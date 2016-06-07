@@ -581,6 +581,7 @@ void interface::loadFunction()
     f->setscaleA(tempdouble);
     scaleaE->setText(QString::number(tempdouble));
     in >> count;
+    numtermsE->setText(QString::number(count));
     for(unsigned int i=0; i<count; i++)
     {
         in >> tempint; f->setN(i, tempint);
