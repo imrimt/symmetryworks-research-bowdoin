@@ -54,10 +54,15 @@ public:
     QLabel *rL;
     QLabel *scaleaL;
     QLabel *scalerL;
-    QLineEdit *nE;
-    QLineEdit *mE;
-    QLineEdit *aE;
-    QLineEdit *rE;
+    // QLineEdit *nE;
+    // QLineEdit *mE;
+    // QLineEdit *aE;
+    // QLineEdit *rE;
+    QSpinBox *nE;
+    QSpinBox *mE;
+    QDoubleSpinBox *aE;
+    QDoubleSpinBox *rE;
+
     QLineEdit *scaleaE;
     QLineEdit *scalerE;
     QSpinBox *currtermE;
@@ -138,10 +143,16 @@ private slots:
     void changeYCorner(const QString &val);
     void changeOWidth(const QString &val);
     void changeOHeight(const QString &val);
-    void changeN(const QString &val);
-    void changeM(const QString &val);
-    void changeR(const QString &val);
-    void changeA(const QString &val);
+    // void changeN(const QString &val);
+    // void changeM(const QString &val);
+    // void changeR(const QString &val);
+    // void changeA(const QString &val);
+
+    void changeN(int val);
+    void changeM(int val);
+    void changeR(double val);
+    void changeA(double val);
+
     void changeScaleR(const QString &val);
     void changeScaleA(const QString &val);
     void saveImageStart();
@@ -157,7 +168,6 @@ private:
     void refreshTerms();
     AbstractFunction * f;
     ColorWheel * c;
-
 };
 
 #endif // INTERFACE_H

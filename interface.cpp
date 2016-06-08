@@ -56,10 +56,14 @@ interface::interface(QWidget *parent) :
     scaleaL = new QLabel(tr("sa"), editconst);
     scalerL = new QLabel(tr("sr"), editconst);
     refreshLabels();
-    nE = new QLineEdit(editconst);                              //create input boxes
-    mE = new QLineEdit(editconst);
-    aE = new QLineEdit(editconst);
-    rE = new QLineEdit(editconst);
+    // nE = new QLineEdit(editconst);                              //create input boxes
+    // mE = new QLineEdit(editconst);
+    // aE = new QLineEdit(editconst);
+    // rE = new QLineEdit(editconst);
+    nE = new QSpinBox(editconst);
+    mE = new QSpinBox(editconst);
+    aE = new QDoubleSpinBox(editconst);
+    rE = new QDoubleSpinBox(editconst);
     scaleaE = new QLineEdit(editconst);
     scalerE = new QLineEdit(editconst);
     currtermE = new QSpinBox(editconst);
@@ -73,8 +77,9 @@ interface::interface(QWidget *parent) :
     espacer8 = new QSpacerItem(8, 15);
     loadButton = new QPushButton(tr("Load..."), editconst);
     saveButton = new QPushButton(tr("Save"), editconst);
-    currtermE->setMaximum(4);
-    currtermE->setMinimum(1);
+    // currtermE->setMaximum(4);
+    // currtermE->setMinimum(1);
+    currtermE->setRange(1,4);
     nE->setFixedWidth(75);
     mE->setFixedWidth(75);
     rE->setFixedWidth(75);
@@ -87,10 +92,29 @@ interface::interface(QWidget *parent) :
     aL->setFixedWidth(18);
     scaleaL->setFixedWidth(18);
     scalerL->setFixedWidth(18);
-    nE->setValidator(intValidate);
-    mE->setValidator(intValidate);
-    rE->setValidator(doubleValidate);
-    aE->setValidator(doubleValidate);
+
+    // nE->setValidator(intValidate);
+    // mE->setValidator(intValidate);
+    // rE->setValidator(doubleValidate);
+    // aE->setValidator(doubleValidate);
+
+    // nE->setMaximum(9999999);
+    // nE->setMinimum(-9999999);
+    nE->setRange(-9999999,9999999);
+    nE->setSingleStep(1);
+    mE->setRange(-9999999,9999999);
+    mE->setSingleStep(1);
+    rE->setRange(-9999999.0,9999999.0);
+    rE->setSingleStep(0.25);
+    aE->setRange(-9999999.0,9999999.0);
+    aE->setSingleStep(0.25);
+    // mE->setMaximum(9999999);
+    // mE->setMinimum(-9999999);
+    // rE->setMaximum(9999999.0);
+    // rE->setMinimum(-9999999.0);
+    // aE->setMaximum(9999999.0);
+    // aE->setMinimum(-9999999.0);
+
     scaleaE->setValidator(doubleValidate);
     scalerE->setValidator(doubleValidate);
 
@@ -184,8 +208,6 @@ interface::interface(QWidget *parent) :
     colorwheelL->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     functionSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     functionL->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
-
 
     numtermsE->setFixedWidth(30);
     numtermsE->setValidator(numtermsValidate);
@@ -320,6 +342,11 @@ interface::interface(QWidget *parent) :
     connect(numtermsE, SIGNAL(textChanged(QString)), this, SLOT(changeMaxTerms(QString)));
     connect(currtermE, SIGNAL(valueChanged(int)), this, SLOT(updateTerms(int)));
 
+    connect(nE, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
+    connect(mE, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
+    connect(rE, SIGNAL(valueChanged(double)), this, SLOT(changeR(double)));
+    connect(aE, SIGNAL(valueChanged(double)), this, SLOT(changeA(double)));
+
     connect(outwidthE, SIGNAL(textChanged(QString)), this, SLOT(changeOWidth(QString)));
     connect(outheightE, SIGNAL(textChanged(QString)), this, SLOT(changeOHeight(QString)));
     connect(worldwidthE, SIGNAL(textChanged(QString)), this, SLOT(changeWorldWidth(QString)));
@@ -327,10 +354,11 @@ interface::interface(QWidget *parent) :
     connect(XCornerE, SIGNAL(textChanged(QString)), this, SLOT(changeXCorner(QString)));
     connect(YCornerE, SIGNAL(textChanged(QString)), this, SLOT(changeYCorner(QString)));
 
-    connect(nE, SIGNAL(textChanged(QString)), this, SLOT(changeN(QString)));
-    connect(mE, SIGNAL(textChanged(QString)), this, SLOT(changeM(QString)));
-    connect(rE, SIGNAL(textChanged(QString)), this, SLOT(changeR(QString)));
-    connect(aE, SIGNAL(textChanged(QString)), this, SLOT(changeA(QString)));
+    // connect(nE, SIGNAL(textChanged(QString)), this, SLOT(changeN(QString)));
+    // connect(mE, SIGNAL(textChanged(QString)), this, SLOT(changeM(QString)));
+    // connect(rE, SIGNAL(textChanged(QString)), this, SLOT(changeR(QString)));
+    // connect(aE, SIGNAL(textChanged(QString)), this, SLOT(changeA(QString)));
+
     connect(scalerE, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
     connect(scaleaE, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
 
@@ -389,10 +417,14 @@ void interface::refreshLabels()                 //for updating our label names
 
 void interface::refreshTerms()
 {
-    nE->setText(QString::number(f->N(termindex)));
-    mE->setText(QString::number(f->M(termindex)));
-    rE->setText(QString::number(f->R(termindex)));
-    aE->setText(QString::number(f->A(termindex)));
+    // nE->setText(QString::number(f->N(termindex)));
+    // mE->setText(QString::number(f->M(termindex)));
+    // rE->setText(QString::number(f->R(termindex)));
+    // aE->setText(QString::number(f->A(termindex)));
+    nE->setValue(f->N(termindex));
+    mE->setValue(f->M(termindex));
+    rE->setValue(f->R(termindex));
+    aE->setValue(f->A(termindex));
 }
 
 void interface::updateTerms(int i)
@@ -660,28 +692,52 @@ void interface::changeYCorner(const QString &val)
     settings::YCorner = val.toDouble();
 }
 
-void interface::changeN(const QString &val)
+// void interface::changeN(const QString &val)
+// {
+//     int passedval = val.toInt();
+//     f->setN(termindex, passedval);
+// }
+
+// void interface::changeM(const QString &val)
+// {
+//     int passedval = val.toInt();
+//     f->setM(termindex, passedval);
+// }
+
+// void interface::changeR(const QString &val)
+// {
+//     double passedval = val.toDouble();
+//     f->setR(termindex, passedval);
+// }
+
+// void interface::changeA(const QString &val)
+// {
+//     double passedval = val.toDouble();
+//     f->setA(termindex, passedval);
+// }
+
+void interface::changeN(int val)
 {
-    int passedval = val.toInt();
-    f->setN(termindex, passedval);
+    // int passedval = val.toInt();
+    f->setN(termindex, val);
 }
 
-void interface::changeM(const QString &val)
+void interface::changeM(int val)
 {
-    int passedval = val.toInt();
-    f->setM(termindex, passedval);
+    // int passedval = val.toInt();
+    f->setM(termindex, val);
 }
 
-void interface::changeR(const QString &val)
+void interface::changeR(double val)
 {
-    double passedval = val.toDouble();
-    f->setR(termindex, passedval);
+    // double passedval = val.toDouble();
+    f->setR(termindex, val);
 }
 
-void interface::changeA(const QString &val)
+void interface::changeA(double val)
 {
-    double passedval = val.toDouble();
-    f->setA(termindex, passedval);
+    // double passedval = val.toDouble();
+    f->setA(termindex, val);
 }
 
 void interface::changeScaleA(const QString &val)
