@@ -720,24 +720,28 @@ void interface::changeN(int val)
 {
     // int passedval = val.toInt();
     f->setN(termindex, val);
+    updatePreviewDisplay();
 }
 
 void interface::changeM(int val)
 {
     // int passedval = val.toInt();
     f->setM(termindex, val);
+    updatePreviewDisplay();
 }
 
 void interface::changeR(double val)
 {
     // double passedval = val.toDouble();
     f->setR(termindex, val);
+    updatePreviewDisplay();
 }
 
 void interface::changeA(double val)
 {
     // double passedval = val.toDouble();
     f->setA(termindex, val);
+    updatePreviewDisplay();
 }
 
 void interface::changeScaleA(const QString &val)
