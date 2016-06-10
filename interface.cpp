@@ -378,8 +378,12 @@ interface::interface(QWidget *parent) :
     XCornerE->setText(QString::number(settings::XCorner));
     YCornerE->setText(QString::number(settings::YCorner));
 
-    functionSel->setCurrentIndex(1);    //set up current function
-    colorwheelSel->setCurrentIndex(9);
+    // functionSel->setCurrentIndex(1);    //set up current function
+    // colorwheelSel->setCurrentIndex(9);
+
+    //default set up (fixed)
+    functionSel->setCurrentIndex(0);
+    colorwheelSel->setCurrentIndex(0);
 
 
     // FINALIZE WINDOW

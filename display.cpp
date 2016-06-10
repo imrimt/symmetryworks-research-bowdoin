@@ -23,7 +23,7 @@ QSize Display::sizeHint() const
 }
 
 int Display::dim() const
-{
+{ 
     return dimension;
 }
 
