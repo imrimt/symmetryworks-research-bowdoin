@@ -22,7 +22,6 @@ interface::interface(QWidget *parent) :
     f = new hex3Function();
     c = new ColorWheel();
 
-
     // ORGANIZATIONAL ELEMENTS
     editconst = new QGroupBox(tr("Function Constants"), this);          //create elements
     interfaceLayout = new QVBoxLayout(this);
@@ -66,7 +65,7 @@ interface::interface(QWidget *parent) :
     rE = new QDoubleSpinBox(editconst);
     scaleaE = new QLineEdit(editconst);
     scalerE = new QLineEdit(editconst);
-    currtermE = new QSpinBox(editconst);
+    currtermE = new CustomSpinBox(editconst);
     espacer1 = new QSpacerItem(10, 15);
     espacer2 = new QSpacerItem(10, 15);
     espacer3 = new QSpacerItem(10, 15);
@@ -75,11 +74,12 @@ interface::interface(QWidget *parent) :
     espacer6 = new QSpacerItem(2, 0);
     espacer7 = new QSpacerItem(15, 15);
     espacer8 = new QSpacerItem(8, 15);
+
     loadButton = new QPushButton(tr("Load..."), editconst);
     saveButton = new QPushButton(tr("Save"), editconst);
     // currtermE->setMaximum(4);
     // currtermE->setMinimum(1);
-    currtermE->setRange(1,4);
+    currtermE->setRange(1,1);
     nE->setFixedWidth(75);
     mE->setFixedWidth(75);
     rE->setFixedWidth(75);
@@ -98,8 +98,6 @@ interface::interface(QWidget *parent) :
     // rE->setValidator(doubleValidate);
     // aE->setValidator(doubleValidate);
 
-    // nE->setMaximum(9999999);
-    // nE->setMinimum(-9999999);
     nE->setRange(-9999999,9999999);
     nE->setSingleStep(1);
     mE->setRange(-9999999,9999999);
@@ -108,6 +106,8 @@ interface::interface(QWidget *parent) :
     rE->setSingleStep(0.25);
     aE->setRange(-9999999.0,9999999.0);
     aE->setSingleStep(0.25);
+    // nE->setMaximum(9999999);
+    // nE->setMinimum(-9999999);
     // mE->setMaximum(9999999);
     // mE->setMinimum(-9999999);
     // rE->setMaximum(9999999.0);
@@ -166,7 +166,6 @@ interface::interface(QWidget *parent) :
     gspacer3 = new QSpacerItem(0,10);
     gspacer4 = new QSpacerItem(0,50);
     setLoadedImage = new QPushButton(tr("Set Image..."), genBox);
-
     genBoxOverallLayout = new QVBoxLayout(genBoxWidget);
     functionLayout = new QVBoxLayout();
     colorwheelLayout = new QVBoxLayout();
@@ -452,7 +451,6 @@ void interface::colorWheelChanged(int index)
         setLoadedImage->show();
     else
         setLoadedImage->hide();
-
 }
 
 void interface::setImagePushed()
@@ -554,7 +552,6 @@ void interface::changeFunction(int index)
     }
 
     refreshTerms();
-
 }
 
 void interface::saveFunction()
@@ -791,5 +788,4 @@ void interface::saveImageStart()
           QDir stickypath(fileName);
           stickypath.cdUp();
           saveloadPath = stickypath.path();
-
 }

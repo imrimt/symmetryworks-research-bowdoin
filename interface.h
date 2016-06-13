@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QSpinBox>
+#include <QKeyEvent>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QSpacerItem>
@@ -23,6 +24,16 @@
 #include "functions.h"
 #include "colorwheel.h"
 #include "display.h"
+
+class CustomSpinBox : public QSpinBox
+{
+  public:
+    CustomSpinBox(QWidget *parent = 0) : QSpinBox(parent) { }
+
+  protected:
+    void keyPressEvent(QKeyEvent *event) {event->ignore();}
+
+};
 
 class interface : public QWidget
 {
@@ -52,6 +63,9 @@ public:
     QLabel *mL;
     QLabel *aL;
     QLabel *rL;
+
+    QLabel *fileLabel;
+
     QLabel *scaleaL;
     QLabel *scalerL;
     // QLineEdit *nE;
@@ -65,7 +79,7 @@ public:
 
     QLineEdit *scaleaE;
     QLineEdit *scalerE;
-    QSpinBox *currtermE;
+    CustomSpinBox *currtermE;
     QHBoxLayout *editconstLayout;
     QHBoxLayout *editconstLayoutLower;
     QVBoxLayout *editconstLayoutStack;
@@ -158,7 +172,6 @@ private slots:
     void saveImageStart();
     void loadFunction();
     void saveFunction();
-
 
 private:
     unsigned int termindex;              //internal index:  starts at 0

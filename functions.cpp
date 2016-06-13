@@ -162,8 +162,10 @@ std::complex<double> locSymFunction::bundle(double &x, double &y, unsigned int &
     std::complex<double> part1;
     N = freqs[i].N();
     M = freqs[i].M();
-    if(N==0 and M==0){part1=qCos(Xloc)*qCos(Yloc);}else{
-        part1 = (ei((2*N+M)*Xloc + (-2*M)*Yloc)+ ei((2*M+N)*Xloc + (-2*N)*Yloc))/2.0;};
+    if(N==0 and M==0)
+        part1 = qCos(Xloc) * qCos(Yloc);
+    else
+        part1 = (ei((2*N+M)*Xloc + (-2*M)*Yloc)+ ei((2*M+N)*Xloc + (-2*N)*Yloc))/2.0;
 
     return part1;
 }
