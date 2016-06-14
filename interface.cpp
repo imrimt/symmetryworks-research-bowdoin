@@ -424,6 +424,7 @@ void interface::refreshTerms()
     // mE->setText(QString::number(f->M(termindex)));
     // rE->setText(QString::number(f->R(termindex)));
     // aE->setText(QString::number(f->A(termindex)));
+
     nE->setValue(f->N(termindex));
     mE->setValue(f->M(termindex));
     rE->setValue(f->R(termindex));
@@ -439,10 +440,19 @@ void interface::updateTerms(int i)
 }
 
 void interface::changeMaxTerms(const QString &val)
-{
+{   
     int passedval = val.toInt();
-    currtermE->setMaximum(passedval);
-    f->setNumTerms(passedval);
+
+    if (passedval >= currtermE->minimum()) {
+        currtermE->setMaximum(passedval);
+        f->setNumTerms(passedval);
+    }
+    // else {
+    //     qDebug() << "pass in : " << passedval;
+    //     qDebug() << "currtermE max: " << currtermE->maximum();
+    //     qDebug() << "currtermE min: " << currtermE->minimum();
+    // }
+    
 }
 
 void interface::colorWheelChanged(int index)
@@ -551,7 +561,7 @@ void interface::changeFunction(int index)
 
     }
 
-    refreshTerms();
+    // refreshTerms();
 }
 
 void interface::saveFunction()
