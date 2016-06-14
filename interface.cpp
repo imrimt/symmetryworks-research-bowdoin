@@ -15,7 +15,7 @@ interface::interface(QWidget *parent) :
 {
 
     // FUNCTIONAL VARIABLES
-    termindex = 0;
+    termIndex = 0;
     saveloadPath = QDir::homePath();
 
     // FUNCTIONAL OBJECTS
@@ -46,26 +46,26 @@ interface::interface(QWidget *parent) :
     dimValidate = new QIntValidator(1, 10000, this);
 
     // EDITCONST SUBELEMENTS
-    currtermL = new QLabel(editconst);                              //create labels
-    currtermL->setText(tr("Term"));
-    nL = new QLabel(editconst);
-    mL = new QLabel(editconst);
-    aL = new QLabel(editconst);
-    rL = new QLabel(editconst);
-    scaleaL = new QLabel(tr("sa"), editconst);
-    scalerL = new QLabel(tr("sr"), editconst);
+    currtermLabel = new QLabel(editconst);                              //create labels
+    currtermLabel->setText(tr("Term"));
+    nLabel = new QLabel(editconst);
+    mLabel = new QLabel(editconst);
+    aLabel = new QLabel(editconst);
+    rLabel = new QLabel(editconst);
+    scaleALabel = new QLabel(tr("sa"), editconst);
+    scaleRLabel = new QLabel(tr("sr"), editconst);
     refreshLabels();
-    // nE = new QLineEdit(editconst);                              //create input boxes
-    // mE = new QLineEdit(editconst);
-    // aE = new QLineEdit(editconst);
-    // rE = new QLineEdit(editconst);
-    nE = new QSpinBox(editconst);
-    mE = new QSpinBox(editconst);
-    aE = new QDoubleSpinBox(editconst);
-    rE = new QDoubleSpinBox(editconst);
-    scaleaE = new QLineEdit(editconst);
-    scalerE = new QLineEdit(editconst);
-    currtermE = new CustomSpinBox(editconst);
+    // nEdit = new QLineEdit(editconst);                              //create input boxes
+    // mEdit = new QLineEdit(editconst);
+    // aEdit = new QLineEdit(editconst);
+    // rEdit = new QLineEdit(editconst);
+    nEdit = new QSpinBox(editconst);
+    mEdit = new QSpinBox(editconst);
+    aEdit = new QDoubleSpinBox(editconst);
+    rEdit = new QDoubleSpinBox(editconst);
+    scaleAEdit = new QLineEdit(editconst);
+    scaleREdit = new QLineEdit(editconst);
+    currtermEdit = new CustomSpinBox(editconst);
     espacer1 = new QSpacerItem(10, 15);
     espacer2 = new QSpacerItem(10, 15);
     espacer3 = new QSpacerItem(10, 15);
@@ -77,46 +77,46 @@ interface::interface(QWidget *parent) :
 
     loadButton = new QPushButton(tr("Load..."), editconst);
     saveButton = new QPushButton(tr("Save"), editconst);
-    // currtermE->setMaximum(4);
-    // currtermE->setMinimum(1);
-    currtermE->setRange(1,1);
-    nE->setFixedWidth(75);
-    mE->setFixedWidth(75);
-    rE->setFixedWidth(75);
-    aE->setFixedWidth(75);
-    scaleaE->setFixedWidth(75);
-    scalerE->setFixedWidth(75);
-    nL->setFixedWidth(18);
-    mL->setFixedWidth(20);
-    rL->setFixedWidth(18);
-    aL->setFixedWidth(18);
-    scaleaL->setFixedWidth(18);
-    scalerL->setFixedWidth(18);
+    // currtermEdit->setMaximum(4);
+    // currtermEdit->setMinimum(1);
+    currtermEdit->setRange(1,1);
+    nEdit->setFixedWidth(75);
+    mEdit->setFixedWidth(75);
+    rEdit->setFixedWidth(75);
+    aEdit->setFixedWidth(75);
+    scaleAEdit->setFixedWidth(75);
+    scaleREdit->setFixedWidth(75);
+    nLabel->setFixedWidth(18);
+    mLabel->setFixedWidth(20);
+    rLabel->setFixedWidth(18);
+    aLabel->setFixedWidth(18);
+    scaleALabel->setFixedWidth(18);
+    scaleRLabel->setFixedWidth(18);
 
-    // nE->setValidator(intValidate);
-    // mE->setValidator(intValidate);
-    // rE->setValidator(doubleValidate);
-    // aE->setValidator(doubleValidate);
+    // nEdit->setValidator(intValidate);
+    // mEdit->setValidator(intValidate);
+    // rEdit->setValidator(doubleValidate);
+    // aEdit->setValidator(doubleValidate);
 
-    nE->setRange(-9999999,9999999);
-    nE->setSingleStep(1);
-    mE->setRange(-9999999,9999999);
-    mE->setSingleStep(1);
-    rE->setRange(-9999999.0,9999999.0);
-    rE->setSingleStep(0.25);
-    aE->setRange(-9999999.0,9999999.0);
-    aE->setSingleStep(0.25);
-    // nE->setMaximum(9999999);
-    // nE->setMinimum(-9999999);
-    // mE->setMaximum(9999999);
-    // mE->setMinimum(-9999999);
-    // rE->setMaximum(9999999.0);
-    // rE->setMinimum(-9999999.0);
-    // aE->setMaximum(9999999.0);
-    // aE->setMinimum(-9999999.0);
+    nEdit->setRange(-9999999,9999999);
+    nEdit->setSingleStep(1);
+    mEdit->setRange(-9999999,9999999);
+    mEdit->setSingleStep(1);
+    rEdit->setRange(-9999999.0,9999999.0);
+    rEdit->setSingleStep(0.25);
+    aEdit->setRange(-9999999.0,9999999.0);
+    aEdit->setSingleStep(0.25);
+    // nEdit->setMaximum(9999999);
+    // nEdit->setMinimum(-9999999);
+    // mEdit->setMaximum(9999999);
+    // mEdit->setMinimum(-9999999);
+    // rEdit->setMaximum(9999999.0);
+    // rEdit->setMinimum(-9999999.0);
+    // aEdit->setMaximum(9999999.0);
+    // aEdit->setMinimum(-9999999.0);
 
-    scaleaE->setValidator(doubleValidate);
-    scalerE->setValidator(doubleValidate);
+    scaleAEdit->setValidator(doubleValidate);
+    scaleREdit->setValidator(doubleValidate);
 
 
     editconstLayoutStack = new QVBoxLayout(editconst);  //initialize layout
@@ -125,30 +125,30 @@ interface::interface(QWidget *parent) :
     editconstLayoutLower->setAlignment(Qt::AlignRight);
     editconstLayout->setAlignment(Qt::AlignRight);
 
-    editconstLayout->addWidget(currtermL);              //fill layouts
-    editconstLayout->addWidget(currtermE);
+    editconstLayout->addWidget(currtermLabel);              //fill layouts
+    editconstLayout->addWidget(currtermEdit);
     editconstLayout->addItem(espacer1);
-    editconstLayout->addWidget(nL);
-    editconstLayout->addWidget(nE);
+    editconstLayout->addWidget(nLabel);
+    editconstLayout->addWidget(nEdit);
     editconstLayout->addItem(espacer2);
-    editconstLayout->addWidget(mL);
-    editconstLayout->addWidget(mE);
+    editconstLayout->addWidget(mLabel);
+    editconstLayout->addWidget(mEdit);
     editconstLayout->addItem(espacer3);
-    editconstLayout->addWidget(rL);
-    editconstLayout->addWidget(rE);
+    editconstLayout->addWidget(rLabel);
+    editconstLayout->addWidget(rEdit);
     editconstLayout->addItem(espacer4);
-    editconstLayout->addWidget(aL);
-    editconstLayout->addWidget(aE);
+    editconstLayout->addWidget(aLabel);
+    editconstLayout->addWidget(aEdit);
     editconstLayoutLower->addItem(espacer8);
     editconstLayoutLower->addWidget(loadButton);
     editconstLayoutLower->addItem(espacer7);
     editconstLayoutLower->addWidget(saveButton);
     editconstLayoutLower->addItem(espacer5);
-    editconstLayoutLower->addWidget(scalerL);
-    editconstLayoutLower->addWidget(scalerE);
+    editconstLayoutLower->addWidget(scaleRLabel);
+    editconstLayoutLower->addWidget(scaleREdit);
     editconstLayoutLower->addItem(espacer6);
-    editconstLayoutLower->addWidget(scaleaL);
-    editconstLayoutLower->addWidget(scaleaE);
+    editconstLayoutLower->addWidget(scaleALabel);
+    editconstLayoutLower->addWidget(scaleAEdit);
     editconstLayoutStack->addLayout(editconstLayout);
     editconstLayoutStack->addLayout(editconstLayoutLower);
     editconst->setLayout(editconstLayoutStack);
@@ -157,10 +157,10 @@ interface::interface(QWidget *parent) :
     genBox = new QGroupBox(tr("Image Generation"), genBoxWidget);
     functionSel = new QComboBox(genBox);        //initialize elements
     colorwheelSel = new QComboBox(genBox);
-    functionL = new QLabel(genBox);
-    colorwheelL = new QLabel(genBox);
-    numtermsL = new QLabel(tr("<i>No. Terms</i>"), genBox);
-    numtermsE = new QLineEdit("1", genBox);
+    functionLabel = new QLabel(genBox);
+    colorwheelLabel = new QLabel(genBox);
+    numtermsLabel = new QLabel(tr("<i>No. Terms</i>"), genBox);
+    numtermsEdit = new QLineEdit("1", genBox);
     gspacer1 = new QSpacerItem(0,20);
     gspacer2 = new QSpacerItem(0,10);
     gspacer3 = new QSpacerItem(0,10);
@@ -199,28 +199,28 @@ interface::interface(QWidget *parent) :
     colorwheelSel->addItem("Sect6Col");
     colorwheelSel->addItem("WinCol");
     colorwheelSel->addItem("FromImage");
-    functionL->setText(tr("Function"));
-    colorwheelL->setText(tr("Color Wheel"));
-    numtermsE->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    numtermsL->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    functionLabel->setText(tr("Function"));
+    colorwheelLabel->setText(tr("Color Wheel"));
+    numtermsEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    numtermsLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    colorwheelL->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     functionSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    functionL->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    functionLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    numtermsE->setFixedWidth(30);
-    numtermsE->setValidator(numtermsValidate);
+    numtermsEdit->setFixedWidth(30);
+    numtermsEdit->setValidator(numtermsValidate);
 
     genBoxLayout = new QVBoxLayout(genBox);     //set up layout
-    functionLayout->addWidget(functionL);
+    functionLayout->addWidget(functionLabel);
     functionLayout->addWidget(functionSel);
-    numtermsLayout->addWidget(numtermsL);
-    numtermsLayout->addWidget(numtermsE);
+    numtermsLayout->addWidget(numtermsLabel);
+    numtermsLayout->addWidget(numtermsEdit);
     functionLayout->addLayout(numtermsLayout);
     genBoxLayout->addLayout(functionLayout);
     genBoxLayout->addItem(gspacer1);
     colorwheelLayout->addItem(gspacer3);
-    colorwheelLayout->addWidget(colorwheelL);
+    colorwheelLayout->addWidget(colorwheelLabel);
     colorwheelLayout->addWidget(colorwheelSel);
     colorwheelLayout->addWidget(setLoadedImage);
     setLoadedImage->hide();
@@ -232,18 +232,18 @@ interface::interface(QWidget *parent) :
     //genBoxOverallLayout->addItem(gspacer4);
 
     // PROPSBOX SUBELEMENTS
-    outheightL = new QLabel(tr("Output Height"), propsBox);          //initialize elements
-    outwidthL = new QLabel(tr("Output Width"), propsBox);
-    XCornerL = new QLabel(tr("XCorner"), propsBox);
-    YCornerL = new QLabel(tr("YCorner"), propsBox);
-    worldwidthL = new QLabel(tr("World Width"), propsBox);
-    worldheightL = new QLabel(tr("World Height"), propsBox);
-    outheightE = new QLineEdit(propsBox);
-    outwidthE = new QLineEdit(propsBox);
-    XCornerE = new QLineEdit(propsBox);
-    YCornerE = new QLineEdit(propsBox);
-    worldwidthE = new QLineEdit(propsBox);
-    worldheightE = new QLineEdit(propsBox);
+    outheightLabel = new QLabel(tr("Output Height"), propsBox);          //initialize elements
+    outwidthLabel = new QLabel(tr("Output Width"), propsBox);
+    XCornerLabel = new QLabel(tr("XCorner"), propsBox);
+    YCornerLabel = new QLabel(tr("YCorner"), propsBox);
+    worldwidthLabel = new QLabel(tr("World Width"), propsBox);
+    worldheightLabel = new QLabel(tr("World Height"), propsBox);
+    outheightEdit = new QLineEdit(propsBox);
+    outwidthEdit = new QLineEdit(propsBox);
+    XCornerEdit = new QLineEdit(propsBox);
+    YCornerEdit = new QLineEdit(propsBox);
+    worldwidthEdit = new QLineEdit(propsBox);
+    worldheightEdit = new QLineEdit(propsBox);
     saveImagePush = new QPushButton(tr("Save Image"), propsBox);
     pspacer1 = new QSpacerItem(0, 12);
     pspacer2 = new QSpacerItem(0, 14);
@@ -251,19 +251,19 @@ interface::interface(QWidget *parent) :
     pspacer4 = new QSpacerItem(20, 60);
     pspacer5 = new QSpacerItem(20, 15);
 
-//    outheightE->setFixedWidth(100);
-//    outwidthE->setFixedWidth(100);
-//    XCornerE->setFixedWidth(100);
-//    YCornerE->setFixedWidth(100);
-//    worldwidthE->setFixedWidth(100);
-//    worldheightE->setFixedWidth(100);
+//    outheightEdit->setFixedWidth(100);
+//    outwidthEdit->setFixedWidth(100);
+//    XCornerEdit->setFixedWidth(100);
+//    YCornerEdit->setFixedWidth(100);
+//    worldwidthEdit->setFixedWidth(100);
+//    worldheightEdit->setFixedWidth(100);
 
-//    outheightE->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-//    outwidthE->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-//    XCornerE->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-//    YCornerE->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-//    worldwidthE->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-//    worldheightE->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+//    outheightEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+//    outwidthEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+//    XCornerEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+//    YCornerEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+//    worldwidthEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+//    worldheightEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     saveImagePush->setFixedHeight(25);
     propsBoxOverallLayout = new QVBoxLayout(propsBox);
@@ -272,45 +272,45 @@ interface::interface(QWidget *parent) :
     propslabelStack = new QVBoxLayout();
     savePushLayout = new QHBoxLayout();
 
-    outheightE->setValidator(dimValidate);
-    outwidthE->setValidator(dimValidate);
-    XCornerE->setValidator(doubleValidate);
-    YCornerE->setValidator(doubleValidate);
-    worldwidthE->setValidator(doubleValidate);
-    worldheightE->setValidator(doubleValidate);
+    outheightEdit->setValidator(dimValidate);
+    outwidthEdit->setValidator(dimValidate);
+    XCornerEdit->setValidator(doubleValidate);
+    YCornerEdit->setValidator(doubleValidate);
+    worldwidthEdit->setValidator(doubleValidate);
+    worldheightEdit->setValidator(doubleValidate);
 
-    outheightE->setFixedWidth(100);
-    outwidthE->setFixedWidth(100);
-    XCornerE->setFixedWidth(100);
-    YCornerE->setFixedWidth(100);
-    worldwidthE->setFixedWidth(100);
-    worldheightE->setFixedWidth(100);
+    outheightEdit->setFixedWidth(100);
+    outwidthEdit->setFixedWidth(100);
+    XCornerEdit->setFixedWidth(100);
+    YCornerEdit->setFixedWidth(100);
+    worldwidthEdit->setFixedWidth(100);
+    worldheightEdit->setFixedWidth(100);
 
     saveImagePush->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     saveImagePush->setFixedWidth(150);
 
-    propslabelStack->addWidget(XCornerL);
-    propslabelStack->addWidget(YCornerL);
-    propslabelStack->addWidget(worldwidthL);
-    propslabelStack->addWidget(worldheightL);
+    propslabelStack->addWidget(XCornerLabel);
+    propslabelStack->addWidget(YCornerLabel);
+    propslabelStack->addWidget(worldwidthLabel);
+    propslabelStack->addWidget(worldheightLabel);
     propslabelStack->addItem(pspacer1);
-    propslabelStack->addWidget(outwidthL);
-    propslabelStack->addWidget(outheightL);
+    propslabelStack->addWidget(outwidthLabel);
+    propslabelStack->addWidget(outheightLabel);
 
-    propslabelStack->setAlignment(XCornerL, Qt::AlignLeft);
-    propslabelStack->setAlignment(YCornerL, Qt::AlignLeft);
-    propslabelStack->setAlignment(worldwidthL, Qt::AlignLeft);
-    propslabelStack->setAlignment(worldheightL, Qt::AlignLeft);
-    propslabelStack->setAlignment(outwidthL, Qt::AlignLeft);
-    propslabelStack->setAlignment(outheightL, Qt::AlignLeft);
+    propslabelStack->setAlignment(XCornerLabel, Qt::AlignLeft);
+    propslabelStack->setAlignment(YCornerLabel, Qt::AlignLeft);
+    propslabelStack->setAlignment(worldwidthLabel, Qt::AlignLeft);
+    propslabelStack->setAlignment(worldheightLabel, Qt::AlignLeft);
+    propslabelStack->setAlignment(outwidthLabel, Qt::AlignLeft);
+    propslabelStack->setAlignment(outheightLabel, Qt::AlignLeft);
 
-    propseditStack->addWidget(XCornerE);
-    propseditStack->addWidget(YCornerE);
-    propseditStack->addWidget(worldwidthE);
-    propseditStack->addWidget(worldheightE);
+    propseditStack->addWidget(XCornerEdit);
+    propseditStack->addWidget(YCornerEdit);
+    propseditStack->addWidget(worldwidthEdit);
+    propseditStack->addWidget(worldheightEdit);
     propseditStack->addItem(pspacer2);
-    propseditStack->addWidget(outwidthE);
-    propseditStack->addWidget(outheightE);
+    propseditStack->addWidget(outwidthEdit);
+    propseditStack->addWidget(outheightEdit);
 
     //propsBoxLayout->addItem(pspacer3);
     propsBoxLayout->addLayout(propslabelStack);
@@ -338,28 +338,28 @@ interface::interface(QWidget *parent) :
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
-    connect(numtermsE, SIGNAL(textChanged(QString)), this, SLOT(changeMaxTerms(QString)));
-    connect(currtermE, SIGNAL(valueChanged(int)), this, SLOT(updateTerms(int)));
+    connect(numtermsEdit, SIGNAL(textChanged(QString)), this, SLOT(changeMaxTerms(QString)));
+    connect(currtermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateTerms(int)));
 
-    connect(nE, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
-    connect(mE, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
-    connect(rE, SIGNAL(valueChanged(double)), this, SLOT(changeR(double)));
-    connect(aE, SIGNAL(valueChanged(double)), this, SLOT(changeA(double)));
+    connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
+    connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
+    connect(rEdit, SIGNAL(valueChanged(double)), this, SLOT(changeR(double)));
+    connect(aEdit, SIGNAL(valueChanged(double)), this, SLOT(changeA(double)));
 
-    connect(outwidthE, SIGNAL(textChanged(QString)), this, SLOT(changeOWidth(QString)));
-    connect(outheightE, SIGNAL(textChanged(QString)), this, SLOT(changeOHeight(QString)));
-    connect(worldwidthE, SIGNAL(textChanged(QString)), this, SLOT(changeWorldWidth(QString)));
-    connect(worldheightE, SIGNAL(textChanged(QString)), this, SLOT(changeWorldHeight(QString)));
-    connect(XCornerE, SIGNAL(textChanged(QString)), this, SLOT(changeXCorner(QString)));
-    connect(YCornerE, SIGNAL(textChanged(QString)), this, SLOT(changeYCorner(QString)));
+    connect(outwidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOWidth(QString)));
+    connect(outheightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOHeight(QString)));
+    connect(worldwidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeWorldWidth(QString)));
+    connect(worldheightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeWorldHeight(QString)));
+    connect(XCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeXCorner(QString)));
+    connect(YCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeYCorner(QString)));
 
-    // connect(nE, SIGNAL(textChanged(QString)), this, SLOT(changeN(QString)));
-    // connect(mE, SIGNAL(textChanged(QString)), this, SLOT(changeM(QString)));
-    // connect(rE, SIGNAL(textChanged(QString)), this, SLOT(changeR(QString)));
-    // connect(aE, SIGNAL(textChanged(QString)), this, SLOT(changeA(QString)));
+    // connect(nEdit, SIGNAL(textChanged(QString)), this, SLOT(changeN(QString)));
+    // connect(mEdit, SIGNAL(textChanged(QString)), this, SLOT(changeM(QString)));
+    // connect(rEdit, SIGNAL(textChanged(QString)), this, SLOT(changeR(QString)));
+    // connect(aEdit, SIGNAL(textChanged(QString)), this, SLOT(changeA(QString)));
 
-    connect(scalerE, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
-    connect(scaleaE, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
+    connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
+    connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
 
     connect(saveImagePush, SIGNAL(clicked()), this, SLOT(saveImageStart()));
     connect(loadButton, SIGNAL(clicked()), this, SLOT(loadFunction()));
@@ -367,15 +367,15 @@ interface::interface(QWidget *parent) :
 
     // SET DEFAULTS
     refreshTerms();
-    scalerE->setText(QString::number(currFunction->scaleR()));
-    scaleaE->setText(QString::number(currFunction->scaleA()));
+    scaleREdit->setText(QString::number(currFunction->scaleR()));
+    scaleAEdit->setText(QString::number(currFunction->scaleA()));
 
-    outwidthE->setText(QString::number(settings::OWidth));
-    outheightE->setText(QString::number(settings::OHeight));
-    worldwidthE->setText(QString::number(settings::Width));
-    worldheightE->setText(QString::number(settings::Height));
-    XCornerE->setText(QString::number(settings::XCorner));
-    YCornerE->setText(QString::number(settings::YCorner));
+    outwidthEdit->setText(QString::number(settings::OWidth));
+    outheightEdit->setText(QString::number(settings::OHeight));
+    worldwidthEdit->setText(QString::number(settings::Width));
+    worldheightEdit->setText(QString::number(settings::Height));
+    XCornerEdit->setText(QString::number(settings::XCorner));
+    YCornerEdit->setText(QString::number(settings::YCorner));
 
     // functionSel->setCurrentIndex(1);    //set up current function
     // colorwheelSel->setCurrentIndex(9);
@@ -388,23 +388,23 @@ interface::interface(QWidget *parent) :
     // FINALIZE WINDOW
     setFixedSize(sizeHint());
     setWindowTitle(tr("Wallpaper Generation"));
-    setTabOrder(nE, mE);
-    setTabOrder(mE, rE);
-    setTabOrder(rE, aE);
-    setTabOrder(aE, scalerE);
-    setTabOrder(scalerE, scaleaE);
-    setTabOrder(scaleaE, XCornerE);
-    setTabOrder(XCornerE, YCornerE);
-    setTabOrder(YCornerE, worldwidthE);
-    setTabOrder(worldwidthE, worldheightE);
-    setTabOrder(worldheightE, outwidthE);
-    setTabOrder(outwidthE, outheightE);
+    setTabOrder(nEdit, mEdit);
+    setTabOrder(mEdit, rEdit);
+    setTabOrder(rEdit, aEdit);
+    setTabOrder(aEdit, scaleREdit);
+    setTabOrder(scaleREdit, scaleAEdit);
+    setTabOrder(scaleAEdit, XCornerEdit);
+    setTabOrder(XCornerEdit, YCornerEdit);
+    setTabOrder(YCornerEdit, worldwidthEdit);
+    setTabOrder(worldwidthEdit, worldheightEdit);
+    setTabOrder(worldheightEdit, outwidthEdit);
+    setTabOrder(outwidthEdit, outheightEdit);
 }
 
 QString interface::genLabel(const char *in)     //concatenate the constant name
 {                                               //with the current index number
     QString out;
-    out.setNum(termindex+1);
+    out.setNum(termIndex+1);
     out.prepend(in);
 
     return out;
@@ -412,28 +412,28 @@ QString interface::genLabel(const char *in)     //concatenate the constant name
 
 void interface::refreshLabels()                 //for updating our label names
 {                                               //with the current term #
-    nL->setText(genLabel("n"));
-    mL->setText(genLabel("m"));
-    rL->setText(genLabel("r"));
-    aL->setText(genLabel("a"));
+    nLabel->setText(genLabel("n"));
+    mLabel->setText(genLabel("m"));
+    rLabel->setText(genLabel("r"));
+    aLabel->setText(genLabel("a"));
 }
 
 void interface::refreshTerms()
 {
-    // nE->setText(QString::number(currFunction->N(termindex)));
-    // mE->setText(QString::number(currFunction->M(termindex)));
-    // rE->setText(QString::number(currFunction->R(termindex)));
-    // aE->setText(QString::number(currFunction->A(termindex)));
+    // nEdit->setText(QString::number(f->N(termIndex)));
+    // mEdit->setText(QString::number(f->M(termIndex)));
+    // rEdit->setText(QString::number(f->R(termIndex)));
+    // aEdit->setText(QString::number(f->A(termIndex)));
 
-    nE->setValue(currFunction->N(termindex));
-    mE->setValue(currFunction->M(termindex));
-    rE->setValue(currFunction->R(termindex));
-    aE->setValue(currFunction->A(termindex));
+    nEdit->setValue(currFunction->getN(termIndex));
+    mEdit->setValue(currFunction->getM(termIndex));
+    rEdit->setValue(currFunction->getR(termIndex));
+    aEdit->setValue(currFunction->getA(termIndex));
 }
 
 void interface::updateTerms(int i)
 {
-    termindex = i-1;
+    termIndex = i-1;
 
     refreshTerms();
     refreshLabels();
@@ -443,14 +443,14 @@ void interface::changeMaxTerms(const QString &val)
 {   
     int passedval = val.toInt();
 
-    if (passedval >= currtermE->minimum()) {
-        currtermE->setMaximum(passedval);
+    if (passedval >= currtermEdit->minimum()) {
+        currtermEdit->setMaximum(passedval);
         currFunction->setNumTerms(passedval);
     }
     // else {
     //     qDebug() << "pass in : " << passedval;
-    //     qDebug() << "currtermE max: " << currtermE->maximum();
-    //     qDebug() << "currtermE min: " << currtermE->minimum();
+    //     qDebug() << "currtermEdit max: " << currtermEdit->maximum();
+    //     qDebug() << "currtermEdit min: " << currtermEdit->minimum();
     // }
     
 }
@@ -585,7 +585,7 @@ void interface::saveFunction()
     out << currFunction->scaleR() << currFunction->scaleA();
     out << currFunction->numterms();
     for(unsigned int i=0; i<currFunction->numterms(); i++)
-        out << currFunction->N(i) << currFunction->M(i) << currFunction->R(i) << currFunction->A(i);
+        out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
 
     outFile.close();
 
@@ -618,13 +618,13 @@ void interface::loadFunction()
     colorwheelSel->setCurrentIndex(tempint);
 
     in >> tempdouble;
-    currFunction->setscaleR(tempdouble);
-    scalerE->setText(QString::number(tempdouble));
+    currFunction->setScaleR(tempdouble);
+    scaleREdit->setText(QString::number(tempdouble));
     in >> tempdouble;
-    currFunction->setscaleA(tempdouble);
-    scaleaE->setText(QString::number(tempdouble));
+    currFunction->setScaleA(tempdouble);
+    scaleAEdit->setText(QString::number(tempdouble));
     in >> count;
-    numtermsE->setText(QString::number(count));
+    numtermsEdit->setText(QString::number(count));
     for(unsigned int i=0; i<count; i++)
     {
         in >> tempint; currFunction->setN(i, tempint);
@@ -636,12 +636,12 @@ void interface::loadFunction()
     inFile.close();
 
     refreshTerms();
-    outwidthE->setText(QString::number(settings::OWidth));
-    outheightE->setText(QString::number(settings::OHeight));
-    worldwidthE->setText(QString::number(settings::Width));
-    worldheightE->setText(QString::number(settings::Height));
-    XCornerE->setText(QString::number(settings::XCorner));
-    YCornerE->setText(QString::number(settings::YCorner));
+    outwidthEdit->setText(QString::number(settings::OWidth));
+    outheightEdit->setText(QString::number(settings::OHeight));
+    worldwidthEdit->setText(QString::number(settings::Width));
+    worldheightEdit->setText(QString::number(settings::Height));
+    XCornerEdit->setText(QString::number(settings::XCorner));
+    YCornerEdit->setText(QString::number(settings::YCorner));
     updatePreviewDisplay();
 
     QDir stickypath(fileName);
@@ -706,65 +706,65 @@ void interface::changeYCorner(const QString &val)
 // void interface::changeN(const QString &val)
 // {
 //     int passedval = val.toInt();
-//     currFunction->setN(termindex, passedval);
+//     currFunction->setN(termIndex, passedval);
 // }
 
 // void interface::changeM(const QString &val)
 // {
 //     int passedval = val.toInt();
-//     currFunction->setM(termindex, passedval);
+//     currFunction->setM(termIndex, passedval);
 // }
 
 // void interface::changeR(const QString &val)
 // {
 //     double passedval = val.toDouble();
-//     currFunction->setR(termindex, passedval);
+//     currFunction->setR(termIndex, passedval);
 // }
 
 // void interface::changeA(const QString &val)
 // {
 //     double passedval = val.toDouble();
-//     currFunction->setA(termindex, passedval);
+//     currFunction->setA(termIndex, passedval);
 // }
 
 void interface::changeN(int val)
 {
     // int passedval = val.toInt();
-    currFunction->setN(termindex, val);
+    currFunction->setN(termIndex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeM(int val)
 {
     // int passedval = val.toInt();
-    currFunction->setM(termindex, val);
+    currFunction->setM(termIndex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeR(double val)
 {
     // double passedval = val.toDouble();
-    currFunction->setR(termindex, val);
+    currFunction->setR(termIndex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeA(double val)
 {
     // double passedval = val.toDouble();
-    currFunction->setA(termindex, val);
+    currFunction->setA(termIndex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeScaleA(const QString &val)
 {
     double passedval = val.toDouble();
-    currFunction->setscaleA(passedval);
+    currFunction->setScaleA(passedval);
 }
 
 void interface::changeScaleR(const QString &val)
 {
     double passedval = val.toDouble();
-    currFunction->setscaleR(passedval);
+    currFunction->setScaleR(passedval);
 }
 
 void interface::saveImageStart()

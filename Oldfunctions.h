@@ -36,8 +36,8 @@ class AbstractFunction      //this is the base class for all other classes that 
     void setM(unsigned int &i, int &val);
     void setR(unsigned int &i, double &val);
     void setA(unsigned int &i, double &val);
-    void setscaleR(double &val);
-    void setscaleA(double &val);
+    void setScaleR(double &val);
+    void setScaleA(double &val);
     void setNumTerms(int &val);
 
 

@@ -81,12 +81,12 @@ void AbstractFunction::setA(unsigned int &i, double &val)
         qDebug() << "AbstractFunction.cpp error: coeffs[" << i << "] is out of bounds";
 }
 
-void AbstractFunction::setscaleR(double &val)
+void AbstractFunction::setScaleR(double &val)
 {
     scale.setR(val);
 }
 
-void AbstractFunction::setscaleA(double &val)
+void AbstractFunction::setScaleA(double &val)
 {
     scale.setA(val);
 }

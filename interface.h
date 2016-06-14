@@ -58,25 +58,25 @@ public:
     QIntValidator *dimValidate;
 
     // EDITCONST SUBELEMENTS
-    QLabel *currtermL;
+    QLabel *currtermLabel;
     QLabel *nLabel;
     QLabel *mLabel;
     QLabel *aLabel;
     QLabel *rLabel;
-    QLabel *scaleaLabel;
-    QLabel *scalerLabel;
-    // QLineEdit *nE;
-    // QLineEdit *mE;
-    // QLineEdit *aE;
-    // QLineEdit *rE;
+    QLabel *scaleALabel;
+    QLabel *scaleRLabel;
+    // QLineEdit *nEdit;
+    // QLineEdit *mEdit;
+    // QLineEdit *aEdit;
+    // QLineEdit *rEdit;
     QSpinBox *nEdit;
     QSpinBox *mEdit;
     QDoubleSpinBox *aEdit;
     QDoubleSpinBox *rEdit;
 
-    QLineEdit *scaleaE;
-    QLineEdit *scalerE;
-    CustomSpinBox *currtermE;
+    QLineEdit *scaleAEdit;
+    QLineEdit *scaleREdit;
+    CustomSpinBox *currtermEdit;
     QHBoxLayout *editconstLayout;
     QHBoxLayout *editconstLayoutLower;
     QVBoxLayout *editconstLayoutStack;
@@ -101,7 +101,7 @@ public:
     QLabel *colorwheelLabel;
     QLabel *functionLabel;
     QLabel *numtermsLabel;
-    QLineEdit *numtermsE;
+    QLineEdit *numtermsEdit;
     QSpacerItem *gspacer1;
     QSpacerItem *gspacer2;
     QSpacerItem *gspacer3;
