@@ -23,18 +23,20 @@ interface::interface(QWidget *parent) :
     currColorWheel = new ColorWheel();
 
     // ORGANIZATIONAL ELEMENTS
-    editconst = new QGroupBox(tr("Function Constants"), this);          //create elements
+    
+    //create elements
+    functionConstantsBox = new QGroupBox(tr("Function Constants"), this);
     interfaceLayout = new QVBoxLayout(this);
     topbarLayout = new QHBoxLayout();
-    propsBox = new QGroupBox(tr("Image Properties"), this);
+    imagePropsBox = new QGroupBox(tr("Image Properties"), this);
     displayWidget = new QWidget(this);
-    genBoxWidget = new QWidget(this);
-
-    topbarLayout->addWidget(genBoxWidget);
+    patternTypeWidget = new QWidget(this);
+    
+    topbarLayout->addWidget(patternTypeWidget);
     topbarLayout->addWidget(displayWidget);
-    topbarLayout->addWidget(propsBox);
+    topbarLayout->addWidget(imagePropsBox);
     interfaceLayout->addLayout(topbarLayout);                       //lay out vertically
-    interfaceLayout->addWidget(editconst);
+    interfaceLayout->addWidget(functionConstantsBox);
     setLayout(interfaceLayout);
 
     // INPUT VALIDATORS (NUMERICAL)
@@ -45,28 +47,28 @@ interface::interface(QWidget *parent) :
     numtermsValidate = new QIntValidator(1, 99, this);
     dimValidate = new QIntValidator(1, 10000, this);
 
-    // EDITCONST SUBELEMENTS
-    currtermLabel = new QLabel(editconst);                              //create labels
-    currtermLabel->setText(tr("Term"));
-    nLabel = new QLabel(editconst);
-    mLabel = new QLabel(editconst);
-    aLabel = new QLabel(editconst);
-    rLabel = new QLabel(editconst);
-    scaleALabel = new QLabel(tr("sa"), editconst);
-    scaleRLabel = new QLabel(tr("sr"), editconst);
+    // functionConstantsBox SUBELEMENTS
+    currTermLabel = new QLabel(functionConstantsBox);                              //create labels
+    currTermLabel->setText(tr("Term"));
+    nLabel = new QLabel(functionConstantsBox);
+    mLabel = new QLabel(functionConstantsBox);
+    aLabel = new QLabel(functionConstantsBox);
+    rLabel = new QLabel(functionConstantsBox);
+    scaleALabel = new QLabel(tr("sa"), functionConstantsBox);
+    scaleRLabel = new QLabel(tr("sr"), functionConstantsBox);
     refreshLabels();
-    // nEdit = new QLineEdit(editconst);                              //create input boxes
-    // mEdit = new QLineEdit(editconst);
-    // aEdit = new QLineEdit(editconst);
-    // rEdit = new QLineEdit(editconst);
-    nEdit = new QSpinBox(editconst);
-    mEdit = new QSpinBox(editconst);
-    aEdit = new QDoubleSpinBox(editconst);
-    rEdit = new QDoubleSpinBox(editconst);
-    scaleAEdit = new QLineEdit(editconst);
-    scaleREdit = new QLineEdit(editconst);
-    currtermEdit = new CustomSpinBox(editconst);
-    espacer1 = new QSpacerItem(10, 15);
+    // nEdit = new QLineEdit(functionConstantsBox);                              //create input boxes
+    // mEdit = new QLineEdit(functionConstantsBox);
+    // aEdit = new QLineEdit(functionConstantsBox);
+    // rEdit = new QLineEdit(functionConstantsBox);
+    nEdit = new QSpinBox(functionConstantsBox);
+    mEdit = new QSpinBox(functionConstantsBox);
+    aEdit = new QDoubleSpinBox(functionConstantsBox);
+    rEdit = new QDoubleSpinBox(functionConstantsBox);
+    scaleAEdit = new QLineEdit(functionConstantsBox);
+    scaleREdit = new QLineEdit(functionConstantsBox);
+    currTermEdit = new CustomSpinBox(functionConstantsBox);
+    espacer1 = new QSpacerItem(100, 15);
     espacer2 = new QSpacerItem(10, 15);
     espacer3 = new QSpacerItem(10, 15);
     espacer4 = new QSpacerItem(10, 15);
@@ -75,11 +77,11 @@ interface::interface(QWidget *parent) :
     espacer7 = new QSpacerItem(15, 15);
     espacer8 = new QSpacerItem(8, 15);
 
-    loadButton = new QPushButton(tr("Load..."), editconst);
-    saveButton = new QPushButton(tr("Save"), editconst);
-    // currtermEdit->setMaximum(4);
-    // currtermEdit->setMinimum(1);
-    currtermEdit->setRange(1,1);
+    loadButton = new QPushButton(tr("Load..."), functionConstantsBox);
+    saveButton = new QPushButton(tr("Save"), functionConstantsBox);
+    // currTermEdit->setMaximum(4);
+    // currTermEdit->setMinimum(1);
+    currTermEdit->setRange(1,1);
     nEdit->setFixedWidth(75);
     mEdit->setFixedWidth(75);
     rEdit->setFixedWidth(75);
@@ -119,54 +121,54 @@ interface::interface(QWidget *parent) :
     scaleREdit->setValidator(doubleValidate);
 
 
-    editconstLayoutStack = new QVBoxLayout(editconst);  //initialize layout
-    editconstLayout = new QHBoxLayout();
-    editconstLayoutLower = new QHBoxLayout();
-    editconstLayoutLower->setAlignment(Qt::AlignRight);
-    editconstLayout->setAlignment(Qt::AlignRight);
+    functionConstantsBoxLayoutStack = new QVBoxLayout(functionConstantsBox);  //initialize layout
+    functionConstantsBoxLayout = new QHBoxLayout();
+    functionConstantsBoxLayoutLower = new QHBoxLayout();
+    functionConstantsBoxLayoutLower->setAlignment(Qt::AlignRight);
+    functionConstantsBoxLayout->setAlignment(Qt::AlignRight);
 
-    editconstLayout->addWidget(currtermLabel);              //fill layouts
-    editconstLayout->addWidget(currtermEdit);
-    editconstLayout->addItem(espacer1);
-    editconstLayout->addWidget(nLabel);
-    editconstLayout->addWidget(nEdit);
-    editconstLayout->addItem(espacer2);
-    editconstLayout->addWidget(mLabel);
-    editconstLayout->addWidget(mEdit);
-    editconstLayout->addItem(espacer3);
-    editconstLayout->addWidget(rLabel);
-    editconstLayout->addWidget(rEdit);
-    editconstLayout->addItem(espacer4);
-    editconstLayout->addWidget(aLabel);
-    editconstLayout->addWidget(aEdit);
-    editconstLayoutLower->addItem(espacer8);
-    editconstLayoutLower->addWidget(loadButton);
-    editconstLayoutLower->addItem(espacer7);
-    editconstLayoutLower->addWidget(saveButton);
-    editconstLayoutLower->addItem(espacer5);
-    editconstLayoutLower->addWidget(scaleRLabel);
-    editconstLayoutLower->addWidget(scaleREdit);
-    editconstLayoutLower->addItem(espacer6);
-    editconstLayoutLower->addWidget(scaleALabel);
-    editconstLayoutLower->addWidget(scaleAEdit);
-    editconstLayoutStack->addLayout(editconstLayout);
-    editconstLayoutStack->addLayout(editconstLayoutLower);
-    editconst->setLayout(editconstLayoutStack);
+    functionConstantsBoxLayout->addWidget(currTermLabel);              //fill layouts
+    functionConstantsBoxLayout->addWidget(currTermEdit);
+    functionConstantsBoxLayout->addItem(espacer1);
+    functionConstantsBoxLayout->addWidget(nLabel);
+    functionConstantsBoxLayout->addWidget(nEdit);
+    functionConstantsBoxLayout->addItem(espacer2);
+    functionConstantsBoxLayout->addWidget(mLabel);
+    functionConstantsBoxLayout->addWidget(mEdit);
+    functionConstantsBoxLayout->addItem(espacer3);
+    functionConstantsBoxLayout->addWidget(rLabel);
+    functionConstantsBoxLayout->addWidget(rEdit);
+    functionConstantsBoxLayout->addItem(espacer4);
+    functionConstantsBoxLayout->addWidget(aLabel);
+    functionConstantsBoxLayout->addWidget(aEdit);
+    functionConstantsBoxLayoutLower->addItem(espacer8);
+    functionConstantsBoxLayoutLower->addWidget(loadButton);
+    functionConstantsBoxLayoutLower->addItem(espacer7);
+    functionConstantsBoxLayoutLower->addWidget(saveButton);
+    functionConstantsBoxLayoutLower->addItem(espacer5);
+    functionConstantsBoxLayoutLower->addWidget(scaleRLabel);
+    functionConstantsBoxLayoutLower->addWidget(scaleREdit);
+    functionConstantsBoxLayoutLower->addItem(espacer6);
+    functionConstantsBoxLayoutLower->addWidget(scaleALabel);
+    functionConstantsBoxLayoutLower->addWidget(scaleAEdit);
+    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayout);
+    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutLower);
+    functionConstantsBox->setLayout(functionConstantsBoxLayoutStack);
 
-    // GENBOX SUBELEMENTS
-    genBox = new QGroupBox(tr("Image Generation"), genBoxWidget);
-    functionSel = new QComboBox(genBox);        //initialize elements
-    colorwheelSel = new QComboBox(genBox);
-    functionLabel = new QLabel(genBox);
-    colorwheelLabel = new QLabel(genBox);
-    numtermsLabel = new QLabel(tr("<i>No. Terms</i>"), genBox);
-    numtermsEdit = new QLineEdit("1", genBox);
+    // patternType SUBELEMENTS
+    patternTypeBox = new QGroupBox(tr("Pattern Type"), patternTypeWidget);
+    functionSel = new QComboBox(patternTypeBox);        //initialize elements
+    colorwheelSel = new QComboBox(patternTypeBox);
+    functionLabel = new QLabel(patternTypeBox);
+    colorwheelLabel = new QLabel(patternTypeBox);
+    numtermsLabel = new QLabel(tr("<i>No. Terms</i>"), patternTypeBox);
+    numtermsEdit = new QLineEdit("1", patternTypeBox);
     gspacer1 = new QSpacerItem(0,20);
     gspacer2 = new QSpacerItem(0,10);
     gspacer3 = new QSpacerItem(0,10);
     gspacer4 = new QSpacerItem(0,50);
-    setLoadedImage = new QPushButton(tr("Set Image..."), genBox);
-    genBoxOverallLayout = new QVBoxLayout(genBoxWidget);
+    setLoadedImage = new QPushButton(tr("Set Image..."), patternTypeBox);
+    patternTypeBoxOverallLayout = new QVBoxLayout(patternTypeWidget);
     functionLayout = new QVBoxLayout();
     colorwheelLayout = new QVBoxLayout();
     numtermsLayout = new QHBoxLayout();
@@ -210,41 +212,41 @@ interface::interface(QWidget *parent) :
 
     numtermsEdit->setFixedWidth(30);
     numtermsEdit->setValidator(numtermsValidate);
-
-    genBoxLayout = new QVBoxLayout(genBox);     //set up layout
+    
+    patternTypeBoxLayout = new QVBoxLayout(patternTypeBox);     //set up layout
     functionLayout->addWidget(functionLabel);
     functionLayout->addWidget(functionSel);
     numtermsLayout->addWidget(numtermsLabel);
     numtermsLayout->addWidget(numtermsEdit);
     functionLayout->addLayout(numtermsLayout);
-    genBoxLayout->addLayout(functionLayout);
-    genBoxLayout->addItem(gspacer1);
+    patternTypeBoxLayout->addLayout(functionLayout);
+    patternTypeBoxLayout->addItem(gspacer1);
     colorwheelLayout->addItem(gspacer3);
     colorwheelLayout->addWidget(colorwheelLabel);
     colorwheelLayout->addWidget(colorwheelSel);
     colorwheelLayout->addWidget(setLoadedImage);
     setLoadedImage->hide();
-    genBoxLayout->addLayout(colorwheelLayout);
-    genBoxLayout->addItem(gspacer2);
+    patternTypeBoxLayout->addLayout(colorwheelLayout);
+    patternTypeBoxLayout->addItem(gspacer2);
 
-    genBoxOverallLayout->addWidget(genBox);
-    genBoxOverallLayout->addStretch();
-    //genBoxOverallLayout->addItem(gspacer4);
+    patternTypeBoxOverallLayout->addWidget(patternTypeBox);
+    patternTypeBoxOverallLayout->addStretch();
+    //patternTypeWidgetOverallLayout->addItem(gspacer4);
 
-    // PROPSBOX SUBELEMENTS
-    outheightLabel = new QLabel(tr("Output Height"), propsBox);          //initialize elements
-    outwidthLabel = new QLabel(tr("Output Width"), propsBox);
-    XCornerLabel = new QLabel(tr("XCorner"), propsBox);
-    YCornerLabel = new QLabel(tr("YCorner"), propsBox);
-    worldwidthLabel = new QLabel(tr("World Width"), propsBox);
-    worldheightLabel = new QLabel(tr("World Height"), propsBox);
-    outheightEdit = new QLineEdit(propsBox);
-    outwidthEdit = new QLineEdit(propsBox);
-    XCornerEdit = new QLineEdit(propsBox);
-    YCornerEdit = new QLineEdit(propsBox);
-    worldwidthEdit = new QLineEdit(propsBox);
-    worldheightEdit = new QLineEdit(propsBox);
-    saveImagePush = new QPushButton(tr("Save Image"), propsBox);
+    // imagePropsBox SUBELEMENTS
+    outheightLabel = new QLabel(tr("Output Height"), imagePropsBox);          //initialize elements
+    outwidthLabel = new QLabel(tr("Output Width"), imagePropsBox);
+    XCornerLabel = new QLabel(tr("XCorner"), imagePropsBox);
+    YCornerLabel = new QLabel(tr("YCorner"), imagePropsBox);
+    worldwidthLabel = new QLabel(tr("World Width"), imagePropsBox);
+    worldheightLabel = new QLabel(tr("World Height"), imagePropsBox);
+    outheightEdit = new QLineEdit(imagePropsBox);
+    outwidthEdit = new QLineEdit(imagePropsBox);
+    XCornerEdit = new QLineEdit(imagePropsBox);
+    YCornerEdit = new QLineEdit(imagePropsBox);
+    worldwidthEdit = new QLineEdit(imagePropsBox);
+    worldheightEdit = new QLineEdit(imagePropsBox);
+    saveImagePush = new QPushButton(tr("Save Image"), imagePropsBox);
     pspacer1 = new QSpacerItem(0, 12);
     pspacer2 = new QSpacerItem(0, 14);
     pspacer3 = new QSpacerItem(15, 30);
@@ -266,10 +268,10 @@ interface::interface(QWidget *parent) :
 //    worldheightEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     saveImagePush->setFixedHeight(25);
-    propsBoxOverallLayout = new QVBoxLayout(propsBox);
-    propsBoxLayout = new QHBoxLayout();
-    propseditStack = new QVBoxLayout();
-    propslabelStack = new QVBoxLayout();
+    imagePropsBoxOverallLayout = new QVBoxLayout(imagePropsBox);
+    imagePropsBoxLayout = new QHBoxLayout();
+    imagePropsEditStack = new QVBoxLayout();
+    imagePropsBoxStack = new QVBoxLayout();
     savePushLayout = new QHBoxLayout();
 
     outheightEdit->setValidator(dimValidate);
@@ -289,41 +291,41 @@ interface::interface(QWidget *parent) :
     saveImagePush->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     saveImagePush->setFixedWidth(150);
 
-    propslabelStack->addWidget(XCornerLabel);
-    propslabelStack->addWidget(YCornerLabel);
-    propslabelStack->addWidget(worldwidthLabel);
-    propslabelStack->addWidget(worldheightLabel);
-    propslabelStack->addItem(pspacer1);
-    propslabelStack->addWidget(outwidthLabel);
-    propslabelStack->addWidget(outheightLabel);
+    imagePropsBoxStack->addWidget(XCornerLabel);
+    imagePropsBoxStack->addWidget(YCornerLabel);
+    imagePropsBoxStack->addWidget(worldwidthLabel);
+    imagePropsBoxStack->addWidget(worldheightLabel);
+    imagePropsBoxStack->addItem(pspacer1);
+    imagePropsBoxStack->addWidget(outwidthLabel);
+    imagePropsBoxStack->addWidget(outheightLabel);
 
-    propslabelStack->setAlignment(XCornerLabel, Qt::AlignLeft);
-    propslabelStack->setAlignment(YCornerLabel, Qt::AlignLeft);
-    propslabelStack->setAlignment(worldwidthLabel, Qt::AlignLeft);
-    propslabelStack->setAlignment(worldheightLabel, Qt::AlignLeft);
-    propslabelStack->setAlignment(outwidthLabel, Qt::AlignLeft);
-    propslabelStack->setAlignment(outheightLabel, Qt::AlignLeft);
+    imagePropsBoxStack->setAlignment(XCornerLabel, Qt::AlignLeft);
+    imagePropsBoxStack->setAlignment(YCornerLabel, Qt::AlignLeft);
+    imagePropsBoxStack->setAlignment(worldwidthLabel, Qt::AlignLeft);
+    imagePropsBoxStack->setAlignment(worldheightLabel, Qt::AlignLeft);
+    imagePropsBoxStack->setAlignment(outwidthLabel, Qt::AlignLeft);
+    imagePropsBoxStack->setAlignment(outheightLabel, Qt::AlignLeft);
 
-    propseditStack->addWidget(XCornerEdit);
-    propseditStack->addWidget(YCornerEdit);
-    propseditStack->addWidget(worldwidthEdit);
-    propseditStack->addWidget(worldheightEdit);
-    propseditStack->addItem(pspacer2);
-    propseditStack->addWidget(outwidthEdit);
-    propseditStack->addWidget(outheightEdit);
+    imagePropsEditStack->addWidget(XCornerEdit);
+    imagePropsEditStack->addWidget(YCornerEdit);
+    imagePropsEditStack->addWidget(worldwidthEdit);
+    imagePropsEditStack->addWidget(worldheightEdit);
+    imagePropsEditStack->addItem(pspacer2);
+    imagePropsEditStack->addWidget(outwidthEdit);
+    imagePropsEditStack->addWidget(outheightEdit);
 
-    //propsBoxLayout->addItem(pspacer3);
-    propsBoxLayout->addLayout(propslabelStack);
-    propsBoxLayout->addLayout(propseditStack);
-    propsBoxLayout->addItem(pspacer4);
+    //imagePropsBoxLayout->addItem(pspacer3);
+    imagePropsBoxLayout->addLayout(imagePropsBoxStack);
+    imagePropsBoxLayout->addLayout(imagePropsEditStack);
+    imagePropsBoxLayout->addItem(pspacer4);
 
     //savePushLayout->addWidget(saveImagePush);
     //savePushLayout->addItem(pspacer5);
 
-    propsBoxOverallLayout->addLayout(propsBoxLayout);
-    //propsBoxOverallLayout->addItem(pspacer3);
-    propsBoxOverallLayout->addWidget(saveImagePush);
-    propsBoxOverallLayout->setAlignment(saveImagePush, Qt::AlignRight);
+    imagePropsBoxOverallLayout->addLayout(imagePropsBoxLayout);
+    //imagePropsBoxOverallLayout->addItem(pspacer3);
+    imagePropsBoxOverallLayout->addWidget(saveImagePush);
+    imagePropsBoxOverallLayout->setAlignment(saveImagePush, Qt::AlignRight);
 
     // DISP SUBELEMENTS
     disp = new Display(500, displayWidget);
@@ -339,7 +341,7 @@ interface::interface(QWidget *parent) :
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
     connect(numtermsEdit, SIGNAL(textChanged(QString)), this, SLOT(changeMaxTerms(QString)));
-    connect(currtermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateTerms(int)));
+    connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateTerms(int)));
 
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
@@ -443,14 +445,14 @@ void interface::changeMaxTerms(const QString &val)
 {   
     int passedval = val.toInt();
 
-    if (passedval >= currtermEdit->minimum()) {
-        currtermEdit->setMaximum(passedval);
+    if (passedval >= currTermEdit->minimum()) {
+        currTermEdit->setMaximum(passedval);
         currFunction->setNumTerms(passedval);
     }
     // else {
     //     qDebug() << "pass in : " << passedval;
-    //     qDebug() << "currtermEdit max: " << currtermEdit->maximum();
-    //     qDebug() << "currtermEdit min: " << currtermEdit->minimum();
+    //     qDebug() << "currTermEdit max: " << currTermEdit->maximum();
+    //     qDebug() << "currTermEdit min: " << currTermEdit->minimum();
     // }
     
 }

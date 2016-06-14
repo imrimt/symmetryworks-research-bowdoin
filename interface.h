@@ -42,12 +42,12 @@ public:
     explicit interface(QWidget *parent = 0);
 
     // ORGANIZATIONAL ELEMENTS
-    QGroupBox *editconst;
+    QGroupBox *functionConstantsBox;
     QVBoxLayout *interfaceLayout;
     QWidget *displayWidget;
     QHBoxLayout *topbarLayout;
-    QGroupBox *propsBox;
-    QWidget *genBoxWidget;
+    QGroupBox *imagePropsBox;
+    QWidget *patternTypeWidget;
 
     // INPUT VALIDATORS
     QDoubleValidator *doubleValidate;
@@ -57,8 +57,8 @@ public:
     QIntValidator *numtermsValidate;
     QIntValidator *dimValidate;
 
-    // EDITCONST SUBELEMENTS
-    QLabel *currtermLabel;
+    // functionConstants SUBELEMENTS
+    QLabel *currTermLabel;
     QLabel *nLabel;
     QLabel *mLabel;
     QLabel *aLabel;
@@ -76,10 +76,10 @@ public:
 
     QLineEdit *scaleAEdit;
     QLineEdit *scaleREdit;
-    CustomSpinBox *currtermEdit;
-    QHBoxLayout *editconstLayout;
-    QHBoxLayout *editconstLayoutLower;
-    QVBoxLayout *editconstLayoutStack;
+    CustomSpinBox *currTermEdit;
+    QHBoxLayout *functionConstantsBoxLayout;
+    QHBoxLayout *functionConstantsBoxLayoutLower;
+    QVBoxLayout *functionConstantsBoxLayoutStack;
     QSpacerItem *espacer1;
     QSpacerItem *espacer2;
     QSpacerItem *espacer3;
@@ -91,10 +91,10 @@ public:
     QPushButton *loadButton;
     QPushButton *saveButton;
 
-    // GENBOX SUBELEMENTS
-    QGroupBox *genBox;
-    QVBoxLayout *genBoxOverallLayout;
-    QVBoxLayout *genBoxLayout;
+    // patternTypeBox SUBELEMENTS
+    QGroupBox *patternTypeBox;
+    QVBoxLayout *patternTypeBoxOverallLayout;
+    QVBoxLayout *patternTypeBoxLayout;
     QVBoxLayout *functionLayout;
     QVBoxLayout *colorwheelLayout;
     QHBoxLayout *numtermsLayout;
@@ -110,12 +110,12 @@ public:
     QComboBox *functionSel;
     QPushButton *setLoadedImage;
 
-    // PROPSBOX SUBELEMENTS
-    QVBoxLayout *propslabelStack;
-    QVBoxLayout *propseditStack;
-    QHBoxLayout *propsBoxLayout;
+    // imagePropsBox SUBELEMENTS
+    QVBoxLayout *imagePropsBoxStack;
+    QVBoxLayout *imagePropsEditStack;
+    QHBoxLayout *imagePropsBoxLayout;
     QHBoxLayout *savePushLayout;
-    QVBoxLayout *propsBoxOverallLayout;
+    QVBoxLayout *imagePropsBoxOverallLayout;
     QLabel *outheightLabel;
     QLabel *outwidthLabel;
     QLabel *XCornerLabel;
