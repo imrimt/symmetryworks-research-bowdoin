@@ -19,8 +19,8 @@ interface::interface(QWidget *parent) :
     saveloadPath = QDir::homePath();
 
     // FUNCTIONAL OBJECTS
-    f = new hex3Function();
-    c = new ColorWheel();
+    currFunction = new hex3Function();
+    currColorWheel = new ColorWheel();
 
     // ORGANIZATIONAL ELEMENTS
     editconst = new QGroupBox(tr("Function Constants"), this);          //create elements
@@ -334,7 +334,7 @@ interface::interface(QWidget *parent) :
 
     // CONNECT SIGNALS & SLOTS
     connect(updatePreview, SIGNAL(clicked()), this, SLOT(updatePreviewDisplay()));
-    connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), c, SLOT(setCurrent(int)));
+    connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), currColorWheel, SLOT(setCurrent(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
@@ -367,8 +367,8 @@ interface::interface(QWidget *parent) :
 
     // SET DEFAULTS
     refreshTerms();
-    scalerE->setText(QString::number(f->scaleR()));
-    scaleaE->setText(QString::number(f->scaleA()));
+    scalerE->setText(QString::number(currFunction->scaleR()));
+    scaleaE->setText(QString::number(currFunction->scaleA()));
 
     outwidthE->setText(QString::number(settings::OWidth));
     outheightE->setText(QString::number(settings::OHeight));
@@ -420,15 +420,15 @@ void interface::refreshLabels()                 //for updating our label names
 
 void interface::refreshTerms()
 {
-    // nE->setText(QString::number(f->N(termindex)));
-    // mE->setText(QString::number(f->M(termindex)));
-    // rE->setText(QString::number(f->R(termindex)));
-    // aE->setText(QString::number(f->A(termindex)));
+    // nE->setText(QString::number(currFunction->N(termindex)));
+    // mE->setText(QString::number(currFunction->M(termindex)));
+    // rE->setText(QString::number(currFunction->R(termindex)));
+    // aE->setText(QString::number(currFunction->A(termindex)));
 
-    nE->setValue(f->N(termindex));
-    mE->setValue(f->M(termindex));
-    rE->setValue(f->R(termindex));
-    aE->setValue(f->A(termindex));
+    nE->setValue(currFunction->N(termindex));
+    mE->setValue(currFunction->M(termindex));
+    rE->setValue(currFunction->R(termindex));
+    aE->setValue(currFunction->A(termindex));
 }
 
 void interface::updateTerms(int i)
@@ -445,7 +445,7 @@ void interface::changeMaxTerms(const QString &val)
 
     if (passedval >= currtermE->minimum()) {
         currtermE->setMaximum(passedval);
-        f->setNumTerms(passedval);
+        currFunction->setNumTerms(passedval);
     }
     // else {
     //     qDebug() << "pass in : " << passedval;
@@ -473,7 +473,7 @@ void interface::setImagePushed()
     if (!inFile.open(QIODevice::ReadOnly))
              return;
 
-    c->loadImage(fileName);
+    currColorWheel->loadImage(fileName);
 
     QDir stickypath(fileName);
     stickypath.cdUp();
@@ -482,80 +482,80 @@ void interface::setImagePushed()
 
 void interface::changeFunction(int index)
 {
-    delete f;
+    delete currFunction;
 
     switch(index)
     {
     case 0:
-        f = new hex3Function();
+        currFunction = new hex3Function();
         colorwheelSel->setCurrentIndex(7);
         break;
     case 1:
-        f = new hex6Function();
+        currFunction = new hex6Function();
         colorwheelSel->setCurrentIndex(7);
         break;
     case 2:
-        f = new squareFunction();
+        currFunction = new squareFunction();
         colorwheelSel->setCurrentIndex(6);
         break;
     case 3:
-        f = new generalpairedFunction();
+        currFunction = new generalpairedFunction();
         colorwheelSel->setCurrentIndex(3);
         break;
     case 4:
-        f = new generalFunction();
+        currFunction = new generalFunction();
         colorwheelSel->setCurrentIndex(7);
         break;
     case 5:
-        f = new cmmFunction();
+        currFunction = new cmmFunction();
         colorwheelSel->setCurrentIndex(7);
         break;
     case 6:
-        f = new p31mFunction();
+        currFunction = new p31mFunction();
         colorwheelSel->setCurrentIndex(1);
         break;
     case 7:
-        f = new p3m1Function();
+        currFunction = new p3m1Function();
         colorwheelSel->setCurrentIndex(1);
         break;
     case 8:
-        f = new p6mFunction();
+        currFunction = new p6mFunction();
         colorwheelSel->setCurrentIndex(6);
         break;
     case 9:
-        f = new p4gFunction();
+        currFunction = new p4gFunction();
         colorwheelSel->setCurrentIndex(6);
         break;
     case 10:
-        f = new p4mFunction();
+        currFunction = new p4mFunction();
         colorwheelSel->setCurrentIndex(6);
         break;
     case 11:
-        f = new pmmFunction();
+        currFunction = new pmmFunction();
         colorwheelSel->setCurrentIndex(9);
         break;
     case 12:
-        f = new pmgFunction();
+        currFunction = new pmgFunction();
         colorwheelSel->setCurrentIndex(9);
         break;
     case 13:
-        f = new pggFunction();
+        currFunction = new pggFunction();
         colorwheelSel->setCurrentIndex(9);
         break;
     case 14:
-        f = new pmFunction();
+        currFunction = new pmFunction();
         colorwheelSel->setCurrentIndex(9);
         break;
     case 15:
-        f = new pgFunction();
+        currFunction = new pgFunction();
         colorwheelSel->setCurrentIndex(9);
         break;
     case 16:
-        f = new rhombicFunction();
+        currFunction = new rhombicFunction();
         colorwheelSel->setCurrentIndex(9);
         break;
     case 17:
-        f = new zzbarFunction();
+        currFunction = new zzbarFunction();
         colorwheelSel->setCurrentIndex(9);
         break;
 
@@ -582,10 +582,10 @@ void interface::saveFunction()
     out << settings::OWidth << settings::OHeight;
     out << functionSel->currentIndex();
     out << colorwheelSel->currentIndex();
-    out << f->scaleR() << f->scaleA();
-    out << f->numterms();
-    for(unsigned int i=0; i<f->numterms(); i++)
-        out << f->N(i) << f->M(i) << f->R(i) << f->A(i);
+    out << currFunction->scaleR() << currFunction->scaleA();
+    out << currFunction->numterms();
+    for(unsigned int i=0; i<currFunction->numterms(); i++)
+        out << currFunction->N(i) << currFunction->M(i) << currFunction->R(i) << currFunction->A(i);
 
     outFile.close();
 
@@ -618,19 +618,19 @@ void interface::loadFunction()
     colorwheelSel->setCurrentIndex(tempint);
 
     in >> tempdouble;
-    f->setscaleR(tempdouble);
+    currFunction->setscaleR(tempdouble);
     scalerE->setText(QString::number(tempdouble));
     in >> tempdouble;
-    f->setscaleA(tempdouble);
+    currFunction->setscaleA(tempdouble);
     scaleaE->setText(QString::number(tempdouble));
     in >> count;
     numtermsE->setText(QString::number(count));
     for(unsigned int i=0; i<count; i++)
     {
-        in >> tempint; f->setN(i, tempint);
-        in >> tempint; f->setM(i, tempint);
-        in >> tempdouble; f->setR(i, tempdouble);
-        in >> tempdouble; f->setA(i, tempdouble);
+        in >> tempint; currFunction->setN(i, tempint);
+        in >> tempint; currFunction->setM(i, tempint);
+        in >> tempdouble; currFunction->setR(i, tempdouble);
+        in >> tempdouble; currFunction->setA(i, tempdouble);
     }
 
     inFile.close();
@@ -661,8 +661,8 @@ void interface::updatePreviewDisplay()
               worldY= settings::Height-y*settings::Height/disp->dim()+settings::YCorner;
               worldX= x*settings::Width/disp->dim()+settings::XCorner;
 
-              std::complex<double> fout = (*f)(worldX,worldY);  //run the point through our mathematical function
-              QRgb color = (*c)(fout);                          //...then convert that complex output to a color according to our color wheel
+              std::complex<double> fout = (*currFunction)(worldX,worldY);  //run the point through our mathematical function
+              QRgb color = (*currColorWheel)(fout);                          //...then convert that complex output to a color according to our color wheel
 
               disp->setPixel(x, y, color);                    //finally push the determined color to the corresponding point on the display
 
@@ -706,65 +706,65 @@ void interface::changeYCorner(const QString &val)
 // void interface::changeN(const QString &val)
 // {
 //     int passedval = val.toInt();
-//     f->setN(termindex, passedval);
+//     currFunction->setN(termindex, passedval);
 // }
 
 // void interface::changeM(const QString &val)
 // {
 //     int passedval = val.toInt();
-//     f->setM(termindex, passedval);
+//     currFunction->setM(termindex, passedval);
 // }
 
 // void interface::changeR(const QString &val)
 // {
 //     double passedval = val.toDouble();
-//     f->setR(termindex, passedval);
+//     currFunction->setR(termindex, passedval);
 // }
 
 // void interface::changeA(const QString &val)
 // {
 //     double passedval = val.toDouble();
-//     f->setA(termindex, passedval);
+//     currFunction->setA(termindex, passedval);
 // }
 
 void interface::changeN(int val)
 {
     // int passedval = val.toInt();
-    f->setN(termindex, val);
+    currFunction->setN(termindex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeM(int val)
 {
     // int passedval = val.toInt();
-    f->setM(termindex, val);
+    currFunction->setM(termindex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeR(double val)
 {
     // double passedval = val.toDouble();
-    f->setR(termindex, val);
+    currFunction->setR(termindex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeA(double val)
 {
     // double passedval = val.toDouble();
-    f->setA(termindex, val);
+    currFunction->setA(termindex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeScaleA(const QString &val)
 {
     double passedval = val.toDouble();
-    f->setscaleA(passedval);
+    currFunction->setscaleA(passedval);
 }
 
 void interface::changeScaleR(const QString &val)
 {
     double passedval = val.toDouble();
-    f->setscaleR(passedval);
+    currFunction->setscaleR(passedval);
 }
 
 void interface::saveImageStart()
@@ -786,8 +786,8 @@ void interface::saveImageStart()
           {   worldY= settings::Height-y*settings::Height/settings::OHeight+settings::YCorner ;
               worldX= x*settings::Width/settings::OWidth+settings::XCorner;
 
-              std::complex<double> fout=(*f)(worldX,worldY);        //run the point through our mathematical function
-              QRgb color = (*c)(fout);                              //...then turn that complex output into a color per our color wheel
+              std::complex<double> fout=(*currFunction)(worldX,worldY);        //run the point through our mathematical function
+              QRgb color = (*currColorWheel)(fout);                              //...then turn that complex output into a color per our color wheel
 
               outimg.setPixel(x, y, color);
 

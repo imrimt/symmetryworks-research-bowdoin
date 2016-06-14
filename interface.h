@@ -59,23 +59,20 @@ public:
 
     // EDITCONST SUBELEMENTS
     QLabel *currtermL;
-    QLabel *nL;
-    QLabel *mL;
-    QLabel *aL;
-    QLabel *rL;
-
-    QLabel *fileLabel;
-
-    QLabel *scaleaL;
-    QLabel *scalerL;
+    QLabel *nLabel;
+    QLabel *mLabel;
+    QLabel *aLabel;
+    QLabel *rLabel;
+    QLabel *scaleaLabel;
+    QLabel *scalerLabel;
     // QLineEdit *nE;
     // QLineEdit *mE;
     // QLineEdit *aE;
     // QLineEdit *rE;
-    QSpinBox *nE;
-    QSpinBox *mE;
-    QDoubleSpinBox *aE;
-    QDoubleSpinBox *rE;
+    QSpinBox *nEdit;
+    QSpinBox *mEdit;
+    QDoubleSpinBox *aEdit;
+    QDoubleSpinBox *rEdit;
 
     QLineEdit *scaleaE;
     QLineEdit *scalerE;
@@ -101,9 +98,9 @@ public:
     QVBoxLayout *functionLayout;
     QVBoxLayout *colorwheelLayout;
     QHBoxLayout *numtermsLayout;
-    QLabel *colorwheelL;
-    QLabel *functionL;
-    QLabel *numtermsL;
+    QLabel *colorwheelLabel;
+    QLabel *functionLabel;
+    QLabel *numtermsLabel;
     QLineEdit *numtermsE;
     QSpacerItem *gspacer1;
     QSpacerItem *gspacer2;
@@ -119,18 +116,18 @@ public:
     QHBoxLayout *propsBoxLayout;
     QHBoxLayout *savePushLayout;
     QVBoxLayout *propsBoxOverallLayout;
-    QLabel *outheightL;
-    QLabel *outwidthL;
-    QLabel *XCornerL;
-    QLabel *YCornerL;
-    QLabel *worldwidthL;
-    QLabel *worldheightL;
-    QLineEdit *outheightE;
-    QLineEdit *outwidthE;
-    QLineEdit *XCornerE;
-    QLineEdit *YCornerE;
-    QLineEdit *worldwidthE;
-    QLineEdit *worldheightE;
+    QLabel *outheightLabel;
+    QLabel *outwidthLabel;
+    QLabel *XCornerLabel;
+    QLabel *YCornerLabel;
+    QLabel *worldwidthLabel;
+    QLabel *worldheightLabel;
+    QLineEdit *outheightEdit;
+    QLineEdit *outwidthEdit;
+    QLineEdit *XCornerEdit;
+    QLineEdit *YCornerEdit;
+    QLineEdit *worldwidthEdit;
+    QLineEdit *worldheightEdit;
     QPushButton *saveImagePush;
     QSpacerItem *pspacer1;
     QSpacerItem *pspacer2;
@@ -174,13 +171,13 @@ private slots:
     void saveFunction();
 
 private:
-    unsigned int termindex;              //internal index:  starts at 0
+    unsigned int termIndex;              //internal index:  starts at 0
     QString genLabel(const char * in);
     void refreshLabels();
     QString saveloadPath;
     void refreshTerms();
-    AbstractFunction * f;
-    ColorWheel * c;
+    AbstractFunction * currFunction;
+    ColorWheel * currColorWheel;
 };
 
 #endif // INTERFACE_H
