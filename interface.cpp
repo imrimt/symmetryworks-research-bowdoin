@@ -15,7 +15,7 @@ interface::interface(QWidget *parent) :
 {
 
     // FUNCTIONAL VARIABLES
-    termindex = 0;
+    termIndex = 0;
     saveloadPath = QDir::homePath();
 
     // FUNCTIONAL OBJECTS
@@ -404,7 +404,7 @@ interface::interface(QWidget *parent) :
 QString interface::genLabel(const char *in)     //concatenate the constant name
 {                                               //with the current index number
     QString out;
-    out.setNum(termindex+1);
+    out.setNum(termIndex+1);
     out.prepend(in);
 
     return out;
@@ -420,20 +420,20 @@ void interface::refreshLabels()                 //for updating our label names
 
 void interface::refreshTerms()
 {
-    // nE->setText(QString::number(f->N(termindex)));
-    // mE->setText(QString::number(f->M(termindex)));
-    // rE->setText(QString::number(f->R(termindex)));
-    // aE->setText(QString::number(f->A(termindex)));
+    // nE->setText(QString::number(f->N(termIndex)));
+    // mE->setText(QString::number(f->M(termIndex)));
+    // rE->setText(QString::number(f->R(termIndex)));
+    // aE->setText(QString::number(f->A(termIndex)));
 
-    nE->setValue(f->N(termindex));
-    mE->setValue(f->M(termindex));
-    rE->setValue(f->R(termindex));
-    aE->setValue(f->A(termindex));
+    nE->setValue(f->getN(termIndex));
+    mE->setValue(f->getM(termIndex));
+    rE->setValue(f->getR(termIndex));
+    aE->setValue(f->getA(termIndex));
 }
 
 void interface::updateTerms(int i)
 {
-    termindex = i-1;
+    termIndex = i-1;
 
     refreshTerms();
     refreshLabels();
@@ -585,7 +585,7 @@ void interface::saveFunction()
     out << f->scaleR() << f->scaleA();
     out << f->numterms();
     for(unsigned int i=0; i<f->numterms(); i++)
-        out << f->N(i) << f->M(i) << f->R(i) << f->A(i);
+        out << f->getN(i) << f->getM(i) << f->getR(i) << f->getA(i);
 
     outFile.close();
 
@@ -618,10 +618,10 @@ void interface::loadFunction()
     colorwheelSel->setCurrentIndex(tempint);
 
     in >> tempdouble;
-    f->setscaleR(tempdouble);
+    f->setScaleR(tempdouble);
     scalerE->setText(QString::number(tempdouble));
     in >> tempdouble;
-    f->setscaleA(tempdouble);
+    f->setScaleA(tempdouble);
     scaleaE->setText(QString::number(tempdouble));
     in >> count;
     numtermsE->setText(QString::number(count));
@@ -706,65 +706,65 @@ void interface::changeYCorner(const QString &val)
 // void interface::changeN(const QString &val)
 // {
 //     int passedval = val.toInt();
-//     f->setN(termindex, passedval);
+//     f->setN(termIndex, passedval);
 // }
 
 // void interface::changeM(const QString &val)
 // {
 //     int passedval = val.toInt();
-//     f->setM(termindex, passedval);
+//     f->setM(termIndex, passedval);
 // }
 
 // void interface::changeR(const QString &val)
 // {
 //     double passedval = val.toDouble();
-//     f->setR(termindex, passedval);
+//     f->setR(termIndex, passedval);
 // }
 
 // void interface::changeA(const QString &val)
 // {
 //     double passedval = val.toDouble();
-//     f->setA(termindex, passedval);
+//     f->setA(termIndex, passedval);
 // }
 
 void interface::changeN(int val)
 {
     // int passedval = val.toInt();
-    f->setN(termindex, val);
+    f->setN(termIndex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeM(int val)
 {
     // int passedval = val.toInt();
-    f->setM(termindex, val);
+    f->setM(termIndex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeR(double val)
 {
     // double passedval = val.toDouble();
-    f->setR(termindex, val);
+    f->setR(termIndex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeA(double val)
 {
     // double passedval = val.toDouble();
-    f->setA(termindex, val);
+    f->setA(termIndex, val);
     updatePreviewDisplay();
 }
 
 void interface::changeScaleA(const QString &val)
 {
     double passedval = val.toDouble();
-    f->setscaleA(passedval);
+    f->setScaleA(passedval);
 }
 
 void interface::changeScaleR(const QString &val)
 {
     double passedval = val.toDouble();
-    f->setscaleR(passedval);
+    f->setScaleR(passedval);
 }
 
 void interface::saveImageStart()

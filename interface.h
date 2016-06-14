@@ -174,7 +174,7 @@ private slots:
     void saveFunction();
 
 private:
-    unsigned int termindex;              //internal index:  starts at 0
+    unsigned int termIndex;              //internal index:  starts at 0
     QString genLabel(const char * in);
     void refreshLabels();
     QString saveloadPath;

@@ -24,10 +24,10 @@ class AbstractFunction      //this is the base class for all other classes that 
     unsigned int numterms() const { return terms; }
     virtual std::complex<double> bundle(double &x, double &y, unsigned int &i) const = 0;
     virtual std::complex<double> operator() (double i, double j) = 0;
-    int N(unsigned int &i) const;
-    int M(unsigned int &i) const;
-    double R(unsigned int &i) const;
-    double A(unsigned int &i) const;
+    int getN(unsigned int &i) const;
+    int getM(unsigned int &i) const;
+    double getR(unsigned int &i) const;
+    double getA(unsigned int &i) const;
     double scaleR() const { return scale.R(); }
     double scaleA() const { return scale.A(); }
 
@@ -36,8 +36,8 @@ class AbstractFunction      //this is the base class for all other classes that 
     void setM(unsigned int &i, int &val);
     void setR(unsigned int &i, double &val);
     void setA(unsigned int &i, double &val);
-    void setscaleR(double &val);
-    void setscaleA(double &val);
+    void setScaleR(double &val);
+    void setScaleA(double &val);
     void setNumTerms(int &val);
 
 

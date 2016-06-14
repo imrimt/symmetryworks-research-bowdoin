@@ -5,7 +5,7 @@ AbstractFunction::AbstractFunction(QVector<coeffpair> &in_coeffs, QVector<freqpa
     initWithVectors(in_coeffs, in_freqs);
 }
 
-int AbstractFunction::N(unsigned int &i) const
+int AbstractFunction::getN(unsigned int &i) const
 {
     if(i < terms)
         return freqs[i].N();
@@ -16,7 +16,7 @@ int AbstractFunction::N(unsigned int &i) const
     }
 }
 
-int AbstractFunction::M(unsigned int &i) const
+int AbstractFunction::getM(unsigned int &i) const
 {
     if(i < terms)
         return freqs[i].M();
@@ -27,7 +27,7 @@ int AbstractFunction::M(unsigned int &i) const
     }
 }
 
-double AbstractFunction::R(unsigned int &i) const
+double AbstractFunction::getR(unsigned int &i) const
 {
     if(i < terms)
         return coeffs[i].R();
@@ -38,7 +38,7 @@ double AbstractFunction::R(unsigned int &i) const
     }
 }
 
-double AbstractFunction::A(unsigned int &i) const
+double AbstractFunction::getA(unsigned int &i) const
 {
     if(i < terms)
         return coeffs[i].A();
@@ -81,12 +81,12 @@ void AbstractFunction::setA(unsigned int &i, double &val)
         qDebug() << "AbstractFunction.cpp error: coeffs[" << i << "] is out of bounds";
 }
 
-void AbstractFunction::setscaleR(double &val)
+void AbstractFunction::setScaleR(double &val)
 {
     scale.setR(val);
 }
 
-void AbstractFunction::setscaleA(double &val)
+void AbstractFunction::setScaleA(double &val)
 {
     scale.setA(val);
 }

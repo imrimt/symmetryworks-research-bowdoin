@@ -619,10 +619,10 @@ void interface::loadFunction()
     colorwheelSel->setCurrentIndex(tempint);
 
     in >> tempdouble;
-    f->setscaleR(tempdouble);
+    f->setScaleR(tempdouble);
 
     in >> tempdouble;
-    f->setscaleA(tempdouble);
+    f->setScaleA(tempdouble);
 
     in >> count;
     for(unsigned int i=0; i<count; i++)
@@ -730,13 +730,13 @@ void interface::changeA(const QString &val)
 void interface::changeScaleA(const QString &val)
 {
     double passedval = val.toDouble();
-    f->setscaleA(passedval);
+    f->setScaleA(passedval);
 }
 
 void interface::changeScaleR(const QString &val)
 {
     double passedval = val.toDouble();
-    f->setscaleR(passedval);
+    f->setScaleR(passedval);
 }
 
 void interface::saveImageStart()
