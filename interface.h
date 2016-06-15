@@ -225,7 +225,7 @@ private slots:
     // void changeA(const QString &val);
 
     void changeN(int val);
-    void changeM(int val);3
+    void changeM(int val);
     void changeR(double val);
     void changeA(double val);
 
