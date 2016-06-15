@@ -28,13 +28,17 @@ interface::interface(QWidget *parent) :
     functionConstantsBox = new QGroupBox(tr("Function Constants"), this);
     interfaceLayout = new QVBoxLayout(this);
     topbarLayout = new QHBoxLayout();
+    leftbarLayout = new QVBoxLayout();
     imagePropsBox = new QGroupBox(tr("Image Properties"), this);
     displayWidget = new QWidget(this);
     patternTypeWidget = new QWidget(this);
+    viewHistoryWidget = new QWidget(this);
+    leftbarLayout->addWidget(patternTypeWidget);
+    leftbarLayout->addWidget(imagePropsBox);
     
-    topbarLayout->addWidget(patternTypeWidget);
+    topbarLayout->addLayout(leftbarLayout);
     topbarLayout->addWidget(displayWidget);
-    topbarLayout->addWidget(imagePropsBox);
+    topbarLayout->addWidget(viewHistoryWidget);
     interfaceLayout->addLayout(topbarLayout);                       //lay out vertically
     interfaceLayout->addWidget(functionConstantsBox);
     setLayout(interfaceLayout);
@@ -231,7 +235,21 @@ interface::interface(QWidget *parent) :
 
     patternTypeBoxOverallLayout->addWidget(patternTypeBox);
     patternTypeBoxOverallLayout->addStretch();
-    //patternTypeWidgetOverallLayout->addItem(gspacer4);
+    //patternTypeBoxOverallLayout->addItem(gspacer2);
+    
+   // viewHistoryWidget SUBELEMENTS
+    viewHistoryBox = new QGroupBox(tr("History"), viewHistoryWidget);
+    viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
+    
+    restoreButton = new QPushButton(tr("Clear All History"), viewHistoryBox);
+    viewHistoryBoxLayout = new QVBoxLayout(viewHistoryBox);
+    
+    
+    //viewHistoryBoxLayout->addItem(gspacer1);
+    viewHistoryBoxLayout->addWidget(restoreButton);
+    
+    viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);
+    //viewHistoryBoxOverallLayout->addStretch();
 
     // imagePropsBox SUBELEMENTS
     outheightLabel = new QLabel(tr("Output Height"), imagePropsBox);          //initialize elements
@@ -250,7 +268,7 @@ interface::interface(QWidget *parent) :
     pspacer1 = new QSpacerItem(0, 12);
     pspacer2 = new QSpacerItem(0, 14);
     pspacer3 = new QSpacerItem(15, 30);
-    pspacer4 = new QSpacerItem(20, 60);
+    pspacer4 = new QSpacerItem(20, 40);
     pspacer5 = new QSpacerItem(20, 15);
 
 //    outheightEdit->setFixedWidth(100);
@@ -326,9 +344,10 @@ interface::interface(QWidget *parent) :
     //imagePropsBoxOverallLayout->addItem(pspacer3);
     imagePropsBoxOverallLayout->addWidget(saveImagePush);
     imagePropsBoxOverallLayout->setAlignment(saveImagePush, Qt::AlignRight);
+    imagePropsBoxOverallLayout->addStretch();
 
     // DISP SUBELEMENTS
-    disp = new Display(500, displayWidget);
+    disp = new Display(600, displayWidget);
     updatePreview = new QPushButton(tr("Update Preview"), this);
     dispLayout = new QVBoxLayout(displayWidget);
     dispLayout->addWidget(disp);
@@ -364,8 +383,8 @@ interface::interface(QWidget *parent) :
     connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
 
     connect(saveImagePush, SIGNAL(clicked()), this, SLOT(saveImageStart()));
-    connect(loadButton, SIGNAL(clicked()), this, SLOT(loadFunction()));
-    connect(saveButton, SIGNAL(clicked()), this, SLOT(saveFunction()));
+    connect(loadButton, SIGNAL(clicked()), this, SLOT(loadFromSettings(true, nullptr)));
+    connect(saveButton, SIGNAL(clicked()), this, SLOT(saveCurrSettings(true, nullptr)));
 
     // SET DEFAULTS
     refreshTerms();
@@ -566,19 +585,25 @@ void interface::changeFunction(int index)
     // refreshTerms();
 }
 
-void interface::saveFunction()
+void interface::saveCurrSettings(bool userPrompt, HistoryItem &item)
 {
 
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
-                                                    saveloadPath,
-                               tr("Wallpapers (*.wpr)"));
+    QString fileName;
+    if (userPrompt) {
+        fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                saveloadPath,
+                                                tr("Wallpapers (*.wpr)"));
+    } else {
+        fileName = item.index;
+        fileName.append(".wpr");
+    }
 
     QFile outFile(fileName);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
              return;
 
     QDataStream out(&outFile);
-    qDebug() << "Width" << settings::Width;
+    //qDebug() << "Width" << settings::Width;
     out << settings::Width << settings::Height;
     out << settings::XCorner << settings::YCorner;
     out << settings::OWidth << settings::OHeight;
@@ -593,14 +618,24 @@ void interface::saveFunction()
 
     QDir stickypath(fileName);
     stickypath.cdUp();
-    saveloadPath = stickypath.path();
+    if (userPrompt) {
+        saveloadPath =  stickypath.path();
+    }
 }
 
-void interface::loadFunction()
+
+void interface::loadFromSettings(bool userPrompt, HistoryItem &item)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                    saveloadPath,
-                               tr("Wallpapers (*.wpr)"));
+    QString fileName;
+    if (userPrompt) {
+        fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                               saveloadPath,
+                                               tr("Wallpapers (*.wpr)"));
+    } else {
+        fileName = item.index;
+        fileName.append(".wpr");
+    }
+    
 
     QFile inFile(fileName);
     if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -648,10 +683,44 @@ void interface::loadFunction()
 
     QDir stickypath(fileName);
     stickypath.cdUp();
-    saveloadPath = stickypath.path();
+    
+    if (userPrompt) {
+        saveloadPath = stickypath.path();
+    }
+    
 
 
 }
+
+
+void interface::addToHistory()
+{
+    Display *d = new Display(60, viewHistoryBox);
+    QPushButton *viewButton = new QPushButton(tr("View"), viewHistoryBox);
+    QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
+    
+    HistoryItem *item = new HistoryItem;
+    item->index = numHistoryItems;
+    item->preview = d;
+    saveCurrSettings(false, *item);
+    
+    historyItems.push_back(item);
+    
+    historyItemsLayout = new QHBoxLayout();
+    historyItemsLayout->addWidget(d);
+    historyItemsLayout->addWidget(viewButton);
+    historyItemsLayout->addWidget(removeButton);
+    
+    viewHistoryBoxLayout->addLayout(historyItemsLayout);
+    
+    connect(viewButton, SIGNAL(clicked()), this, SLOT(loadFromSettings(false, item)));
+    //connect(viewButton, SIGNAL(clicked()), this, SLOT(restoreFromSettings(item)));
+    //TODO remove from history upon clicking remove button
+    
+}
+
+
+
 
 void interface::updatePreviewDisplay()
 {
@@ -672,6 +741,14 @@ void interface::updatePreviewDisplay()
 
       //qDebug() << "hit" << thecount++;
       disp->repaint();
+    
+      if (historyItems.size() < MAX_HISTORY_ITEMS) {
+          addToHistory();
+          
+      } else {
+          historyItems.erase(historyItems.begin());
+          
+      }
 
 }
 
