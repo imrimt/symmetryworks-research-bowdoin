@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QSpinBox>
+#include <QSlider>
 #include <QKeyEvent>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -32,6 +33,26 @@ class CustomSpinBox : public QSpinBox
 
   protected:
     void keyPressEvent(QKeyEvent *event) {event->ignore();}
+
+};
+
+class QDoubleSlider : public QSlider
+{
+    Q_OBJECT
+  public:
+    QDoubleSlider(QWidget *parent = 0) : QSlider(parent) { 
+        connect(this, SIGNAL(valueChanged(int)),
+            this, SLOT(notifyValueChanged(int)));
+    }
+
+  signals:
+    void doubleValueChanged(double value);
+
+  public slots:
+    void notifyValueChanged(int value) {
+        double doubleValue = value / 4.0;
+        emit doubleValueChanged(doubleValue);
+    }
 
 };
 
@@ -63,23 +84,45 @@ public:
     QLabel *mLabel;
     QLabel *aLabel;
     QLabel *rLabel;
+
+    QLabel *nValueLabel;
+    QLabel *mValueLabel;
+    QLabel *aValueLabel;
+    QLabel *rValueLabel;
+
     QLabel *scaleALabel;
     QLabel *scaleRLabel;
     // QLineEdit *nEdit;
     // QLineEdit *mEdit;
     // QLineEdit *aEdit;
     // QLineEdit *rEdit;
-    QSpinBox *nEdit;
-    QSpinBox *mEdit;
-    QDoubleSpinBox *aEdit;
-    QDoubleSpinBox *rEdit;
+
+    // QSpinBox *nEdit;
+    // QSpinBox *mEdit;
+    // QDoubleSpinBox *aEdit;
+    // QDoubleSpinBox *rEdit;
+
+    QSlider *nEdit;
+    QSlider *mEdit;
+    QSlider *aEdit;
+    QSlider *rEdit;
 
     QLineEdit *scaleAEdit;
     QLineEdit *scaleREdit;
     CustomSpinBox *currTermEdit;
-    QHBoxLayout *functionConstantsBoxLayout;
+
+    // QHBoxLayout *functionConstantsBoxLayout;
+
     QHBoxLayout *functionConstantsBoxLayoutLower;
     QVBoxLayout *functionConstantsBoxLayoutStack;
+
+    QHBoxLayout *functionConstantsBoxLayoutFirstLevel;
+    QHBoxLayout *functionConstantsBoxLayoutSecondLevel;
+    QHBoxLayout *functionConstantsBoxLayoutThirdLevel;
+    // QHBoxLayout *functionConstantsBoxLayoutForthLevel;
+    // QHBoxLayout *functionConstantsBoxLayoutFifthLevel;
+    // QHBoxLayout *functionConstantsBoxLayoutSixthLevel;
+
     QSpacerItem *espacer1;
     QSpacerItem *espacer2;
     QSpacerItem *espacer3;
@@ -87,7 +130,6 @@ public:
     QSpacerItem *espacer5;
     QSpacerItem *espacer6;
     QSpacerItem *espacer7;
-    QSpacerItem *espacer8;
     QPushButton *loadButton;
     QPushButton *saveButton;
 
@@ -101,6 +143,8 @@ public:
     QLabel *colorwheelLabel;
     QLabel *functionLabel;
     QLabel *numtermsLabel;
+    QLabel *freqpairLabel;
+    QLabel *coeffLabel;
     QLineEdit *numtermsEdit;
     QSpacerItem *gspacer1;
     QSpacerItem *gspacer2;
@@ -128,7 +172,6 @@ public:
     QLineEdit *YCornerEdit;
     QLineEdit *worldwidthEdit;
     QLineEdit *worldheightEdit;
-    QPushButton *saveImagePush;
     QSpacerItem *pspacer1;
     QSpacerItem *pspacer2;
     QSpacerItem *pspacer3;
@@ -137,8 +180,11 @@ public:
 
     // DISP SUBELEMENTS
     QPushButton *updatePreview;
+    QPushButton *exportImage;
+    QPushButton *resetImage;
     Display *disp;
     QVBoxLayout *dispLayout;
+    QHBoxLayout *buttonLayout;
 
 
 private slots:
@@ -169,6 +215,7 @@ private slots:
     void saveImageStart();
     void loadFunction();
     void saveFunction();
+    void resetImageFunction();
 
 private:
     unsigned int termIndex;              //internal index:  starts at 0

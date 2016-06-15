@@ -1,13 +1,20 @@
 #include "interface.h"
 
+const double DEFAULT_WIDTH = 2.5;
+const double DEFAULT_HEIGHT = 2.0;
+const double DEFAULT_XCORNER = -0.5;
+const double DEFAULT_YCORNER = -0.5;
+const int DEFAULT_OUTPUT_WIDTH = 6000;
+const int DEFAULT_OUTPUT_HEIGHT = 4800;
+
 namespace settings      //the settings namespace stores
 {                       //a few variables used to compute the
-    double Width=2.5;   //image via the mathematical function
-    double Height=2.0;  //and the color wheel, as well as
-    double XCorner=-0.5; //the Output Width and Height.
-    double YCorner=-0.5;
-    int OWidth=6000;//6000 width 4800 height standard for art prints
-    int OHeight=4800;
+    double Width = DEFAULT_WIDTH;   //image via the mathematical function
+    double Height = DEFAULT_HEIGHT;  //and the color wheel, as well as
+    double XCorner = DEFAULT_XCORNER; //the Output Width and Height.
+    double YCorner = DEFAULT_YCORNER;
+    int OWidth = DEFAULT_OUTPUT_WIDTH;//6000 width 4800 height standard for art prints
+    int OHeight = DEFAULT_OUTPUT_HEIGHT;
 }
 
 interface::interface(QWidget *parent) :
@@ -48,100 +55,120 @@ interface::interface(QWidget *parent) :
     dimValidate = new QIntValidator(1, 10000, this);
 
     // functionConstantsBox SUBELEMENTS
-    currTermLabel = new QLabel(functionConstantsBox);                              //create labels
+    //create labels
+    currTermLabel = new QLabel(functionConstantsBox);
     currTermLabel->setText(tr("Term"));
+
+    freqpairLabel = new QLabel(tr("Frequency Pair: "), functionConstantsBox);
+    coeffLabel = new QLabel(tr("Coefficient Pair: "), functionConstantsBox);
+
     nLabel = new QLabel(functionConstantsBox);
     mLabel = new QLabel(functionConstantsBox);
     aLabel = new QLabel(functionConstantsBox);
     rLabel = new QLabel(functionConstantsBox);
-    scaleALabel = new QLabel(tr("sa"), functionConstantsBox);
-    scaleRLabel = new QLabel(tr("sr"), functionConstantsBox);
+
+    nValueLabel = new QLabel(functionConstantsBox);
+    mValueLabel = new QLabel(functionConstantsBox);
+    aValueLabel = new QLabel(functionConstantsBox);
+    rValueLabel = new QLabel(functionConstantsBox);
+
+    scaleALabel = new QLabel(tr("Scaling Angle"), functionConstantsBox);
+    scaleRLabel = new QLabel(tr("Scaling Radius"), functionConstantsBox);
     refreshLabels();
-    // nEdit = new QLineEdit(functionConstantsBox);                              //create input boxes
-    // mEdit = new QLineEdit(functionConstantsBox);
-    // aEdit = new QLineEdit(functionConstantsBox);
-    // rEdit = new QLineEdit(functionConstantsBox);
-    nEdit = new QSpinBox(functionConstantsBox);
-    mEdit = new QSpinBox(functionConstantsBox);
-    aEdit = new QDoubleSpinBox(functionConstantsBox);
-    rEdit = new QDoubleSpinBox(functionConstantsBox);
+
+    //create input
+    // nEdit = new QSpinBox(functionConstantsBox);
+    // mEdit = new QSpinBox(functionConstantsBox);
+    // aEdit = new QDoubleSpinBox(functionConstantsBox);
+    // rEdit = new QDoubleSpinBox(functionConstantsBox);
+
+    nEdit = new QSlider(Qt::Horizontal);
+    mEdit = new QSlider(Qt::Horizontal);
+    aEdit = new QDoubleSlider();
+    rEdit = new QDoubleSlider();
+
+    aEdit->setOrientation(Qt::Horizontal);
+    rEdit->setOrientation(Qt::Horizontal);
+
     scaleAEdit = new QLineEdit(functionConstantsBox);
     scaleREdit = new QLineEdit(functionConstantsBox);
     currTermEdit = new CustomSpinBox(functionConstantsBox);
-    espacer1 = new QSpacerItem(100, 15);
-    espacer2 = new QSpacerItem(10, 15);
-    espacer3 = new QSpacerItem(10, 15);
-    espacer4 = new QSpacerItem(10, 15);
+    espacer1 = new QSpacerItem(5, 5);
+    espacer2 = new QSpacerItem(5, 5);
+    espacer3 = new QSpacerItem(5, 5);
+    espacer4 = new QSpacerItem(5, 5);
     espacer5 = new QSpacerItem(130, 15);
     espacer6 = new QSpacerItem(2, 0);
     espacer7 = new QSpacerItem(15, 15);
-    espacer8 = new QSpacerItem(8, 15);
 
-    loadButton = new QPushButton(tr("Load..."), functionConstantsBox);
-    saveButton = new QPushButton(tr("Save"), functionConstantsBox);
-    // currTermEdit->setMaximum(4);
-    // currTermEdit->setMinimum(1);
+    loadButton = new QPushButton(tr("Load Setting..."), functionConstantsBox);
+    saveButton = new QPushButton(tr("Save Current Setting"), functionConstantsBox);
     currTermEdit->setRange(1,1);
-    nEdit->setFixedWidth(75);
-    mEdit->setFixedWidth(75);
-    rEdit->setFixedWidth(75);
-    aEdit->setFixedWidth(75);
-    scaleAEdit->setFixedWidth(75);
-    scaleREdit->setFixedWidth(75);
+    nEdit->setFixedWidth(200);
+    mEdit->setFixedWidth(200);
+    rEdit->setFixedWidth(200);
+    aEdit->setFixedWidth(200);
+    scaleAEdit->setFixedWidth(50);
+    scaleREdit->setFixedWidth(50);
     nLabel->setFixedWidth(18);
-    mLabel->setFixedWidth(20);
+    mLabel->setFixedWidth(18);
     rLabel->setFixedWidth(18);
     aLabel->setFixedWidth(18);
-    scaleALabel->setFixedWidth(18);
-    scaleRLabel->setFixedWidth(18);
 
-    // nEdit->setValidator(intValidate);
-    // mEdit->setValidator(intValidate);
-    // rEdit->setValidator(doubleValidate);
-    // aEdit->setValidator(doubleValidate);
+    // scaleALabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    // scaleRLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    scaleALabel->setFixedWidth(100);
+    scaleRLabel->setFixedWidth(100);
 
-    nEdit->setRange(-9999999,9999999);
+    nEdit->setRange(-10,10);
     nEdit->setSingleStep(1);
-    mEdit->setRange(-9999999,9999999);
+    mEdit->setRange(-10,10);
     mEdit->setSingleStep(1);
-    rEdit->setRange(-9999999.0,9999999.0);
-    rEdit->setSingleStep(0.25);
-    aEdit->setRange(-9999999.0,9999999.0);
-    aEdit->setSingleStep(0.25);
-    // nEdit->setMaximum(9999999);
-    // nEdit->setMinimum(-9999999);
-    // mEdit->setMaximum(9999999);
-    // mEdit->setMinimum(-9999999);
-    // rEdit->setMaximum(9999999.0);
-    // rEdit->setMinimum(-9999999.0);
-    // aEdit->setMaximum(9999999.0);
-    // aEdit->setMinimum(-9999999.0);
+    rEdit->setRange(-100,100);
+    rEdit->setSingleStep(1);
+    aEdit->setRange(-100,100);
+    aEdit->setSingleStep(1);
 
     scaleAEdit->setValidator(doubleValidate);
     scaleREdit->setValidator(doubleValidate);
 
-
     functionConstantsBoxLayoutStack = new QVBoxLayout(functionConstantsBox);  //initialize layout
-    functionConstantsBoxLayout = new QHBoxLayout();
+    
     functionConstantsBoxLayoutLower = new QHBoxLayout();
-    functionConstantsBoxLayoutLower->setAlignment(Qt::AlignRight);
-    functionConstantsBoxLayout->setAlignment(Qt::AlignRight);
+    functionConstantsBoxLayoutFirstLevel = new QHBoxLayout();
+    functionConstantsBoxLayoutSecondLevel = new QHBoxLayout();
+    functionConstantsBoxLayoutThirdLevel = new QHBoxLayout();
 
-    functionConstantsBoxLayout->addWidget(currTermLabel);              //fill layouts
-    functionConstantsBoxLayout->addWidget(currTermEdit);
-    functionConstantsBoxLayout->addItem(espacer1);
-    functionConstantsBoxLayout->addWidget(nLabel);
-    functionConstantsBoxLayout->addWidget(nEdit);
-    functionConstantsBoxLayout->addItem(espacer2);
-    functionConstantsBoxLayout->addWidget(mLabel);
-    functionConstantsBoxLayout->addWidget(mEdit);
-    functionConstantsBoxLayout->addItem(espacer3);
-    functionConstantsBoxLayout->addWidget(rLabel);
-    functionConstantsBoxLayout->addWidget(rEdit);
-    functionConstantsBoxLayout->addItem(espacer4);
-    functionConstantsBoxLayout->addWidget(aLabel);
-    functionConstantsBoxLayout->addWidget(aEdit);
-    functionConstantsBoxLayoutLower->addItem(espacer8);
+    functionConstantsBoxLayoutFirstLevel->setAlignment(Qt::AlignLeft);
+    functionConstantsBoxLayoutSecondLevel->setAlignment(Qt::AlignLeft);
+    functionConstantsBoxLayoutThirdLevel->setAlignment(Qt::AlignLeft);
+    
+    functionConstantsBoxLayoutLower->setAlignment(Qt::AlignRight);
+
+    functionConstantsBoxLayoutFirstLevel->addWidget(currTermLabel);
+    functionConstantsBoxLayoutFirstLevel->addWidget(currTermEdit);
+
+    functionConstantsBoxLayoutSecondLevel->addWidget(freqpairLabel);
+    functionConstantsBoxLayoutSecondLevel->addItem(espacer1);
+    functionConstantsBoxLayoutSecondLevel->addWidget(nLabel);
+    functionConstantsBoxLayoutSecondLevel->addWidget(nEdit);
+    functionConstantsBoxLayoutSecondLevel->addWidget(nValueLabel);
+    functionConstantsBoxLayoutSecondLevel->addItem(espacer2);
+    functionConstantsBoxLayoutSecondLevel->addWidget(mLabel);
+    functionConstantsBoxLayoutSecondLevel->addWidget(mEdit);
+    functionConstantsBoxLayoutSecondLevel->addWidget(mValueLabel);
+
+    functionConstantsBoxLayoutThirdLevel->addWidget(coeffLabel);
+    functionConstantsBoxLayoutThirdLevel->addItem(espacer4);
+    functionConstantsBoxLayoutThirdLevel->addWidget(rLabel);
+    functionConstantsBoxLayoutThirdLevel->addWidget(rEdit);
+    functionConstantsBoxLayoutThirdLevel->addWidget(rValueLabel);
+    functionConstantsBoxLayoutThirdLevel->addItem(espacer3);
+    functionConstantsBoxLayoutThirdLevel->addWidget(aLabel);
+    functionConstantsBoxLayoutThirdLevel->addWidget(aEdit);
+    functionConstantsBoxLayoutThirdLevel->addWidget(aValueLabel);
+
+    //fill layouts
     functionConstantsBoxLayoutLower->addWidget(loadButton);
     functionConstantsBoxLayoutLower->addItem(espacer7);
     functionConstantsBoxLayoutLower->addWidget(saveButton);
@@ -151,8 +178,12 @@ interface::interface(QWidget *parent) :
     functionConstantsBoxLayoutLower->addItem(espacer6);
     functionConstantsBoxLayoutLower->addWidget(scaleALabel);
     functionConstantsBoxLayoutLower->addWidget(scaleAEdit);
-    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayout);
+    
+    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutFirstLevel);
+    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutSecondLevel);
+    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutThirdLevel);
     functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutLower);
+
     functionConstantsBox->setLayout(functionConstantsBoxLayoutStack);
 
     // patternType SUBELEMENTS
@@ -246,7 +277,6 @@ interface::interface(QWidget *parent) :
     YCornerEdit = new QLineEdit(imagePropsBox);
     worldwidthEdit = new QLineEdit(imagePropsBox);
     worldheightEdit = new QLineEdit(imagePropsBox);
-    saveImagePush = new QPushButton(tr("Save Image"), imagePropsBox);
     pspacer1 = new QSpacerItem(0, 12);
     pspacer2 = new QSpacerItem(0, 14);
     pspacer3 = new QSpacerItem(15, 30);
@@ -267,7 +297,6 @@ interface::interface(QWidget *parent) :
 //    worldwidthEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 //    worldheightEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    saveImagePush->setFixedHeight(25);
     imagePropsBoxOverallLayout = new QVBoxLayout(imagePropsBox);
     imagePropsBoxLayout = new QHBoxLayout();
     imagePropsEditStack = new QVBoxLayout();
@@ -287,9 +316,6 @@ interface::interface(QWidget *parent) :
     YCornerEdit->setFixedWidth(100);
     worldwidthEdit->setFixedWidth(100);
     worldheightEdit->setFixedWidth(100);
-
-    saveImagePush->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    saveImagePush->setFixedWidth(150);
 
     imagePropsBoxStack->addWidget(XCornerLabel);
     imagePropsBoxStack->addWidget(YCornerLabel);
@@ -314,28 +340,37 @@ interface::interface(QWidget *parent) :
     imagePropsEditStack->addWidget(outwidthEdit);
     imagePropsEditStack->addWidget(outheightEdit);
 
-    //imagePropsBoxLayout->addItem(pspacer3);
     imagePropsBoxLayout->addLayout(imagePropsBoxStack);
     imagePropsBoxLayout->addLayout(imagePropsEditStack);
     imagePropsBoxLayout->addItem(pspacer4);
 
-    //savePushLayout->addWidget(saveImagePush);
-    //savePushLayout->addItem(pspacer5);
-
     imagePropsBoxOverallLayout->addLayout(imagePropsBoxLayout);
-    //imagePropsBoxOverallLayout->addItem(pspacer3);
-    imagePropsBoxOverallLayout->addWidget(saveImagePush);
-    imagePropsBoxOverallLayout->setAlignment(saveImagePush, Qt::AlignRight);
 
     // DISP SUBELEMENTS
     disp = new Display(500, displayWidget);
     updatePreview = new QPushButton(tr("Update Preview"), this);
+    exportImage = new QPushButton(tr("Export Image"), this);
+    resetImage = new QPushButton(tr("Reset Image"), this);
     dispLayout = new QVBoxLayout(displayWidget);
+    buttonLayout = new QHBoxLayout();
+
+    updatePreview->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    exportImage->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    resetImage->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    buttonLayout->addWidget(updatePreview);
+    buttonLayout->addWidget(exportImage);
+    buttonLayout->addWidget(resetImage);
+
     dispLayout->addWidget(disp);
-    dispLayout->addWidget(updatePreview);
+    dispLayout->addLayout(buttonLayout);
+    
 
     // CONNECT SIGNALS & SLOTS
     connect(updatePreview, SIGNAL(clicked()), this, SLOT(updatePreviewDisplay()));
+    connect(exportImage, SIGNAL(clicked()), this, SLOT(saveImageStart()));
+    connect(resetImage, SIGNAL(clicked()), this, SLOT(resetImageFunction()));
+
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), currColorWheel, SLOT(setCurrent(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
@@ -345,8 +380,10 @@ interface::interface(QWidget *parent) :
 
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
-    connect(rEdit, SIGNAL(valueChanged(double)), this, SLOT(changeR(double)));
-    connect(aEdit, SIGNAL(valueChanged(double)), this, SLOT(changeA(double)));
+    connect(rEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeR(double)));
+    connect(aEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeA(double)));
+    connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
+    connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
 
     connect(outwidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOWidth(QString)));
     connect(outheightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOHeight(QString)));
@@ -355,15 +392,6 @@ interface::interface(QWidget *parent) :
     connect(XCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeXCorner(QString)));
     connect(YCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeYCorner(QString)));
 
-    // connect(nEdit, SIGNAL(textChanged(QString)), this, SLOT(changeN(QString)));
-    // connect(mEdit, SIGNAL(textChanged(QString)), this, SLOT(changeM(QString)));
-    // connect(rEdit, SIGNAL(textChanged(QString)), this, SLOT(changeR(QString)));
-    // connect(aEdit, SIGNAL(textChanged(QString)), this, SLOT(changeA(QString)));
-
-    connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
-    connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
-
-    connect(saveImagePush, SIGNAL(clicked()), this, SLOT(saveImageStart()));
     connect(loadButton, SIGNAL(clicked()), this, SLOT(loadFunction()));
     connect(saveButton, SIGNAL(clicked()), this, SLOT(saveFunction()));
 
@@ -372,12 +400,12 @@ interface::interface(QWidget *parent) :
     scaleREdit->setText(QString::number(currFunction->scaleR()));
     scaleAEdit->setText(QString::number(currFunction->scaleA()));
 
-    outwidthEdit->setText(QString::number(settings::OWidth));
-    outheightEdit->setText(QString::number(settings::OHeight));
-    worldwidthEdit->setText(QString::number(settings::Width));
-    worldheightEdit->setText(QString::number(settings::Height));
-    XCornerEdit->setText(QString::number(settings::XCorner));
-    YCornerEdit->setText(QString::number(settings::YCorner));
+    outwidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
+    outheightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
+    worldwidthEdit->setText(QString::number(DEFAULT_WIDTH));
+    worldheightEdit->setText(QString::number(DEFAULT_HEIGHT));
+    XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
+    YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
 
     // functionSel->setCurrentIndex(1);    //set up current function
     // colorwheelSel->setCurrentIndex(9);
@@ -385,7 +413,6 @@ interface::interface(QWidget *parent) :
     //default set up (fixed)
     functionSel->setCurrentIndex(0);
     colorwheelSel->setCurrentIndex(0);
-
 
     // FINALIZE WINDOW
     setFixedSize(sizeHint());
@@ -422,15 +449,40 @@ void interface::refreshLabels()                 //for updating our label names
 
 void interface::refreshTerms()
 {
-    // nEdit->setText(QString::number(f->N(termIndex)));
-    // mEdit->setText(QString::number(f->M(termIndex)));
-    // rEdit->setText(QString::number(f->R(termIndex)));
-    // aEdit->setText(QString::number(f->A(termIndex)));
-
     nEdit->setValue(currFunction->getN(termIndex));
     mEdit->setValue(currFunction->getM(termIndex));
-    rEdit->setValue(currFunction->getR(termIndex));
-    aEdit->setValue(currFunction->getA(termIndex));
+    rEdit->setValue(currFunction->getR(termIndex) * 4.0);
+    aEdit->setValue(currFunction->getA(termIndex) * 4.0);
+
+    nValueLabel->setText(QString::number(currFunction->getN(termIndex)));
+    mValueLabel->setText(QString::number(currFunction->getM(termIndex)));
+    rValueLabel->setText(QString::number(currFunction->getR(termIndex) * 1.0));
+    aValueLabel->setText(QString::number(currFunction->getA(termIndex) * 1.0));
+}
+
+void interface::resetImageFunction()
+{
+    delete currFunction;
+
+    currFunction = new hex3Function();
+    functionSel->setCurrentIndex(0);
+    colorwheelSel->setCurrentIndex(0);
+
+    numtermsEdit->setText(tr("1"));
+    termIndex = 0;
+
+    refreshTerms();
+    scaleREdit->setText(QString::number(currFunction->scaleR()));
+    scaleAEdit->setText(QString::number(currFunction->scaleA()));
+
+    outwidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
+    outheightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
+    worldwidthEdit->setText(QString::number(DEFAULT_WIDTH));
+    worldheightEdit->setText(QString::number(DEFAULT_HEIGHT));
+    XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
+    YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
+
+    updatePreviewDisplay();
 }
 
 void interface::updateTerms(int i)
@@ -563,7 +615,7 @@ void interface::changeFunction(int index)
 
     }
 
-    // refreshTerms();
+    refreshTerms();
 }
 
 void interface::saveFunction()
@@ -649,8 +701,6 @@ void interface::loadFunction()
     QDir stickypath(fileName);
     stickypath.cdUp();
     saveloadPath = stickypath.path();
-
-
 }
 
 void interface::updatePreviewDisplay()
@@ -705,34 +755,11 @@ void interface::changeYCorner(const QString &val)
     settings::YCorner = val.toDouble();
 }
 
-// void interface::changeN(const QString &val)
-// {
-//     int passedval = val.toInt();
-//     currFunction->setN(termIndex, passedval);
-// }
-
-// void interface::changeM(const QString &val)
-// {
-//     int passedval = val.toInt();
-//     currFunction->setM(termIndex, passedval);
-// }
-
-// void interface::changeR(const QString &val)
-// {
-//     double passedval = val.toDouble();
-//     currFunction->setR(termIndex, passedval);
-// }
-
-// void interface::changeA(const QString &val)
-// {
-//     double passedval = val.toDouble();
-//     currFunction->setA(termIndex, passedval);
-// }
-
 void interface::changeN(int val)
 {
     // int passedval = val.toInt();
     currFunction->setN(termIndex, val);
+    nValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
@@ -740,6 +767,7 @@ void interface::changeM(int val)
 {
     // int passedval = val.toInt();
     currFunction->setM(termIndex, val);
+    mValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
@@ -747,6 +775,7 @@ void interface::changeR(double val)
 {
     // double passedval = val.toDouble();
     currFunction->setR(termIndex, val);
+    rValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
@@ -754,6 +783,7 @@ void interface::changeA(double val)
 {
     // double passedval = val.toDouble();
     currFunction->setA(termIndex, val);
+    aValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
@@ -779,25 +809,26 @@ void interface::saveImageStart()
     if (!inFile.open(QIODevice::WriteOnly))
              return;
 
-      double worldY, worldX ;
-      QImage outimg(settings::OWidth, settings::OHeight, QImage::Format_RGB32);
+    double worldY, worldX ;
+    QImage outputImage(settings::OWidth, settings::OHeight, QImage::Format_RGB32);
 
-      for (int y = 0; y < settings::OHeight; y++)
-          for (int x = 0; x <= ((settings::OWidth)-1); x++)
+    for (int y = 0; y < settings::OHeight; y++)
+    {
+        for (int x = 0; x <= ((settings::OWidth)-1); x++)
+        {   
+            worldY = settings::Height - y*settings::Height/settings::OHeight + settings::YCorner;
+            worldX = x*settings::Width/settings::OWidth + settings::XCorner;
 
-          {   worldY= settings::Height-y*settings::Height/settings::OHeight+settings::YCorner ;
-              worldX= x*settings::Width/settings::OWidth+settings::XCorner;
+            std::complex<double> fout=(*currFunction)(worldX,worldY);        //run the point through our mathematical function
+            QRgb color = (*currColorWheel)(fout);                              //...then turn that complex output into a color per our color wheel
 
-              std::complex<double> fout=(*currFunction)(worldX,worldY);        //run the point through our mathematical function
-              QRgb color = (*currColorWheel)(fout);                              //...then turn that complex output into a color per our color wheel
-
-              outimg.setPixel(x, y, color);
-
+            outputImage.setPixel(x, y, color);
+        }
     }
 
-          outimg.save(fileName);
+    outputImage.save(fileName);
 
-          QDir stickypath(fileName);
-          stickypath.cdUp();
-          saveloadPath = stickypath.path();
+    QDir stickypath(fileName);
+    stickypath.cdUp();
+    saveloadPath = stickypath.path();
 }
