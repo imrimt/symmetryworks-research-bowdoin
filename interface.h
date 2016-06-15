@@ -26,6 +26,8 @@
 #include "colorwheel.h"
 #include "display.h"
 
+#define MAX_HISTORY_ITEMS 5
+
 class CustomSpinBox : public QSpinBox
 {
   public:
@@ -67,8 +69,10 @@ public:
     QVBoxLayout *interfaceLayout;
     QWidget *displayWidget;
     QHBoxLayout *topbarLayout;
+    QVBoxLayout *leftbarLayout;
     QGroupBox *imagePropsBox;
     QWidget *patternTypeWidget;
+    QWidget *viewHistoryWidget;
 
     // INPUT VALIDATORS
     QDoubleValidator *doubleValidate;
@@ -153,6 +157,21 @@ public:
     QComboBox *colorwheelSel;
     QComboBox *functionSel;
     QPushButton *setLoadedImage;
+    
+    // viewHistoryBox SUBELEMENTS
+    QGroupBox *viewHistoryBox;
+    QVBoxLayout *viewHistoryBoxLayout;
+    QVBoxLayout *viewHistoryBoxOverallLayout;
+    QPushButton *restoreButton;
+    struct HistoryItem {
+        int index;
+        Display *preview;
+        QStringList settings;
+    };
+    std::vector<HistoryItem *> historyItems;
+    
+    QHBoxLayout *historyItemsLayout;
+    
 
     // imagePropsBox SUBELEMENTS
     QVBoxLayout *imagePropsBoxStack;
@@ -206,25 +225,31 @@ private slots:
     // void changeA(const QString &val);
 
     void changeN(int val);
-    void changeM(int val);
+    void changeM(int val);3
     void changeR(double val);
     void changeA(double val);
 
     void changeScaleR(const QString &val);
     void changeScaleA(const QString &val);
     void saveImageStart();
-    void loadFunction();
-    void saveFunction();
     void resetImageFunction();
 
+    void loadFromSettings(bool userPrompt, HistoryItem &item);
+    void saveCurrSettings(bool userPrompt, HistoryItem &item);
+    
 private:
     unsigned int termIndex;              //internal index:  starts at 0
+    int numHistoryItems = 0;
     QString genLabel(const char * in);
     void refreshLabels();
     QString saveloadPath;
+    QString getCurrSettings(const HistoryItem &item);
+    void addToHistory();
+    
     void refreshTerms();
     AbstractFunction * currFunction;
     ColorWheel * currColorWheel;
+    
 };
 
 #endif // INTERFACE_H
