@@ -43,8 +43,8 @@ interface::interface(QWidget *parent) :
     displayWidget = new QWidget(this);
     patternTypeWidget = new QWidget(this);
     viewHistoryWidget = new QWidget(this);
-    leftbarLayout->addWidget(patternTypeWidget);
     leftbarLayout->addWidget(imagePropsBox);
+    leftbarLayout->addWidget(patternTypeWidget);
     
     topbarLayout->addLayout(leftbarLayout);
     topbarLayout->addWidget(displayWidget);
@@ -199,7 +199,7 @@ interface::interface(QWidget *parent) :
     colorwheelSel = new QComboBox(patternTypeBox);
     functionLabel = new QLabel(patternTypeBox);
     colorwheelLabel = new QLabel(patternTypeBox);
-    numtermsLabel = new QLabel(tr("<i>No. Terms</i>"), patternTypeBox);
+    numtermsLabel = new QLabel(tr("<b>Number of Terms</b>"), patternTypeBox);
     numtermsEdit = new CustomSpinBox(patternTypeBox);
     numtermsEdit->setRange(1,4);
     gspacer1 = new QSpacerItem(0,20);
@@ -283,6 +283,7 @@ interface::interface(QWidget *parent) :
     
     viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);
     viewHistoryBoxLayout->addWidget(clearHistoryButton);
+    viewHistoryBoxOverallLayout->addStretch(5);
    
     //viewHistoryBoxOverallLayout->addStretch();
 
@@ -371,8 +372,8 @@ interface::interface(QWidget *parent) :
     // DISP SUBELEMENTS
     disp = new Display(600, displayWidget);
     updatePreview = new QPushButton(tr("Update Preview"), this);
-    exportImage = new QPushButton(tr("Export Image"), this);
-    resetImage = new QPushButton(tr("Reset Image"), this);
+    exportImage = new QPushButton(tr("Export Image..."), this);
+    resetImage = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
     buttonLayout = new QHBoxLayout();
 
@@ -416,6 +417,8 @@ interface::interface(QWidget *parent) :
 
     connect(loadButton, SIGNAL(clicked()), this, SLOT(loadFromSettings()));
     connect(saveButton, SIGNAL(clicked()), this, SLOT(saveCurrSettings()));
+    
+    connect(clearHistoryButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
 
     connect(viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
     connect(removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removeItem(QObject*)));
@@ -788,9 +791,23 @@ void interface::addToHistory()
 
     viewMapper->setMapping(viewButton, newFile);
     removeMapper->setMapping(removeButton, item);
-
-    // this is where we will manage actually painting the lower-res image
     
+    // this handles the painting of the preview icon
+    double worldY, worldX;
+    
+    for (int y = 0; y < item->preview->dim(); y++)
+        for (int x = 0; x <= ((item->preview->dim())-1); x++)
+        {
+            worldY= settings::Height-y*settings::Height/item->preview->dim()+settings::YCorner;
+            worldX= x*settings::Width/item->preview->dim()+settings::XCorner;
+            
+            std::complex<double> fout = (*currFunction)(worldX,worldY);  //run the point through our mathematical function
+            QRgb color = (*currColorWheel)(fout);                          //...then convert that complex output to a color according to our color wheel
+            
+            item->preview->setPixel(x, y, color);                    //finally push the determined color to the corresponding point on the display
+            
+        }
+    item->preview->repaint();    
 }
 
 void interface::removePreview(HistoryItem *historyItemToRemove)
@@ -860,6 +877,11 @@ void interface::updateSavePreview()
     }
     
     updatePreviewDisplay();
+    
+}
+
+void interface::clearAllHistory()
+{
     
 }
 

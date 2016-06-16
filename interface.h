@@ -251,9 +251,8 @@ private slots:
     void loadFromSettings();
     void saveCurrSettings();
     void updateSavePreview();
-    // void removePreview(const HistoryItem &item);
-
     void removeItem(QObject* item);
+    void clearAllHistory();
     
     QString loadSettings(const QString &fileName);
     
