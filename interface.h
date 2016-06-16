@@ -72,7 +72,9 @@ class HistoryItem : public QObject
     QPushButton *viewButton;
     QPushButton *removeButton;
     QString filePathName;
-    QDateTime timeSaved;
+
+    //is this data structure useful? 
+    QDateTime savedTime;
 };
 
 class interface : public QWidget
@@ -175,12 +177,10 @@ public:
     QVBoxLayout *viewHistoryBoxLayout;
     QVBoxLayout *viewHistoryBoxOverallLayout;
     QPushButton *clearHistoryButton;
-    // struct HistoryItem {
-    //     int index;
-    //     Display *preview;
-    //     QStringList settings;
-    // };
-    std::vector<HistoryItem *> historyItems;
+
+    // std::vector<HistoryItem *> historyItems;
+
+    QMap<QDateTime, HistoryItem*> historyItems;
 
     QSignalMapper *viewMapper;
     QSignalMapper *removeMapper;

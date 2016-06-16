@@ -497,7 +497,6 @@ void interface::resetImageFunction()
     functionSel->setCurrentIndex(0);
     colorwheelSel->setCurrentIndex(0);
 
-    //numtermsEdit->setText(tr("1"));
     termIndex = 0;
 
     refreshTerms();
@@ -762,7 +761,6 @@ void interface::addToHistory()
     
     HistoryItem *item = new HistoryItem();
     item->preview = d;    
-    historyItems.push_back(item);
     
     historyItemsLayout = new QHBoxLayout();
     historyItemsLayout->addWidget(d);
@@ -772,19 +770,23 @@ void interface::addToHistory()
     historyItemButtonsLayout->addWidget(removeButton);
 
     historyItemsLayout->addLayout(historyItemButtonsLayout);    
-    viewHistoryBoxLayout->addLayout(historyItemsLayout);
+    // viewHistoryBoxLayout->addLayout(historyItemsLayout);
+
+    viewHistoryBoxLayout->insertLayout(1, historyItemsLayout);
 
     item->layoutItem = historyItemsLayout;
     item->buttonLayoutItem = historyItemButtonsLayout;
     item->viewButton = viewButton;
     item->removeButton = removeButton;    
 
-    QDateTime current = QDateTime::currentDateTimeUtc();
-    item->timeSaved = current;
-    
-    QString newFile = current.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
+    QDateTime savedTime = QDateTime::currentDateTimeUtc();
 
+    item->savedTime = savedTime;
+
+    QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
     item->filePathName = saveSettings(newFile).append("/" + newFile);
+
+    historyItems.insert(savedTime, item);
 
     connect(viewButton, SIGNAL(clicked()), viewMapper, SLOT(map()));
     connect(removeButton, SIGNAL(clicked()), removeMapper, SLOT(map()));
@@ -813,7 +815,6 @@ void interface::addToHistory()
 void interface::removePreview(HistoryItem *historyItemToRemove)
 {
     qDebug() << "removing preview";
-    // historyItems.erase(historyItems.begin() + historyItemToRemove->index);
 
     historyItemToRemove->buttonLayoutItem->removeWidget(historyItemToRemove->viewButton);
     delete historyItemToRemove->viewButton;
@@ -830,7 +831,11 @@ void interface::removePreview(HistoryItem *historyItemToRemove)
     viewHistoryBoxLayout->removeItem(historyItemToRemove->layoutItem);
     delete historyItemToRemove->layoutItem;
 
+    historyItems.erase(historyItems.find(historyItemToRemove->savedTime));
+
     qDebug() << "removing file: " << historyItemToRemove->filePathName;
+
+    qDebug() << "size of Qmap: " << historyItems.size();
 
     QFile::remove(historyItemToRemove->filePathName);
 }
@@ -882,7 +887,7 @@ void interface::updateSavePreview()
 
 void interface::clearAllHistory()
 {
-    
+
 }
 
 void interface::changeOHeight(const QString &val)
