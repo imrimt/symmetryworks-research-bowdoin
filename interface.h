@@ -23,6 +23,8 @@
 #include <QFileDialog>
 #include <QSignalMapper>
 #include <QDateTime>
+#include <QShortCut>
+#include <QAction>
 
 #include "functions.h"
 #include "colorwheel.h"
@@ -175,20 +177,14 @@ public:
     QPushButton *setLoadedImage;
     
     // viewHistoryBox SUBELEMENTS
+    QMap<QDateTime, HistoryItem*> historyItemsMap;
     QGroupBox *viewHistoryBox;
     QVBoxLayout *viewHistoryBoxLayout;
     QVBoxLayout *viewHistoryBoxOverallLayout;
     QPushButton *clearHistoryButton;
-
-    // std::vector<HistoryItem *> historyItemsMap;
-
-    QMap<QDateTime, HistoryItem*> historyItemsMap;
-
     QSignalMapper *viewMapper;
     QSignalMapper *removeMapper;
     
-    // QHBoxLayout *historyItemsLayout;
-    // QVBoxLayout *historyItemButtonsLayout;
 
     // imagePropsBox SUBELEMENTS
     QVBoxLayout *imagePropsBoxStack;
@@ -222,6 +218,8 @@ public:
     QVBoxLayout *dispLayout;
     QHBoxLayout *buttonLayout;
 
+    // SHORTCUTS
+    QShortcut *updatePreviewShortcut;
 
 private slots:
     void updateTerms(int i);
@@ -235,10 +233,6 @@ private slots:
     void changeYCorner(const QString &val);
     void changeOWidth(const QString &val);
     void changeOHeight(const QString &val);
-    // void changeN(const QString &val);
-    // void changeM(const QString &val);
-    // void changeR(const QString &val);
-    // void changeA(const QString &val);
 
     void changeN(int val);
     void changeM(int val);

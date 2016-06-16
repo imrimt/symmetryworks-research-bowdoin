@@ -388,6 +388,14 @@ interface::interface(QWidget *parent) :
     dispLayout->addWidget(disp);
     dispLayout->addLayout(buttonLayout);
     
+    //SET UP SHORTCUTS
+    
+    // updatePreviewAction = new QAction(this);
+    // updatePreviewAction->setShortcut(QKeySequence("Ctrl+D"));
+
+    // this->addAction(updatePreviewAction);
+
+    updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
 
     // CONNECT SIGNALS & SLOTS
     connect(updatePreview, SIGNAL(clicked()), this, SLOT(updateSavePreview()));
@@ -422,7 +430,8 @@ interface::interface(QWidget *parent) :
 
     connect(viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
     connect(removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removeItem(QObject*)));
-    // connect(removeMapper, static_cast<void(QSignalMapper::*)(HistoryItem *)>(&QSignalMapper::mapped), this, &removePreview());
+    
+    connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(updateSavePreview()));
 
     // SET DEFAULTS
     refreshTerms();
