@@ -21,6 +21,8 @@
 #include <QDir>
 #include <QInputDialog>
 #include <QFileDialog>
+#include <QSignalMapper>
+#include <QDateTime>
 
 #include "functions.h"
 #include "colorwheel.h"
@@ -56,6 +58,21 @@ class QDoubleSlider : public QSlider
         emit doubleValueChanged(doubleValue);
     }
 
+};
+
+class HistoryItem : public QObject
+{
+    Q_OBJECT
+  public:
+    HistoryItem(QObject *parent = 0) : QObject(parent) { }
+    Display *preview;
+    QStringList settings;
+    QHBoxLayout *layoutItem;
+    QVBoxLayout *buttonLayoutItem;
+    QPushButton *viewButton;
+    QPushButton *removeButton;
+    QString filePathName;
+    QDateTime timeSaved;
 };
 
 class interface : public QWidget
@@ -115,17 +132,12 @@ public:
     QLineEdit *scaleREdit;
     CustomSpinBox *currTermEdit;
 
-    // QHBoxLayout *functionConstantsBoxLayout;
-
     QHBoxLayout *functionConstantsBoxLayoutLower;
     QVBoxLayout *functionConstantsBoxLayoutStack;
 
     QHBoxLayout *functionConstantsBoxLayoutFirstLevel;
     QHBoxLayout *functionConstantsBoxLayoutSecondLevel;
     QHBoxLayout *functionConstantsBoxLayoutThirdLevel;
-    // QHBoxLayout *functionConstantsBoxLayoutForthLevel;
-    // QHBoxLayout *functionConstantsBoxLayoutFifthLevel;
-    // QHBoxLayout *functionConstantsBoxLayoutSixthLevel;
 
     QSpacerItem *espacer1;
     QSpacerItem *espacer2;
@@ -162,16 +174,19 @@ public:
     QGroupBox *viewHistoryBox;
     QVBoxLayout *viewHistoryBoxLayout;
     QVBoxLayout *viewHistoryBoxOverallLayout;
-    QPushButton *restoreButton;
-    struct HistoryItem {
-        int index;
-        Display *preview;
-        QStringList settings;
-    };
+    QPushButton *clearHistoryButton;
+    // struct HistoryItem {
+    //     int index;
+    //     Display *preview;
+    //     QStringList settings;
+    // };
     std::vector<HistoryItem *> historyItems;
+
+    QSignalMapper *viewMapper;
+    QSignalMapper *removeMapper;
     
     QHBoxLayout *historyItemsLayout;
-    
+    QVBoxLayout *historyItemButtonsLayout;
 
     // imagePropsBox SUBELEMENTS
     QVBoxLayout *imagePropsBoxStack;
@@ -236,7 +251,11 @@ private slots:
     void loadFromSettings();
     void saveCurrSettings();
     void updateSavePreview();
-    void removePreview(const HistoryItem &item);
+    // void removePreview(const HistoryItem &item);
+
+    void removeItem(QObject* item);
+    
+    QString loadSettings(const QString &fileName);
     
 private:
     unsigned int termIndex;              //internal index:  starts at 0
@@ -244,11 +263,11 @@ private:
     QString genLabel(const char * in);
     void refreshLabels();
     void updatePreviewDisplay();
+    void removePreview(HistoryItem *historyItemsLayout);
     QString saveloadPath;
     QString getCurrSettings(const HistoryItem &item);
-    void addToHistory();
     QString saveSettings(const QString &fileName);
-    QString loadSettings(const QString &fileName);
+    void addToHistory();    
     
     void refreshTerms();
     AbstractFunction * currFunction;
