@@ -280,6 +280,7 @@ interface::interface(QWidget *parent) :
     
     viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);
     viewHistoryBoxLayout->addWidget(restoreButton);
+    viewHistoryBoxOverallLayout->addStretch(5);
    
     //viewHistoryBoxOverallLayout->addStretch();
 
@@ -413,6 +414,8 @@ interface::interface(QWidget *parent) :
 
     connect(loadButton, SIGNAL(clicked()), this, SLOT(loadFromSettings()));
     connect(saveButton, SIGNAL(clicked()), this, SLOT(saveCurrSettings()));
+    
+    connect(restoreButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
 
     // SET DEFAULTS
     refreshTerms();
@@ -765,6 +768,7 @@ void interface::addToHistory()
     connect(viewButton, SIGNAL(clicked()), this, SLOT(loadSettings(newFile)));
     connect(removeButton, SIGNAL(clicked()), this, SLOT(removePreview(item)));
     
+    // this handles the painting of the preview icon
     double worldY, worldX;
     
     for (int y = 0; y < item->preview->dim(); y++)

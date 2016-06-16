@@ -237,6 +237,7 @@ private slots:
     void saveCurrSettings();
     void updateSavePreview();
     void removePreview(const HistoryItem &item);
+    void clearAllHistory();
     
 private:
     unsigned int termIndex;              //internal index:  starts at 0
