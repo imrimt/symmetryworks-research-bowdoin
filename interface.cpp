@@ -756,51 +756,41 @@ QString interface::loadSettings(const QString &fileName) {
 void interface::addToHistory()
 {    
     
+    HistoryItem *item = new HistoryItem();
+
     QVBoxLayout *historyItemsWithLabelLayout = new QVBoxLayout();
     QHBoxLayout *historyItemsLayout = new QHBoxLayout();
     QVBoxLayout *historyItemsButtonsLayout = new QVBoxLayout();
-
     Display *d = new Display(60, viewHistoryBox);
     QPushButton *viewButton = new QPushButton(tr("View"), viewHistoryBox);
     QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
     QLabel *timeStampLabel = new QLabel(viewHistoryBox);
-    
-    HistoryItem *item = new HistoryItem();
       
     QDateTime savedTime = QDateTime::currentDateTimeUtc();
 
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
-
-    historyItems.insert(savedTime, item);
     
-    // historyItemsLayout = new QHBoxLayout();
-    historyItemsLayout->addWidget(d);
-
-    // historyItemButtonsLayout = new QVBoxLayout();
-    historyItemsButtonsLayout->addWidget(viewButton);
-    historyItemsButtonsLayout->addWidget(removeButton);
-
-    historyItemsLayout->addLayout(historyItemsButtonsLayout);
-
     QString savedTimeLabel = "Saved: " + savedTime.toString("MM/dd/yyyy") + " at " + savedTime.toString("hh:mm:ss");
 
     timeStampLabel->setText(savedTimeLabel);
 
+    historyItemsLayout->addWidget(d);
+    historyItemsButtonsLayout->addWidget(viewButton);
+    historyItemsButtonsLayout->addWidget(removeButton);
+    historyItemsLayout->addLayout(historyItemsButtonsLayout);
     historyItemsWithLabelLayout->addLayout(historyItemsLayout);
     historyItemsWithLabelLayout->addWidget(timeStampLabel);
-
-    // viewHistoryBoxLayout->addLayout(historyItemsLayout);
-
     viewHistoryBoxLayout->insertLayout(1, historyItemsWithLabelLayout);
 
+    //saving all values to history item
     item->preview = d;
     item->savedTime = savedTime;
     item->layoutWithLabelItem = historyItemsWithLabelLayout;
     item->layoutItem = historyItemsLayout;
     item->buttonLayoutItem = historyItemsButtonsLayout;
-    item->labelItem = timeStampLabel;
     item->viewButton = viewButton;
     item->removeButton = removeButton;
+    item->labelItem = timeStampLabel;
     item->filePathName = saveSettings(newFile).append("/" + newFile);    
 
     connect(viewButton, SIGNAL(clicked()), viewMapper, SLOT(map()));
@@ -813,6 +803,7 @@ void interface::addToHistory()
     double worldY, worldX;
     
     for (int y = 0; y < item->preview->dim(); y++)
+    {
         for (int x = 0; x <= ((item->preview->dim())-1); x++)
         {
             worldY= settings::Height-y*settings::Height/item->preview->dim()+settings::YCorner;
@@ -824,12 +815,15 @@ void interface::addToHistory()
             item->preview->setPixel(x, y, color);                    //finally push the determined color to the corresponding point on the display
             
         }
+    }
     item->preview->repaint();    
+
+    historyItemsMap.insert(savedTime, item);
 }
 
 void interface::removePreview(HistoryItem *historyItemToRemove)
 {
-    qDebug() << "removing preview";
+    // qDebug() << "removing preview";
 
     historyItemToRemove->buttonLayoutItem->removeWidget(historyItemToRemove->viewButton);
     delete historyItemToRemove->viewButton;
@@ -852,18 +846,18 @@ void interface::removePreview(HistoryItem *historyItemToRemove)
     viewHistoryBoxLayout->removeItem(historyItemToRemove->layoutWithLabelItem);
     delete historyItemToRemove->layoutWithLabelItem;
 
-    historyItems.erase(historyItems.find(historyItemToRemove->savedTime));
+    historyItemsMap.erase(historyItemsMap.find(historyItemToRemove->savedTime));
 
-    qDebug() << "removing file: " << historyItemToRemove->filePathName;
+    // qDebug() << "removing file: " << historyItemToRemove->filePathName;
 
-    qDebug() << "size of Qmap: " << historyItems.size();
+    // qDebug() << "size of Qmap: " << historyItemsMap.size();
 
     QFile::remove(historyItemToRemove->filePathName);
 }
 
 void interface::removeItem(QObject *item)
 {
-    qDebug() << "converting qobject to HistoryItem";
+    // qDebug() << "converting qobject to HistoryItem";
     removePreview(qobject_cast<HistoryItem*>(item));
 }
 
@@ -892,13 +886,13 @@ void interface::updatePreviewDisplay()
 void interface::updateSavePreview()
 {
 
-    qDebug() << "Updating Preview";
+    // qDebug() << "Updating Preview";
 
-    if (historyItems.size() < MAX_HISTORY_ITEMS) {
+    if (historyItemsMap.size() < MAX_HISTORY_ITEMS) {
         addToHistory();
         
     } else {
-        removePreview(*(historyItems.begin()));
+        removePreview(*(historyItemsMap.begin()));
         addToHistory();      
     }
     

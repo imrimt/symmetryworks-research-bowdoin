@@ -64,16 +64,16 @@ class HistoryItem : public QObject
 {
     Q_OBJECT
   public:
-    HistoryItem(QObject *parent = 0) : QObject(parent) { }
-    Display *preview;
-    QStringList settings;
+    HistoryItem(QObject *parent = 0) : QObject(parent) { }    
     QVBoxLayout *layoutWithLabelItem;
     QHBoxLayout *layoutItem;
     QVBoxLayout *buttonLayoutItem;
-    QLabel *labelItem;
+    Display *preview;
     QPushButton *viewButton;
     QPushButton *removeButton;
+    QLabel *labelItem;
     QString filePathName;
+    QStringList settings;
 
     //is this data structure useful? 
     QDateTime savedTime;
@@ -180,9 +180,9 @@ public:
     QVBoxLayout *viewHistoryBoxOverallLayout;
     QPushButton *clearHistoryButton;
 
-    // std::vector<HistoryItem *> historyItems;
+    // std::vector<HistoryItem *> historyItemsMap;
 
-    QMap<QDateTime, HistoryItem*> historyItems;
+    QMap<QDateTime, HistoryItem*> historyItemsMap;
 
     QSignalMapper *viewMapper;
     QSignalMapper *removeMapper;
