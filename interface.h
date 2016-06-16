@@ -149,7 +149,7 @@ public:
     QLabel *numtermsLabel;
     QLabel *freqpairLabel;
     QLabel *coeffLabel;
-    QLineEdit *numtermsEdit;
+    CustomSpinBox *numtermsEdit;
     QSpacerItem *gspacer1;
     QSpacerItem *gspacer2;
     QSpacerItem *gspacer3;
@@ -208,7 +208,7 @@ public:
 
 private slots:
     void updateTerms(int i);
-    void changeMaxTerms(const QString &val);
+    void changeMaxTerms(int i);
     void colorWheelChanged(int index);
     void setImagePushed();
     void changeFunction(int index);

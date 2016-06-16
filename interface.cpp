@@ -197,7 +197,8 @@ interface::interface(QWidget *parent) :
     functionLabel = new QLabel(patternTypeBox);
     colorwheelLabel = new QLabel(patternTypeBox);
     numtermsLabel = new QLabel(tr("<i>No. Terms</i>"), patternTypeBox);
-    numtermsEdit = new QLineEdit("1", patternTypeBox);
+    numtermsEdit = new CustomSpinBox(patternTypeBox);
+    numtermsEdit->setRange(1,4);
     gspacer1 = new QSpacerItem(0,20);
     gspacer2 = new QSpacerItem(0,10);
     gspacer3 = new QSpacerItem(0,10);
@@ -246,7 +247,7 @@ interface::interface(QWidget *parent) :
     functionLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     numtermsEdit->setFixedWidth(30);
-    numtermsEdit->setValidator(numtermsValidate);
+    //numtermsEdit->setValidator(numtermsValidate);
     
     patternTypeBoxLayout = new QVBoxLayout(patternTypeBox);     //set up layout
     functionLayout->addWidget(functionLabel);
@@ -393,7 +394,7 @@ interface::interface(QWidget *parent) :
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
-    connect(numtermsEdit, SIGNAL(textChanged(QString)), this, SLOT(changeMaxTerms(QString)));
+    connect(numtermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeMaxTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateTerms(int)));
 
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
@@ -486,7 +487,7 @@ void interface::resetImageFunction()
     functionSel->setCurrentIndex(0);
     colorwheelSel->setCurrentIndex(0);
 
-    numtermsEdit->setText(tr("1"));
+    //numtermsEdit->setText(tr("1"));
     termIndex = 0;
 
     refreshTerms();
@@ -511,13 +512,12 @@ void interface::updateTerms(int i)
     refreshLabels();
 }
 
-void interface::changeMaxTerms(const QString &val)
-{   
-    int passedval = val.toInt();
+void interface::changeMaxTerms(int i)
+{
 
-    if (passedval >= currTermEdit->minimum()) {
-        currTermEdit->setMaximum(passedval);
-        currFunction->setNumTerms(passedval);
+    if (i >= currTermEdit->minimum()) {
+        currTermEdit->setMaximum(i);
+        currFunction->setNumTerms(i);
     }
     // else {
     //     qDebug() << "pass in : " << passedval;
@@ -712,7 +712,7 @@ QString interface::loadSettings(const QString &fileName) {
     currFunction->setScaleA(tempdouble);
     scaleAEdit->setText(QString::number(tempdouble));
     in >> count;
-    numtermsEdit->setText(QString::number(count));
+    numtermsEdit->setValue(count);
     for(unsigned int i=0; i<count; i++)
     {
         in >> tempint; currFunction->setN(i, tempint);
