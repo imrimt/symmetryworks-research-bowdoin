@@ -275,11 +275,11 @@ interface::interface(QWidget *parent) :
     restoreButton = new QPushButton(tr("Clear All History"), viewHistoryBox);
     viewHistoryBoxLayout = new QVBoxLayout(viewHistoryBox);
     
-    
     //viewHistoryBoxLayout->addItem(gspacer1);
-    viewHistoryBoxLayout->addWidget(restoreButton);
     
     viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);
+    viewHistoryBoxLayout->addWidget(restoreButton);
+   
     //viewHistoryBoxOverallLayout->addStretch();
 
     // imagePropsBox SUBELEMENTS
@@ -385,7 +385,7 @@ interface::interface(QWidget *parent) :
     
 
     // CONNECT SIGNALS & SLOTS
-    connect(updatePreview, SIGNAL(clicked()), this, SLOT(updatePreviewDisplay()));
+    connect(updatePreview, SIGNAL(clicked()), this, SLOT(updateSavePreview()));
     connect(exportImage, SIGNAL(clicked()), this, SLOT(saveImageStart()));
     connect(resetImage, SIGNAL(clicked()), this, SLOT(resetImageFunction()));
 
@@ -410,8 +410,8 @@ interface::interface(QWidget *parent) :
     connect(XCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeXCorner(QString)));
     connect(YCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeYCorner(QString)));
 
-    connect(loadButton, SIGNAL(clicked()), this, SLOT(loadFromSettings(true, nullptr)));
-    connect(saveButton, SIGNAL(clicked()), this, SLOT(saveCurrSettings(true, nullptr)));
+    connect(loadButton, SIGNAL(clicked()), this, SLOT(loadFromSettings()));
+    connect(saveButton, SIGNAL(clicked()), this, SLOT(saveCurrSettings()));
 
     // SET DEFAULTS
     refreshTerms();
@@ -636,23 +636,24 @@ void interface::changeFunction(int index)
     refreshTerms();
 }
 
-void interface::saveCurrSettings(bool userPrompt, HistoryItem &item)
+// SLOT function called only when user attempts to save current settings into a wpr file
+void interface::saveCurrSettings()
 {
 
-    QString fileName;
-    if (userPrompt) {
-        fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                 saveloadPath,
                                                 tr("Wallpapers (*.wpr)"));
-    } else {
-        fileName = item.index;
-        fileName.append(".wpr");
-    }
+    saveloadPath = saveSettings(fileName);
 
+}
+
+// internal function that handles saving settings
+QString interface::saveSettings(const QString &fileName) {
+    
     QFile outFile(fileName);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
-             return;
-
+        return nullptr;
+    
     QDataStream out(&outFile);
     //qDebug() << "Width" << settings::Width;
     out << settings::Width << settings::Height;
@@ -664,39 +665,38 @@ void interface::saveCurrSettings(bool userPrompt, HistoryItem &item)
     out << currFunction->numterms();
     for(unsigned int i=0; i<currFunction->numterms(); i++)
         out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
-
+    
     outFile.close();
-
+    
     QDir stickypath(fileName);
     stickypath.cdUp();
-    if (userPrompt) {
-        saveloadPath =  stickypath.path();
-    }
+    return stickypath.path();
+    
 }
 
-
-void interface::loadFromSettings(bool userPrompt, HistoryItem &item)
+// SLOT function called only when user attempts to load from saved settings stored in a wpr file
+void interface::loadFromSettings()
 {
-    QString fileName;
-    if (userPrompt) {
-        fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+    
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                saveloadPath,
                                                tr("Wallpapers (*.wpr)"));
-    } else {
-        fileName = item.index;
-        fileName.append(".wpr");
-    }
-    
+    saveloadPath = loadSettings(fileName);
 
+}
+
+// internal function that handles loading settings from a specified file
+QString interface::loadSettings(const QString &fileName) {
+    
     QFile inFile(fileName);
     if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
-             return;
-
+        return nullptr;
+    
     QDataStream in(&inFile);
     int tempint;
     unsigned int count;
     double tempdouble;
-
+    
     in >> settings::Width >> settings::Height;
     in >> settings::XCorner >> settings::YCorner;
     in >> settings::OWidth >> settings::OHeight;
@@ -704,7 +704,7 @@ void interface::loadFromSettings(bool userPrompt, HistoryItem &item)
     functionSel->setCurrentIndex(tempint);
     in >> tempint;
     colorwheelSel->setCurrentIndex(tempint);
-
+    
     in >> tempdouble;
     currFunction->setScaleR(tempdouble);
     scaleREdit->setText(QString::number(tempdouble));
@@ -720,9 +720,9 @@ void interface::loadFromSettings(bool userPrompt, HistoryItem &item)
         in >> tempdouble; currFunction->setR(i, tempdouble);
         in >> tempdouble; currFunction->setA(i, tempdouble);
     }
-
+    
     inFile.close();
-
+    
     refreshTerms();
     outwidthEdit->setText(QString::number(settings::OWidth));
     outheightEdit->setText(QString::number(settings::OHeight));
@@ -731,18 +731,18 @@ void interface::loadFromSettings(bool userPrompt, HistoryItem &item)
     XCornerEdit->setText(QString::number(settings::XCorner));
     YCornerEdit->setText(QString::number(settings::YCorner));
     updatePreviewDisplay();
-
+    
     QDir stickypath(fileName);
     stickypath.cdUp();
+    return stickypath.path();
     
-    if (userPrompt) {
-        saveloadPath = stickypath.path();
-    }
 }
 
 
 void interface::addToHistory()
 {
+    
+    
     Display *d = new Display(60, viewHistoryBox);
     QPushButton *viewButton = new QPushButton(tr("View"), viewHistoryBox);
     QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
@@ -750,7 +750,6 @@ void interface::addToHistory()
     HistoryItem *item = new HistoryItem;
     item->index = numHistoryItems;
     item->preview = d;
-    saveCurrSettings(false, *item);
     
     historyItems.push_back(item);
     
@@ -761,12 +760,25 @@ void interface::addToHistory()
     
     viewHistoryBoxLayout->addLayout(historyItemsLayout);
     
-    connect(viewButton, SIGNAL(clicked()), this, SLOT(loadFromSettings(false, item)));
-    //connect(viewButton, SIGNAL(clicked()), this, SLOT(restoreFromSettings(item)));
-    //TODO remove from history upon clicking remove button
+    
+    
+    QString newFile = QString::number(item->index).append(".wpr");
+    saveSettings(newFile);
+    connect(viewButton, SIGNAL(clicked()), this, SLOT(loadSettings(newFile)));
+    connect(removeButton, SIGNAL(clicked()), this, SLOT(removePreview(item)));
+    
+    // this is where we will manage actually painting the lower-res image
     
 }
+            
 
+
+void interface::removePreview(const HistoryItem &item)
+{
+    historyItems.erase(historyItems.begin() + item.index);
+    historyItemsLayout->removeWidget(item.preview);
+    
+}
 
 
 
@@ -789,15 +801,22 @@ void interface::updatePreviewDisplay()
 
       //qDebug() << "hit" << thecount++;
       disp->repaint();
-    
-      if (historyItems.size() < MAX_HISTORY_ITEMS) {
-          addToHistory();
-          
-      } else {
-          historyItems.erase(historyItems.begin());
-          
-      }
 
+}
+
+void interface::updateSavePreview()
+{
+    if (historyItems.size() < MAX_HISTORY_ITEMS) {
+        addToHistory();
+        
+    } else {
+        historyItems.erase(historyItems.begin());
+        historyItemsLayout->removeWidget((*historyItems.begin())->preview);
+        
+    }
+    
+    updatePreviewDisplay();
+    
 }
 
 void interface::changeOHeight(const QString &val)

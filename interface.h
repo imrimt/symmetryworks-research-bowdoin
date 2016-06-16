@@ -208,7 +208,6 @@ public:
 
 private slots:
     void updateTerms(int i);
-    void updatePreviewDisplay();
     void changeMaxTerms(const QString &val);
     void colorWheelChanged(int index);
     void setImagePushed();
@@ -234,17 +233,22 @@ private slots:
     void saveImageStart();
     void resetImageFunction();
 
-    void loadFromSettings(bool userPrompt, HistoryItem &item);
-    void saveCurrSettings(bool userPrompt, HistoryItem &item);
+    void loadFromSettings();
+    void saveCurrSettings();
+    void updateSavePreview();
+    void removePreview(const HistoryItem &item);
     
 private:
     unsigned int termIndex;              //internal index:  starts at 0
     int numHistoryItems = 0;
     QString genLabel(const char * in);
     void refreshLabels();
+    void updatePreviewDisplay();
     QString saveloadPath;
     QString getCurrSettings(const HistoryItem &item);
     void addToHistory();
+    QString saveSettings(const QString &fileName);
+    QString loadSettings(const QString &fileName);
     
     void refreshTerms();
     AbstractFunction * currFunction;
