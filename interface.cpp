@@ -828,11 +828,11 @@ void interface::addToHistory()
     item->preview->repaint();    
 
     historyItemsMap.insert(savedTime, item);
+    
 }
 
 void interface::removePreview(HistoryItem *historyItemToRemove)
 {
-    // qDebug() << "removing preview";
 
     historyItemToRemove->buttonLayoutItem->removeWidget(historyItemToRemove->viewButton);
     delete historyItemToRemove->viewButton;
