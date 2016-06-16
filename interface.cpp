@@ -199,9 +199,9 @@ interface::interface(QWidget *parent) :
     colorwheelSel = new QComboBox(patternTypeBox);
     functionLabel = new QLabel(patternTypeBox);
     colorwheelLabel = new QLabel(patternTypeBox);
-    numtermsLabel = new QLabel(tr("<b>Number of Terms</b>"), patternTypeBox);
-    numtermsEdit = new CustomSpinBox(patternTypeBox);
-    numtermsEdit->setRange(1,4);
+    numTermsLabel = new QLabel(tr("<b>Number of Terms</b>"), patternTypeBox);
+    numTermsEdit = new CustomSpinBox(patternTypeBox);
+    numTermsEdit->setRange(1,4);
     gspacer1 = new QSpacerItem(0,20);
     gspacer2 = new QSpacerItem(0,10);
     gspacer3 = new QSpacerItem(0,10);
@@ -242,21 +242,21 @@ interface::interface(QWidget *parent) :
     colorwheelSel->addItem("FromImage");
     functionLabel->setText(tr("Function"));
     colorwheelLabel->setText(tr("Color Wheel"));
-    numtermsEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    numtermsLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    numTermsEdit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    numTermsLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     functionSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     functionLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    numtermsEdit->setFixedWidth(30);
-    //numtermsEdit->setValidator(numtermsValidate);
+    numTermsEdit->setFixedWidth(30);
+    //numTermsEdit->setValidator(numtermsValidate);
     
     patternTypeBoxLayout = new QVBoxLayout(patternTypeBox);     //set up layout
     functionLayout->addWidget(functionLabel);
     functionLayout->addWidget(functionSel);
-    numtermsLayout->addWidget(numtermsLabel);
-    numtermsLayout->addWidget(numtermsEdit);
+    numtermsLayout->addWidget(numTermsLabel);
+    numtermsLayout->addWidget(numTermsEdit);
     functionLayout->addLayout(numtermsLayout);
     patternTypeBoxLayout->addLayout(functionLayout);
     patternTypeBoxLayout->addItem(gspacer1);
@@ -406,7 +406,7 @@ interface::interface(QWidget *parent) :
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
-    connect(numtermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeMaxTerms(int)));
+    connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeMaxTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateTerms(int)));
 
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
@@ -735,7 +735,7 @@ QString interface::loadSettings(const QString &fileName) {
     currFunction->setScaleA(tempdouble);
     scaleAEdit->setText(QString::number(tempdouble));
     in >> count;
-    numtermsEdit->setValue(count);
+    numTermsEdit->setValue(count);
     for(unsigned int i=0; i<count; i++)
     {
         in >> tempint; currFunction->setN(i, tempint);

@@ -164,10 +164,10 @@ public:
     QHBoxLayout *numtermsLayout;
     QLabel *colorwheelLabel;
     QLabel *functionLabel;
-    QLabel *numtermsLabel;
+    QLabel *numTermsLabel;
     QLabel *freqpairLabel;
     QLabel *coeffLabel;
-    CustomSpinBox *numtermsEdit;
+    CustomSpinBox *numTermsEdit;
     QSpacerItem *gspacer1;
     QSpacerItem *gspacer2;
     QSpacerItem *gspacer3;
