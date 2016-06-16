@@ -833,7 +833,8 @@ void interface::addToHistory()
 
 void interface::removePreview(HistoryItem *historyItemToRemove)
 {
-
+    //qDebug() << "removing";
+    
     historyItemToRemove->buttonLayoutItem->removeWidget(historyItemToRemove->viewButton);
     delete historyItemToRemove->viewButton;
 
@@ -911,6 +912,13 @@ void interface::updateSavePreview()
 
 void interface::clearAllHistory()
 {
+    QMap<QDateTime, HistoryItem*>::iterator it;
+    
+    for (it = historyItemsMap.begin(); it != historyItemsMap.end(); ++it) {
+        removePreview(it.value());
+    }
+    
+    //historyItemsMap.clear();
 
 }
 
