@@ -755,38 +755,53 @@ QString interface::loadSettings(const QString &fileName) {
 
 void interface::addToHistory()
 {    
+    
+    QVBoxLayout *historyItemsWithLabelLayout = new QVBoxLayout();
+    QHBoxLayout *historyItemsLayout = new QHBoxLayout();
+    QVBoxLayout *historyItemsButtonsLayout = new QVBoxLayout();
+
     Display *d = new Display(60, viewHistoryBox);
     QPushButton *viewButton = new QPushButton(tr("View"), viewHistoryBox);
     QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
+    QLabel *timeStampLabel = new QLabel(viewHistoryBox);
     
     HistoryItem *item = new HistoryItem();
-    item->preview = d;    
-    
-    historyItemsLayout = new QHBoxLayout();
-    historyItemsLayout->addWidget(d);
-
-    historyItemButtonsLayout = new QVBoxLayout();
-    historyItemButtonsLayout->addWidget(viewButton);
-    historyItemButtonsLayout->addWidget(removeButton);
-
-    historyItemsLayout->addLayout(historyItemButtonsLayout);    
-    // viewHistoryBoxLayout->addLayout(historyItemsLayout);
-
-    viewHistoryBoxLayout->insertLayout(1, historyItemsLayout);
-
-    item->layoutItem = historyItemsLayout;
-    item->buttonLayoutItem = historyItemButtonsLayout;
-    item->viewButton = viewButton;
-    item->removeButton = removeButton;    
-
+      
     QDateTime savedTime = QDateTime::currentDateTimeUtc();
 
-    item->savedTime = savedTime;
-
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
-    item->filePathName = saveSettings(newFile).append("/" + newFile);
 
     historyItems.insert(savedTime, item);
+    
+    // historyItemsLayout = new QHBoxLayout();
+    historyItemsLayout->addWidget(d);
+
+    // historyItemButtonsLayout = new QVBoxLayout();
+    historyItemsButtonsLayout->addWidget(viewButton);
+    historyItemsButtonsLayout->addWidget(removeButton);
+
+    historyItemsLayout->addLayout(historyItemsButtonsLayout);
+
+    QString savedTimeLabel = "Saved: " + savedTime.toString("MM/dd/yyyy") + " at " + savedTime.toString("hh:mm:ss");
+
+    timeStampLabel->setText(savedTimeLabel);
+
+    historyItemsWithLabelLayout->addLayout(historyItemsLayout);
+    historyItemsWithLabelLayout->addWidget(timeStampLabel);
+
+    // viewHistoryBoxLayout->addLayout(historyItemsLayout);
+
+    viewHistoryBoxLayout->insertLayout(1, historyItemsWithLabelLayout);
+
+    item->preview = d;
+    item->savedTime = savedTime;
+    item->layoutWithLabelItem = historyItemsWithLabelLayout;
+    item->layoutItem = historyItemsLayout;
+    item->buttonLayoutItem = historyItemsButtonsLayout;
+    item->labelItem = timeStampLabel;
+    item->viewButton = viewButton;
+    item->removeButton = removeButton;
+    item->filePathName = saveSettings(newFile).append("/" + newFile);    
 
     connect(viewButton, SIGNAL(clicked()), viewMapper, SLOT(map()));
     connect(removeButton, SIGNAL(clicked()), removeMapper, SLOT(map()));
@@ -827,9 +842,15 @@ void interface::removePreview(HistoryItem *historyItemToRemove)
     
     historyItemToRemove->layoutItem->removeWidget(historyItemToRemove->preview);
     delete historyItemToRemove->preview;
-    
-    viewHistoryBoxLayout->removeItem(historyItemToRemove->layoutItem);
+
+    historyItemToRemove->layoutWithLabelItem->removeItem(historyItemToRemove->layoutItem);
     delete historyItemToRemove->layoutItem;
+
+    historyItemToRemove->layoutWithLabelItem->removeWidget(historyItemToRemove->labelItem);
+    delete historyItemToRemove->labelItem;
+    
+    viewHistoryBoxLayout->removeItem(historyItemToRemove->layoutWithLabelItem);
+    delete historyItemToRemove->layoutWithLabelItem;
 
     historyItems.erase(historyItems.find(historyItemToRemove->savedTime));
 

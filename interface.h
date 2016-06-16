@@ -67,8 +67,10 @@ class HistoryItem : public QObject
     HistoryItem(QObject *parent = 0) : QObject(parent) { }
     Display *preview;
     QStringList settings;
+    QVBoxLayout *layoutWithLabelItem;
     QHBoxLayout *layoutItem;
     QVBoxLayout *buttonLayoutItem;
+    QLabel *labelItem;
     QPushButton *viewButton;
     QPushButton *removeButton;
     QString filePathName;
@@ -185,8 +187,8 @@ public:
     QSignalMapper *viewMapper;
     QSignalMapper *removeMapper;
     
-    QHBoxLayout *historyItemsLayout;
-    QVBoxLayout *historyItemButtonsLayout;
+    // QHBoxLayout *historyItemsLayout;
+    // QVBoxLayout *historyItemButtonsLayout;
 
     // imagePropsBox SUBELEMENTS
     QVBoxLayout *imagePropsBoxStack;
