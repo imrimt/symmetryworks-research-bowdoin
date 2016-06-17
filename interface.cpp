@@ -7,6 +7,8 @@ const double DEFAULT_YCORNER = -0.5;
 const int DEFAULT_OUTPUT_WIDTH = 6000;
 const int DEFAULT_OUTPUT_HEIGHT = 4800;
 
+const unsigned int INVALID_FILE_ERROR = 0;
+
 namespace settings      //the settings namespace stores
 {                       //a few variables used to compute the
     double Width = DEFAULT_WIDTH;   //image via the mathematical function
@@ -52,6 +54,9 @@ interface::interface(QWidget *parent) :
     interfaceLayout->addLayout(topbarLayout);                       //lay out vertically
     interfaceLayout->addWidget(functionConstantsBox);
     setLayout(interfaceLayout);
+
+    errorMessageBox = new QMessageBox(this);
+    errorMessageBox->setIcon(QMessageBox::Critical);
 
     // INPUT VALIDATORS (NUMERICAL)
     doubleValidate = new QDoubleValidator(-9999999.0, 9999999.0, 5, this);
@@ -818,11 +823,13 @@ void interface::addToHistory()
             worldY= settings::Height-y*settings::Height/item->preview->dim()+settings::YCorner;
             worldX= x*settings::Width/item->preview->dim()+settings::XCorner;
             
-            std::complex<double> fout = (*currFunction)(worldX,worldY);  //run the point through our mathematical function
-            QRgb color = (*currColorWheel)(fout);                          //...then convert that complex output to a color according to our color wheel
+            //run the point through our mathematical function
+            //then convert that complex output to a color according to our color wheel
+            std::complex<double> fout = (*currFunction)(worldX,worldY);  
+            QRgb color = (*currColorWheel)(fout);                          
             
-            item->preview->setPixel(x, y, color);                    //finally push the determined color to the corresponding point on the display
-            
+            //finally push the determined color to the corresponding point on the display
+            item->preview->setPixel(x, y, color);                    
         }
     }
     item->preview->repaint();    
@@ -858,16 +865,11 @@ void interface::removePreview(HistoryItem *historyItemToRemove)
 
     historyItemsMap.erase(historyItemsMap.find(historyItemToRemove->savedTime));
 
-    // qDebug() << "removing file: " << historyItemToRemove->filePathName;
-
-    // qDebug() << "size of Qmap: " << historyItemsMap.size();
-
     QFile::remove(historyItemToRemove->filePathName);
 }
 
 void interface::removeItem(QObject *item)
 {
-    // qDebug() << "converting qobject to HistoryItem";
     removePreview(qobject_cast<HistoryItem*>(item));
 }
 
@@ -875,21 +877,24 @@ void interface::updatePreviewDisplay()
 {
     double worldY, worldX;
 
-      for (int y = 0; y < disp->dim(); y++)
-          for (int x = 0; x <= ((disp->dim())-1); x++)
-          {
-              worldY= settings::Height-y*settings::Height/disp->dim()+settings::YCorner;
-              worldX= x*settings::Width/disp->dim()+settings::XCorner;
+    for (int y = 0; y < disp->dim(); y++) 
+    {
+        for (int x = 0; x <= ((disp->dim())-1); x++)
+        {
+        worldY= settings::Height-y*settings::Height/disp->dim()+settings::YCorner;
+        worldX= x*settings::Width/disp->dim()+settings::XCorner;
 
-              std::complex<double> fout = (*currFunction)(worldX,worldY);  //run the point through our mathematical function
-              QRgb color = (*currColorWheel)(fout);                          //...then convert that complex output to a color according to our color wheel
+            //run the point through our mathematical function
+            //...then convert that complex output to a color according to our color wheel
+            std::complex<double> fout = (*currFunction)(worldX,worldY);  
+            QRgb color = (*currColorWheel)(fout);                          
 
-              disp->setPixel(x, y, color);                    //finally push the determined color to the corresponding point on the display
+            //finally push the determined color to the corresponding point on the display
+            disp->setPixel(x, y, color);                    
+        }
+    }
 
-          }
-
-      //qDebug() << "hit" << thecount++;
-      disp->repaint();
+    disp->repaint();
 
 }
 
@@ -1016,9 +1021,10 @@ void interface::saveImageStart()
             worldY = settings::Height - y*settings::Height/settings::OHeight + settings::YCorner;
             worldX = x*settings::Width/settings::OWidth + settings::XCorner;
 
-            std::complex<double> fout=(*currFunction)(worldX,worldY);        //run the point through our mathematical function
-            QRgb color = (*currColorWheel)(fout);                              //...then turn that complex output into a color per our color wheel
-
+            //run the point through our mathematical function
+            //...then turn that complex output into a color per our color wheel
+            std::complex<double> fout=(*currFunction)(worldX,worldY);       
+            QRgb color = (*currColorWheel)(fout);                              
             outputImage.setPixel(x, y, color);
         }
     }
@@ -1028,4 +1034,15 @@ void interface::saveImageStart()
     QDir stickypath(fileName);
     stickypath.cdUp();
     saveloadPath = stickypath.path();
+}
+
+void interface::errorHandler(const int &flag) 
+{   
+    switch(flag) 
+    {
+    case INVALID_FILE_ERROR:
+        errorMessageBox->setText("Invalid file name/path");
+        errorMessageBox->exec();
+        break;
+    }
 }

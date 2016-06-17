@@ -25,6 +25,9 @@
 #include <QDateTime>
 #include <QShortCut>
 #include <QAction>
+#include <QMessageBox>
+
+// #include <QQmlDebuggingEnabler>
 
 #include "functions.h"
 #include "colorwheel.h"
@@ -96,6 +99,7 @@ public:
     QGroupBox *imagePropsBox;
     QWidget *patternTypeWidget;
     QWidget *viewHistoryWidget;
+    QMessageBox *errorMessageBox;
 
     // INPUT VALIDATORS
     QDoubleValidator *doubleValidate;
@@ -111,40 +115,25 @@ public:
     QLabel *mLabel;
     QLabel *aLabel;
     QLabel *rLabel;
-
     QLabel *nValueLabel;
     QLabel *mValueLabel;
     QLabel *aValueLabel;
     QLabel *rValueLabel;
-
     QLabel *scaleALabel;
     QLabel *scaleRLabel;
-    // QLineEdit *nEdit;
-    // QLineEdit *mEdit;
-    // QLineEdit *aEdit;
-    // QLineEdit *rEdit;
-
-    // QSpinBox *nEdit;
-    // QSpinBox *mEdit;
-    // QDoubleSpinBox *aEdit;
-    // QDoubleSpinBox *rEdit;
-
     QSlider *nEdit;
     QSlider *mEdit;
     QSlider *aEdit;
     QSlider *rEdit;
-
     QLineEdit *scaleAEdit;
     QLineEdit *scaleREdit;
     CustomSpinBox *currTermEdit;
 
     QHBoxLayout *functionConstantsBoxLayoutLower;
     QVBoxLayout *functionConstantsBoxLayoutStack;
-
     QHBoxLayout *functionConstantsBoxLayoutFirstLevel;
     QHBoxLayout *functionConstantsBoxLayoutSecondLevel;
     QHBoxLayout *functionConstantsBoxLayoutThirdLevel;
-
     QSpacerItem *espacer1;
     QSpacerItem *espacer2;
     QSpacerItem *espacer3;
@@ -253,8 +242,7 @@ private slots:
     QString loadSettings(const QString &fileName);
     
 private:
-    unsigned int termIndex;              //internal index:  starts at 0
-    int numHistoryItems = 0;
+    unsigned int termIndex;              //internal index:  starts at 0 
     QString genLabel(const char * in);
     void refreshLabels();
     void updatePreviewDisplay();
@@ -262,7 +250,8 @@ private:
     QString saveloadPath;
     QString getCurrSettings(const HistoryItem &item);
     QString saveSettings(const QString &fileName);
-    void addToHistory();    
+    void addToHistory();
+    void errorHandler(const int &flag);    
     
     void refreshTerms();
     AbstractFunction * currFunction;

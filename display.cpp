@@ -27,7 +27,7 @@ int Display::dim() const
     return dimension;
 }
 
-void Display::paintEvent(QPaintEvent *event)
+void Display::paintEvent(QPaintEvent * /* unused */)
 {
     QPainter painter(this);
     QColor color;
