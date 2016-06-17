@@ -63,6 +63,7 @@ void AbstractFunction::setM(unsigned int &i, int &val)
         freqs[i].setM(val);
     else
         qDebug() << "AbstractFunction.cpp error: freqs[" << i << "] is out of bounds";
+    
 }
 
 void AbstractFunction::setR(unsigned int &i, double &val)

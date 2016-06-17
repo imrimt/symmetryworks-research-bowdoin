@@ -381,6 +381,7 @@ interface::interface(QWidget *parent) :
     exportImage->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     resetImage->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
+
     buttonLayout->addWidget(updatePreview);
     buttonLayout->addWidget(exportImage);
     buttonLayout->addWidget(resetImage);
@@ -429,7 +430,7 @@ interface::interface(QWidget *parent) :
     connect(clearHistoryButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
 
     connect(viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
-    connect(removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removeItem(QObject*)));
+    connect(removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removePreview(QObject*)));
     
     connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(updateSavePreview()));
 
@@ -537,11 +538,6 @@ void interface::changeMaxTerms(int i)
         currTermEdit->setMaximum(i);
         currFunction->setNumTerms(i);
     }
-    // else {
-    //     qDebug() << "pass in : " << passedval;
-    //     qDebug() << "currTermEdit max: " << currTermEdit->maximum();
-    //     qDebug() << "currTermEdit min: " << currTermEdit->minimum();
-    // }
     
 }
 
@@ -661,21 +657,19 @@ void interface::saveCurrSettings()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                 saveloadPath,
                                                 tr("Wallpapers (*.wpr)"));
-    saveloadPath = saveSettings(fileName);
+    
+    saveloadPath = saveSettings(fileName) != nullptr ? saveSettings(fileName) : nullptr;
 
 }
 
 // internal function that handles saving settings
 QString interface::saveSettings(const QString &fileName) {
-
-    // qDebug() << "saving settings";
     
     QFile outFile(fileName);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         return nullptr;
     }
     QDataStream out(&outFile);
-    //qDebug() << "Width" << settings::Width;
     out << settings::Width << settings::Height;
     out << settings::XCorner << settings::YCorner;
     out << settings::OWidth << settings::OHeight;
@@ -704,7 +698,8 @@ void interface::loadFromSettings()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                saveloadPath,
                                                tr("Wallpapers (*.wpr)"));
-    saveloadPath = loadSettings(fileName);
+    
+    saveloadPath = loadSettings(fileName) != nullptr ? saveSettings(fileName) : nullptr;
 
 }
 
@@ -831,9 +826,9 @@ void interface::addToHistory()
     
 }
 
-void interface::removePreview(HistoryItem *historyItemToRemove)
+void interface::removePreview(QObject *item)
 {
-    //qDebug() << "removing";
+    HistoryItem *historyItemToRemove = qobject_cast<HistoryItem*>(item);
     
     historyItemToRemove->buttonLayoutItem->removeWidget(historyItemToRemove->viewButton);
     delete historyItemToRemove->viewButton;
@@ -858,18 +853,9 @@ void interface::removePreview(HistoryItem *historyItemToRemove)
 
     historyItemsMap.erase(historyItemsMap.find(historyItemToRemove->savedTime));
 
-    // qDebug() << "removing file: " << historyItemToRemove->filePathName;
-
-    // qDebug() << "size of Qmap: " << historyItemsMap.size();
-
     QFile::remove(historyItemToRemove->filePathName);
 }
 
-void interface::removeItem(QObject *item)
-{
-    // qDebug() << "converting qobject to HistoryItem";
-    removePreview(qobject_cast<HistoryItem*>(item));
-}
 
 void interface::updatePreviewDisplay()
 {
@@ -917,8 +903,6 @@ void interface::clearAllHistory()
     for (it = historyItemsMap.begin(); it != historyItemsMap.end(); ++it) {
         removePreview(it.value());
     }
-    
-    //historyItemsMap.clear();
 
 }
 
