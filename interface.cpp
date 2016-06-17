@@ -4,23 +4,25 @@ const double DEFAULT_WIDTH = 2.5;
 const double DEFAULT_HEIGHT = 2.0;
 const double DEFAULT_XCORNER = -0.5;
 const double DEFAULT_YCORNER = -0.5;
-const int DEFAULT_OUTPUT_WIDTH = 6000;
+const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art prints
 const int DEFAULT_OUTPUT_HEIGHT = 4800;
 
 const unsigned int INVALID_FILE_ERROR = 0;
 
-namespace settings      //the settings namespace stores
-{                       //a few variables used to compute the
-    double Width = DEFAULT_WIDTH;   //image via the mathematical function
-    double Height = DEFAULT_HEIGHT;  //and the color wheel, as well as
-    double XCorner = DEFAULT_XCORNER; //the Output Width and Height.
+//the settings namespace stores a few variables used to compute the
+//image via the mathematical function and the color wheel, as well as
+//the output width and height.
+namespace settings      
+{               
+    double Width = DEFAULT_WIDTH;   
+    double Height = DEFAULT_HEIGHT;
+    double XCorner = DEFAULT_XCORNER;
     double YCorner = DEFAULT_YCORNER;
-    int OWidth = DEFAULT_OUTPUT_WIDTH;//6000 width 4800 height standard for art prints
+    int OWidth = DEFAULT_OUTPUT_WIDTH;
     int OHeight = DEFAULT_OUTPUT_HEIGHT;
 }
 
-interface::interface(QWidget *parent) :
-    QWidget(parent)
+interface::interface(QWidget *parent) : QWidget(parent)
 {
 
     // FUNCTIONAL VARIABLES
@@ -66,7 +68,7 @@ interface::interface(QWidget *parent) :
     numtermsValidate = new QIntValidator(1, 99, this);
     dimValidate = new QIntValidator(1, 10000, this);
 
-    // functionConstantsBox SUBELEMENTS
+    //functionConstantsBox SUBELEMENTS
     //create labels
     currTermLabel = new QLabel(functionConstantsBox);
     currTermLabel->setText(tr("Term"));
@@ -88,7 +90,7 @@ interface::interface(QWidget *parent) :
     scaleRLabel = new QLabel(tr("Scaling Radius"), functionConstantsBox);
     refreshLabels();
 
-    //create input
+    // create input
     // nEdit = new QSpinBox(functionConstantsBox);
     // mEdit = new QSpinBox(functionConstantsBox);
     // aEdit = new QDoubleSpinBox(functionConstantsBox);
@@ -126,9 +128,6 @@ interface::interface(QWidget *parent) :
     mLabel->setFixedWidth(18);
     rLabel->setFixedWidth(18);
     aLabel->setFixedWidth(18);
-
-    // scaleALabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    // scaleRLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     scaleALabel->setFixedWidth(100);
     scaleRLabel->setFixedWidth(100);
 
@@ -136,10 +135,10 @@ interface::interface(QWidget *parent) :
     nEdit->setSingleStep(1);
     mEdit->setRange(-10,10);
     mEdit->setSingleStep(1);
-    rEdit->setRange(-100,100);
+    rEdit->setRange(-250,250);
     rEdit->setSingleStep(1);
-    aEdit->setRange(-100,100);
-    aEdit->setSingleStep(1);
+    aEdit->setRange(-314, 314);
+    aEdit->setSingleStep(25);
 
     scaleAEdit->setValidator(doubleValidate);
     scaleREdit->setValidator(doubleValidate);
@@ -395,12 +394,6 @@ interface::interface(QWidget *parent) :
     dispLayout->addLayout(buttonLayout);
     
     //SET UP SHORTCUTS
-    
-    // updatePreviewAction = new QAction(this);
-    // updatePreviewAction->setShortcut(QKeySequence("Ctrl+D"));
-
-    // this->addAction(updatePreviewAction);
-
     updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
 
     // CONNECT SIGNALS & SLOTS
@@ -495,8 +488,8 @@ void interface::refreshTerms()
 {
     nEdit->setValue(currFunction->getN(termIndex));
     mEdit->setValue(currFunction->getM(termIndex));
-    rEdit->setValue(currFunction->getR(termIndex) * 4.0);
-    aEdit->setValue(currFunction->getA(termIndex) * 4.0);
+    rEdit->setValue(currFunction->getR(termIndex) * 100.0);
+    aEdit->setValue(currFunction->getA(termIndex) * 100.0);
 
     nValueLabel->setText(QString::number(currFunction->getN(termIndex)));
     mValueLabel->setText(QString::number(currFunction->getM(termIndex)));
@@ -699,13 +692,11 @@ QString interface::saveSettings(const QString &fileName) {
 // SLOT function called only when user attempts to load from saved settings stored in a wpr file
 void interface::loadFromSettings()
 {
-    
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                saveloadPath,
                                                tr("Wallpapers (*.wpr)"));
     
     saveloadPath = loadSettings(fileName) != nullptr ? saveSettings(fileName) : nullptr;
-
 }
 
 // internal function that handles loading settings from a specified file
@@ -758,13 +749,11 @@ QString interface::loadSettings(const QString &fileName) {
     QDir stickypath(fileName);
     stickypath.cdUp();
     return stickypath.path();
-    
 }
 
 
 void interface::addToHistory()
 {    
-    
     HistoryItem *item = new HistoryItem();
 
     QVBoxLayout *historyItemsWithLabelLayout = new QVBoxLayout();
@@ -800,7 +789,9 @@ void interface::addToHistory()
     item->viewButton = viewButton;
     item->removeButton = removeButton;
     item->labelItem = timeStampLabel;
-    item->filePathName = saveSettings(newFile).append("/" + newFile);    
+    item->filePathName = saveSettings(newFile).append("/" + newFile);
+
+    qDebug() << item->filePathName;    
 
     connect(viewButton, SIGNAL(clicked()), viewMapper, SLOT(map()));
     connect(removeButton, SIGNAL(clicked()), removeMapper, SLOT(map()));
@@ -867,22 +858,52 @@ void interface::updatePreviewDisplay()
 {
     double worldY, worldX;
 
+    double worldYPreCalculations1 = settings::Height + settings::YCorner;
+    double worldYPreCalculations2 = settings::Height/disp->dim();
+    double worldXPreCalculations = settings::Width/disp->dim();
+
+    clock_t start, end, startLoop, endLoop;
+    double cpu_time_used = 0.0;
+    double cpu_time_used2 = 0.0;
+    double cpu_time_used3 = 0.0;
+
+    startLoop = clock();
     for (int y = 0; y < disp->dim(); y++) 
     {
         for (int x = 0; x <= ((disp->dim())-1); x++)
         {
-        worldY= settings::Height-y*settings::Height/disp->dim()+settings::YCorner;
-        worldX= x*settings::Width/disp->dim()+settings::XCorner;
+            // worldY= settings::Height-y*settings::Height/disp->dim()+settings::YCorner;
+            // worldX= x*settings::Width/disp->dim()+settings::XCorner;
+
+            worldY = worldYPreCalculations1 - y * worldYPreCalculations2;
+            worldX = x * worldXPreCalculations + settings::XCorner;
 
             //run the point through our mathematical function
             //...then convert that complex output to a color according to our color wheel
-            std::complex<double> fout = (*currFunction)(worldX,worldY);  
-            QRgb color = (*currColorWheel)(fout);                          
+            start = clock();
+            std::complex<double> fout=(*currFunction)(worldX,worldY);
+            end = clock();
+            cpu_time_used += ((double) (end - start)) / CLOCKS_PER_SEC;
+
+            start = clock();
+            QRgb color = (*currColorWheel)(fout);
+            end = clock();
+            cpu_time_used2 += ((double) (end - start)) / CLOCKS_PER_SEC;                    
 
             //finally push the determined color to the corresponding point on the display
-            disp->setPixel(x, y, color);                    
+            start = clock();
+            disp->setPixel(x, y, color);  
+            end = clock();
+            cpu_time_used3 += ((double) (end - start)) / CLOCKS_PER_SEC;               
         }
     }
+    endLoop = clock();
+
+    qDebug() << "========================";
+    qDebug() << "function: " << cpu_time_used;
+    qDebug() << "color: " << cpu_time_used2;
+    qDebug() << "setPixel: " << cpu_time_used3;
+    qDebug() << "for-loop: " << ((double) (endLoop - startLoop)) / CLOCKS_PER_SEC;
 
     disp->repaint();
 
@@ -1002,17 +1023,37 @@ void interface::saveImageStart()
     double worldY, worldX ;
     QImage outputImage(settings::OWidth, settings::OHeight, QImage::Format_RGB32);
 
+    double worldYPreCalculations1 = settings::Height + settings::YCorner;
+    double worldYPreCalculations2 = settings::Height/settings::OHeight;
+    double worldXPreCalculations = settings::Width/settings::OWidth;
+
     for (int y = 0; y < settings::OHeight; y++)
     {
         for (int x = 0; x <= ((settings::OWidth)-1); x++)
         {   
-            worldY = settings::Height - y*settings::Height/settings::OHeight + settings::YCorner;
-            worldX = x*settings::Width/settings::OWidth + settings::XCorner;
+            // worldY = settings::Height - y*settings::Height/settings::OHeight + settings::YCorner;
+            // worldX = x*settings::Width/settings::OWidth + settings::XCorner;
+
+            worldY = worldYPreCalculations1 - y * worldYPreCalculations2;
+            worldX = x * worldXPreCalculations + settings::XCorner;
 
             //run the point through our mathematical function
             //...then turn that complex output into a color per our color wheel
-            std::complex<double> fout=(*currFunction)(worldX,worldY);       
-            QRgb color = (*currColorWheel)(fout);                              
+            clock_t start, end;
+            double cpu_time_used;
+
+            start = clock();
+            std::complex<double> fout=(*currFunction)(worldX,worldY);
+            end = clock();
+            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+            qDebug() << "function: " << cpu_time_used;
+
+            start = clock();
+            QRgb color = (*currColorWheel)(fout);
+            end = clock();
+            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+            qDebug() << "function: " << cpu_time_used;  
+
             outputImage.setPixel(x, y, color);
         }
     }

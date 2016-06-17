@@ -17,6 +17,8 @@ const double c4=cos(4.0* pi/5.0); const double s4= sin(4.0* pi/5.0);
 const double c6=cos(6.0* pi/5.0); const double s6= sin(6.0* pi/5.0);
 const double c8=cos(8.0* pi/5.0); const double s8= sin(8.0* pi/5.0);
 const int Fib=0;
+const int MAX_RGB = 255;
+const int MIN_RGB = 0;
 
 inline std::complex<double> ei(double in)
 {

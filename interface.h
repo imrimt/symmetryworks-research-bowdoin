@@ -27,6 +27,8 @@
 #include <QAction>
 #include <QMessageBox>
 
+#include <time.h>
+
 // #include <QQmlDebuggingEnabler>
 
 #include "functions.h"
@@ -59,7 +61,7 @@ class QDoubleSlider : public QSlider
 
   public slots:
     void notifyValueChanged(int value) {
-        double doubleValue = value / 4.0;
+        double doubleValue = value / 100.0;
         emit doubleValueChanged(doubleValue);
     }
 
@@ -222,12 +224,10 @@ private slots:
     void changeYCorner(const QString &val);
     void changeOWidth(const QString &val);
     void changeOHeight(const QString &val);
-
     void changeN(int val);
     void changeM(int val);
     void changeR(double val);
     void changeA(double val);
-
     void changeScaleR(const QString &val);
     void changeScaleA(const QString &val);
     void saveImageStart();
@@ -236,24 +236,23 @@ private slots:
     void loadFromSettings();
     void saveCurrSettings();
     void updateSavePreview();
-
     void clearAllHistory();
     
     QString loadSettings(const QString &fileName);
     
-private:
-    unsigned int termIndex;              //internal index:  starts at 0 
-    QString genLabel(const char * in);
-    void refreshLabels();
-    void updatePreviewDisplay();
-    
-    QString saveloadPath;
+private:    
+    QString genLabel(const char * in);    
     QString getCurrSettings(const HistoryItem &item);
     QString saveSettings(const QString &fileName);
+
+    void refreshLabels();
+    void updatePreviewDisplay();
     void addToHistory();
     void errorHandler(const int &flag);    
-    
     void refreshTerms();
+
+    unsigned int termIndex;  //internal index:  starts at 0 
+    QString saveloadPath;
     AbstractFunction * currFunction;
     ColorWheel * currColorWheel;
     
