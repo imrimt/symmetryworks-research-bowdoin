@@ -232,11 +232,11 @@ private slots:
     void changeScaleA(const QString &val);
     void saveImageStart();
     void resetImageFunction();
-
+    void removePreview(QObject *item);
     void loadFromSettings();
     void saveCurrSettings();
     void updateSavePreview();
-    void removeItem(QObject* item);
+
     void clearAllHistory();
     
     QString loadSettings(const QString &fileName);
@@ -246,7 +246,7 @@ private:
     QString genLabel(const char * in);
     void refreshLabels();
     void updatePreviewDisplay();
-    void removePreview(HistoryItem *historyItemsLayout);
+    
     QString saveloadPath;
     QString getCurrSettings(const HistoryItem &item);
     QString saveSettings(const QString &fileName);
