@@ -6,6 +6,7 @@ const double DEFAULT_XCORNER = -0.5;
 const double DEFAULT_YCORNER = -0.5;
 const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art prints
 const int DEFAULT_OUTPUT_HEIGHT = 4800;
+const int DEFAULT_PREVIEW_SIZE = 200;
 
 const unsigned int INVALID_FILE_ERROR = 0;
 
@@ -387,23 +388,27 @@ interface::interface(QWidget *parent) : QWidget(parent)
     imagePropsBoxOverallLayout->addLayout(imagePropsBoxLayout);
 
     // DISP SUBELEMENTS
-    disp = new Display(600, displayWidget);
+    disp = new Display(DEFAULT_PREVIEW_SIZE, displayWidget);
     updatePreview = new QPushButton(tr("Update Preview"), this);
     exportImage = new QPushButton(tr("Export Image..."), this);
     resetImage = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
     buttonLayout = new QHBoxLayout();
 
-    updatePreview->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    exportImage->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    resetImage->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    // updatePreview->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    // exportImage->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    // resetImage->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
+    // updatePreview->setFixedWidth(200);
+    // exportImage->setFixedWidth(200);
+    // resetImage->setFixedWidth(200);
 
     buttonLayout->addWidget(updatePreview);
     buttonLayout->addWidget(exportImage);
     buttonLayout->addWidget(resetImage);
 
     dispLayout->addWidget(disp);
+    dispLayout->setAlignment(disp, Qt::AlignCenter);
     dispLayout->addLayout(buttonLayout);
     
     //SET UP SHORTCUTS

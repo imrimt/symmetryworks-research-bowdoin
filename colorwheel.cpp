@@ -6,6 +6,20 @@ ColorWheel::ColorWheel(QObject *parent) :
     currentSel = 0;
     image = QImage(image_dim, image_dim, QImage::Format_RGB32);
     image.fill(MAX_RGB);
+
+    //initialize zoneVect
+    zoneVect[0] = tilt(QVector3D(0.0,0.0,1.0));
+    zoneVect[1] = tilt(QVector3D(0.0,0.0,-1.0));
+
+    int m = 6;
+
+    for(int i = 1; i < m; i++)
+    {
+        for(int j = 0; j < m; j++)
+        {
+            zoneVect[2+j+6*(i-1)] = tilt(QVector3D(cos(2.0*pi*float(j)/6.0)*sin(pi*i/m),sin(2.0*pi*j/6.0)*sin(pi*i/m),cos(pi*i/m)));
+        }
+    }
 }
 
 QRgb ColorWheel::operator() (std::complex<double> zin)
@@ -58,90 +72,44 @@ void ColorWheel::loadImage(QString filename)
 QRgb ColorWheel::IcosColor(std::complex<double> zin)
 {
     QVector3D V;
-    int Tag,n;
+    int Tag;
     double test,compare;
 
-    // v3 icosFaces[] =
-    // {   initV3(1.0/q3,1.0/q3,1.0/q3),
-    //     initV3(gold/q3,(gold-1.0)/q3,0.0),
-    //     initV3(0.0,gold/q3,(gold-1.0)/q3),
-    //     initV3((gold-1.0)/q3,0.0,gold/q3),
-    //     initV3(gold/q3,-(gold-1.0)/q3,0.0),
-    //     initV3(0.0,gold/q3,-(gold-1.0)/q3),
-    //     initV3(-(gold-1.0)/q3,0.0,gold/q3),
-    //     initV3(1.0/q3,-1.0/q3,1.0/q3),
-    //     initV3(1.0/q3,1.0/q3,-1.0/q3),
-    //     initV3(-1.0/q3,1.0/q3,1.0/q3),
-    //     initV3(-1.0/q3,1.0/q3,-1.0/q3),
-    //     initV3(-1.0/q3,-1.0/q3,1.0/q3),
-    //     initV3(1.0/q3,-1.0/q3,-1.0/q3),
-    //     initV3(-gold/q3,(gold-1.0)/q3,0.0),
-    //     initV3(0.0,-gold/q3,(gold-1.0)/q3),
-    //     initV3((gold-1.0)/q3,0.0,-gold/q3),
-    //     initV3(-gold/q3,-(gold-1.0)/q3,0.0),
-    //     initV3(0.0,-gold/q3,-(gold-1.0)/q3),
-    //     initV3(-(gold-1.0)/q3,0.0,-gold/q3),
-    //     initV3(-1.0/q3,-1.0/q3,-1.0/q3) };
 
     V = tilt(stereo(zin));
-    test=0.0;
-    for(n=0; n<20; n++)
+    test = 0.0;
+    for(unsigned int n = 0; n < ICOS_FACES_SIZE; n++)
     {
-       compare = dotProduct(V,icosFaces[n]);
+       compare = dotProduct(V, icosFaces[n]);
        if(compare > test)
        {
-           Tag=n;
-           test=compare;
+           Tag = n;
+           test = compare;
        }
     }
 
     return RgbFromVec3(icosFaces[Tag]);
-
 }
 
 QRgb ColorWheel::IcosColorC(std::complex<double> zin)
 {
     QVector3D V;
-    int Tag,n;
+    int Tag;
     double test,compare;
 
-    QVector3D icosFaces2[] =
-    {   QVector3D(1.0/q3,1.0/q3,1.0/q3),
-        QVector3D(gold/q3,(gold-1.0)/q3,0.0),
-        QVector3D(0.0,gold/q3,(gold-1.0)/q3),
-        QVector3D((gold-1.0)/q3,0.0,gold/q3),
-        QVector3D(gold/q3,-(gold-1.0)/q3,0.0),
-        QVector3D(0.0,gold/q3,-(gold-1.0)/q3),
-        QVector3D(-(gold-1.0)/q3,0.0,gold/q3),
-        QVector3D(1.0/q3,-1.0/q3,1.0/q3),
-        QVector3D(1.0/q3,1.0/q3,-1.0/q3),
-        QVector3D(-1.0/q3,1.0/q3,1.0/q3),
-        QVector3D(-1.0/q3,1.0/q3,-1.0/q3),
-        QVector3D(-1.0/q3,-1.0/q3,1.0/q3),
-        QVector3D(1.0/q3,-1.0/q3,-1.0/q3),
-        QVector3D(-gold/q3,(gold-1.0)/q3,0.0),
-        QVector3D(0.0,-gold/q3,(gold-1.0)/q3),
-        QVector3D((gold-1.0)/q3,0.0,-gold/q3),
-        QVector3D(-gold/q3,-(gold-1.0)/q3,0.0),
-        QVector3D(0.0,-gold/q3,-(gold-1.0)/q3),
-        QVector3D(-(gold-1.0)/q3,0.0,-gold/q3),
-        QVector3D(-1.0/q3,-1.0/q3,-1.0/q3) };
-
-    V=tilt(stereo(zin));
-    test=0.0;
-    for(n=0;n<20;n++)
+    V = tilt(stereo(zin));
+    test = 0.0;
+    for(unsigned int n = 0; n < ICOS_FACES_SIZE; n++)
     {
-       compare = dotProduct(V,icosFaces2[n]);
+       compare = dotProduct(V, icosFaces[n]);
        if(compare > test)
        {
-           Tag=n;
-           test=compare;
+           Tag = n;
+           test = compare;
        }
     }
 
-    
-    return RgbFromVec3(cubeRootVec(icosFaces2[Tag]));
-
+    return RgbFromVec3(cubeRootVec(icosFaces[Tag]));
 }
 
 QRgb ColorWheel::StCol(std::complex<double> zin)
@@ -172,36 +140,20 @@ QRgb ColorWheel::StCol35(std::complex<double> zin)
 QRgb ColorWheel::ZoneCol(std::complex<double> zin)
 {
     QVector3D V;
-    int Tag,i,j,n,m,znum;
+    int Tag;
     double test,compare;
 
-    m=6;
-    znum=2+6*(m-1);
-    QVector<QVector3D> zoneVect(znum);
+    V = tilt(stereo(zin));
+    test = 0.0;
+    Tag = 0;
 
-    //initial zone vectors
-    zoneVect[0]=tilt(QVector3D(0.0,0.0,1.0));
-    zoneVect[1]=tilt(QVector3D(0.0,0.0,-1.0));
-
-    for(i=1; i<m; i++)
+    for(unsigned int n = 0; n < ZONE_VECT_SIZE; n++)
     {
-        for(j=0; j<6; j++)
-        {
-            zoneVect[2+j+6*(i-1)] = tilt(QVector3D(qCos(2.0*pi*float(j)/6.0)*qCos(pi*i/m),qSin(2.0*pi*j/6.0)*qSin(pi*i/m),qCos(pi*i/m)));
-        }
-    }
-
-    V=tilt(stereo(zin));
-    test=0.0;
-    Tag=0;
-
-    for(n=0; n<znum; n++)
-    {
-       compare = dotProduct(V,zoneVect[n]);
-       if(compare>test)
+       compare = dotProduct(V, zoneVect[n]);
+       if(compare > test)
        {
-           Tag=n;
-           test=compare;
+           Tag = n;
+           test = compare;
        }
     }
 
@@ -218,7 +170,9 @@ QRgb ColorWheel::SectCol(std::complex<double> zin)
 
     ra = sqrt(x*x+y*y);
 
-    if(ra<0.25)
+    int extremeValue = int(MAX_RGB - (MAX_RGB * ra)/2.0);
+
+    if(ra < 0.25)
     {
         r = MAX_RGB; 
         g = MAX_RGB; 
@@ -226,7 +180,7 @@ QRgb ColorWheel::SectCol(std::complex<double> zin)
     }
     else
     {
-        if(ra>2.0)
+        if(ra > 2.0)
         {
             r = MIN_RGB;
             g = MIN_RGB;
@@ -234,7 +188,7 @@ QRgb ColorWheel::SectCol(std::complex<double> zin)
         }
         else
         {
-            if(y>0.0)
+            if(y > 0.0)
             {
                 if (y < 0.72654 * x)
                 {
@@ -242,7 +196,7 @@ QRgb ColorWheel::SectCol(std::complex<double> zin)
                 }
                 else
                 {
-                    if(y<-3.077*x)
+                    if(y < -3.077 * x)
                     {
                         S1 = 3;
                     }
@@ -254,48 +208,48 @@ QRgb ColorWheel::SectCol(std::complex<double> zin)
             }
             else
             {
-                if(y>-0.72654*x)
+                if(y > -0.72654 * x)
                 {
-                    S1=1;
+                    S1 = 1;
                 }
                 else
                 {
-                    if(y>3.077*x)
+                    if(y > 3.077 * x)
                     {
-                        S1=4;
+                        S1 = 4;
                     }
                     else
                     {
-                        S1=5;
+                        S1 = 5;
                     }
                 }
             }
             switch(S1)
             {
             case 1:
-                r = int(MAX_RGB-MAX_RGB*ra/2.0);
+                r = extremeValue;
                 g = MIN_RGB;
                 b = MIN_RGB;
                 break;
             case 2:
-                r = int(MAX_RGB-MAX_RGB*ra/2.0);
-                g = int(MAX_RGB-MAX_RGB*ra/2.0);
+                r = extremeValue;
+                g = extremeValue;
                 b = MIN_RGB;
                 break;
             case 3:
                 r = MIN_RGB;
-                g = int(MAX_RGB-MAX_RGB*ra/2.0);
+                g = extremeValue;
                 b = MIN_RGB;
                 break;
             case 4:
                 r = MIN_RGB;
                 g = MIN_RGB;
-                b = int(MAX_RGB-MAX_RGB*ra/2.0);
+                b = extremeValue;
                 break;
             case 5:
-                r = int(MAX_RGB-MAX_RGB*ra/2.0);
+                r = extremeValue;
                 g = MIN_RGB;
-                b = int(MAX_RGB-MAX_RGB*ra/2.0);
+                b = extremeValue;
                 break;
             }
         }
@@ -307,21 +261,28 @@ QRgb ColorWheel::SectCol(std::complex<double> zin)
 QRgb ColorWheel::Sect6Col(std::complex<double> zin)
 {
     int S1,S2,r,g,b;
-    double ra;
+
     double x = zin.real();
     double y = zin.imag();
 
-    ra = sqrt(x*x+y*y);
+    double ra = sqrt(x * x + y * y);
 
-    if(ra<0.25)
+    int specialValue1 = int(MAX_RGB * (1.5 - 2 * ra));
+    int specialValue2 = int(MAX_RGB - (MAX_RGB * ra)/2.0);
+
+    if(ra < 0.25)
     {
-        r=MAX_RGB;g=MAX_RGB;b=MAX_RGB;
+        r = MAX_RGB;
+        g = MAX_RGB;
+        b = MAX_RGB;
     }
     else
     {
-        if(ra>2.0)
+        if(ra > 2.0)
         {
-            r=0;g=0;b=0;
+            r = MIN_RGB;
+            g = MIN_RGB;
+            b = MIN_RGB;
         }
         else
         {
@@ -329,51 +290,51 @@ QRgb ColorWheel::Sect6Col(std::complex<double> zin)
             {
                 if(y < -x/1.732)
                 {
-                    S1=6;
+                    S1 = 6;
                 }
                 else
                 {
                     if(y > x/1.732)
                     {
-                        S1=2;
+                        S1 = 2;
                     }
                     else
                     {
-                        S1=1;
+                        S1 = 1;
                     }
                 }
             }
             else
             {
-                if(y<x/1.732)
+                if(y < x/1.732)
                 {
-                    S1=5;
+                    S1 = 5;
                 }
                 else
                 {
-                    if(y>-x/1.732)
+                    if(y > -x/1.732)
                     {
-                        S1=3;
+                        S1 = 3;
                     }
                     else
                     {
-                        S1=4;
+                        S1 = 4;
                     }
                 }
             }
-            if(ra<0.75)
+            if(ra < 0.75)
             {
-                S2=1;
+                S2 = 1;
             }
             else
             {
-                if(ra<1.25)
+                if(ra < 1.25)
                 {
-                    S2=2;
+                    S2 = 2;
                 }
                 else
                 {
-                    S2=3;
+                    S2 = 3;
                 }
             }
             switch(S2)
@@ -382,34 +343,34 @@ QRgb ColorWheel::Sect6Col(std::complex<double> zin)
                 switch(S1)
                 {
                 case 1:
-                    r=int(MAX_RGB);
-                    g=int(MAX_RGB*(1.5-2*ra));
-                    b=int(MAX_RGB*(1.5-2*ra));
+                    r = int(MAX_RGB);
+                    g = specialValue1;
+                    b = specialValue1;
                     break;
                 case 2:
-                    r=int(MAX_RGB);
-                    g=int(MAX_RGB);
-                    b=int(MAX_RGB*(1.5-2*ra));
+                    r = int(MAX_RGB);
+                    g = int(MAX_RGB);
+                    b = specialValue1;
                     break;
                 case 3:
-                    r=int(MAX_RGB*(1.5-2*ra));
-                    g=MAX_RGB;
-                    b=int(MAX_RGB*(1.5-2*ra));
+                    r = specialValue1;
+                    g = MAX_RGB;
+                    b = specialValue1;
                     break;
                 case 4:
-                    r=int(MAX_RGB*(1.5-2*ra));
-                    g=int(MAX_RGB);
-                    b=int(MAX_RGB);
+                    r = specialValue1;
+                    g = int(MAX_RGB);
+                    b = int(MAX_RGB);
                     break;
                 case 5:
-                    r=int(MAX_RGB*(1.5-2*ra));
-                    g=int(MAX_RGB*(1.5-2*ra));
-                    b=int(MAX_RGB);
+                    r = specialValue1;
+                    g = specialValue1;
+                    b = int(MAX_RGB);
                     break;
                 case 6:
-                    r=int(MAX_RGB);
-                    g=int(MAX_RGB*(1.5-2*ra));
-                    b=int(MAX_RGB);
+                    r = int(MAX_RGB);
+                    g = specialValue1;
+                    b = int(MAX_RGB);
                     break;
                 }
                 break;
@@ -417,34 +378,34 @@ QRgb ColorWheel::Sect6Col(std::complex<double> zin)
                 switch(S1)
                 {
                 case 1:
-                    r=int(MAX_RGB);
-                    g=int(0);
-                    b=int(0);
+                    r = int(MAX_RGB);
+                    g = int(0);
+                    b = int(0);
                     break;
                 case 2:
-                    r=int(MAX_RGB);
-                    g=int(MAX_RGB);
-                    b=0;
+                    r = int(MAX_RGB);
+                    g = int(MAX_RGB);
+                    b = 0;
                     break;
                 case 3:
-                    r=0;
-                    g=MAX_RGB;
-                    b=0;
+                    r = 0;
+                    g = MAX_RGB;
+                    b = 0;
                     break;
                 case 4:
-                    r=0;
-                    g=MAX_RGB;
-                    b=MAX_RGB;
+                    r = 0;
+                    g = MAX_RGB;
+                    b = MAX_RGB;
                     break;
                 case 5:
-                    r=0;
-                    g=0;
-                    b=MAX_RGB;
+                    r = 0;
+                    g = 0;
+                    b = MAX_RGB;
                     break;
                 case 6:
-                    r=MAX_RGB;
-                    g=0;
-                    b=MAX_RGB;
+                    r = MAX_RGB;
+                    g = 0;
+                    b = MAX_RGB;
                     break;
                 }
                 break;
@@ -452,34 +413,34 @@ QRgb ColorWheel::Sect6Col(std::complex<double> zin)
                 switch(S1)
                 {
                 case 1:
-                    r=int(MAX_RGB-MAX_RGB*ra/2.0);
-                    g=0;
-                    b=0;
+                    r = specialValue2;
+                    g = 0;
+                    b = 0;
                     break;
                 case 2:
-                    r=int(MAX_RGB-MAX_RGB*ra/2.0);
-                    g=int(MAX_RGB-MAX_RGB*ra/2.0);
-                    b=0;
+                    r = specialValue2;
+                    g = specialValue2;
+                    b = 0;
                     break;
                 case 3:
-                    r=0;
-                    g=int(MAX_RGB-MAX_RGB*ra/2.0);
-                    b=0;
+                    r = 0;
+                    g = specialValue2;
+                    b = 0;
                     break;
                 case 4:
-                    r=0;
-                    g=int(MAX_RGB-MAX_RGB*ra/2.0);
-                    b=int(MAX_RGB-MAX_RGB*ra/2.0);
+                    r = 0;
+                    g = specialValue2;
+                    b = specialValue2;
                     break;
                 case 5:
-                    r=0;
-                    g=0;
-                    b=int(MAX_RGB-MAX_RGB*ra/2.0);
+                    r = 0;
+                    g = 0;
+                    b = specialValue2;
                     break;
                 case 6:
-                    r=int(MAX_RGB-MAX_RGB*ra/2.0);
-                    g=0;
-                    b=int(MAX_RGB-MAX_RGB*ra/2.0);
+                    r = specialValue2;
+                    g = 0;
+                    b = specialValue2;
                     break;
                 }
                 break;
@@ -496,9 +457,9 @@ QRgb ColorWheel::WinCol(std::complex<double> zin)
     vect5 E1, E2, E3, B1, B2;
     int r, g, b;
 
-    E1=initVect5(1.0/ma,c2/ma,c4/ma,c6/ma,c8/ma);
-    E2=initVect5(0.0,s2/ma,s4/ma,s6/ma,s8/ma);
-    E3=initVect5(1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0));
+    E1 = initVect5(1.0/ma,c2/ma,c4/ma,c6/ma,c8/ma);
+    E2 = initVect5(0.0,s2/ma,s4/ma,s6/ma,s8/ma);
+    E3 = initVect5(1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0));
 
     xa=zin.real();
     ya=zin.imag();
@@ -512,15 +473,15 @@ QRgb ColorWheel::WinCol(std::complex<double> zin)
     B1=Bvect5(xtm,ytm,ztm);
 
     //take cube roots
-    B2=initVect5(cubeRoot(B1.xv),cubeRoot(B1.yv),cubeRoot(B1.zv),cubeRoot(B1.uv),cubeRoot(B1.vv));
-    Xf=B2.xv*E1.xv+B2.yv*E1.yv+B2.zv*E1.zv+B2.uv*E1.uv+B2.vv*E1.vv;
-    Yf=B2.xv*E2.xv+B2.yv*E2.yv+B2.zv*E2.zv+B2.uv*E2.uv+B2.vv*E2.vv;
-    Zf=B2.xv*E3.xv+B2.yv*E3.yv+B2.zv*E3.zv+B2.uv*E3.uv+B2.vv*E3.vv;
+    B2 = initVect5(cubeRoot(B1.xv),cubeRoot(B1.yv),cubeRoot(B1.zv),cubeRoot(B1.uv),cubeRoot(B1.vv));
+    Xf = B2.xv*E1.xv+B2.yv*E1.yv+B2.zv*E1.zv+B2.uv*E1.uv+B2.vv*E1.vv;
+    Yf = B2.xv*E2.xv+B2.yv*E2.yv+B2.zv*E2.zv+B2.uv*E2.uv+B2.vv*E2.vv;
+    Zf = B2.xv*E3.xv+B2.yv*E3.yv+B2.zv*E3.zv+B2.uv*E3.uv+B2.vv*E3.vv;
 
     //following accomplishes "tilt," but it was already written out, so fine.
-    X=(Xf*q2+Zf)/q3;
-    Z=0.0-Xf/q2/q3-Yf/q2+Zf/q3;
-    Y=0.0-Xf/q2/q3+Yf/q2+Zf/q3;
+    X = (Xf*q2+Zf)/q3;
+    Z = 0.0-Xf/q2/q3-Yf/q2+Zf/q3;
+    Y = 0.0-Xf/q2/q3+Yf/q2+Zf/q3;
     r = int(double(MAX_RGB) * (1.0+X)/2.0);
     g = int(double(MAX_RGB) * (1.0+Z)/2.0);
     b = int(double(MAX_RGB) * (1.0+Y)/2.0);
