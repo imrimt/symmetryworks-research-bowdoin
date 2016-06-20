@@ -26,6 +26,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
 {
 
     // FUNCTIONAL VARIABLES
+    advancedMode = false;
     termIndex = 0;
     saveloadPath = QDir::homePath();
 
@@ -47,8 +48,11 @@ interface::interface(QWidget *parent) : QWidget(parent)
     displayWidget = new QWidget(this);
     patternTypeWidget = new QWidget(this);
     viewHistoryWidget = new QWidget(this);
+    toggleViewWidget = new QWidget(this);
+    leftbarLayout->addWidget(toggleViewWidget);
     leftbarLayout->addWidget(imagePropsBox);
     leftbarLayout->addWidget(patternTypeWidget);
+    
     
     topbarLayout->addLayout(leftbarLayout);
     topbarLayout->addWidget(displayWidget);
@@ -68,6 +72,15 @@ interface::interface(QWidget *parent) : QWidget(parent)
     numtermsValidate = new QIntValidator(1, 99, this);
     dimValidate = new QIntValidator(1, 10000, this);
 
+    
+    //modeToggle SUBELEMENTS
+    
+    toggleViewButton = new QPushButton(tr("Switch to Advanced View"), this);
+    toggleViewLayout = new QVBoxLayout(toggleViewWidget);
+    toggleViewLayout->addWidget(toggleViewButton);
+    
+
+    
     //functionConstantsBox SUBELEMENTS
     //create labels
     currTermLabel = new QLabel(functionConstantsBox);
@@ -397,6 +410,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
 
     // CONNECT SIGNALS & SLOTS
+    connect(toggleViewButton, SIGNAL(clicked()), this, SLOT(toggleViewMode()));
     connect(updatePreview, SIGNAL(clicked()), this, SLOT(updateSavePreview()));
     connect(exportImage, SIGNAL(clicked()), this, SLOT(saveImageStart()));
     connect(resetImage, SIGNAL(clicked()), this, SLOT(resetImageFunction()));
@@ -519,6 +533,16 @@ void interface::resetImageFunction()
     YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
 
     updatePreviewDisplay();
+}
+
+void interface::toggleViewMode() {
+    if (advancedMode) {
+        advancedMode = false;
+        toggleViewButton->setText(tr("Switch to Advanced View"));
+    } else {
+        advancedMode = true;
+        toggleViewButton->setText(tr("Switch to Default View"));
+    }
 }
 
 void interface::updateTerms(int i)

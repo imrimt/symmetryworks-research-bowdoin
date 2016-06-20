@@ -91,7 +91,7 @@ class interface : public QWidget
     Q_OBJECT
 public:
     explicit interface(QWidget *parent = 0);
-
+    
     // ORGANIZATIONAL ELEMENTS
     QGroupBox *functionConstantsBox;
     QVBoxLayout *interfaceLayout;
@@ -99,6 +99,7 @@ public:
     QHBoxLayout *topbarLayout;
     QVBoxLayout *leftbarLayout;
     QGroupBox *imagePropsBox;
+    QWidget *toggleViewWidget;
     QWidget *patternTypeWidget;
     QWidget *viewHistoryWidget;
     QMessageBox *errorMessageBox;
@@ -111,6 +112,10 @@ public:
     QIntValidator *numtermsValidate;
     QIntValidator *dimValidate;
 
+    //modeToggle SUBELEMENTS
+    QPushButton *toggleViewButton;
+    QVBoxLayout *toggleViewLayout;
+    
     // functionConstants SUBELEMENTS
     QLabel *currTermLabel;
     QLabel *nLabel;
@@ -213,6 +218,7 @@ public:
     QShortcut *updatePreviewShortcut;
 
 private slots:
+    void toggleViewMode();
     void updateTerms(int i);
     void changeMaxTerms(int i);
     void colorWheelChanged(int index);
@@ -255,6 +261,7 @@ private:
     QString saveloadPath;
     AbstractFunction * currFunction;
     ColorWheel * currColorWheel;
+    bool advancedMode;
     
 };
 
