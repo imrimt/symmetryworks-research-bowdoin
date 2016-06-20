@@ -1072,6 +1072,6 @@ void interface::errorHandler(const int &flag)
     case INVALID_FILE_ERROR:
         errorMessageBox->setText("Invalid file name/path");
         errorMessageBox->exec();
-        break;
+            break;
     }
 }

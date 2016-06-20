@@ -26,21 +26,21 @@ inline std::complex<double> ei(double in)
     return ans;
 }
 
-struct RGB
-{
-    int Rv;
-    int Gv;
-    int Bv;
-};
+//struct RGB
+//{
+//    int Rv;
+//    int Gv;
+//    int Bv;
+//};
 
-struct v3
-{
-    double xv;
-    double yv;
-    double zv;
-};
+//struct vec3
+//{
+//    double xv;
+//    double yv;
+//    double zv;
+//};
 
-struct vect
+struct vect5
 {
     double xv;
     double yv;
