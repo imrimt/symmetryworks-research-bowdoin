@@ -16,6 +16,7 @@
 #define image_dim 300
 
 const unsigned int ICOS_FACES_SIZE = 20;
+const unsigned int ZONE_VECT_SIZE = 32;
 
 class ColorWheel : public QObject
 {
@@ -62,7 +63,7 @@ class ColorWheel : public QObject
     double crt(double nu);
     double r35(double nu);
 
-    v3 icosFaces[ICOS_FACES_SIZE] = 
+    v3 icosFaces[ICOS_FACES_SIZE] =
     {   
         initV3(1.0/q3,1.0/q3,1.0/q3),
         initV3(gold/q3,(gold-1.0)/q3,0.0),
@@ -85,6 +86,8 @@ class ColorWheel : public QObject
         initV3(-(gold-1.0)/q3,0.0,-gold/q3),
         initV3(-1.0/q3,-1.0/q3,-1.0/q3) 
     };
+    
+    v3 zoneVect[ZONE_VECT_SIZE];
 
 private slots:
     void setCurrent(int index);
