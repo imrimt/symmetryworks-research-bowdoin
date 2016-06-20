@@ -86,6 +86,12 @@ class HistoryItem : public QObject
     QDateTime savedTime;
 };
 
+// class QPopUp : public QMessageBox
+// {
+//   public: 
+//     QPopUp(QObject *parent = 0) : QObject(parent) { }
+// };
+
 class interface : public QWidget
 {
     Q_OBJECT
@@ -117,18 +123,30 @@ public:
     QLabel *mLabel;
     QLabel *aLabel;
     QLabel *rLabel;
-    QLabel *nValueLabel;
-    QLabel *mValueLabel;
+    // QLabel *nValueLabel;
+    // QLabel *mValueLabel;
     QLabel *aValueLabel;
     QLabel *rValueLabel;
     QLabel *scaleALabel;
     QLabel *scaleRLabel;
-    QSlider *nEdit;
-    QSlider *mEdit;
-    QSlider *aEdit;
-    QSlider *rEdit;
+    // QSlider *nEdit;
+    // QSlider *mEdit;
+
+    QSpinBox *nEdit;
+    QSpinBox *mEdit;
+
+    QDoubleSlider *aEdit;
+    QDoubleSlider *rEdit;
+    QPushButton *coeffPlaneEdit;
+    
+    QWidget *coeffPlanePopUp;
+
     QLineEdit *scaleAEdit;
     QLineEdit *scaleREdit;
+    QPushButton *scalePlaneEdit;
+    
+    QWidget *scalePlanePopUp;
+
     CustomSpinBox *currTermEdit;
 
     QHBoxLayout *functionConstantsBoxLayoutLower;
@@ -237,6 +255,8 @@ private slots:
     void saveCurrSettings();
     void updateSavePreview();
     void clearAllHistory();
+
+    void showPlanePopUp();
     
     QString loadSettings(const QString &fileName);
     

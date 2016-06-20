@@ -82,8 +82,8 @@ interface::interface(QWidget *parent) : QWidget(parent)
     aLabel = new QLabel(functionConstantsBox);
     rLabel = new QLabel(functionConstantsBox);
 
-    nValueLabel = new QLabel(functionConstantsBox);
-    mValueLabel = new QLabel(functionConstantsBox);
+    // nValueLabel = new QLabel(functionConstantsBox);
+    // mValueLabel = new QLabel(functionConstantsBox);
     aValueLabel = new QLabel(functionConstantsBox);
     rValueLabel = new QLabel(functionConstantsBox);
 
@@ -92,21 +92,33 @@ interface::interface(QWidget *parent) : QWidget(parent)
     refreshLabels();
 
     // create input
-    // nEdit = new QSpinBox(functionConstantsBox);
-    // mEdit = new QSpinBox(functionConstantsBox);
+    nEdit = new QSpinBox(functionConstantsBox);
+    mEdit = new QSpinBox(functionConstantsBox);
     // aEdit = new QDoubleSpinBox(functionConstantsBox);
     // rEdit = new QDoubleSpinBox(functionConstantsBox);
 
-    nEdit = new QSlider(Qt::Horizontal);
-    mEdit = new QSlider(Qt::Horizontal);
+    // nEdit = new QSlider(Qt::Horizontal);
+    // mEdit = new QSlider(Qt::Horizontal);
     aEdit = new QDoubleSlider();
     rEdit = new QDoubleSlider();
+    coeffPlaneEdit = new QPushButton(tr("Set on plane"), functionConstantsBox);
+    // coeffPlanePopUp = new QMessageBox(this);
+    // coeffPlanePopUp->setIcon(QMessageBox::Information);
+    // coeffPlanePopUp->setText("Hello");
+    coeffPlanePopUp = new QWidget(this, Qt::Window);
 
     aEdit->setOrientation(Qt::Horizontal);
     rEdit->setOrientation(Qt::Horizontal);
 
     scaleAEdit = new QLineEdit(functionConstantsBox);
     scaleREdit = new QLineEdit(functionConstantsBox);
+    scalePlaneEdit = new QPushButton(tr("Set on plane"), functionConstantsBox);
+    // scalePlanePopUp = new QMessageBox(this);
+    // scalePlanePopUp->setIcon(QMessageBox::Information);
+    // scalePlanePopUp->setText("It's me");
+
+    scalePlanePopUp = new QWidget(this, Qt::Window);
+
     currTermEdit = new CustomSpinBox(functionConstantsBox);
     espacer1 = new QSpacerItem(5, 5);
     espacer2 = new QSpacerItem(5, 5);
@@ -164,11 +176,11 @@ interface::interface(QWidget *parent) : QWidget(parent)
     functionConstantsBoxLayoutSecondLevel->addItem(espacer1);
     functionConstantsBoxLayoutSecondLevel->addWidget(nLabel);
     functionConstantsBoxLayoutSecondLevel->addWidget(nEdit);
-    functionConstantsBoxLayoutSecondLevel->addWidget(nValueLabel);
+    // functionConstantsBoxLayoutSecondLevel->addWidget(nValueLabel);
     functionConstantsBoxLayoutSecondLevel->addItem(espacer2);
     functionConstantsBoxLayoutSecondLevel->addWidget(mLabel);
     functionConstantsBoxLayoutSecondLevel->addWidget(mEdit);
-    functionConstantsBoxLayoutSecondLevel->addWidget(mValueLabel);
+    // functionConstantsBoxLayoutSecondLevel->addWidget(mValueLabel);
 
     functionConstantsBoxLayoutThirdLevel->addWidget(coeffLabel);
     functionConstantsBoxLayoutThirdLevel->addItem(espacer4);
@@ -179,6 +191,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     functionConstantsBoxLayoutThirdLevel->addWidget(aLabel);
     functionConstantsBoxLayoutThirdLevel->addWidget(aEdit);
     functionConstantsBoxLayoutThirdLevel->addWidget(aValueLabel);
+    functionConstantsBoxLayoutThirdLevel->addWidget(coeffPlaneEdit);
 
     //fill layouts
     functionConstantsBoxLayoutLower->addWidget(loadButton);
@@ -190,6 +203,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     functionConstantsBoxLayoutLower->addItem(espacer6);
     functionConstantsBoxLayoutLower->addWidget(scaleALabel);
     functionConstantsBoxLayoutLower->addWidget(scaleAEdit);
+    functionConstantsBoxLayoutLower->addWidget(scalePlaneEdit);
     
     functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutFirstLevel);
     functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutSecondLevel);
@@ -417,8 +431,10 @@ interface::interface(QWidget *parent) : QWidget(parent)
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
     connect(rEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeR(double)));
     connect(aEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeA(double)));
+    connect(coeffPlaneEdit, SIGNAL(clicked()), this, SLOT(showPlanePopUp()));
     connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
     connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
+    connect(scalePlaneEdit, SIGNAL(clicked()), this, SLOT(showPlanePopUp()));
 
     connect(outwidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOWidth(QString)));
     connect(outheightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOHeight(QString)));
@@ -496,8 +512,8 @@ void interface::refreshTerms()
     rEdit->setValue(currFunction->getR(termIndex) * 100.0);
     aEdit->setValue(currFunction->getA(termIndex) * 100.0);
 
-    nValueLabel->setText(QString::number(currFunction->getN(termIndex)));
-    mValueLabel->setText(QString::number(currFunction->getM(termIndex)));
+    // nValueLabel->setText(QString::number(currFunction->getN(termIndex)));
+    // mValueLabel->setText(QString::number(currFunction->getM(termIndex)));
     rValueLabel->setText(QString::number(currFunction->getR(termIndex) * 1.0));
     aValueLabel->setText(QString::number(currFunction->getA(termIndex) * 1.0));
 }
@@ -975,7 +991,7 @@ void interface::changeN(int val)
 {
     // int passedval = val.toInt();
     currFunction->setN(termIndex, val);
-    nValueLabel->setText(QString::number(val));
+    // nValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
@@ -983,7 +999,7 @@ void interface::changeM(int val)
 {
     // int passedval = val.toInt();
     currFunction->setM(termIndex, val);
-    mValueLabel->setText(QString::number(val));
+    // mValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
@@ -1079,4 +1095,11 @@ void interface::errorHandler(const int &flag)
         errorMessageBox->exec();
             break;
     }
+}
+
+void interface::showPlanePopUp()
+{
+    // qDebug() << "hi";
+    coeffPlanePopUp->show();
+    // hide();
 }
