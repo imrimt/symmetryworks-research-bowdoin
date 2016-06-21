@@ -92,6 +92,15 @@ void AbstractFunction::setScaleA(double &val)
     scale.setA(val);
 }
 
+AbstractFunction* AbstractFunction::copy(AbstractFunction *f)
+{
+    AbstractFunction *copy = new AbstractFunction(f->coeffs, f->freqs);
+    copy->terms = f->terms;
+    return copy;
+    
+}
+
+
 void AbstractFunction::setNumTerms(int &val)
 {
     if(val > 0 && val <= 99 && val != (int) terms)
@@ -128,6 +137,7 @@ void AbstractFunction::initWithVectors(QVector<coeffpair> &in_coeffs, QVector<fr
     scale.setR(1.0);
     scale.setA(0.0);
 }
+
 
 ////////////////////////////////////////////////////////////
 

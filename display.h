@@ -15,6 +15,7 @@ public:
     void setPixel(int i, int j, QRgb color);
     QSize sizeHint() const;
     int dim() const;
+    QImage getImage() { return disp; }
 
 protected:
     void paintEvent(QPaintEvent *event);

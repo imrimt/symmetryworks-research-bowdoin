@@ -1,27 +1,6 @@
 #include "interface.h"
 
-const double DEFAULT_WIDTH = 2.5;
-const double DEFAULT_HEIGHT = 2.0;
-const double DEFAULT_XCORNER = -0.5;
-const double DEFAULT_YCORNER = -0.5;
-const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art prints
-const int DEFAULT_OUTPUT_HEIGHT = 4800;
-const int DEFAULT_PREVIEW_SIZE = 200;
 
-const unsigned int INVALID_FILE_ERROR = 0;
-
-//the settings namespace stores a few variables used to compute the
-//image via the mathematical function and the color wheel, as well as
-//the output width and height.
-namespace settings      
-{               
-    double Width = DEFAULT_WIDTH;   
-    double Height = DEFAULT_HEIGHT;
-    double XCorner = DEFAULT_XCORNER;
-    double YCorner = DEFAULT_YCORNER;
-    int OWidth = DEFAULT_OUTPUT_WIDTH;
-    int OHeight = DEFAULT_OUTPUT_HEIGHT;
-}
 
 interface::interface(QWidget *parent) : QWidget(parent)
 {
@@ -845,25 +824,28 @@ void interface::addToHistory()
     removeMapper->setMapping(removeButton, item);
     
     // this handles the painting of the preview icon
-    double worldY, worldX;
+    Port *historyDisplay = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim());
+    historyDisplay->paintHistoryIcon(item);
     
-    for (int y = 0; y < item->preview->dim(); y++)
-    {
-        for (int x = 0; x <= ((item->preview->dim())-1); x++)
-        {
-            worldY= settings::Height-y*settings::Height/item->preview->dim()+settings::YCorner;
-            worldX= x*settings::Width/item->preview->dim()+settings::XCorner;
-            
-            //run the point through our mathematical function
-            //then convert that complex output to a color according to our color wheel
-            std::complex<double> fout = (*currFunction)(worldX,worldY);  
-            QRgb color = (*currColorWheel)(fout);                          
-            
-            //finally push the determined color to the corresponding point on the display
-            item->preview->setPixel(x, y, color);                    
-        }
-    }
-    item->preview->repaint();    
+//    double worldY, worldX;
+//    
+//    for (int y = 0; y < item->preview->dim(); y++)
+//    {
+//        for (int x = 0; x <= ((item->preview->dim())-1); x++)
+//        {
+//            worldY= settings::Height-y*settings::Height/item->preview->dim()+settings::YCorner;
+//            worldX= x*settings::Width/item->preview->dim()+settings::XCorner;
+//            
+//            //run the point through our mathematical function
+//            //then convert that complex output to a color according to our color wheel
+//            std::complex<double> fout = (*currFunction)(worldX,worldY);  
+//            QRgb color = (*currColorWheel)(fout);                          
+//            
+//            //finally push the determined color to the corresponding point on the display
+//            item->preview->setPixel(x, y, color);                    
+//        }
+//    }
+//    item->preview->repaint();    
 
     historyItemsMap.insert(savedTime, item);
     
@@ -901,56 +883,60 @@ void interface::removePreview(QObject *item)
 
 void interface::updatePreviewDisplay()
 {
-    double worldY, worldX;
+//    double worldY, worldX;
+//
+//    double worldYPreCalculations1 = settings::Height + settings::YCorner;
+//    double worldYPreCalculations2 = settings::Height/disp->dim();
+//    double worldXPreCalculations = settings::Width/disp->dim();
+//
+//    clock_t start, end, startLoop, endLoop;
+//    double cpu_time_used = 0.0;
+//    double cpu_time_used2 = 0.0;
+//    double cpu_time_used3 = 0.0;
 
-    double worldYPreCalculations1 = settings::Height + settings::YCorner;
-    double worldYPreCalculations2 = settings::Height/disp->dim();
-    double worldXPreCalculations = settings::Width/disp->dim();
+    //startLoop = clock();
+    
+    Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim());
+    previewDisplay->paintToDisplay(disp);
 
-    clock_t start, end, startLoop, endLoop;
-    double cpu_time_used = 0.0;
-    double cpu_time_used2 = 0.0;
-    double cpu_time_used3 = 0.0;
+//    for (int y = 0; y < disp->dim(); y++) 
+//    {
+//        for (int x = 0; x <= ((disp->dim())-1); x++)
+//        {
+//            // worldY= settings::Height-y*settings::Height/disp->dim()+settings::YCorner;
+//            // worldX= x*settings::Width/disp->dim()+settings::XCorner;
+//
+//            worldY = worldYPreCalculations1 - y * worldYPreCalculations2;
+//            worldX = x * worldXPreCalculations + settings::XCorner;
+//
+//            //run the point through our mathematical function
+//            //...then convert that complex output to a color according to our color wheel
+//            start = clock();
+//            std::complex<double> fout=(*currFunction)(worldX,worldY);
+//            end = clock();
+//            cpu_time_used += ((double) (end - start)) / CLOCKS_PER_SEC;
+//
+//            start = clock();
+//            QRgb color = (*currColorWheel)(fout);
+//            end = clock();
+//            cpu_time_used2 += ((double) (end - start)) / CLOCKS_PER_SEC;                    
+//
+//            //finally push the determined color to the corresponding point on the display
+//            start = clock();
+//            disp->setPixel(x, y, color);  
+//            end = clock();
+//            cpu_time_used3 += ((double) (end - start)) / CLOCKS_PER_SEC;               
+//        }
+//    }
+//    endLoop = clock();
+//
+//    qDebug() << "========================";
+//    qDebug() << "function: " << cpu_time_used;
+//    qDebug() << "color: " << cpu_time_used2;
+//    qDebug() << "setPixel: " << cpu_time_used3;
+//    qDebug() << "for-loop: " << ((double) (endLoop - startLoop)) / CLOCKS_PER_SEC;
 
-    startLoop = clock();
-    for (int y = 0; y < disp->dim(); y++) 
-    {
-        for (int x = 0; x <= ((disp->dim())-1); x++)
-        {
-            // worldY= settings::Height-y*settings::Height/disp->dim()+settings::YCorner;
-            // worldX= x*settings::Width/disp->dim()+settings::XCorner;
-
-            worldY = worldYPreCalculations1 - y * worldYPreCalculations2;
-            worldX = x * worldXPreCalculations + settings::XCorner;
-
-            //run the point through our mathematical function
-            //...then convert that complex output to a color according to our color wheel
-            start = clock();
-            std::complex<double> fout=(*currFunction)(worldX,worldY);
-            end = clock();
-            cpu_time_used += ((double) (end - start)) / CLOCKS_PER_SEC;
-
-            start = clock();
-            QRgb color = (*currColorWheel)(fout);
-            end = clock();
-            cpu_time_used2 += ((double) (end - start)) / CLOCKS_PER_SEC;                    
-
-            //finally push the determined color to the corresponding point on the display
-            start = clock();
-            disp->setPixel(x, y, color);  
-            end = clock();
-            cpu_time_used3 += ((double) (end - start)) / CLOCKS_PER_SEC;               
-        }
-    }
-    endLoop = clock();
-
-    qDebug() << "========================";
-    qDebug() << "function: " << cpu_time_used;
-    qDebug() << "color: " << cpu_time_used2;
-    qDebug() << "setPixel: " << cpu_time_used3;
-    qDebug() << "for-loop: " << ((double) (endLoop - startLoop)) / CLOCKS_PER_SEC;
-
-    disp->repaint();
+    //disp->repaint();
 
 }
 
@@ -1057,57 +1043,61 @@ void interface::changeScaleR(const QString &val)
 
 void interface::saveImageStart()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
-                                                    saveloadPath,
-                               tr("PPM (*.ppm);;JPEG (*.jpg *.jpeg)"));
+    
+    Port *imageExport = new Port(currFunction, currColorWheel, settings::OWidth, settings::OHeight);
+    imageExport->exportImage();
+    
+//    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
+//                                                    saveloadPath,
+//                               tr("PPM (*.ppm);;JPEG (*.jpg *.jpeg)"));
+//
+//    QFile inFile(fileName);
+//    if (!inFile.open(QIODevice::WriteOnly))
+//             return;
 
-    QFile inFile(fileName);
-    if (!inFile.open(QIODevice::WriteOnly))
-             return;
-
-    double worldY, worldX ;
-    QImage outputImage(settings::OWidth, settings::OHeight, QImage::Format_RGB32);
-
-    double worldYPreCalculations1 = settings::Height + settings::YCorner;
-    double worldYPreCalculations2 = settings::Height/settings::OHeight;
-    double worldXPreCalculations = settings::Width/settings::OWidth;
-
-    for (int y = 0; y < settings::OHeight; y++)
-    {
-        for (int x = 0; x <= ((settings::OWidth)-1); x++)
-        {   
-            // worldY = settings::Height - y*settings::Height/settings::OHeight + settings::YCorner;
-            // worldX = x*settings::Width/settings::OWidth + settings::XCorner;
-
-            worldY = worldYPreCalculations1 - y * worldYPreCalculations2;
-            worldX = x * worldXPreCalculations + settings::XCorner;
-
-            //run the point through our mathematical function
-            //...then turn that complex output into a color per our color wheel
-            clock_t start, end;
-            double cpu_time_used;
-
-            start = clock();
-            std::complex<double> fout=(*currFunction)(worldX,worldY);
-            end = clock();
-            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-            qDebug() << "function: " << cpu_time_used;
-
-            start = clock();
-            QRgb color = (*currColorWheel)(fout);
-            end = clock();
-            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-            qDebug() << "function: " << cpu_time_used;  
-
-            outputImage.setPixel(x, y, color);
-        }
-    }
-
-    outputImage.save(fileName);
-
-    QDir stickypath(fileName);
-    stickypath.cdUp();
-    saveloadPath = stickypath.path();
+//    double worldY, worldX ;
+//    QImage outputImage(settings::OWidth, settings::OHeight, QImage::Format_RGB32);
+//
+//    double worldYPreCalculations1 = settings::Height + settings::YCorner;
+//    double worldYPreCalculations2 = settings::Height/settings::OHeight;
+//    double worldXPreCalculations = settings::Width/settings::OWidth;
+//
+//    for (int y = 0; y < settings::OHeight; y++)
+//    {
+//        for (int x = 0; x <= ((settings::OWidth)-1); x++)
+//        {   
+//            // worldY = settings::Height - y*settings::Height/settings::OHeight + settings::YCorner;
+//            // worldX = x*settings::Width/settings::OWidth + settings::XCorner;
+//
+//            worldY = worldYPreCalculations1 - y * worldYPreCalculations2;
+//            worldX = x * worldXPreCalculations + settings::XCorner;
+//
+//            //run the point through our mathematical function
+//            //...then turn that complex output into a color per our color wheel
+//            clock_t start, end;
+//            double cpu_time_used;
+//
+//            start = clock();
+//            std::complex<double> fout=(*currFunction)(worldX,worldY);
+//            end = clock();
+//            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+//            qDebug() << "function: " << cpu_time_used;
+//
+//            start = clock();
+//            QRgb color = (*currColorWheel)(fout);
+//            end = clock();
+//            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+//            qDebug() << "function: " << cpu_time_used;  
+//
+//            outputImage.setPixel(x, y, color);
+//        }
+//    }
+//
+//    outputImage.save(fileName);
+//
+//    QDir stickypath(fileName);
+//    stickypath.cdUp();
+//    saveloadPath = stickypath.path();
 }
 
 void interface::errorHandler(const int &flag) 

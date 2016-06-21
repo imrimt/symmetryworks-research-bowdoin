@@ -29,13 +29,38 @@
 
 #include <time.h>
 
+
 // #include <QQmlDebuggingEnabler>
 
 #include "functions.h"
 #include "colorwheel.h"
 #include "display.h"
+#include "port.h"
 
 #define MAX_HISTORY_ITEMS 5
+
+const double DEFAULT_WIDTH = 2.5;
+const double DEFAULT_HEIGHT = 2.0;
+const double DEFAULT_XCORNER = -0.5;
+const double DEFAULT_YCORNER = -0.5;
+const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art prints
+const int DEFAULT_OUTPUT_HEIGHT = 4800;
+const int DEFAULT_PREVIEW_SIZE = 200;
+
+const unsigned int INVALID_FILE_ERROR = 0;
+
+//the settings namespace stores a few variables used to compute the
+//image via the mathematical function and the color wheel, as well as
+//the output width and height.
+namespace settings
+{
+    double Width = DEFAULT_WIDTH;
+    double Height = DEFAULT_HEIGHT;
+    double XCorner = DEFAULT_XCORNER;
+    double YCorner = DEFAULT_YCORNER;
+    int OWidth = DEFAULT_OUTPUT_WIDTH;
+    int OHeight = DEFAULT_OUTPUT_HEIGHT;
+}
 
 class CustomSpinBox : public QSpinBox
 {
@@ -67,24 +92,7 @@ class QDoubleSlider : public QSlider
 
 };
 
-class HistoryItem : public QObject
-{
-    Q_OBJECT
-  public:
-    HistoryItem(QObject *parent = 0) : QObject(parent) { }    
-    QVBoxLayout *layoutWithLabelItem;
-    QHBoxLayout *layoutItem;
-    QVBoxLayout *buttonLayoutItem;
-    Display *preview;
-    QPushButton *viewButton;
-    QPushButton *removeButton;
-    QLabel *labelItem;
-    QString filePathName;
-    QStringList settings;
 
-    //is this data structure useful? 
-    QDateTime savedTime;
-};
 
 // class QPopUp : public QMessageBox
 // {

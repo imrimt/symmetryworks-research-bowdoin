@@ -17,7 +17,8 @@ SOURCES += \
     interface.cpp \
     display.cpp \
     colorwheel.cpp \
-    functions.cpp
+    functions.cpp \
+    port.cpp 
 
 HEADERS  += \
     interface.h \
@@ -25,4 +26,5 @@ HEADERS  += \
     display.h \
     colorwheel.h \
     functions.h \
-    pairs.h
+    pairs.h \
+    port.h

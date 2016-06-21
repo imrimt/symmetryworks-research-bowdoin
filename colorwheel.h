@@ -31,6 +31,8 @@ class ColorWheel : public QObject
     // ACCESS FUNCTIONS
     QRgb operator() (std::complex<double> zin);
     void loadImage(QString filename);
+    
+    ColorWheel *copy(ColorWheel *c);
 
   private:
 
@@ -63,9 +65,9 @@ class ColorWheel : public QObject
     //RGB initRGB(int Rin, int Gin, int Bin);
     //RGB Colors(QVector3D Vin);
     QRgb RgbFromVec3(QVector3D v);
-    double dotProduct(QVector3D vec1, QVector3D vec2);
-    double cubeRoot(double nu);
-    double pow35(double nu);
+//    double dotProduct(QVector3D vec1, QVector3D vec2);
+//    double cubeRoot(double nu);
+//    double pow35(double nu);
 
     QVector3D icosFaces[ICOS_FACES_SIZE] =
     {   
