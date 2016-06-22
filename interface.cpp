@@ -1,6 +1,19 @@
 #include "interface.h"
 
 
+//the settings namespace stores a few variables used to compute the
+//image via the mathematical function and the color wheel, as well as
+//the output width and height.
+namespace settings
+{
+    double Width = DEFAULT_WIDTH;
+    double Height = DEFAULT_HEIGHT;
+    double XCorner = DEFAULT_XCORNER;
+    double YCorner = DEFAULT_YCORNER;
+    int OWidth = DEFAULT_OUTPUT_WIDTH;
+    int OHeight = DEFAULT_OUTPUT_HEIGHT;
+}
+
 
 interface::interface(QWidget *parent) : QWidget(parent)
 {
@@ -824,7 +837,7 @@ void interface::addToHistory()
     removeMapper->setMapping(removeButton, item);
     
     // this handles the painting of the preview icon
-    Port *historyDisplay = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim());
+    Port *historyDisplay = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim(), settings::XCorner, settings::YCorner, settings::Width, settings::Height);
     historyDisplay->paintHistoryIcon(item);
     
 //    double worldY, worldX;
@@ -896,7 +909,7 @@ void interface::updatePreviewDisplay()
 
     //startLoop = clock();
     
-    Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim());
+    Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings::XCorner, settings::YCorner, settings::Width, settings::Height);
     previewDisplay->paintToDisplay(disp);
 
 //    for (int y = 0; y < disp->dim(); y++) 
@@ -1044,8 +1057,22 @@ void interface::changeScaleR(const QString &val)
 void interface::saveImageStart()
 {
     
-    Port *imageExport = new Port(currFunction, currColorWheel, settings::OWidth, settings::OHeight);
-    imageExport->exportImage();
+    
+    Port *imageExport = new Port(currFunction, currColorWheel, settings::OWidth, settings::OHeight, settings::XCorner, settings::YCorner, settings::Width, settings::Height);
+    
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
+                                                    saveloadPath,
+                                                    tr("PPM (*.ppm);;JPEG (*.jpg *.jpeg)"));
+    
+    QFile inFile(fileName);
+    if (!inFile.open(QIODevice::WriteOnly))
+        return;
+    
+    
+    QImage *output = new QImage(settings::OWidth, settings::OHeight, QImage::Format_RGB32);
+    
+    
+    imageExport->exportImage(output, fileName);
     
 //    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
 //                                                    saveloadPath,

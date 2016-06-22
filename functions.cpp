@@ -92,13 +92,6 @@ void AbstractFunction::setScaleA(double &val)
     scale.setA(val);
 }
 
-AbstractFunction* AbstractFunction::copy(AbstractFunction *f)
-{
-    AbstractFunction *copy = new AbstractFunction(f->coeffs, f->freqs);
-    copy->terms = f->terms;
-    return copy;
-    
-}
 
 
 void AbstractFunction::setNumTerms(int &val)

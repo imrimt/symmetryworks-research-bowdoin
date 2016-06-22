@@ -13,9 +13,41 @@
 #include <QVector>
 #include <QDebug>
 #include <QtCore/qmath.h>
+#include <complex>
+
+#include <QWidget>
+#include <QLabel>
+#include <QLineEdit>
+#include <QSpinBox>
+#include <QSlider>
+#include <QKeyEvent>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QSpacerItem>
+#include <QGroupBox>
+#include <QComboBox>
+#include <QString>
+#include <QDebug>
+#include <QPushButton>
+#include <QImage>
+#include <QDir>
+#include <QInputDialog>
+#include <QFileDialog>
+#include <QSignalMapper>
+#include <QDateTime>
+#include <QShortCut>
+#include <QAction>
+#include <QMessageBox>
+
+#include <time.h>
+
+#include "display.h"
+#include "functions.h"
+#include "colorwheel.h"
 
 
-#include "interface.h"
+
+//#include "interface.h"
 
 class HistoryItem : public QObject
 {
@@ -23,7 +55,7 @@ class HistoryItem : public QObject
 public:
     HistoryItem(QObject *parent = 0) : QObject(parent) { }
     
-    QImage getImage() { return preview->getImage(); }
+    QImage *getImage() { return preview->getImage(); }
     
     QVBoxLayout *layoutWithLabelItem;
     QHBoxLayout *layoutItem;
@@ -39,7 +71,6 @@ public:
     
 private:
     
-    
 };
 
 class Port
@@ -48,12 +79,13 @@ class Port
 public:
 
     // CONSTRUCTOR
-    Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height);
+    Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height, double XCorner, double YCorner, double setWidth, double setHeight);
+
     
     virtual ~Port(){;}
     
     // ACTIONS
-    QString exportImage();
+    QString exportImage(QImage *output, const QString &fileName);
     void paintToDisplay(Display *disp);
     void paintHistoryIcon(HistoryItem *item);
 
@@ -62,13 +94,19 @@ protected:
     
     AbstractFunction *currFunction;
     ColorWheel *currColorWheel;
+    
+    
     int width, height;
+    double XCorner, YCorner, setWidth, setHeight;
     
     
 private:
     
-    void render();
+    void render(QImage *output);
     
 };
+
+
+
 
 #endif // PORT_H

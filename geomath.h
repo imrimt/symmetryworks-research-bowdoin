@@ -4,6 +4,8 @@
 #include <QtCore/qmath.h>
 #include <complex>
 #include <QVector3D>
+#include <QColor>
+
 
 const double pi=3.1415926535;
 const int deg=3;

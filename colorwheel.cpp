@@ -22,12 +22,12 @@ ColorWheel::ColorWheel(QObject *parent) :
     }
 }
 
-ColorWheel* ColorWheel::copy(ColorWheel *c)
+ColorWheel* ColorWheel::clone()
 {
     ColorWheel *copy = new ColorWheel();
-    copy->setCurrent(c->currentSel);
-    if (!(c->image.isNull())) {
-        copy->image = c->image.copy();
+    copy->setCurrent(this->currentSel);
+    if (!(this->image.isNull())) {
+        copy->image = this->image.copy();
     }
     return copy;
     

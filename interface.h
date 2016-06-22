@@ -1,43 +1,16 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-#include <complex>
-
-#include <QWidget>
-#include <QLabel>
-#include <QLineEdit>
-#include <QSpinBox>
-#include <QSlider>
-#include <QKeyEvent>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QSpacerItem>
-#include <QGroupBox>
-#include <QComboBox>
-#include <QString>
-#include <QDebug>
-#include <QPushButton>
-#include <QImage>
-#include <QDir>
-#include <QInputDialog>
-#include <QFileDialog>
-#include <QSignalMapper>
-#include <QDateTime>
-#include <QShortCut>
-#include <QAction>
-#include <QMessageBox>
-
-#include <time.h>
-
 
 // #include <QQmlDebuggingEnabler>
 
-#include "functions.h"
-#include "colorwheel.h"
-#include "display.h"
+//#include "functions.h"
+//#include "colorwheel.h"
+//#include "display.h"
 #include "port.h"
 
 #define MAX_HISTORY_ITEMS 5
+
 
 const double DEFAULT_WIDTH = 2.5;
 const double DEFAULT_HEIGHT = 2.0;
@@ -49,18 +22,8 @@ const int DEFAULT_PREVIEW_SIZE = 200;
 
 const unsigned int INVALID_FILE_ERROR = 0;
 
-//the settings namespace stores a few variables used to compute the
-//image via the mathematical function and the color wheel, as well as
-//the output width and height.
-namespace settings
-{
-    double Width = DEFAULT_WIDTH;
-    double Height = DEFAULT_HEIGHT;
-    double XCorner = DEFAULT_XCORNER;
-    double YCorner = DEFAULT_YCORNER;
-    int OWidth = DEFAULT_OUTPUT_WIDTH;
-    int OHeight = DEFAULT_OUTPUT_HEIGHT;
-}
+
+
 
 class CustomSpinBox : public QSpinBox
 {

@@ -9,29 +9,23 @@
 #include "port.h"
 
 
-Port::Port(AbstractFunction *currFunction, ColorWheel *currFunction, int width, int height)
+Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height, double XCorner, double YCorner, double setWidth, double setHeight)
 {
     this->width = width;
     this->height = height;
+    this->XCorner = XCorner;
+    this->YCorner = YCorner;
+    this->setWidth = setWidth;
+    this->setHeight = setHeight;
     
-    this->currFunction = currFunction->copy();
-    this->currColorWheel = currFunction->copy();
+    this->currFunction = currFunction->clone();
+    this->currColorWheel = currColorWheel->clone();
     
 }
 
 
-QString Port::exportImage()
+QString Port::exportImage(QImage *output, const QString &fileName)
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
-                                                    saveloadPath,
-                                                    tr("PPM (*.ppm);;JPEG (*.jpg *.jpeg)"));
-    
-    QFile inFile(fileName);
-    if (!inFile.open(QIODevice::WriteOnly))
-        return;
-    
-    double worldY, worldX ;
-    QImage output = new QImage(width, height, QImage::Format_RGB32);
     
     render(output);
     
@@ -47,7 +41,7 @@ void Port::paintToDisplay(Display *display)
 {
     render(display->getImage());
     
-    display->getImage()->repaint();
+    display->repaint();
 }
 
 
@@ -56,15 +50,15 @@ void Port::paintHistoryIcon(HistoryItem *item)
     
     render(item->getImage());
     
-    item->getImage()->repaint();
+    //item->getImage()->repaint();
 }
 
-void Port::render(QImage &output)
+void Port::render(QImage *output)
 {
     
-    double worldYStart1= settings::Height + settings::YCorner;
-    double worldYStart2 = settings::Height/height;
-    double worldXStart = settings::Width/width;
+    double worldYStart1= setHeight + YCorner;
+    double worldYStart2 = setHeight/height;
+    double worldXStart = setWidth/width;
     
     double worldX, worldY;
     
@@ -76,7 +70,7 @@ void Port::render(QImage &output)
             // worldX= x*settings::Width/disp->dim()+settings::XCorner;
             
             worldY = worldYStart1 - y * worldYStart2;
-            worldX = x * worldXStart + settings::XCorner;
+            worldX = x * worldXStart + XCorner;
             
             //run the point through our mathematical function
             //...then convert that complex output to a color according to our color wheel
