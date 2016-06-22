@@ -2,15 +2,9 @@
 #define INTERFACE_H
 
 
-// #include <QQmlDebuggingEnabler>
-
-//#include "functions.h"
-//#include "colorwheel.h"
-//#include "display.h"
 #include "port.h"
 
 #define MAX_HISTORY_ITEMS 5
-
 
 const double DEFAULT_WIDTH = 2.5;
 const double DEFAULT_HEIGHT = 2.0;
@@ -18,10 +12,9 @@ const double DEFAULT_XCORNER = -0.5;
 const double DEFAULT_YCORNER = -0.5;
 const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art prints
 const int DEFAULT_OUTPUT_HEIGHT = 4800;
-const int DEFAULT_PREVIEW_SIZE = 200;
+const int DEFAULT_PREVIEW_SIZE = 600;
 
 const unsigned int INVALID_FILE_ERROR = 0;
-
 
 
 
@@ -94,6 +87,7 @@ public:
     QVBoxLayout *toggleViewLayout;
     
     // functionConstants SUBELEMENTS
+    QScrollArea *functionConstantsScrollArea;
     QLabel *currTermLabel;
     QLabel *nLabel;
     QLabel *mLabel;
@@ -125,18 +119,27 @@ public:
 
     CustomSpinBox *currTermEdit;
 
-    QHBoxLayout *functionConstantsBoxLayoutLower;
-    QVBoxLayout *functionConstantsBoxLayoutStack;
-    QHBoxLayout *functionConstantsBoxLayoutFirstLevel;
-    QHBoxLayout *functionConstantsBoxLayoutSecondLevel;
-    QHBoxLayout *functionConstantsBoxLayoutThirdLevel;
-    QSpacerItem *espacer1;
-    QSpacerItem *espacer2;
-    QSpacerItem *espacer3;
-    QSpacerItem *espacer4;
-    QSpacerItem *espacer5;
-    QSpacerItem *espacer6;
-    QSpacerItem *espacer7;
+    
+    QVBoxLayout *functionConstantsOverallLayout;
+    QHBoxLayout *functionConstantsTerm1;
+    QVBoxLayout *functionConstantsPairs;
+    QHBoxLayout *functionConstantsFreqs;
+    QHBoxLayout *functionConstantsCoeffs;
+    
+    //QVector<QHBoxLayout *> termConstantsLayouts;
+    
+//    QHBoxLayout *functionConstantsBoxLayoutLower;
+//    QVBoxLayout *functionConstantsBoxLayoutStack;
+//    QHBoxLayout *functionConstantsBoxLayoutFirstLevel;
+//    QHBoxLayout *functionConstantsBoxLayoutSecondLevel;
+//    QHBoxLayout *functionConstantsBoxLayoutThirdLevel;
+//    QSpacerItem *espacer1;
+//    QSpacerItem *espacer2;
+//    QSpacerItem *espacer3;
+//    QSpacerItem *espacer4;
+//    QSpacerItem *espacer5;
+//    QSpacerItem *espacer6;
+//    QSpacerItem *espacer7;
     QPushButton *loadButton;
     QPushButton *saveButton;
 

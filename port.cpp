@@ -56,6 +56,11 @@ void Port::paintHistoryIcon(HistoryItem *item)
 void Port::render(QImage *output)
 {
     
+    // temporary timing elements used for code profiling
+    clock_t start, end;
+    double cpu_time_used;
+    start = clock();
+    
     double worldYStart1= setHeight + YCorner;
     double worldYStart2 = setHeight/height;
     double worldXStart = setWidth/width;
@@ -72,6 +77,7 @@ void Port::render(QImage *output)
             worldY = worldYStart1 - y * worldYStart2;
             worldX = x * worldXStart + XCorner;
             
+        
             //run the point through our mathematical function
             //...then convert that complex output to a color according to our color wheel
         
@@ -83,6 +89,11 @@ void Port::render(QImage *output)
             
         }
     }
+    
+    // calc time elapsed to render all pixels
+    end = clock();
+    cpu_time_used = (double)(end - start)/CLOCKS_PER_SEC;
+    qDebug() << "TIME TO RENDER ALL PIXELS: " << cpu_time_used << " sec";
     
 
 }

@@ -33,6 +33,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     // ORGANIZATIONAL ELEMENTS
     
     //create elements
+    
     functionConstantsBox = new QGroupBox(tr("Function Constants"), this);
     interfaceLayout = new QVBoxLayout(this);
     topbarLayout = new QHBoxLayout();
@@ -76,6 +77,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     
     //functionConstantsBox SUBELEMENTS
     //create labels
+    
     currTermLabel = new QLabel(functionConstantsBox);
     currTermLabel->setText(tr("Term"));
 
@@ -125,21 +127,21 @@ interface::interface(QWidget *parent) : QWidget(parent)
     scalePlanePopUp = new QWidget(this, Qt::Window);
 
     currTermEdit = new CustomSpinBox(functionConstantsBox);
-    espacer1 = new QSpacerItem(5, 5);
-    espacer2 = new QSpacerItem(5, 5);
-    espacer3 = new QSpacerItem(5, 5);
-    espacer4 = new QSpacerItem(5, 5);
-    espacer5 = new QSpacerItem(130, 15);
-    espacer6 = new QSpacerItem(2, 0);
-    espacer7 = new QSpacerItem(15, 15);
+//    espacer1 = new QSpacerItem(5, 5);
+//    espacer2 = new QSpacerItem(5, 5);
+//    espacer3 = new QSpacerItem(5, 5);
+//    espacer4 = new QSpacerItem(5, 5);
+//    espacer5 = new QSpacerItem(130, 15);
+//    espacer6 = new QSpacerItem(2, 0);
+//    espacer7 = new QSpacerItem(15, 15);
 
     loadButton = new QPushButton(tr("Load Setting..."), functionConstantsBox);
     saveButton = new QPushButton(tr("Save Current Setting"), functionConstantsBox);
     currTermEdit->setRange(1,1);
-    nEdit->setFixedWidth(200);
-    mEdit->setFixedWidth(200);
-    rEdit->setFixedWidth(200);
-    aEdit->setFixedWidth(200);
+//    nEdit->setFixedWidth(200);
+//    mEdit->setFixedWidth(200);
+//    rEdit->setFixedWidth(200);
+//    aEdit->setFixedWidth(200);
     scaleAEdit->setFixedWidth(50);
     scaleREdit->setFixedWidth(50);
     nLabel->setFixedWidth(18);
@@ -161,61 +163,92 @@ interface::interface(QWidget *parent) : QWidget(parent)
     scaleAEdit->setValidator(doubleValidate);
     scaleREdit->setValidator(doubleValidate);
 
-    functionConstantsBoxLayoutStack = new QVBoxLayout(functionConstantsBox);  //initialize layout
+    functionConstantsOverallLayout = new QVBoxLayout(functionConstantsBox);
+    functionConstantsTerm1 = new QHBoxLayout();
+    functionConstantsTerm1->addWidget(currTermLabel);
+    functionConstantsTerm1->addWidget(currTermEdit);
     
-    functionConstantsBoxLayoutLower = new QHBoxLayout();
-    functionConstantsBoxLayoutFirstLevel = new QHBoxLayout();
-    functionConstantsBoxLayoutSecondLevel = new QHBoxLayout();
-    functionConstantsBoxLayoutThirdLevel = new QHBoxLayout();
-
-    functionConstantsBoxLayoutFirstLevel->setAlignment(Qt::AlignLeft);
-    functionConstantsBoxLayoutSecondLevel->setAlignment(Qt::AlignLeft);
-    functionConstantsBoxLayoutThirdLevel->setAlignment(Qt::AlignLeft);
+    functionConstantsFreqs->addWidget(freqpairLabel);
+    functionConstantsFreqs->addWidget(nLabel);
+    functionConstantsFreqs->addWidget(nEdit);
+   
+    functionConstantsFreqs->addWidget(mLabel);
+    functionConstantsFreqs->addWidget(mEdit);
+   
     
-    functionConstantsBoxLayoutLower->setAlignment(Qt::AlignRight);
+    functionConstantsCoeffs->addWidget(coeffLabel);
+    functionConstantsCoeffs->addWidget(rLabel);
+    functionConstantsCoeffs->addWidget(rEdit);
+    functionConstantsCoeffs->addWidget(rValueLabel);
+    functionConstantsCoeffs->addWidget(aLabel);
+    functionConstantsCoeffs->addWidget(aEdit);
+    functionConstantsCoeffs->addWidget(aValueLabel);
 
-    functionConstantsBoxLayoutFirstLevel->addWidget(currTermLabel);
-    functionConstantsBoxLayoutFirstLevel->addWidget(currTermEdit);
-
-    functionConstantsBoxLayoutSecondLevel->addWidget(freqpairLabel);
-    functionConstantsBoxLayoutSecondLevel->addItem(espacer1);
-    functionConstantsBoxLayoutSecondLevel->addWidget(nLabel);
-    functionConstantsBoxLayoutSecondLevel->addWidget(nEdit);
-    // functionConstantsBoxLayoutSecondLevel->addWidget(nValueLabel);
-    functionConstantsBoxLayoutSecondLevel->addItem(espacer2);
-    functionConstantsBoxLayoutSecondLevel->addWidget(mLabel);
-    functionConstantsBoxLayoutSecondLevel->addWidget(mEdit);
-    // functionConstantsBoxLayoutSecondLevel->addWidget(mValueLabel);
-
-    functionConstantsBoxLayoutThirdLevel->addWidget(coeffLabel);
-    functionConstantsBoxLayoutThirdLevel->addItem(espacer4);
-    functionConstantsBoxLayoutThirdLevel->addWidget(rLabel);
-    functionConstantsBoxLayoutThirdLevel->addWidget(rEdit);
-    functionConstantsBoxLayoutThirdLevel->addWidget(rValueLabel);
-    functionConstantsBoxLayoutThirdLevel->addItem(espacer3);
-    functionConstantsBoxLayoutThirdLevel->addWidget(aLabel);
-    functionConstantsBoxLayoutThirdLevel->addWidget(aEdit);
-    functionConstantsBoxLayoutThirdLevel->addWidget(aValueLabel);
-    functionConstantsBoxLayoutThirdLevel->addWidget(coeffPlaneEdit);
-
-    //fill layouts
-    functionConstantsBoxLayoutLower->addWidget(loadButton);
-    functionConstantsBoxLayoutLower->addItem(espacer7);
-    functionConstantsBoxLayoutLower->addWidget(saveButton);
-    functionConstantsBoxLayoutLower->addItem(espacer5);
-    functionConstantsBoxLayoutLower->addWidget(scaleRLabel);
-    functionConstantsBoxLayoutLower->addWidget(scaleREdit);
-    functionConstantsBoxLayoutLower->addItem(espacer6);
-    functionConstantsBoxLayoutLower->addWidget(scaleALabel);
-    functionConstantsBoxLayoutLower->addWidget(scaleAEdit);
-    functionConstantsBoxLayoutLower->addWidget(scalePlaneEdit);
     
-    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutFirstLevel);
-    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutSecondLevel);
-    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutThirdLevel);
-    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutLower);
+    functionConstantsPairs->addLayout(functionConstantsFreqs);
+    functionConstantsPairs->addLayout(functionConstantsCoeffs);
+    functionConstantsTerm1->addLayout(functionConstantsPairs);
+    
+    functionConstantsOverallLayout->addWidget(loadButton);
+    functionConstantsOverallLayout->addWidget(saveButton);
+    functionConstantsBox->setLayout(functionConstantsOverallLayout);
+    
+    
+//    functionConstantsBoxLayoutStack = new QVBoxLayout(functionConstantsBox);  //initialize layout
+//    
+//    functionConstantsBoxLayoutLower = new QHBoxLayout();
+//    functionConstantsBoxLayoutFirstLevel = new QHBoxLayout();
+//    functionConstantsBoxLayoutSecondLevel = new QHBoxLayout();
+//    functionConstantsBoxLayoutThirdLevel = new QHBoxLayout();
+//
+//    functionConstantsBoxLayoutFirstLevel->setAlignment(Qt::AlignLeft);
+//    functionConstantsBoxLayoutSecondLevel->setAlignment(Qt::AlignLeft);
+//    functionConstantsBoxLayoutThirdLevel->setAlignment(Qt::AlignLeft);
+//    
+//    functionConstantsBoxLayoutLower->setAlignment(Qt::AlignRight);
+//
+//    functionConstantsBoxLayoutFirstLevel->addWidget(currTermLabel);
+//    functionConstantsBoxLayoutFirstLevel->addWidget(currTermEdit);
+//
+//    functionConstantsBoxLayoutFirstLevel->addWidget(freqpairLabel);
+//    //functionConstantsBoxLayoutFirstLevel->addItem(espacer1);
+//    functionConstantsBoxLayoutFirstLevel->addWidget(nLabel);
+//    functionConstantsBoxLayoutFirstLevel->addWidget(nEdit);
+//    // functionConstantsBoxLayoutSecondLevel->addWidget(nValueLabel);
+//    //functionConstantsBoxLayoutFirstLevel->addItem(espacer2);
+//    functionConstantsBoxLayoutFirstLevel->addWidget(mLabel);
+//    functionConstantsBoxLayoutFirstLevel->addWidget(mEdit);
+//    // functionConstantsBoxLayoutSecondLevel->addWidget(mValueLabel);
+//
+//    functionConstantsBoxLayoutThirdLevel->addWidget(coeffLabel);
+//    functionConstantsBoxLayoutThirdLevel->addItem(espacer4);
+//    functionConstantsBoxLayoutThirdLevel->addWidget(rLabel);
+//    functionConstantsBoxLayoutThirdLevel->addWidget(rEdit);
+//    functionConstantsBoxLayoutThirdLevel->addWidget(rValueLabel);
+//    functionConstantsBoxLayoutThirdLevel->addItem(espacer3);
+//    functionConstantsBoxLayoutThirdLevel->addWidget(aLabel);
+//    functionConstantsBoxLayoutThirdLevel->addWidget(aEdit);
+//    functionConstantsBoxLayoutThirdLevel->addWidget(aValueLabel);
+//    functionConstantsBoxLayoutThirdLevel->addWidget(coeffPlaneEdit);
+//
+//    //fill layouts
+//    functionConstantsBoxLayoutLower->addWidget(loadButton);
+//    functionConstantsBoxLayoutLower->addItem(espacer7);
+//    functionConstantsBoxLayoutLower->addWidget(saveButton);
+//    functionConstantsBoxLayoutLower->addItem(espacer5);
+//    functionConstantsBoxLayoutLower->addWidget(scaleRLabel);
+//    functionConstantsBoxLayoutLower->addWidget(scaleREdit);
+//    functionConstantsBoxLayoutLower->addItem(espacer6);
+//    functionConstantsBoxLayoutLower->addWidget(scaleALabel);
+//    functionConstantsBoxLayoutLower->addWidget(scaleAEdit);
+//    functionConstantsBoxLayoutLower->addWidget(scalePlaneEdit);
+    
+//    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutFirstLevel);
+//    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutSecondLevel);
+//    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutThirdLevel);
+//    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutLower);
 
-    functionConstantsBox->setLayout(functionConstantsBoxLayoutStack);
+    //functionConstantsBox->setLayout(functionConstantsOverallLayout);
 
     // patternType SUBELEMENTS
     patternTypeBox = new QGroupBox(tr("Pattern Type"), patternTypeWidget);

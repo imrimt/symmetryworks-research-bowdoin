@@ -1,6 +1,6 @@
 //
 //  port.h
-//  
+//
 //
 //  Created by Bridget E. Went on 6/21/16.
 //
@@ -14,7 +14,9 @@
 #include <QDebug>
 #include <QtCore/qmath.h>
 #include <complex>
+#include <QtWidgets>
 
+#include <QScrollArea>
 #include <QWidget>
 #include <QLabel>
 #include <QLineEdit>
@@ -45,10 +47,7 @@
 #include "functions.h"
 #include "colorwheel.h"
 
-
-
-//#include "interface.h"
-
+// TODO: move this to its own source file?
 class HistoryItem : public QObject
 {
     Q_OBJECT
@@ -69,18 +68,16 @@ public:
     
     QDateTime savedTime;
     
-private:
-    
 };
 
 class Port
 {
-   
+    
+    
 public:
-
+    
     // CONSTRUCTOR
     Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height, double XCorner, double YCorner, double setWidth, double setHeight);
-
     
     virtual ~Port(){;}
     
@@ -88,7 +85,8 @@ public:
     QString exportImage(QImage *output, const QString &fileName);
     void paintToDisplay(Display *disp);
     void paintHistoryIcon(HistoryItem *item);
-
+    
+    
     
 protected:
     
@@ -101,8 +99,8 @@ protected:
     
     
 private:
-    
     void render(QImage *output);
+    
     
 };
 
