@@ -36,18 +36,26 @@
 
 #include <time.h>
 
-// #include <QQmlDebuggingEnabler>
-
 #include "functions.h"
 #include "colorwheel.h"
 #include "display.h"
-#include "qcustomplot.h"
+#include "port.h"
 
 const int MAX_HISTORY_ITEMS = 5;
 const int LOCAL_FLAG = 0;
 const int GLOBAL_FLAG = 1;
 
 using namespace QtCharts;
+
+const double DEFAULT_WIDTH = 2.5;
+const double DEFAULT_HEIGHT = 2.0;
+const double DEFAULT_XCORNER = -0.5;
+const double DEFAULT_YCORNER = -0.5;
+const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art prints
+const int DEFAULT_OUTPUT_HEIGHT = 4800;
+const int DEFAULT_PREVIEW_SIZE = 600;
+
+const unsigned int INVALID_FILE_ERROR = 0;
 
 class CustomSpinBox : public QSpinBox
 {
@@ -77,25 +85,6 @@ class QDoubleSlider : public QSlider
         emit doubleValueChanged(doubleValue);
     }
 
-};
-
-class HistoryItem : public QObject
-{
-    Q_OBJECT
-  public:
-    HistoryItem(QObject *parent = 0) : QObject(parent) { }    
-    QVBoxLayout *layoutWithLabelItem;
-    QHBoxLayout *layoutItem;
-    QVBoxLayout *buttonLayoutItem;
-    Display *preview;
-    QPushButton *viewButton;
-    QPushButton *removeButton;
-    QLabel *labelItem;
-    QString filePathName;
-    QStringList settings;
-
-    //is this data structure useful? 
-    QDateTime savedTime;
 };
 
 class CoeffPlaneView : public QChartView {
@@ -147,7 +136,7 @@ public:
     explicit interface(QWidget *parent = 0);
     
     // ORGANIZATIONAL ELEMENTS
-    QGroupBox *functionConstantsBox;
+    QWidget *functionConstantsWidget;
     QVBoxLayout *interfaceLayout;
     QWidget *displayWidget;
     QHBoxLayout *topbarLayout;
@@ -172,7 +161,10 @@ public:
     QVBoxLayout *toggleViewLayout;
     
     // functionConstants SUBELEMENTS
+    //QScrollArea *functionConstantsScrollArea;
+    
     QLabel *currTermLabel;
+    CustomSpinBox *currTermEdit;
     QLabel *nLabel;
     QLabel *mLabel;
     QLabel *aLabel;
@@ -192,25 +184,38 @@ public:
     QDoubleSlider *aEdit;
     QDoubleSlider *rEdit;
     QPushButton *coeffPlaneEdit;
-
+    
+    QLabel *globalConsantsLabel;
+    
     QLineEdit *scaleAEdit;
     QLineEdit *scaleREdit;
     QPushButton *scalePlaneEdit;
 
-    CustomSpinBox *currTermEdit;
+    //CustomSpinBox *currTermEdit;
 
-    QHBoxLayout *functionConstantsBoxLayoutLower;
-    QVBoxLayout *functionConstantsBoxLayoutStack;
-    QHBoxLayout *functionConstantsBoxLayoutFirstLevel;
-    QHBoxLayout *functionConstantsBoxLayoutSecondLevel;
-    QHBoxLayout *functionConstantsBoxLayoutThirdLevel;
-    QSpacerItem *espacer1;
-    QSpacerItem *espacer2;
-    QSpacerItem *espacer3;
-    QSpacerItem *espacer4;
-    QSpacerItem *espacer5;
-    QSpacerItem *espacer6;
-    QSpacerItem *espacer7;
+    QGroupBox *functionConstantsBox;
+    
+    QVBoxLayout *functionConstantsBoxLayout;
+    QVBoxLayout *functionConstantsWidgetLayout;
+    QHBoxLayout *functionConstantsScalingTerms;
+    QHBoxLayout *functionConstantsTerm1;
+    QVBoxLayout *functionConstantsPairs;
+    QHBoxLayout *functionConstantsFreqs;
+    QHBoxLayout *functionConstantsCoeffs;
+    
+    
+//    QHBoxLayout *functionConstantsBoxLayoutLower;
+//    QVBoxLayout *functionConstantsBoxLayoutStack;
+//    QHBoxLayout *functionConstantsBoxLayoutFirstLevel;
+//    QHBoxLayout *functionConstantsBoxLayoutSecondLevel;
+//    QHBoxLayout *functionConstantsBoxLayoutThirdLevel;
+//    QSpacerItem *espacer1;
+//    QSpacerItem *espacer2;
+//    QSpacerItem *espacer3;
+//    QSpacerItem *espacer4;
+//    QSpacerItem *espacer5;
+//    QSpacerItem *espacer6;
+//    QSpacerItem *espacer7;
     QPushButton *loadButton;
     QPushButton *saveButton;
 
@@ -256,7 +261,8 @@ public:
     QLabel *YCornerLabel;
     QLabel *worldwidthLabel;
     QLabel *worldheightLabel;
-    QLineEdit *outheightEdit;
+    QLineEdit
+     *outheightEdit;
     QLineEdit *outwidthEdit;
     QLineEdit *XCornerEdit;
     QLineEdit *YCornerEdit;

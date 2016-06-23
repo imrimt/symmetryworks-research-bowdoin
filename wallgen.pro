@@ -18,6 +18,7 @@ SOURCES += \
     display.cpp \
     colorwheel.cpp \
     functions.cpp \
+    port.cpp \
     mainwindow.cpp
 
 HEADERS  += \
@@ -27,6 +28,7 @@ HEADERS  += \
     colorwheel.h \
     functions.h \
     pairs.h \
+    port.h \
     mainwindow.h
 
 RESOURCES += \

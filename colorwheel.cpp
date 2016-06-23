@@ -22,6 +22,17 @@ ColorWheel::ColorWheel(QObject *parent) :
     }
 }
 
+ColorWheel* ColorWheel::clone()
+{
+    ColorWheel *copy = new ColorWheel();
+    copy->setCurrent(this->currentSel);
+    if (!(this->image.isNull())) {
+        copy->image = this->image.copy();
+    }
+    return copy;
+    
+}
+
 QRgb ColorWheel::operator() (std::complex<double> zin)
 {
     QRgb col;
@@ -523,114 +534,11 @@ QRgb ColorWheel::FromImage(std::complex<double> zin)
 //    return out;
 //}
 
-QVector3D ColorWheel::tilt(QVector3D v)
-{
-    return QVector3D((q2*v.x() + v.z()) / q3, -v.x() / q2 / q3 + v.y() / q2 + v.z() / q3, -v.x() / q2 / q3 - v.y() / q2 + v.z() / q3);
 
-}
-
-QVector3D ColorWheel::stereo(std::complex<double> z)
-{
-    double r2;
-    double x = z.real();
-    double y = z.imag();
-
-    r2 = 1 + x*x + y*y;
-    return QVector3D(2.0 * x / r2, 2.0 * y / r2, 2.0 / r2 - 1.0);
-}
-
-QVector3D ColorWheel::cubeRootVec(QVector3D v)  //cube root of vector entries
-{
-    
-    return QVector3D(cubeRoot(v.x()),cubeRoot(v.y()),cubeRoot(v.z()));
-    
-}
-
-QVector3D ColorWheel::pow35Vec(QVector3D v) // 3/5ths power of vector entries
-{
-   
-    return QVector3D(pow35(v.x()),pow35(v.y()),pow35(v.z()));;
-}
-
-vect5 ColorWheel::initVect5(double x1, double y1, double z1, double u1, double v1)
-{
-    vect5 vec;
-    vec.xv=x1;
-    vec.yv=y1;
-    vec.zv=z1;
-    vec.uv=u1;
-    vec.vv=v1;
-    return vec;
-}
-
-vect5 ColorWheel::Bvect5(double a, double b, double c)
-{
-    vect5 vec;
-    double x5,y5,z5,u5,v5;
-    x5=a/ma+c/sqrt(5.0);
-    y5=a*c2/ma+b*s2/ma+c/sqrt(5.0);
-    z5=a*c4/ma+b*s4/ma+c/sqrt(5.0);
-    u5=a*c6/ma+b*s6/ma+c/sqrt(5.0);
-    v5=a*c8/ma+b*s8/ma+c/sqrt(5.0);
-    vec = initVect5(x5,y5,z5,u5,v5);
-    return vec;
-}
-//
-//RGB ColorWheel::initRGB(int Rin, int Gin, int Bin)
-//{
-//    RGB out;
-//    out.Rv=Rin;
-//    out.Gv=Gin;
-//    out.Bv=Bin;
-//    return out;
-//}
-
-QRgb ColorWheel::RgbFromVec3(QVector3D v)
-{
-    
-    QColor color(int(double(MAX_RGB) *(1.0 + v.x())/2.0), int(double(MAX_RGB) * (1.0 + v.y())/2.0), int(double(MAX_RGB) * (1.0 + v.z())/2.0));
-    
-    return color.rgb();
-}
-
-double ColorWheel::dotProduct(QVector3D vec1, QVector3D vec2) //dot product
-{
-    return vec1.x() * vec2.x() + vec1.y() * vec2.y() + vec1.z() * vec2.z();
-}
-
-double ColorWheel::cubeRoot(double nu)   //cube root function
-{
-    static double xt;
-
-    if(nu==0.0)
-        return 0.0;
-
-    if (nu>0.0)
-        xt=exp(log(nu)/3.0);
-
-    else
-        xt=0.0-exp(log(0.0-nu)/3.0);
-
-    return xt;
-}
-
-double ColorWheel::pow35(double nu)
-{
-    static double xt;
-
-    if(nu==0.0)
-        return 0.0;
-
-    if (nu>0.0)
-        xt=exp(log(nu)*3.0/5.0);
-    else
-        xt=0.0-exp(log(0.0-nu)*3.0/5.0);
-
-    return xt;
-}
 
 void ColorWheel::setCurrent(int index)
 {
     if(index >= 0 && index <= 9)
         currentSel = index;
 }
+
