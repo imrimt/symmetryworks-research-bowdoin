@@ -34,13 +34,14 @@ interface::interface(QWidget *parent) : QWidget(parent)
     
     //create elements
     
-    functionConstantsBox = new QGroupBox(tr("Function Constants"), this);
+    
     interfaceLayout = new QVBoxLayout(this);
     topbarLayout = new QHBoxLayout();
     leftbarLayout = new QVBoxLayout();
     imagePropsBox = new QGroupBox(tr("Image Properties"), this);
     displayWidget = new QWidget(this);
     patternTypeWidget = new QWidget(this);
+    functionConstantsWidget = new QWidget(this);
     viewHistoryWidget = new QWidget(this);
     toggleViewWidget = new QWidget(this);
     leftbarLayout->addWidget(toggleViewWidget);
@@ -52,7 +53,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     topbarLayout->addWidget(displayWidget);
     topbarLayout->addWidget(viewHistoryWidget);
     interfaceLayout->addLayout(topbarLayout);                       //lay out vertically
-    interfaceLayout->addWidget(functionConstantsBox);
+    interfaceLayout->addWidget(functionConstantsWidget);
     setLayout(interfaceLayout);
 
     errorMessageBox = new QMessageBox(this);
@@ -78,9 +79,13 @@ interface::interface(QWidget *parent) : QWidget(parent)
     //functionConstantsBox SUBELEMENTS
     //create labels
     
+    functionConstantsBox = new QGroupBox(tr("Function Constants"), functionConstantsWidget);
+    
     currTermLabel = new QLabel(functionConstantsBox);
     currTermLabel->setText(tr("Term"));
-
+    
+    currTermEdit = new CustomSpinBox(functionConstantsBox);
+    
     freqpairLabel = new QLabel(tr("Frequency Pair: "), functionConstantsBox);
     coeffLabel = new QLabel(tr("Coefficient Pair: "), functionConstantsBox);
 
@@ -94,6 +99,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     aValueLabel = new QLabel(functionConstantsBox);
     rValueLabel = new QLabel(functionConstantsBox);
 
+    globalConsantsLabel = new QLabel(tr("<b>Global Function Constants<\b>"), functionConstantsBox);
     scaleALabel = new QLabel(tr("Scaling Angle"), functionConstantsBox);
     scaleRLabel = new QLabel(tr("Scaling Radius"), functionConstantsBox);
     refreshLabels();
@@ -109,10 +115,10 @@ interface::interface(QWidget *parent) : QWidget(parent)
     aEdit = new QDoubleSlider();
     rEdit = new QDoubleSlider();
     coeffPlaneEdit = new QPushButton(tr("Set on plane"), functionConstantsBox);
-    // coeffPlanePopUp = new QMessageBox(this);
-    // coeffPlanePopUp->setIcon(QMessageBox::Information);
+     coeffPlanePopUp = new QMessageBox(this);
+     //coeffPlanePopUp->setIcon(QMessageBox::Information);
     // coeffPlanePopUp->setText("Hello");
-    coeffPlanePopUp = new QWidget(this, Qt::Window);
+    //coeffPlanePopUp = new QWidget(this, Qt::Window);
 
     aEdit->setOrientation(Qt::Horizontal);
     rEdit->setOrientation(Qt::Horizontal);
@@ -126,7 +132,9 @@ interface::interface(QWidget *parent) : QWidget(parent)
 
     scalePlanePopUp = new QWidget(this, Qt::Window);
 
-    currTermEdit = new CustomSpinBox(functionConstantsBox);
+    //currTermEdit = new CustomSpinBox(functionConstantsBox);
+    
+    
 //    espacer1 = new QSpacerItem(5, 5);
 //    espacer2 = new QSpacerItem(5, 5);
 //    espacer3 = new QSpacerItem(5, 5);
@@ -135,15 +143,16 @@ interface::interface(QWidget *parent) : QWidget(parent)
 //    espacer6 = new QSpacerItem(2, 0);
 //    espacer7 = new QSpacerItem(15, 15);
 
-    loadButton = new QPushButton(tr("Load Setting..."), functionConstantsBox);
-    saveButton = new QPushButton(tr("Save Current Setting"), functionConstantsBox);
+    //loadButton = new QPushButton(tr("Load Setting..."), functionConstantsBox);
+    //saveButton = new QPushButton(tr("Save Current Setting"), functionConstantsBox);
     currTermEdit->setRange(1,1);
-//    nEdit->setFixedWidth(200);
-//    mEdit->setFixedWidth(200);
-//    rEdit->setFixedWidth(200);
-//    aEdit->setFixedWidth(200);
-    scaleAEdit->setFixedWidth(50);
-    scaleREdit->setFixedWidth(50);
+    nEdit->setFixedWidth(100);
+    mEdit->setFixedWidth(100);
+    rEdit->setFixedWidth(100);
+    aEdit->setFixedWidth(100);
+    scaleAEdit->setFixedWidth(20);
+    scaleREdit->setFixedWidth(20);
+    scalePlaneEdit->setFixedWidth(120);
     nLabel->setFixedWidth(18);
     mLabel->setFixedWidth(18);
     rLabel->setFixedWidth(18);
@@ -163,18 +172,30 @@ interface::interface(QWidget *parent) : QWidget(parent)
     scaleAEdit->setValidator(doubleValidate);
     scaleREdit->setValidator(doubleValidate);
 
-    functionConstantsOverallLayout = new QVBoxLayout(functionConstantsBox);
+    functionConstantsWidgetLayout = new QVBoxLayout(functionConstantsWidget);
+    functionConstantsBoxLayout = new QVBoxLayout(functionConstantsBox);
+    
+    functionConstantsScalingTerms = new QHBoxLayout();
+    //functionConstantsTerms = new QVBoxLayout(); //ADD TO HEADER FILE. CHILDREN WILL BE EACH TERM, STARTING WITH TERM1
     functionConstantsTerm1 = new QHBoxLayout();
-    functionConstantsTerm1->addWidget(currTermLabel);
-    functionConstantsTerm1->addWidget(currTermEdit);
+    functionConstantsFreqs = new QHBoxLayout();
+    functionConstantsCoeffs = new QHBoxLayout();
+    functionConstantsPairs = new QVBoxLayout();
+
+    functionConstantsScalingTerms->addWidget(globalConsantsLabel);
+    functionConstantsScalingTerms->addWidget(scaleRLabel);
+    functionConstantsScalingTerms->addWidget(scaleREdit);
+    functionConstantsScalingTerms->addWidget(scaleALabel);
+    functionConstantsScalingTerms->addWidget(scaleAEdit);
+    functionConstantsScalingTerms->addWidget(scalePlaneEdit);
+    functionConstantsScalingTerms->setAlignment(Qt::AlignRight);
     
     functionConstantsFreqs->addWidget(freqpairLabel);
     functionConstantsFreqs->addWidget(nLabel);
     functionConstantsFreqs->addWidget(nEdit);
-   
     functionConstantsFreqs->addWidget(mLabel);
     functionConstantsFreqs->addWidget(mEdit);
-   
+    functionConstantsFreqs->setAlignment(Qt::AlignLeft);
     
     functionConstantsCoeffs->addWidget(coeffLabel);
     functionConstantsCoeffs->addWidget(rLabel);
@@ -183,72 +204,22 @@ interface::interface(QWidget *parent) : QWidget(parent)
     functionConstantsCoeffs->addWidget(aLabel);
     functionConstantsCoeffs->addWidget(aEdit);
     functionConstantsCoeffs->addWidget(aValueLabel);
+    functionConstantsCoeffs->addWidget(coeffPlaneEdit);
+    functionConstantsCoeffs->setAlignment(Qt::AlignLeft);
 
-    
+    functionConstantsTerm1->addWidget(currTermLabel);
+    functionConstantsTerm1->addWidget(currTermEdit);
+    functionConstantsTerm1->setAlignment(Qt::AlignRight);
+
     functionConstantsPairs->addLayout(functionConstantsFreqs);
     functionConstantsPairs->addLayout(functionConstantsCoeffs);
     functionConstantsTerm1->addLayout(functionConstantsPairs);
     
-    functionConstantsOverallLayout->addWidget(loadButton);
-    functionConstantsOverallLayout->addWidget(saveButton);
-    functionConstantsBox->setLayout(functionConstantsOverallLayout);
+    functionConstantsBoxLayout->addLayout(functionConstantsScalingTerms);
+    functionConstantsBoxLayout->addLayout(functionConstantsTerm1);
+   
+    functionConstantsWidgetLayout->addWidget(functionConstantsBox);
     
-    
-//    functionConstantsBoxLayoutStack = new QVBoxLayout(functionConstantsBox);  //initialize layout
-//    
-//    functionConstantsBoxLayoutLower = new QHBoxLayout();
-//    functionConstantsBoxLayoutFirstLevel = new QHBoxLayout();
-//    functionConstantsBoxLayoutSecondLevel = new QHBoxLayout();
-//    functionConstantsBoxLayoutThirdLevel = new QHBoxLayout();
-//
-//    functionConstantsBoxLayoutFirstLevel->setAlignment(Qt::AlignLeft);
-//    functionConstantsBoxLayoutSecondLevel->setAlignment(Qt::AlignLeft);
-//    functionConstantsBoxLayoutThirdLevel->setAlignment(Qt::AlignLeft);
-//    
-//    functionConstantsBoxLayoutLower->setAlignment(Qt::AlignRight);
-//
-//    functionConstantsBoxLayoutFirstLevel->addWidget(currTermLabel);
-//    functionConstantsBoxLayoutFirstLevel->addWidget(currTermEdit);
-//
-//    functionConstantsBoxLayoutFirstLevel->addWidget(freqpairLabel);
-//    //functionConstantsBoxLayoutFirstLevel->addItem(espacer1);
-//    functionConstantsBoxLayoutFirstLevel->addWidget(nLabel);
-//    functionConstantsBoxLayoutFirstLevel->addWidget(nEdit);
-//    // functionConstantsBoxLayoutSecondLevel->addWidget(nValueLabel);
-//    //functionConstantsBoxLayoutFirstLevel->addItem(espacer2);
-//    functionConstantsBoxLayoutFirstLevel->addWidget(mLabel);
-//    functionConstantsBoxLayoutFirstLevel->addWidget(mEdit);
-//    // functionConstantsBoxLayoutSecondLevel->addWidget(mValueLabel);
-//
-//    functionConstantsBoxLayoutThirdLevel->addWidget(coeffLabel);
-//    functionConstantsBoxLayoutThirdLevel->addItem(espacer4);
-//    functionConstantsBoxLayoutThirdLevel->addWidget(rLabel);
-//    functionConstantsBoxLayoutThirdLevel->addWidget(rEdit);
-//    functionConstantsBoxLayoutThirdLevel->addWidget(rValueLabel);
-//    functionConstantsBoxLayoutThirdLevel->addItem(espacer3);
-//    functionConstantsBoxLayoutThirdLevel->addWidget(aLabel);
-//    functionConstantsBoxLayoutThirdLevel->addWidget(aEdit);
-//    functionConstantsBoxLayoutThirdLevel->addWidget(aValueLabel);
-//    functionConstantsBoxLayoutThirdLevel->addWidget(coeffPlaneEdit);
-//
-//    //fill layouts
-//    functionConstantsBoxLayoutLower->addWidget(loadButton);
-//    functionConstantsBoxLayoutLower->addItem(espacer7);
-//    functionConstantsBoxLayoutLower->addWidget(saveButton);
-//    functionConstantsBoxLayoutLower->addItem(espacer5);
-//    functionConstantsBoxLayoutLower->addWidget(scaleRLabel);
-//    functionConstantsBoxLayoutLower->addWidget(scaleREdit);
-//    functionConstantsBoxLayoutLower->addItem(espacer6);
-//    functionConstantsBoxLayoutLower->addWidget(scaleALabel);
-//    functionConstantsBoxLayoutLower->addWidget(scaleAEdit);
-//    functionConstantsBoxLayoutLower->addWidget(scalePlaneEdit);
-    
-//    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutFirstLevel);
-//    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutSecondLevel);
-//    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutThirdLevel);
-//    functionConstantsBoxLayoutStack->addLayout(functionConstantsBoxLayoutLower);
-
-    //functionConstantsBox->setLayout(functionConstantsOverallLayout);
 
     // patternType SUBELEMENTS
     patternTypeBox = new QGroupBox(tr("Pattern Type"), patternTypeWidget);
@@ -463,7 +434,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
-    connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeMaxTerms(int)));
+    //connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeMaxTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateTerms(int)));
 
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
@@ -591,6 +562,7 @@ void interface::toggleViewMode() {
     }
 }
 
+// TODO fix these to cycle through terms
 void interface::updateTerms(int i)
 {
     termIndex = i-1;

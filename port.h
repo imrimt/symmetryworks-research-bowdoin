@@ -31,6 +31,7 @@
 #include <QString>
 #include <QDebug>
 #include <QPushButton>
+#include <QAbstractButton>
 #include <QImage>
 #include <QDir>
 #include <QInputDialog>
@@ -40,6 +41,7 @@
 #include <QShortCut>
 #include <QAction>
 #include <QMessageBox>
+
 
 #include <time.h>
 

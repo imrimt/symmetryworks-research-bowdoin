@@ -63,7 +63,7 @@ public:
     explicit interface(QWidget *parent = 0);
     
     // ORGANIZATIONAL ELEMENTS
-    QGroupBox *functionConstantsBox;
+    QWidget *functionConstantsWidget;
     QVBoxLayout *interfaceLayout;
     QWidget *displayWidget;
     QHBoxLayout *topbarLayout;
@@ -87,8 +87,10 @@ public:
     QVBoxLayout *toggleViewLayout;
     
     // functionConstants SUBELEMENTS
-    QScrollArea *functionConstantsScrollArea;
+    //QScrollArea *functionConstantsScrollArea;
+    
     QLabel *currTermLabel;
+    CustomSpinBox *currTermEdit;
     QLabel *nLabel;
     QLabel *mLabel;
     QLabel *aLabel;
@@ -110,23 +112,26 @@ public:
     QPushButton *coeffPlaneEdit;
     
     QWidget *coeffPlanePopUp;
-
+    
+    QLabel *globalConsantsLabel;
     QLineEdit *scaleAEdit;
     QLineEdit *scaleREdit;
     QPushButton *scalePlaneEdit;
     
     QWidget *scalePlanePopUp;
 
-    CustomSpinBox *currTermEdit;
+    //CustomSpinBox *currTermEdit;
 
+    QGroupBox *functionConstantsBox;
     
-    QVBoxLayout *functionConstantsOverallLayout;
+    QVBoxLayout *functionConstantsBoxLayout;
+    QVBoxLayout *functionConstantsWidgetLayout;
+    QHBoxLayout *functionConstantsScalingTerms;
     QHBoxLayout *functionConstantsTerm1;
     QVBoxLayout *functionConstantsPairs;
     QHBoxLayout *functionConstantsFreqs;
     QHBoxLayout *functionConstantsCoeffs;
     
-    //QVector<QHBoxLayout *> termConstantsLayouts;
     
 //    QHBoxLayout *functionConstantsBoxLayoutLower;
 //    QVBoxLayout *functionConstantsBoxLayoutStack;
