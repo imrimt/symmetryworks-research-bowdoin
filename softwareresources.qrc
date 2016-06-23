@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/MyFiles">
+        <file>wallgen.pro</file>
+    </qresource>
+    <qresource prefix="/Images">
+        <file>zoomout.png</file>
+        <file>zoomin.png</file>
+    </qresource>
+</RCC>

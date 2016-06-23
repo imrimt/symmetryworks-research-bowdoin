@@ -26,6 +26,13 @@
 #include <QShortCut>
 #include <QAction>
 #include <QMessageBox>
+#include <QChart>
+#include <QChartView>
+#include <QValueAxis>
+#include <QSplineSeries>
+#include <QLineSeries>
+#include <QScatterSeries>
+#include <QMouseEvent>
 
 #include <time.h>
 
@@ -34,8 +41,13 @@
 #include "functions.h"
 #include "colorwheel.h"
 #include "display.h"
+#include "qcustomplot.h"
 
-#define MAX_HISTORY_ITEMS 5
+const int MAX_HISTORY_ITEMS = 5;
+const int LOCAL_FLAG = 0;
+const int GLOBAL_FLAG = 1;
+
+using namespace QtCharts;
 
 class CustomSpinBox : public QSpinBox
 {
@@ -86,11 +98,47 @@ class HistoryItem : public QObject
     QDateTime savedTime;
 };
 
-// class QPopUp : public QMessageBox
-// {
-//   public: 
-//     QPopUp(QObject *parent = 0) : QObject(parent) { }
-// };
+class CoeffPlaneView : public QChartView {
+    Q_OBJECT
+  public:
+    CoeffPlaneView(QChart *chart, QScatterSeries *coordinateSeries) : QChartView(chart) { this->chart = chart; this->coordinateSeries = coordinateSeries; setMouseTracking(false);}
+
+  protected:
+    void mouseReleaseEvent(QMouseEvent *event) 
+    {
+        if(event->button() == Qt::LeftButton)
+        {
+            // qDebug() << "Clicked on: " << event->pos();
+            coordinateSeries->replace(0, chart->mapToValue(event->pos(), coordinateSeries));
+            mouseMoving = false;   
+        }     
+    };
+
+    void mousePressEvent(QMouseEvent *event)
+    {
+        if(event->button() == Qt::LeftButton)
+        {
+            // qDebug() << "Clicked on: " << event->pos();
+            coordinateSeries->replace(0, chart->mapToValue(event->pos(), coordinateSeries));
+            mouseMoving = true;   
+        } 
+    }
+
+    void mouseMoveEvent(QMouseEvent *event)
+    {
+        // qDebug() << "in move event " << event->pos();;
+        if(mouseMoving)
+        {
+            // qDebug() << "Clicked on: " << event->pos();
+            coordinateSeries->replace(0, chart->mapToValue(event->pos(), coordinateSeries));   
+        } 
+    };
+    
+  private:
+    QScatterSeries* coordinateSeries;
+    QChart *chart;
+    bool mouseMoving;
+};
 
 class interface : public QWidget
 {
@@ -113,6 +161,7 @@ public:
     // INPUT VALIDATORS
     QDoubleValidator *doubleValidate;
     QDoubleValidator *posdoubleValidate;
+    QDoubleValidator *angleValidate;
     QIntValidator *intValidate;
     QIntValidator *posintValidate;
     QIntValidator *numtermsValidate;
@@ -143,14 +192,10 @@ public:
     QDoubleSlider *aEdit;
     QDoubleSlider *rEdit;
     QPushButton *coeffPlaneEdit;
-    
-    QWidget *coeffPlanePopUp;
 
     QLineEdit *scaleAEdit;
     QLineEdit *scaleREdit;
     QPushButton *scalePlaneEdit;
-    
-    QWidget *scalePlanePopUp;
 
     CustomSpinBox *currTermEdit;
 
@@ -199,7 +244,6 @@ public:
     QSignalMapper *viewMapper;
     QSignalMapper *removeMapper;
     
-
     // imagePropsBox SUBELEMENTS
     QVBoxLayout *imagePropsBoxStack;
     QVBoxLayout *imagePropsEditStack;
@@ -224,6 +268,35 @@ public:
     QSpacerItem *pspacer4;
     QSpacerItem *pspacer5;
 
+    // PolarPlane SUBELEMENTS
+    QWidget *coeffPlanePopUp;
+    QGroupBox *polarCoordinatesBox;
+    QHBoxLayout *coeffPlanePopUpLayout;
+    QVBoxLayout *polarCoordinatesLayout;
+    QHBoxLayout *actionButtonLayout;
+    QHBoxLayout *zoomButtonLayout;
+    QVBoxLayout *polarPlaneWithZoomLayout;
+    CoeffPlaneView *graphDisplay;
+    QChart *graph;
+    QValueAxis *axisX;
+    QValueAxis *axisY;
+    QLabel *radiusLabel;
+    QLabel *angleLabel;
+    QLineEdit *radiusEdit;
+    QLineEdit *angleEdit;
+    QPushButton *confirmButton;
+    QPushButton *resetButton;
+    QPushButton *zoomInButton;
+    QPushButton *zoomOutButton;
+    QSpacerItem *planeSpacer1;
+    QSpacerItem *planeSpacer2;
+    QLineSeries *series;
+    QLineSeries *series2;
+    QScatterSeries *coordinateSeries;
+    QLineSeries *xSeries;
+    QLineSeries *ySeries;
+    QSignalMapper *coeffMapper;
+
     // DISP SUBELEMENTS
     QPushButton *updatePreview;
     QPushButton *exportImage;
@@ -234,6 +307,8 @@ public:
 
     // SHORTCUTS
     QShortcut *updatePreviewShortcut;
+
+    // void mouseReleaseEvent(QMouseEvent *event);
 
 private slots:
     void toggleViewMode();
@@ -262,7 +337,14 @@ private slots:
     void updateSavePreview();
     void clearAllHistory();
 
-    void showPlanePopUp();
+    void showPlanePopUp(int flag);
+    void updatePolarCoordinatesWithIndex(const int &index);
+    void updatePolarCoordinates();
+    void zoomIn();
+    void zoomOut();
+
+    void setPolarCoordinates();
+    void resetPolarCoordinates();
     
     QString loadSettings(const QString &fileName);
     
@@ -277,11 +359,14 @@ private:
     void errorHandler(const int &flag);    
     void refreshTerms();
 
+    void updatePolarCoordinates(QPointF point);
+
     unsigned int termIndex;  //internal index:  starts at 0 
     QString saveloadPath;
     AbstractFunction * currFunction;
     ColorWheel * currColorWheel;
     bool advancedMode;
+    int coeffFlag;
     
 };
 

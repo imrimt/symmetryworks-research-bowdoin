@@ -5,8 +5,8 @@
 #-------------------------------------------------
 
 QT       += core gui
-QT       += widgets
-
+QT       += widgets printsupport
+QT       += charts
 
 TARGET = wallgen
 TEMPLATE = app
@@ -17,7 +17,8 @@ SOURCES += \
     interface.cpp \
     display.cpp \
     colorwheel.cpp \
-    functions.cpp
+    functions.cpp \
+    mainwindow.cpp
 
 HEADERS  += \
     interface.h \
@@ -25,4 +26,8 @@ HEADERS  += \
     display.h \
     colorwheel.h \
     functions.h \
-    pairs.h
+    pairs.h \
+    mainwindow.h
+
+RESOURCES += \
+    softwareresources.qrc

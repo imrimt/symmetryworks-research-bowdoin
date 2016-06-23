@@ -28,8 +28,8 @@ class AbstractFunction      //this is the base class for all other classes that 
     int getM(unsigned int &i) const;
     double getR(unsigned int &i) const;
     double getA(unsigned int &i) const;
-    double scaleR() const { return scale.R(); }
-    double scaleA() const { return scale.A(); }
+    double getScaleR() const { return scale.R(); }
+    double getScaleA() const { return scale.A(); }
 
     // MUTATORS
     void setN(unsigned int &i, int &val);
