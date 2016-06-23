@@ -161,7 +161,16 @@ public:
     QVBoxLayout *toggleViewLayout;
     
     // functionConstants SUBELEMENTS
-    //QScrollArea *functionConstantsScrollArea;
+    
+    QPushButton *termViewButton;
+    QWidget *termViewWidget;
+    QHBoxLayout *termViewLayout;
+    QTableWidget *termViewTable;
+    QHeaderView *termViewHeaderHorizontal;
+    QHeaderView *termViewHeaderVertical;
+    QStringList termViewHorizontalHeaders;
+    QStringList termViewVerticalHeaders;
+    QTableWidgetItem *addTermButton;
     
     QLabel *currTermLabel;
     CustomSpinBox *currTermEdit;
@@ -342,6 +351,8 @@ private slots:
     void saveCurrSettings();
     void updateSavePreview();
     void clearAllHistory();
+    void termViewPopUp();
+    void addNewTerm();
 
     void showPlanePopUp(int flag);
     void updatePolarCoordinatesWithIndex(const int &index);

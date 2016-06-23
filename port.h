@@ -41,7 +41,8 @@
 #include <QShortCut>
 #include <QAction>
 #include <QMessageBox>
-
+#include <QTableWidget>
+#include <QStringList>
 
 #include <time.h>
 

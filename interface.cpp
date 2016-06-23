@@ -78,6 +78,50 @@ interface::interface(QWidget *parent) : QWidget(parent)
     
     functionConstantsBox = new QGroupBox(tr("Function Constants"), functionConstantsWidget);
     
+    termViewButton = new QPushButton(tr("View All Terms"), functionConstantsBox);
+    termViewWidget = new QWidget(this, Qt::Window);
+    termViewWidget->setWindowTitle(tr("Edit Function Terms"));
+    termViewLayout = new QHBoxLayout(termViewWidget);
+
+    termViewWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    termViewWidget->setFixedSize(800, 200);
+    termViewWidget->hide();
+    termViewTable = new QTableWidget(termViewWidget);
+    termViewTable->setRowCount(2);
+    termViewTable->setColumnCount(5);
+//    termViewTable->setColumnWidth(0, 200);
+//    termViewTable->setColumnWidth(1, 200);
+//    termViewTable->setColumnWidth(2, 100);
+//    termViewTable->setColumnWidth(3, 100);
+//    termViewTable->setColumnWidth(4, 100);
+//    termViewTable->setRowHeight(0, 100);
+//    termViewTable->setRowHeight(1, 100);
+//
+    termViewLayout->addWidget(termViewTable);
+    
+    termViewHorizontalHeaders << tr("Term") << tr("m") << tr("n") << tr("a") << tr("r");
+    termViewTable->setHorizontalHeaderLabels(termViewHorizontalHeaders);
+
+    addTermButton = new QTableWidgetItem();
+    addTermButton->setIcon(*(new QIcon(":/Images/zoomin.png")));
+    termViewTable->setVerticalHeaderItem(1,addTermButton);
+    
+    for (int c = 0; c < termViewTable->horizontalHeader()->count(); ++c)
+    {
+        termViewTable->horizontalHeader()->setSectionResizeMode(
+                                                                c, QHeaderView::Stretch);
+    }
+    
+    
+//    termViewHeaderHorizontal= termViewTable->horizontalHeader();
+//    termViewHeaderHorizontal->resizeSections(QHeaderView::Stretch);
+//    
+//    termViewHeaderVertical= termViewTable->verticalHeader();
+//    termViewHeaderVertical->resizeSections(QHeaderView::Stretch);
+    
+    //termViewWidget->setLayout(termViewLayout);
+    
+    
     currTermLabel = new QLabel(functionConstantsBox);
     currTermLabel->setText(tr("Term"));
     
@@ -195,6 +239,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     functionConstantsCoeffs->addWidget(coeffPlaneEdit);
     functionConstantsCoeffs->setAlignment(Qt::AlignLeft);
 
+    functionConstantsTerm1->addWidget(termViewButton);
     functionConstantsTerm1->addWidget(currTermLabel);
     functionConstantsTerm1->addWidget(currTermEdit);
     functionConstantsTerm1->setAlignment(Qt::AlignRight);
@@ -563,6 +608,8 @@ interface::interface(QWidget *parent) : QWidget(parent)
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
     //connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeMaxTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateTerms(int)));
+    connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
+    connect(addTermButton, SIGNAL(clicked()), this, SLOT(addNewTerm()));
 
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
@@ -686,7 +733,8 @@ void interface::resetImageFunction()
     updatePreviewDisplay();
 }
 
-void interface::toggleViewMode() {
+void interface::toggleViewMode()
+{
     if (advancedMode) {
         advancedMode = false;
         toggleViewButton->setText(tr("Switch to Advanced View"));
@@ -694,6 +742,16 @@ void interface::toggleViewMode() {
         advancedMode = true;
         toggleViewButton->setText(tr("Switch to Default View"));
     }
+}
+
+void interface::termViewPopUp()
+{
+    termViewWidget->show();
+}
+
+void interface::addNewTerm() {
+    // handles adding a new term to the termViewTable
+    qDebug() << "adding a new term";
 }
 
 // TODO fix these to cycle through terms
