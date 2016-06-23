@@ -52,7 +52,9 @@
 
 #include "mainwindow.h"
 
-MainWindow::MainWindow()
+MainWindow::MainWindow(){}
+
+MainWindow::MainWindow(interface *currInterface)
 {
     QWidget *widget = new QWidget;
     setCentralWidget(widget);
@@ -84,6 +86,8 @@ MainWindow::MainWindow()
     setWindowTitle(tr("Bridget & Son"));
     setMinimumSize(160, 160);
     resize(QDesktopWidget().availableGeometry(this).size() * 0.7);
+
+    this->currInterface = currInterface;
 }
 
 #ifndef QT_NO_CONTEXTMENU
@@ -101,10 +105,6 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 // {
 //     infoLabel->setText(tr("Invoked <b>File|New</b>"));
 // }
-
-void MainWindow::setInterface(interface *currInterface){
-    this->currInterface = currInterface;
-}
 
 void MainWindow::load()
 {

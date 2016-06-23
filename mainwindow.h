@@ -65,7 +65,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
-    void setInterface(interface *currInterface);
+    MainWindow(interface *currInterface);
 
 protected:
 #ifndef QT_NO_CONTEXTMENU
