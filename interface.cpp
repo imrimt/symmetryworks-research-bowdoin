@@ -594,8 +594,8 @@ interface::interface(QWidget *parent) : QWidget(parent)
     connect(coordinateSeries, SIGNAL(pointReplaced(int)), this, SLOT(updatePolarCoordinatesWithIndex(int)));
     connect(confirmButton, SIGNAL(clicked()), this, SLOT(setPolarCoordinates()));
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetPolarCoordinates()));
-    connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
-    connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
+    connect(zoomInButton, SIGNAL(clicked()), this, SLOT(polarPlaneZoomIn()));
+    connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(polarPlaneZoomOut()));
 
     // SET DEFAULTS
     refreshTerms();
@@ -1306,7 +1306,7 @@ void interface::updatePolarCoordinates(QPointF point)
     angleEdit->setText(QString::number(atan(point.y() / point.x()), 'f', 2));
 }
 
-void interface::zoomOut()
+void interface::polarPlaneZoomOut()
 {
     series->insert(0, QPointF(series->at(0).x() * 2, series->at(0).y() * 2));
     series->append(QPointF(series->at(series->count() - 1).x() * 2, series->at(series->count() - 1).y() * 2));
@@ -1317,7 +1317,7 @@ void interface::zoomOut()
     graph->zoomOut();
 }
 
-void interface::zoomIn()
+void interface::polarPlaneZoomIn()
 {
     series->replace(0, QPointF(series->at(0).x() / 2, series->at(0).y() / 2));
     series->replace(series->count() - 1, QPointF(series->at(series->count() - 1).x() / 2, series->at(series->count() - 1).y() / 2));

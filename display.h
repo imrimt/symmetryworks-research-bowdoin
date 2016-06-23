@@ -5,6 +5,12 @@
 #include <QImage>
 #include <QColor>
 #include <QPainter>
+#include <QLabel>
+
+const double SCALE = 0.25;
+const double MAX_PREVIEW_SIZE = 600;
+const double MIN_PREVIEW_SIZE = 100;
+const double DEFAULT_SIZE = 200;
 
 class Display : public QWidget
 {
@@ -16,6 +22,9 @@ public:
     QSize sizeHint() const;
     int dim() const;
     QImage *getImage() { return &disp; }
+    void shrink();
+    void enlarge();
+    void resetSize() {resize(DEFAULT_SIZE, DEFAULT_SIZE);}
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -24,7 +33,6 @@ protected:
 private:
     QImage disp;
     int dimension;
-
 };
 
 

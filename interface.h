@@ -53,7 +53,7 @@ const double DEFAULT_XCORNER = -0.5;
 const double DEFAULT_YCORNER = -0.5;
 const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art prints
 const int DEFAULT_OUTPUT_HEIGHT = 4800;
-const int DEFAULT_PREVIEW_SIZE = 600;
+const int DEFAULT_PREVIEW_SIZE = 200;
 
 const unsigned int INVALID_FILE_ERROR = 0;
 
@@ -186,7 +186,7 @@ public:
     QPushButton *coeffPlaneEdit;
     
     QLabel *globalConsantsLabel;
-    
+
     QLineEdit *scaleAEdit;
     QLineEdit *scaleREdit;
     QPushButton *scalePlaneEdit;
@@ -340,14 +340,17 @@ private slots:
     void removePreview(QObject *item);
     void loadFromSettings();
     void saveCurrSettings();
+    void previewDisplayEnlarge() {disp->enlarge();}
+    void previewDisplayShrink() {disp->shrink();}
+    void previewDisplayResetSize() {disp->resetSize();}
     void updateSavePreview();
     void clearAllHistory();
 
     void showPlanePopUp(int flag);
     void updatePolarCoordinatesWithIndex(const int &index);
     void updatePolarCoordinates();
-    void zoomIn();
-    void zoomOut();
+    void polarPlaneZoomIn();
+    void polarPlaneZoomOut();
 
     void setPolarCoordinates();
     void resetPolarCoordinates();
