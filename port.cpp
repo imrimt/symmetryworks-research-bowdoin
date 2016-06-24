@@ -10,14 +10,10 @@
 
 
 
-Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height, double XCorner, double YCorner, double setWidth, double setHeight)
+Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height)
 {
     this->width = width;
     this->height = height;
-    this->XCorner = XCorner;
-    this->YCorner = YCorner;
-    this->setWidth = setWidth;
-    this->setHeight = setHeight;
     
     this->currFunction = currFunction->clone();
     this->currColorWheel = currColorWheel->clone();

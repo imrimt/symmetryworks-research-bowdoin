@@ -2,7 +2,7 @@
 
 
 
-RenderThread::RenderThread(QObject *parent = 0)
+RenderThread::RenderThread(QObject *parent)
 : QThread(parent)
 {
     
@@ -27,7 +27,7 @@ RenderThread::~RenderThread()
 }
 
 
-void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QPoint &topLeft, QPoint &bottomRight, int imageWidth, int imageHeight, QImage *output)
+void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, int imageWidth, int imageHeight, QImage *output)
 {
     QMutexLocker locker(&mutex);
     

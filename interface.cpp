@@ -1026,7 +1026,7 @@ void interface::addToHistory()
     removeMapper->setMapping(removeButton, item);
     
     // this handles the painting of the preview icon
-    Port *historyDisplay = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim(), settings::XCorner, settings::YCorner, settings::Width, settings::Height);
+    Port *historyDisplay = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim());
     historyDisplay->paintHistoryIcon(item);
     
 //    double worldY, worldX;
@@ -1085,7 +1085,7 @@ void interface::removePreview(QObject *item)
 
 void interface::updatePreviewDisplay()
 {    
-    Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings::XCorner, settings::YCorner, settings::Width, settings::Height);
+    Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim());
     previewDisplay->paintToDisplay(disp);
 }
 
@@ -1192,7 +1192,7 @@ void interface::saveImageStart()
 {
     
     
-    Port *imageExport = new Port(currFunction, currColorWheel, settings::OWidth, settings::OHeight, settings::XCorner, settings::YCorner, settings::Width, settings::Height);
+    Port *imageExport = new Port(currFunction, currColorWheel, settings::OWidth, settings::OHeight);
     
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,

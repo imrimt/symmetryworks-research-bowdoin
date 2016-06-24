@@ -36,9 +36,6 @@
 
 #include <time.h>
 
-#include "functions.h"
-#include "colorwheel.h"
-#include "display.h"
 #include "port.h"
 
 const int MAX_HISTORY_ITEMS = 5;
