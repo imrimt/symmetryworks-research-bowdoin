@@ -69,6 +69,8 @@ void RenderThread::run()
         double XCorner = settings->XCorner;
         
         mutex.unlock();
+
+        qDebug() << "drawing at " << topLeft << " and " << bottomRight;
         
         for (int x = topLeft.x(); x < bottomRight.x(); x++)
         {
