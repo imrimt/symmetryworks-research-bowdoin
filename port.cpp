@@ -68,7 +68,7 @@ void Port::render(QImage *output)
     start = clock();
     
     threads[0]->render(currFunction, currColorWheel, QPoint(0,0), QPoint(width/2, height), width, height, currSettings, output);
-    threads[1]->render(currFunction, currColorWheel, QPoint(width/2 + 1, 0), QPoint(width, height), width, height, currSettings, output);
+    threads[1]->render(currFunction, currColorWheel, QPoint(width/2, 0), QPoint(width, height), width, height, currSettings, output);
     
 //    double worldYStart1= setHeight + YCorner;
 //    double worldYStart2 = setHeight/height;

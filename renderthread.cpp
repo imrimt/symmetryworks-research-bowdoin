@@ -70,7 +70,7 @@ void RenderThread::run()
         
         mutex.unlock();
 
-        qDebug() << "drawing at " << topLeft << " and " << bottomRight;
+        // qDebug() << "drawing at " << topLeft << " and " << bottomRight;
         
         for (int x = topLeft.x(); x < bottomRight.x(); x++)
         {
@@ -87,6 +87,7 @@ void RenderThread::run()
                 //...then convert that complex output to a color according to our color wheel
                 
                 std::complex<double> fout=(*function)(worldX,worldY);
+                // std::complex<double> fout = (*function)(x,y);
                 QRgb color = (*colorwheel)(fout);
                 
                 //finally push the determined color to the corresponding point on the display
@@ -94,12 +95,10 @@ void RenderThread::run()
                 
             }
         }
-        
-        
+         
         // create output image
         // process all pixels
-        qDebug() << "Rendering pixels...";
-        
+        // qDebug() << "Rendering pixels...";
         
         mutex.lock();
         if (!restart) {
@@ -107,7 +106,6 @@ void RenderThread::run()
         }
         restart = false;
         mutex.unlock();
-        
         
     }
     
