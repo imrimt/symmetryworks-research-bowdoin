@@ -23,6 +23,25 @@ const int Fib=0;
 const int MAX_RGB = 255;
 const int MIN_RGB = 0;
 
+const double DEFAULT_WIDTH = 2.5;
+const double DEFAULT_HEIGHT = 2.0;
+const double DEFAULT_XCORNER = -0.5;
+const double DEFAULT_YCORNER = -0.5;
+const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art prints
+const int DEFAULT_OUTPUT_HEIGHT = 4800;
+const int DEFAULT_PREVIEW_SIZE = 600;
+
+struct Settings
+{
+    double Width = DEFAULT_WIDTH;
+    double Height = DEFAULT_HEIGHT;
+    double XCorner = DEFAULT_XCORNER;
+    double YCorner = DEFAULT_YCORNER;
+    int OWidth = DEFAULT_OUTPUT_WIDTH;
+    int OHeight = DEFAULT_OUTPUT_HEIGHT;
+};
+
+
 struct vect5
 {
     double xv;

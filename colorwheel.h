@@ -12,7 +12,6 @@
 #include <QImage>
 #include <QVector3D>
 
-
 #include "geomath.h"
 
 #define image_dim 300

@@ -4,15 +4,7 @@
 //the settings namespace stores a few variables used to compute the
 //image via the mathematical function and the color wheel, as well as
 //the output width and height.
-namespace settings
-{
-    double Width = DEFAULT_WIDTH;
-    double Height = DEFAULT_HEIGHT;
-    double XCorner = DEFAULT_XCORNER;
-    double YCorner = DEFAULT_YCORNER;
-    int OWidth = DEFAULT_OUTPUT_WIDTH;
-    int OHeight = DEFAULT_OUTPUT_HEIGHT;
-}
+
 
 
 interface::interface(QWidget *parent) : QWidget(parent)
@@ -33,7 +25,13 @@ interface::interface(QWidget *parent) : QWidget(parent)
     // ORGANIZATIONAL ELEMENTS
     
     //create elements
-    
+    settings = new Settings;
+    settings->Width = DEFAULT_WIDTH;
+    settings->Height = DEFAULT_HEIGHT;
+    settings->XCorner = DEFAULT_XCORNER;
+    settings->YCorner = DEFAULT_YCORNER;
+    settings->OWidth = DEFAULT_OUTPUT_WIDTH;
+    settings->OHeight = DEFAULT_OUTPUT_HEIGHT;
     
     interfaceLayout = new QVBoxLayout(this);
     topbarLayout = new QHBoxLayout();
@@ -77,6 +75,50 @@ interface::interface(QWidget *parent) : QWidget(parent)
     //create labels
     
     functionConstantsBox = new QGroupBox(tr("Function Constants"), functionConstantsWidget);
+    
+    termViewButton = new QPushButton(tr("View All Terms"), functionConstantsBox);
+    termViewWidget = new QWidget(this, Qt::Window);
+    termViewWidget->setWindowTitle(tr("Edit Function Terms"));
+    termViewLayout = new QHBoxLayout(termViewWidget);
+
+    termViewWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    termViewWidget->setFixedSize(800, 200);
+    termViewWidget->hide();
+    termViewTable = new QTableWidget(termViewWidget);
+    termViewTable->setRowCount(2);
+    termViewTable->setColumnCount(5);
+//    termViewTable->setColumnWidth(0, 200);
+//    termViewTable->setColumnWidth(1, 200);
+//    termViewTable->setColumnWidth(2, 100);
+//    termViewTable->setColumnWidth(3, 100);
+//    termViewTable->setColumnWidth(4, 100);
+//    termViewTable->setRowHeight(0, 100);
+//    termViewTable->setRowHeight(1, 100);
+//
+    termViewLayout->addWidget(termViewTable);
+    
+    termViewHorizontalHeaders << tr("Term") << tr("m") << tr("n") << tr("a") << tr("r");
+    termViewTable->setHorizontalHeaderLabels(termViewHorizontalHeaders);
+
+    addTermButton = new QTableWidgetItem();
+    addTermButton->setIcon(*(new QIcon(":/Images/zoomin.png")));
+    termViewTable->setVerticalHeaderItem(1,addTermButton);
+    
+    // resize all columns to maximum stretch
+    for (int c = 0; c < termViewTable->horizontalHeader()->count(); ++c)
+    {
+        termViewTable->horizontalHeader()->setSectionResizeMode(c, QHeaderView::Stretch);
+    }
+    
+    
+//    termViewHeaderHorizontal= termViewTable->horizontalHeader();
+//    termViewHeaderHorizontal->resizeSections(QHeaderView::Stretch);
+//    
+//    termViewHeaderVertical= termViewTable->verticalHeader();
+//    termViewHeaderVertical->resizeSections(QHeaderView::Stretch);
+    
+    //termViewWidget->setLayout(termViewLayout);
+    
     
     currTermLabel = new QLabel(functionConstantsBox);
     currTermLabel->setText(tr("Term"));
@@ -195,6 +237,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     functionConstantsCoeffs->addWidget(coeffPlaneEdit);
     functionConstantsCoeffs->setAlignment(Qt::AlignLeft);
 
+    functionConstantsTerm1->addWidget(termViewButton);
     functionConstantsTerm1->addWidget(currTermLabel);
     functionConstantsTerm1->addWidget(currTermEdit);
     functionConstantsTerm1->setAlignment(Qt::AlignRight);
@@ -563,6 +606,8 @@ interface::interface(QWidget *parent) : QWidget(parent)
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
     //connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeMaxTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateTerms(int)));
+    connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
+    //connect(addTermButton, SIGNAL(clicked()), this, SLOT(addNewTerm()));
 
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
@@ -686,7 +731,8 @@ void interface::resetImageFunction()
     updatePreviewDisplay();
 }
 
-void interface::toggleViewMode() {
+void interface::toggleViewMode()
+{
     if (advancedMode) {
         advancedMode = false;
         toggleViewButton->setText(tr("Switch to Advanced View"));
@@ -694,6 +740,16 @@ void interface::toggleViewMode() {
         advancedMode = true;
         toggleViewButton->setText(tr("Switch to Default View"));
     }
+}
+
+void interface::termViewPopUp()
+{
+    termViewWidget->show();
+}
+
+void interface::addNewTerm() {
+    // handles adding a new term to the termViewTable
+    qDebug() << "adding a new term";
 }
 
 // TODO fix these to cycle through terms
@@ -844,9 +900,9 @@ QString interface::saveSettings(const QString &fileName) {
         return nullptr;
     }
     QDataStream out(&outFile);
-    out << settings::Width << settings::Height;
-    out << settings::XCorner << settings::YCorner;
-    out << settings::OWidth << settings::OHeight;
+    out << settings->Width << settings->Height;
+    out << settings->XCorner << settings->YCorner;
+    out << settings->OWidth << settings->OHeight;
     out << functionSel->currentIndex();
     out << colorwheelSel->currentIndex();
     out << currFunction->getScaleR() << currFunction->getScaleA();
@@ -887,9 +943,9 @@ QString interface::loadSettings(const QString &fileName) {
     unsigned int count;
     double tempdouble;
     
-    in >> settings::Width >> settings::Height;
-    in >> settings::XCorner >> settings::YCorner;
-    in >> settings::OWidth >> settings::OHeight;
+    in >> settings->Width >> settings->Height;
+    in >> settings->XCorner >> settings->YCorner;
+    in >> settings->OWidth >> settings->OHeight;
     in >> tempint;
     functionSel->setCurrentIndex(tempint);
     in >> tempint;
@@ -914,12 +970,12 @@ QString interface::loadSettings(const QString &fileName) {
     inFile.close();
     
     refreshTerms();
-    outwidthEdit->setText(QString::number(settings::OWidth));
-    outheightEdit->setText(QString::number(settings::OHeight));
-    worldwidthEdit->setText(QString::number(settings::Width));
-    worldheightEdit->setText(QString::number(settings::Height));
-    XCornerEdit->setText(QString::number(settings::XCorner));
-    YCornerEdit->setText(QString::number(settings::YCorner));
+    outwidthEdit->setText(QString::number(settings->OWidth));
+    outheightEdit->setText(QString::number(settings->OHeight));
+    worldwidthEdit->setText(QString::number(settings->Width));
+    worldheightEdit->setText(QString::number(settings->Height));
+    XCornerEdit->setText(QString::number(settings->XCorner));
+    YCornerEdit->setText(QString::number(settings->YCorner));
     updatePreviewDisplay();
     
     QDir stickypath(fileName);
@@ -976,7 +1032,7 @@ void interface::addToHistory()
     removeMapper->setMapping(removeButton, item);
     
     // this handles the painting of the preview icon
-    Port *historyDisplay = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim(), settings::XCorner, settings::YCorner, settings::Width, settings::Height);
+    Port *historyDisplay = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim(), settings);
     historyDisplay->paintHistoryIcon(item);
     
 //    double worldY, worldX;
@@ -985,8 +1041,8 @@ void interface::addToHistory()
 //    {
 //        for (int x = 0; x <= ((item->preview->dim())-1); x++)
 //        {
-//            worldY= settings::Height-y*settings::Height/item->preview->dim()+settings::YCorner;
-//            worldX= x*settings::Width/item->preview->dim()+settings::XCorner;
+//            worldY= settings->Height-y*settings->Height/item->preview->dim()+settings->YCorner;
+//            worldX= x*settings->Width/item->preview->dim()+settings->XCorner;
 //            
 //            //run the point through our mathematical function
 //            //then convert that complex output to a color according to our color wheel
@@ -1035,7 +1091,7 @@ void interface::removePreview(QObject *item)
 
 void interface::updatePreviewDisplay()
 {    
-    Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings::XCorner, settings::YCorner, settings::Width, settings::Height);
+    Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings);
     previewDisplay->paintToDisplay(disp);
 }
 
@@ -1066,32 +1122,32 @@ void interface::clearAllHistory()
 
 void interface::changeOHeight(const QString &val)
 {
-    settings::OHeight = val.toInt();
+    settings->OHeight = val.toInt();
 }
 
 void interface::changeOWidth(const QString &val)
 {
-    settings::OWidth = val.toInt();
+    settings->OWidth = val.toInt();
 }
 
 void interface::changeWorldHeight(const QString &val)
 {
-    settings::Height = val.toDouble();
+    settings->Height = val.toDouble();
 }
 
 void interface::changeWorldWidth(const QString &val)
 {
-    settings::Width = val.toDouble();
+    settings->Width = val.toDouble();
 }
 
 void interface::changeXCorner(const QString &val)
 {
-    settings::XCorner = val.toDouble();
+    settings->XCorner = val.toDouble();
 }
 
 void interface::changeYCorner(const QString &val)
 {
-    settings::YCorner = val.toDouble();
+    settings->YCorner = val.toDouble();
 }
 
 void interface::changeN(int val)
@@ -1142,7 +1198,7 @@ void interface::saveImageStart()
 {
     
     
-    Port *imageExport = new Port(currFunction, currColorWheel, settings::OWidth, settings::OHeight, settings::XCorner, settings::YCorner, settings::Width, settings::Height);
+    Port *imageExport = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
     
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,
@@ -1153,21 +1209,21 @@ void interface::saveImageStart()
         return;
 
     double worldY, worldX ;
-    QImage outputImage(settings::OWidth, settings::OHeight, QImage::Format_RGB32);
+    QImage outputImage(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
 
-    double worldYPreCalculations1 = settings::Height + settings::YCorner;
-    double worldYPreCalculations2 = settings::Height/settings::OHeight;
-    double worldXPreCalculations = settings::Width/settings::OWidth;
+    double worldYPreCalculations1 = settings->Height + settings->YCorner;
+    double worldYPreCalculations2 = settings->Height/settings->OHeight;
+    double worldXPreCalculations = settings->Width/settings->OWidth;
 
-    for (int y = 0; y < settings::OHeight; y++)
+    for (int y = 0; y < settings->OHeight; y++)
     {
-        for (int x = 0; x <= ((settings::OWidth)-1); x++)
+        for (int x = 0; x <= ((settings->OWidth)-1); x++)
         {   
-            // worldY = settings::Height - y*settings::Height/settings::OHeight + settings::YCorner;
-            // worldX = x*settings::Width/settings::OWidth + settings::XCorner;
+            // worldY = settings->Height - y*settings->Height/settings->OHeight + settings->YCorner;
+            // worldX = x*settings->Width/settings->OWidth + settings->XCorner;
 
             worldY = worldYPreCalculations1 - y * worldYPreCalculations2;
-            worldX = x * worldXPreCalculations + settings::XCorner;
+            worldX = x * worldXPreCalculations + settings->XCorner;
 
             //run the point through our mathematical function
             //...then turn that complex output into a color per our color wheel
@@ -1197,7 +1253,7 @@ void interface::saveImageStart()
     saveloadPath = stickypath.path();
         return;
     
-    QImage *output = new QImage(settings::OWidth, settings::OHeight, QImage::Format_RGB32);
+    QImage *output = new QImage(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
     
     imageExport->exportImage(output, fileName);
 }
