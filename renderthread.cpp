@@ -1,4 +1,4 @@
-#include "renderThread.h"
+#include "renderthread.h"
 
 
 
@@ -27,7 +27,7 @@ RenderThread::~RenderThread()
 }
 
 
-void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, int imageWidth, int imageHeight, QImage *output)
+void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, int imageWidth, int imageHeight, Settings *settings, QImage *output)
 {
     QMutexLocker locker(&mutex);
     
@@ -39,10 +39,11 @@ void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QP
     
     this->function = function->clone();
     this->colorwheel = colorwheel->clone();
+    this->settings = settings;
     
-    worldYStart1= settings::Height + settings::YCorner;
-    worldYStart2 = settings::Height/overallHeight;
-    worldXStart = settings::Width/overallWidth;
+    worldYStart1= settings->Height + settings->YCorner;
+    worldYStart2 = settings->Height/overallHeight;
+    worldXStart = settings->Width/overallWidth;
     
     
     if (!isRunning()) {
@@ -65,7 +66,7 @@ void RenderThread::run()
         double worldYStart1 = this->worldYStart1;
         double worldYStart2 = this->worldYStart2;
         double worldXStart = this->worldXStart;
-        double XCorner = settings::XCorner;
+        double XCorner = settings->XCorner;
         
         mutex.unlock();
         
@@ -73,8 +74,8 @@ void RenderThread::run()
         {
             for (int y = topLeft.y(); y < bottomRight.y(); y++)
             {
-                // worldY= settings::Height-y*settings::Height/disp->dim()+settings::YCorner;
-                // worldX= x*settings::Width/disp->dim()+settings::XCorner;
+                // worldY= settings->Height-y*settings->Height/disp->dim()+settings->YCorner;
+                // worldX= x*settings->Width/disp->dim()+settings->XCorner;
                 
                 worldY = worldYStart1 - y * worldYStart2;
                 worldX = x * worldXStart + XCorner;

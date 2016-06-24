@@ -10,7 +10,7 @@
 
 
 
-Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height)
+Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height, Settings *currSettings)
 {
     this->width = width;
     this->height = height;
@@ -18,8 +18,13 @@ Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width
     this->currFunction = currFunction->clone();
     this->currColorWheel = currColorWheel->clone();
     
+    this->currSettings = currSettings;
+    
     threads.push_back(new RenderThread());
     threads.push_back(new RenderThread());
+    
+    
+    
     
 }
 
@@ -62,8 +67,8 @@ void Port::render(QImage *output)
     double cpu_time_used;
     start = clock();
     
-    threads[0]->render(currFunction, currColorWheel, QPoint(0,0), QPoint(width/2, height), width, height, output);
-    threads[1]->render(currFunction, currColorWheel, QPoint(width/2 + 1, height), QPoint(width - 1, height - 1), width, height, output);
+    threads[0]->render(currFunction, currColorWheel, QPoint(0,0), QPoint(width/2, height), width, height, currSettings, output);
+    threads[1]->render(currFunction, currColorWheel, QPoint(width/2 + 1, height), QPoint(width - 1, height - 1), width, height, currSettings, output);
     
 //    double worldYStart1= setHeight + YCorner;
 //    double worldYStart2 = setHeight/height;
@@ -76,8 +81,8 @@ void Port::render(QImage *output)
 //    {
 //        for (int x = 0; x < width; x++)
 //        {
-//            // worldY= settings::Height-y*settings::Height/disp->dim()+settings::YCorner;
-//            // worldX= x*settings::Width/disp->dim()+settings::XCorner;
+//            // worldY= settings->Height-y*settings->Height/disp->dim()+settings->YCorner;
+//            // worldX= x*settings->Width/disp->dim()+settings->XCorner;
 //            
 //            worldY = worldYStart1 - y * worldYStart2;
 //            worldX = x * worldXStart + XCorner;

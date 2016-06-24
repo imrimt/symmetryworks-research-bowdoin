@@ -20,7 +20,7 @@ SOURCES += \
     functions.cpp \
     port.cpp \
     mainwindow.cpp \
-    renderThread.cpp
+    renderthread.cpp
 
 HEADERS  += \
     interface.h \
@@ -31,7 +31,7 @@ HEADERS  += \
     pairs.h \
     port.h \
     mainwindow.h \
-    renderThread.h
+    renderthread.h
 
 RESOURCES += \
     softwareresources.qrc

@@ -352,12 +352,12 @@ interface::interface(QWidget *parent) :
     scalerE->setText(QString::number(f->scaleR()));
     scaleaE->setText(QString::number(f->scaleA()));
 
-    outwidthE->setText(QString::number(settings::OWidth));
-    outheightE->setText(QString::number(settings::OHeight));
-    worldwidthE->setText(QString::number(settings::Width));
-    worldheightE->setText(QString::number(settings::Height));
-    XCornerE->setText(QString::number(settings::XCorner));
-    YCornerE->setText(QString::number(settings::YCorner));
+    outwidthE->setText(QString::number(settings->OWidth));
+    outheightE->setText(QString::number(settings->OHeight));
+    worldwidthE->setText(QString::number(settings->Width));
+    worldheightE->setText(QString::number(settings->Height));
+    XCornerE->setText(QString::number(settings->XCorner));
+    YCornerE->setText(QString::number(settings->YCorner));
 
     functionSel->setCurrentIndex(15);    //set up current function
     colorwheelSel->setCurrentIndex(9);
@@ -578,9 +578,9 @@ void interface::saveFunction()
 
     QDataStream out(&outFile);
 
-    out << settings::Width << settings::Height;
-    out << settings::XCorner << settings::YCorner;
-    out << settings::OWidth << settings::OHeight;
+    out << settings->Width << settings->Height;
+    out << settings->XCorner << settings->YCorner;
+    out << settings->OWidth << settings->OHeight;
     out << functionSel->currentIndex();
     out << colorwheelSel->currentIndex();
     out << f->scaleR() << f->scaleA();
@@ -610,9 +610,9 @@ void interface::loadFunction()
     unsigned int count;
     double tempdouble;
 
-    in >> settings::Width >> settings::Height;
-    in >> settings::XCorner >> settings::YCorner;
-    in >> settings::OWidth >> settings::OHeight;
+    in >> settings->Width >> settings->Height;
+    in >> settings->XCorner >> settings->YCorner;
+    in >> settings->OWidth >> settings->OHeight;
     in >> tempint;
     functionSel->setCurrentIndex(tempint);
     in >> tempint;
@@ -636,12 +636,12 @@ void interface::loadFunction()
     inFile.close();
 
     refreshTerms();
-    outwidthE->setText(QString::number(settings::OWidth));
-    outheightE->setText(QString::number(settings::OHeight));
-    worldwidthE->setText(QString::number(settings::Width));
-    worldheightE->setText(QString::number(settings::Height));
-    XCornerE->setText(QString::number(settings::XCorner));
-    YCornerE->setText(QString::number(settings::YCorner));
+    outwidthE->setText(QString::number(settings->OWidth));
+    outheightE->setText(QString::number(settings->OHeight));
+    worldwidthE->setText(QString::number(settings->Width));
+    worldheightE->setText(QString::number(settings->Height));
+    XCornerE->setText(QString::number(settings->XCorner));
+    YCornerE->setText(QString::number(settings->YCorner));
     updatePreviewDisplay();
 
     QDir stickypath(fileName);
@@ -658,8 +658,8 @@ void interface::updatePreviewDisplay()
       for (int y = 0; y < disp->dim(); y++)
           for (int x = 0; x <= ((disp->dim()* 3)-1); x++)
           {   pixX=x/3;
-              worldY= settings::Height-y*settings::Height/disp->dim()+settings::YCorner;
-              worldX= pixX*settings::Width/disp->dim()+settings::XCorner;
+              worldY= settings->Height-y*settings->Height/disp->dim()+settings->YCorner;
+              worldX= pixX*settings->Width/disp->dim()+settings->XCorner;
 
               std::complex<double> fout = (*f)(worldX,worldY);  //run the point through our mathematical function
               QRgb color = (*c)(fout);                          //...then convert that complex output to a color according to our color wheel
@@ -675,32 +675,32 @@ void interface::updatePreviewDisplay()
 
 void interface::changeOHeight(const QString &val)
 {
-    settings::OHeight = val.toInt();
+    settings->OHeight = val.toInt();
 }
 
 void interface::changeOWidth(const QString &val)
 {
-    settings::OWidth = val.toInt();
+    settings->OWidth = val.toInt();
 }
 
 void interface::changeWorldHeight(const QString &val)
 {
-    settings::Height = val.toDouble();
+    settings->Height = val.toDouble();
 }
 
 void interface::changeWorldWidth(const QString &val)
 {
-    settings::Width = val.toDouble();
+    settings->Width = val.toDouble();
 }
 
 void interface::changeXCorner(const QString &val)
 {
-    settings::XCorner = val.toDouble();
+    settings->XCorner = val.toDouble();
 }
 
 void interface::changeYCorner(const QString &val)
 {
-    settings::YCorner = val.toDouble();
+    settings->YCorner = val.toDouble();
 }
 
 void interface::changeN(const QString &val)
@@ -750,14 +750,14 @@ void interface::saveImageStart()
              return;
 
       double worldY, worldX, pixX;
-      QImage outimg(settings::OWidth, settings::OHeight, QImage::Format_RGB32);
+      QImage outimg(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
 
-      for (int y = 0; y < settings::OHeight; y++)
-          for (int x = 0; x <= ((settings::OWidth* 3)-1); x++)
+      for (int y = 0; y < settings->OHeight; y++)
+          for (int x = 0; x <= ((settings->OWidth* 3)-1); x++)
 
           {   pixX=x/3;
-              worldY= settings::Height-y*settings::Height/settings::OHeight+settings::YCorner ;
-              worldX= pixX*settings::Width/settings::OWidth+settings::XCorner;
+              worldY= settings->Height-y*settings->Height/settings->OHeight+settings->YCorner ;
+              worldX= pixX*settings->Width/settings->OWidth+settings->XCorner;
 
               std::complex<double> fout=(*f)(worldX,worldY);        //run the point through our mathematical function
               QRgb color = (*c)(fout);                              //...then turn that complex output into a color per our color wheel

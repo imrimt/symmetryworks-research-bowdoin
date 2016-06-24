@@ -53,7 +53,7 @@ public:
     RenderThread(QObject *parent = 0);
     ~RenderThread();
     
-    void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, int imageWidth, int imageHeight, QImage *output);
+    void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, int imageWidth, int imageHeight, Settings *settings, QImage *output);
     
 signals:
     void renderedImage(const QImage &image);
@@ -76,6 +76,8 @@ private:
     
     AbstractFunction *function;
     ColorWheel *colorwheel;
+    Settings *settings;
+    
     
     QImage *output;
     

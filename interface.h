@@ -44,6 +44,9 @@ const int GLOBAL_FLAG = 1;
 
 using namespace QtCharts;
 
+
+
+
 const unsigned int INVALID_FILE_ERROR = 0;
 
 class CustomSpinBox : public QSpinBox
@@ -373,6 +376,8 @@ private:
     ColorWheel * currColorWheel;
     bool advancedMode;
     int coeffFlag;
+    
+    Settings *settings;
     
 };
 

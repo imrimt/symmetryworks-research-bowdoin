@@ -12,7 +12,7 @@
 
 #include "display.h"
 
-#include "renderThread.h"
+#include "renderthread.h"
 
 
 #define NUM_THREADS 2
@@ -50,7 +50,7 @@ class Port
 public:
     
     // CONSTRUCTOR
-    Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height);
+    Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height, Settings *currSettings);
     
     virtual ~Port(){;}
     
@@ -65,6 +65,7 @@ protected:
     AbstractFunction *currFunction;
     ColorWheel *currColorWheel;
     
+    Settings *currSettings;
     
     int width, height;
     //double XCorner, YCorner, setWidth, setHeight;
