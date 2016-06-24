@@ -5,6 +5,8 @@
 
 int main(int argc, char *argv[])
 {
+    
+    qDebug() << "Main thread: " << QThread::currentThread();
 
     QApplication a(argc, argv);
 

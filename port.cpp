@@ -20,12 +20,13 @@ Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width
     
     this->currSettings = currSettings;
     
-    threads.push_back(new RenderThread());
-    threads.push_back(new RenderThread());
+    for (int i = 0; i < NUM_THREADS; i++) {
+        RenderThread *nextThread = new RenderThread();
+        threads.push_back(nextThread);
+        QThread::connect(nextThread, SIGNAL(finished()), nextThread, SLOT(deleteLater()));
+    }
     
-    
-    
-    
+
 }
 
 
@@ -45,9 +46,12 @@ QString Port::exportImage(QImage *output, const QString &fileName)
 
 void Port::paintToDisplay(Display *display)
 {
+    
+    
     render(display->getImage());
     
     display->repaint();
+    
 }
 
 
@@ -67,8 +71,9 @@ void Port::render(QImage *output)
     double cpu_time_used;
     start = clock();
     
-    threads[0]->render(currFunction, currColorWheel, QPoint(0,0), QPoint(width/2, height), width, height, currSettings, output);
-    threads[1]->render(currFunction, currColorWheel, QPoint(width/2, 0), QPoint(width, height), width, height, currSettings, output);
+    for (int i = 0; i < NUM_THREADS; i++) {
+        threads[i]->render(currFunction, currColorWheel, QPoint(i * width/NUM_THREADS,0), QPoint((i + 1) * width/NUM_THREADS, height), width, height, currSettings, output);
+    }
     
 //    double worldYStart1= setHeight + YCorner;
 //    double worldYStart2 = setHeight/height;

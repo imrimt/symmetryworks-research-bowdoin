@@ -55,9 +55,6 @@ public:
     
     void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, int imageWidth, int imageHeight, Settings *settings, QImage *output);
     
-signals:
-    void renderedImage(const QImage &image);
-    
 protected:
     void run() Q_DECL_OVERRIDE;
     

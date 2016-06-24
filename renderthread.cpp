@@ -9,8 +9,6 @@ RenderThread::RenderThread(QObject *parent)
     restart = false;
     abort = false;
     
-    
-    
 }
 
 RenderThread::~RenderThread()
@@ -20,9 +18,7 @@ RenderThread::~RenderThread()
     condition.wakeOne();
     mutex.unlock();
     
-    
     wait();
-    
     
 }
 
@@ -44,7 +40,6 @@ void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QP
     worldYStart1= settings->Height + settings->YCorner;
     worldYStart2 = settings->Height/overallHeight;
     worldXStart = settings->Width/overallWidth;
-    
     
     if (!isRunning()) {
         start(LowPriority);

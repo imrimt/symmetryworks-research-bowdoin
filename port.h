@@ -13,9 +13,9 @@
 #include "display.h"
 
 #include "renderthread.h"
+#include <QThread>
 
-
-#define NUM_THREADS 2
+#define NUM_THREADS 4
 
 
 // TODO: move this to its own source file?
@@ -70,14 +70,11 @@ protected:
     int width, height;
     //double XCorner, YCorner, setWidth, setHeight;
     
-    
 private:
     void render(QImage *output);
     
-    
-    
     QVector<RenderThread *> threads;
-    
+
     
 };
 
