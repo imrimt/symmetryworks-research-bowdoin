@@ -4,15 +4,7 @@
 //the settings namespace stores a few variables used to compute the
 //image via the mathematical function and the color wheel, as well as
 //the output width and height.
-namespace settings
-{
-    double Width = DEFAULT_WIDTH;
-    double Height = DEFAULT_HEIGHT;
-    double XCorner = DEFAULT_XCORNER;
-    double YCorner = DEFAULT_YCORNER;
-    int OWidth = DEFAULT_OUTPUT_WIDTH;
-    int OHeight = DEFAULT_OUTPUT_HEIGHT;
-}
+
 
 
 interface::interface(QWidget *parent) : QWidget(parent)
@@ -106,10 +98,10 @@ interface::interface(QWidget *parent) : QWidget(parent)
     addTermButton->setIcon(*(new QIcon(":/Images/zoomin.png")));
     termViewTable->setVerticalHeaderItem(1,addTermButton);
     
+    // resize all columns to maximum stretch
     for (int c = 0; c < termViewTable->horizontalHeader()->count(); ++c)
     {
-        termViewTable->horizontalHeader()->setSectionResizeMode(
-                                                                c, QHeaderView::Stretch);
+        termViewTable->horizontalHeader()->setSectionResizeMode(c, QHeaderView::Stretch);
     }
     
     
@@ -609,7 +601,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     //connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeMaxTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateTerms(int)));
     connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
-    connect(addTermButton, SIGNAL(clicked()), this, SLOT(addNewTerm()));
+    //connect(addTermButton, SIGNAL(clicked()), this, SLOT(addNewTerm()));
 
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));

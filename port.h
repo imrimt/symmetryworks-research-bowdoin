@@ -49,12 +49,36 @@
 #include "display.h"
 #include "functions.h"
 #include "colorwheel.h"
+#include "renderThread.h"
+
+
+#define NUM_THREADS 2
+
+const double DEFAULT_WIDTH = 2.5;
+const double DEFAULT_HEIGHT = 2.0;
+const double DEFAULT_XCORNER = -0.5;
+const double DEFAULT_YCORNER = -0.5;
+const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art prints
+const int DEFAULT_OUTPUT_HEIGHT = 4800;
+const int DEFAULT_PREVIEW_SIZE = 600;
+
+namespace settings
+{
+    double Width = DEFAULT_WIDTH;
+    double Height = DEFAULT_HEIGHT;
+    double XCorner = DEFAULT_XCORNER;
+    double YCorner = DEFAULT_YCORNER;
+    int OWidth = DEFAULT_OUTPUT_WIDTH;
+    int OHeight = DEFAULT_OUTPUT_HEIGHT;
+}
 
 // TODO: move this to its own source file?
 class HistoryItem : public QObject
 {
     Q_OBJECT
+
 public:
+    
     HistoryItem(QObject *parent = 0) : QObject(parent) { }
     
     QImage *getImage() { return preview->getImage(); }
@@ -73,9 +97,9 @@ public:
     
 };
 
+
 class Port
 {
-    
     
 public:
     
@@ -90,7 +114,6 @@ public:
     void paintHistoryIcon(HistoryItem *item);
     
     
-    
 protected:
     
     AbstractFunction *currFunction;
@@ -103,6 +126,10 @@ protected:
     
 private:
     void render(QImage *output);
+    
+    
+    
+    QVector<RenderThread *> threads;
     
     
 };

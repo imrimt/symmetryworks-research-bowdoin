@@ -19,7 +19,8 @@ SOURCES += \
     colorwheel.cpp \
     functions.cpp \
     port.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    renderThread.cpp
 
 HEADERS  += \
     interface.h \
@@ -29,7 +30,8 @@ HEADERS  += \
     functions.h \
     pairs.h \
     port.h \
-    mainwindow.h
+    mainwindow.h \
+    renderThread.h
 
 RESOURCES += \
     softwareresources.qrc
