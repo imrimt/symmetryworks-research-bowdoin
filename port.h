@@ -1,11 +1,3 @@
-//
-//  port.h
-//
-//
-//  Created by Bridget E. Went on 6/21/16.
-//
-//
-
 #ifndef PORT_H
 #define PORT_H
 
@@ -15,7 +7,7 @@
 #include "renderthread.h"
 
 
-#define NUM_THREADS 2
+#define NUM_DISPLAY_THREADS 2
 
 
 // TODO: move this to its own source file?
@@ -37,10 +29,9 @@ public:
     QPushButton *removeButton;
     QLabel *labelItem;
     QString filePathName;
-    QStringList settings;
-    
+    // QStringList settings;
     QDateTime savedTime;
-    
+    // Port *port;
 };
 
 
@@ -74,10 +65,8 @@ protected:
 private:
     void render(QImage *output);
     
-    
-    
     QVector<RenderThread *> threads;
-    
+    // QVector<RenderThread> threads;
     
 };
 

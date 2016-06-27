@@ -56,7 +56,7 @@ MainWindow::MainWindow()
 {
     currInterface = new interface();
 
-    qDebug() << "setting " << this->currInterface << " to " << currInterface;
+    // qDebug() << "setting " << this->currInterface << " to " << currInterface;
 
     QHBoxLayout *centerLayout = new QHBoxLayout();
     QWidget *centerWidget = new QWidget();

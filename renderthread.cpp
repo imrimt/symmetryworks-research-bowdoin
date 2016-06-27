@@ -5,12 +5,8 @@
 RenderThread::RenderThread(QObject *parent)
 : QThread(parent)
 {
-    
     restart = false;
     abort = false;
-    
-    
-    
 }
 
 RenderThread::~RenderThread()
@@ -20,15 +16,13 @@ RenderThread::~RenderThread()
     condition.wakeOne();
     mutex.unlock();
     
-    
-    wait();
-    
-    
+    wait();    
 }
 
 
 void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, int imageWidth, int imageHeight, Settings *settings, QImage *output)
 {
+
     QMutexLocker locker(&mutex);
     
     this->topLeft = topLeft;
@@ -37,30 +31,35 @@ void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QP
     overallHeight = imageHeight;
     this->output = output;
     
-    this->function = function->clone();
-    this->colorwheel = colorwheel->clone();
+    // this->function = function->clone();
+    // this->colorwheel = colorwheel->clone();
+
+    this->function = function;
+    this->colorwheel = colorwheel;
     this->settings = settings;
     
     worldYStart1= settings->Height + settings->YCorner;
     worldYStart2 = settings->Height/overallHeight;
     worldXStart = settings->Width/overallWidth;
     
-    
     if (!isRunning()) {
+        qDebug() << QThread::currentThread() << " is not running but start now";
         start(LowPriority);
     } else {
+        qDebug() << QThread::currentThread() << " is running already, so wake one";
         restart = true;
         condition.wakeOne();
     }
-    
-    
+        
 }
 
 
 void RenderThread::run()
 {
     forever {
+        qDebug() << "start running thread " << QThread::currentThread();
         mutex.lock();
+        // qDebug() << "lock acquired";
         
         double worldX, worldY;
         double worldYStart1 = this->worldYStart1;
@@ -69,8 +68,9 @@ void RenderThread::run()
         double XCorner = settings->XCorner;
         
         mutex.unlock();
+        // qDebug() << "lock unlocked";
 
-        // qDebug() << "drawing at " << topLeft << " and " << bottomRight;
+        qDebug() << "drawing at " << topLeft << " and " << bottomRight;
         
         for (int x = topLeft.x(); x < bottomRight.x(); x++)
         {
@@ -81,7 +81,6 @@ void RenderThread::run()
                 
                 worldY = worldYStart1 - y * worldYStart2;
                 worldX = x * worldXStart + XCorner;
-                
                 
                 //run the point through our mathematical function
                 //...then convert that complex output to a color according to our color wheel
@@ -95,6 +94,8 @@ void RenderThread::run()
                 
             }
         }
+
+        qDebug() << "thread " << QThread::currentThread() << " finishes rendering";
          
         // create output image
         // process all pixels

@@ -525,17 +525,6 @@ QRgb ColorWheel::FromImage(std::complex<double> zin)
     return color.rgb();
 }
 
-//v3 ColorWheel::initV3(double x1, double y1, double z1)
-//{
-//    v3 out;
-//    out.xv = x1;
-//    out.yv = y1;
-//    out.zv = z1;
-//    return out;
-//}
-
-
-
 void ColorWheel::setCurrent(int index)
 {
     if(index >= 0 && index <= 9)

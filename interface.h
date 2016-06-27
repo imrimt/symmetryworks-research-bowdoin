@@ -38,11 +38,13 @@
 
 #include "port.h"
 
+
+using namespace QtCharts;
+
 const int MAX_HISTORY_ITEMS = 5;
 const int LOCAL_FLAG = 0;
 const int GLOBAL_FLAG = 1;
-
-using namespace QtCharts;
+const int HISTORY_ITEM_SIZE = 60;
 
 const unsigned int INVALID_FILE_ERROR = 0;
 
@@ -239,7 +241,6 @@ public:
     QPushButton *setLoadedImage;
     
     // viewHistoryBox SUBELEMENTS
-    QMap<QDateTime, HistoryItem*> historyItemsMap;
     QGroupBox *viewHistoryBox;
     QVBoxLayout *viewHistoryBoxLayout;
     QVBoxLayout *viewHistoryBoxOverallLayout;
@@ -374,10 +375,14 @@ private:
     QString saveloadPath;
     AbstractFunction * currFunction;
     ColorWheel * currColorWheel;
+    Port *previewDisplayPort, *historyDisplayPort, *imageExportPort;
     bool advancedMode;
     int coeffFlag;
     
     Settings *settings;
+
+    QMap<QDateTime, HistoryItem*> historyItemsMap;
+    QMap<QDateTime, Port*> historyPortsMap;
     
 };
 

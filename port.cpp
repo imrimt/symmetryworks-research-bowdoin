@@ -8,24 +8,28 @@
 
 #include "port.h"
 
-
-
 Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height, Settings *currSettings)
 {
     this->width = width;
     this->height = height;
     
-    this->currFunction = currFunction->clone();
-    this->currColorWheel = currColorWheel->clone();
+    // this->currFunction = currFunction->clone();
+    // this->currColorWheel = currColorWheel->clone();
     
+    this->currFunction = currFunction;
+    this->currColorWheel = currColorWheel;
+
     this->currSettings = currSettings;
     
+    // for (unsigned int i = 0; i < NUM_THREADS; i++)
+    // {
+    qDebug() << "creating 2 threads: " << QThread::currentThread();
     threads.push_back(new RenderThread());
     threads.push_back(new RenderThread());
-    
-    
-    
-    
+    // }  
+
+    // threads.push_back(RenderThread());
+    // threads.push_back(RenderThread());  
 }
 
 
@@ -46,6 +50,8 @@ QString Port::exportImage(QImage *output, const QString &fileName)
 void Port::paintToDisplay(Display *display)
 {
     render(display->getImage());
+
+    qDebug() << "repainting display";
     
     display->repaint();
 }
@@ -66,10 +72,16 @@ void Port::render(QImage *output)
     clock_t start, end;
     double cpu_time_used;
     start = clock();
+
+    qDebug() << "Port Thread: " << QThread::currentThread() << " starts rendering: " << threads[0]->currentThread() << " and " << threads[1]->currentThread();
     
     threads[0]->render(currFunction, currColorWheel, QPoint(0,0), QPoint(width/2, height), width, height, currSettings, output);
+
+    // QThread::yieldCurrentThread();
+
     threads[1]->render(currFunction, currColorWheel, QPoint(width/2, 0), QPoint(width, height), width, height, currSettings, output);
     
+    // QThread::yieldCurrentThread();
 //    double worldYStart1= setHeight + YCorner;
 //    double worldYStart2 = setHeight/height;
 //    double worldXStart = setWidth/width;

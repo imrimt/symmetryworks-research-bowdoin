@@ -65,7 +65,6 @@ interface::interface(QWidget *parent) : QWidget(parent)
     numtermsValidate = new QIntValidator(1, 99, this);
     dimValidate = new QIntValidator(1, 10000, this);
 
-    
     //modeToggle SUBELEMENTS
     toggleViewButton = new QPushButton(tr("Switch to Advanced View"), this);
     toggleViewLayout = new QVBoxLayout(toggleViewWidget);
@@ -594,6 +593,10 @@ interface::interface(QWidget *parent) : QWidget(parent)
     coeffMapper->setMapping(coeffPlaneEdit, LOCAL_FLAG);
     coeffMapper->setMapping(scalePlaneEdit, GLOBAL_FLAG);
 
+    //INITIALIZING PORT OBJECTS
+    previewDisplayPort = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings);
+    imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
+
     // CONNECT SIGNALS & SLOTS
     connect(toggleViewButton, SIGNAL(clicked()), this, SLOT(toggleViewMode()));
     connect(updatePreview, SIGNAL(clicked()), this, SLOT(updateSavePreview()));
@@ -799,6 +802,9 @@ void interface::setImagePushed()
 void interface::changeFunction(int index)
 {
     delete currFunction;
+    delete previewDisplayPort;
+    delete historyDisplayPort;
+    delete imageExportPort;
 
     switch(index)
     {
@@ -874,8 +880,10 @@ void interface::changeFunction(int index)
         currFunction = new zzbarFunction();
         colorwheelSel->setCurrentIndex(9);
         break;
-
     }
+
+    previewDisplayPort = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings);
+    imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
 
     refreshTerms();
 }
@@ -991,7 +999,7 @@ void interface::addToHistory()
     QVBoxLayout *historyItemsWithLabelLayout = new QVBoxLayout();
     QHBoxLayout *historyItemsLayout = new QHBoxLayout();
     QVBoxLayout *historyItemsButtonsLayout = new QVBoxLayout();
-    Display *d = new Display(60, viewHistoryBox);
+    Display *d = new Display(HISTORY_ITEM_SIZE, viewHistoryBox);
     QPushButton *viewButton = new QPushButton(tr("View"), viewHistoryBox);
     QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
     QLabel *timeStampLabel = new QLabel(viewHistoryBox);
@@ -1023,39 +1031,20 @@ void interface::addToHistory()
     item->labelItem = timeStampLabel;
     item->filePathName = saveSettings(newFile).append("/" + newFile);
 
-    qDebug() << item->filePathName;    
+    // qDebug() << item->filePathName;
+
+    // this handles the painting of the preview icon
+    Port *historyDisplayPort = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim(), settings);
+    historyDisplayPort->paintHistoryIcon(item);    
 
     connect(viewButton, SIGNAL(clicked()), viewMapper, SLOT(map()));
     connect(removeButton, SIGNAL(clicked()), removeMapper, SLOT(map()));
 
     viewMapper->setMapping(viewButton, newFile);
-    removeMapper->setMapping(removeButton, item);
-    
-    // this handles the painting of the preview icon
-    Port *historyDisplay = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim(), settings);
-    historyDisplay->paintHistoryIcon(item);
-    
-//    double worldY, worldX;
-//    
-//    for (int y = 0; y < item->preview->dim(); y++)
-//    {
-//        for (int x = 0; x <= ((item->preview->dim())-1); x++)
-//        {
-//            worldY= settings->Height-y*settings->Height/item->preview->dim()+settings->YCorner;
-//            worldX= x*settings->Width/item->preview->dim()+settings->XCorner;
-//            
-//            //run the point through our mathematical function
-//            //then convert that complex output to a color according to our color wheel
-//            std::complex<double> fout = (*currFunction)(worldX,worldY);  
-//            QRgb color = (*currColorWheel)(fout);                          
-//            
-//            //finally push the determined color to the corresponding point on the display
-//            item->preview->setPixel(x, y, color);                    
-//        }
-//    }
-//    item->preview->repaint();    
+    removeMapper->setMapping(removeButton, item);   
 
     historyItemsMap.insert(savedTime, item);
+    historyPortsMap.insert(savedTime, historyDisplayPort);
     
 }
 
@@ -1084,6 +1073,10 @@ void interface::removePreview(QObject *item)
     viewHistoryBoxLayout->removeItem(historyItemToRemove->layoutWithLabelItem);
     delete historyItemToRemove->layoutWithLabelItem;
 
+    delete *(historyPortsMap.find(historyItemToRemove->savedTime));
+    historyPortsMap.erase(historyPortsMap.find(historyItemToRemove->savedTime));
+
+    // delete historyItemToRemove->port;
     historyItemsMap.erase(historyItemsMap.find(historyItemToRemove->savedTime));
 
     QFile::remove(historyItemToRemove->filePathName);
@@ -1091,8 +1084,9 @@ void interface::removePreview(QObject *item)
 
 void interface::updatePreviewDisplay()
 {    
-    Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings);
-    previewDisplay->paintToDisplay(disp);
+    // Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings);
+    qDebug() << QThread::currentThread() << " updates preview display";
+    previewDisplayPort->paintToDisplay(disp);
 }
 
 void interface::updateSavePreview()
@@ -1155,6 +1149,7 @@ void interface::changeN(int val)
     // int passedval = val.toInt();
     currFunction->setN(termIndex, val);
     // nValueLabel->setText(QString::number(val));
+    qDebug() << "changing N";
     updatePreviewDisplay();
 }
 
@@ -1163,6 +1158,7 @@ void interface::changeM(int val)
     // int passedval = val.toInt();
     currFunction->setM(termIndex, val);
     // mValueLabel->setText(QString::number(val));
+    qDebug() << "changing M";
     updatePreviewDisplay();
 }
 
@@ -1171,6 +1167,7 @@ void interface::changeR(double val)
     // double passedval = val.toDouble();
     currFunction->setR(termIndex, val);
     rValueLabel->setText(QString::number(val));
+    qDebug() << "changing R";
     updatePreviewDisplay();
 }
 
@@ -1179,6 +1176,7 @@ void interface::changeA(double val)
     // double passedval = val.toDouble();
     currFunction->setA(termIndex, val);
     aValueLabel->setText(QString::number(val));
+    qDebug() << "changing A";
     updatePreviewDisplay();
 }
 
@@ -1198,7 +1196,7 @@ void interface::saveImageStart()
 {
     
     
-    Port *imageExport = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
+    // Port *imageExport = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
     
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,
@@ -1255,7 +1253,7 @@ void interface::saveImageStart()
     
     QImage *output = new QImage(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
     
-    imageExport->exportImage(output, fileName);
+    imageExportPort->exportImage(output, fileName);
 }
 
 void interface::errorHandler(const int &flag) 
