@@ -15,7 +15,7 @@
 #include "renderthread.h"
 #include <QThread>
 
-#define NUM_THREADS 4
+#define NUM_THREADS 8
 
 
 // TODO: move this to its own source file?
@@ -44,8 +44,9 @@ public:
 };
 
 
-class Port
+class Port : public QObject
 {
+    Q_OBJECT
     
 public:
     
@@ -58,8 +59,7 @@ public:
     QString exportImage(QImage *output, const QString &fileName);
     void paintToDisplay(Display *disp);
     void paintHistoryIcon(HistoryItem *item);
-    
-    
+
 protected:
     
     AbstractFunction *currFunction;

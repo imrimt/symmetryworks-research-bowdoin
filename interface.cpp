@@ -80,12 +80,15 @@ interface::interface(QWidget *parent) : QWidget(parent)
     termViewWidget = new QWidget(this, Qt::Window);
     termViewWidget->setWindowTitle(tr("Edit Function Terms"));
     termViewLayout = new QHBoxLayout(termViewWidget);
+    
+    
 
     termViewWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    termViewWidget->setFixedSize(800, 200);
+    termViewWidget->setFixedWidth(500);
+    //termViewWidget->setFixedSize(600, 400);
     termViewWidget->hide();
     termViewTable = new QTableWidget(termViewWidget);
-    termViewTable->setRowCount(2);
+    termViewTable->setRowCount(1);
     termViewTable->setColumnCount(5);
 //    termViewTable->setColumnWidth(0, 200);
 //    termViewTable->setColumnWidth(1, 200);
@@ -100,14 +103,18 @@ interface::interface(QWidget *parent) : QWidget(parent)
     termViewHorizontalHeaders << tr("Term") << tr("m") << tr("n") << tr("a") << tr("r");
     termViewTable->setHorizontalHeaderLabels(termViewHorizontalHeaders);
 
-    addTermButton = new QTableWidgetItem();
+    addTermButton = new QPushButton(tr("Add term..."));
     addTermButton->setIcon(*(new QIcon(":/Images/zoomin.png")));
-    termViewTable->setVerticalHeaderItem(1,addTermButton);
-    
+    termViewLayout->addWidget(addTermButton);
     // resize all columns to maximum stretch
     for (int c = 0; c < termViewTable->horizontalHeader()->count(); ++c)
     {
         termViewTable->horizontalHeader()->setSectionResizeMode(c, QHeaderView::Stretch);
+    }
+    
+    for (int r = 0; r < termViewTable->verticalHeader()->count(); ++r)
+    {
+        termViewTable->verticalHeader()->setSectionResizeMode(r, QHeaderView::Stretch);
     }
     
     

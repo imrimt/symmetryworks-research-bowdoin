@@ -58,6 +58,9 @@ public:
 protected:
     void run() Q_DECL_OVERRIDE;
     
+signals:
+    void finished();
+    
 private:
     QMutex mutex;
     QWaitCondition condition;

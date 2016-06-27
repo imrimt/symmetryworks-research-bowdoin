@@ -159,7 +159,7 @@ public:
     QHeaderView *termViewHeaderVertical;
     QStringList termViewHorizontalHeaders;
     QStringList termViewVerticalHeaders;
-    QTableWidgetItem *addTermButton;
+    QPushButton *addTermButton;
     
     QLabel *currTermLabel;
     CustomSpinBox *currTermEdit;

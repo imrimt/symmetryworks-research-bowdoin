@@ -20,11 +20,7 @@ Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width
     
     this->currSettings = currSettings;
     
-    for (int i = 0; i < NUM_THREADS; i++) {
-        RenderThread *nextThread = new RenderThread();
-        threads.push_back(nextThread);
-        QThread::connect(nextThread, SIGNAL(finished()), nextThread, SLOT(deleteLater()));
-    }
+    
     
 
 }
@@ -70,6 +66,14 @@ void Port::render(QImage *output)
     clock_t start, end;
     double cpu_time_used;
     start = clock();
+    
+    
+    for (int i = 0; i < NUM_THREADS; i++) {
+        RenderThread *nextThread = new RenderThread();
+        threads.push_back(nextThread);
+        QThread::connect(nextThread, SIGNAL(finished()), this, SLOT(deleteLater()));
+    }
+    
     
     for (int i = 0; i < NUM_THREADS; i++) {
         threads[i]->render(currFunction, currColorWheel, QPoint(i * width/NUM_THREADS,0), QPoint((i + 1) * width/NUM_THREADS, height), width, height, currSettings, output);
