@@ -161,7 +161,7 @@ public:
     QHeaderView *termViewHeaderVertical;
     QStringList termViewHorizontalHeaders;
     QStringList termViewVerticalHeaders;
-    QTableWidgetItem *addTermButton;
+    QPushButton *addTermButton;
     
     QLabel *currTermLabel;
     CustomSpinBox *currTermEdit;
@@ -375,7 +375,7 @@ private:
     QString saveloadPath;
     AbstractFunction * currFunction;
     ColorWheel * currColorWheel;
-    Port *previewDisplayPort, *historyDisplayPort, *imageExportPort;
+    Port *previewDisplayPort, *imageExportPort;
     bool advancedMode;
     int coeffFlag;
     

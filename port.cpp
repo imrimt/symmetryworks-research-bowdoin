@@ -20,16 +20,18 @@ Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width
     this->currColorWheel = currColorWheel;
 
     this->currSettings = currSettings;
-    
-    // for (unsigned int i = 0; i < NUM_THREADS; i++)
-    // {
-    qDebug() << "creating 2 threads: " << QThread::currentThread();
-    threads.push_back(new RenderThread());
-    threads.push_back(new RenderThread());
-    // }  
 
-    // threads.push_back(RenderThread());
-    // threads.push_back(RenderThread());  
+    // numThreadsFinished = 0;
+    
+    // qDebug() << "creating 2 threads: " << QThread::currentThread();
+
+    for (int i = 0; i < NUM_THREADS; i++) {
+        RenderThread *nextThread = new RenderThread();
+        threads.push_back(nextThread);
+        // connect(nextThread, SIGNAL(finished()), nextThread, SLOT(deleteLater()));
+        // connect(nextThread, SIGNAL(renderingFinished()), controller->getControllerObject(), SLOT(checkProgress()));
+    }
+
 }
 
 
@@ -48,12 +50,14 @@ QString Port::exportImage(QImage *output, const QString &fileName)
 
 
 void Port::paintToDisplay(Display *display)
-{
+{ 
+    
     render(display->getImage());
 
-    qDebug() << "repainting display";
+    // qDebug() << "repainting display";
     
     display->repaint();
+    
 }
 
 
@@ -73,13 +77,27 @@ void Port::render(QImage *output)
     double cpu_time_used;
     start = clock();
 
-    qDebug() << "Port Thread: " << QThread::currentThread() << " starts rendering: " << threads[0]->currentThread() << " and " << threads[1]->currentThread();
+    // qDebug() << "Port Thread: " << QThread::currentThread() << " starts rendering: " << threads[0]->currentThread() << " and " << threads[1]->currentThread();
     
-    threads[0]->render(currFunction, currColorWheel, QPoint(0,0), QPoint(width/2, height), width, height, currSettings, output);
+    // for (int i = 0; i < NUM_THREADS; i++) {
+    //     RenderThread *nextThread = new RenderThread();
+    //     threads.push_back(nextThread);
+    //     QThread::connect(nextThread, SIGNAL(finished()), this, SLOT(deleteLater()));
+    // }
 
-    // QThread::yieldCurrentThread();
+    // for (int i = 0; i < NUM_THREADS; i++) {
+    //     connect(threads[i], SIGNAL(started()), controller, SLOT(updateProgress()));
+    //     connect(threads[i], SIGNAL(finished()), controller, SLOT(checkProgress()));
+    // }
 
-    threads[1]->render(currFunction, currColorWheel, QPoint(width/2, 0), QPoint(width, height), width, height, currSettings, output);
+    ControllerThread *controller = new ControllerThread();
+    controller->prepareToRun(threads, currFunction, currColorWheel, currSettings, output);
+    // controller->start(QThread::InheritPriority);
+    controller->wait();
+    
+    // for (int i = 0; i < NUM_THREADS; i++) {
+    //     threads[i]->render(currFunction, currColorWheel, QPoint(i * width/NUM_THREADS,0), QPoint((i + 1) * width/NUM_THREADS, height), width, height, currSettings, output);
+    // }
     
     // QThread::yieldCurrentThread();
 //    double worldYStart1= setHeight + YCorner;
@@ -115,9 +133,18 @@ void Port::render(QImage *output)
     // calc time elapsed to render all pixels
     end = clock();
     cpu_time_used = (double)(end - start)/CLOCKS_PER_SEC;
-    qDebug() << "TIME TO RENDER ALL PIXELS: " << cpu_time_used << " sec";
-    
-
+    // qDebug() << "TIME TO RENDER ALL PIXELS: " << cpu_time_used << " sec";
 }
+
+// void Port::checkProgress()
+// {
+
+//     ++numThreadsFinished;
+
+//     if (numThreadsFinished < NUM_THREADS)
+//     {
+//         QThread::wait();
+//     }
+// }
 
 

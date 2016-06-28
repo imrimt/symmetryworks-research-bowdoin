@@ -44,6 +44,24 @@
 
 #include "geomath.h"
 
+class Controller : public QObject
+{
+    Q_OBJECT
+public: 
+    int getNumThreadsRunning() {return numThreadsRunning;}
+    void setNumThreadsRunning(int value) {numThreadsRunning = value;}
+
+private slots:
+    void checkProgress() 
+    {
+        --numThreadsRunning;
+        qDebug() << "reducing numThreadsRunning to" << numThreadsRunning;
+    }
+
+private:
+    int numThreadsRunning;
+
+};
 
 class RenderThread : public QThread
 {
@@ -53,17 +71,19 @@ public:
     RenderThread(QObject *parent = 0);
     ~RenderThread();
     
-    void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, int imageWidth, int imageHeight, Settings *settings, QImage *output);
-    
-signals:
-    void renderedImage(const QImage &image);
+    void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, Settings *settings, QImage *output, Controller *controllerObject, QWaitCondition *controllerCondition);
     
 protected:
     void run() Q_DECL_OVERRIDE;
     
+signals:
+    // void renderingStarted();
+    void renderingFinished();
+    
 private:
     QMutex mutex;
     QWaitCondition condition;
+    QWaitCondition *controllerCondition;
     
     int overallWidth, overallHeight;
     QPoint topLeft, bottomRight;
@@ -77,7 +97,7 @@ private:
     AbstractFunction *function;
     ColorWheel *colorwheel;
     Settings *settings;
-    
+    Controller *controllerObject;
     
     QImage *output;
     

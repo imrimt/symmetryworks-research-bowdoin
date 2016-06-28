@@ -1,12 +1,5 @@
 #include "interface.h"
 
-
-//the settings namespace stores a few variables used to compute the
-//image via the mathematical function and the color wheel, as well as
-//the output width and height.
-
-
-
 interface::interface(QWidget *parent) : QWidget(parent)
 {
 
@@ -79,12 +72,15 @@ interface::interface(QWidget *parent) : QWidget(parent)
     termViewWidget = new QWidget(this, Qt::Window);
     termViewWidget->setWindowTitle(tr("Edit Function Terms"));
     termViewLayout = new QHBoxLayout(termViewWidget);
+    
+    
 
     termViewWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    termViewWidget->setFixedSize(800, 200);
+    termViewWidget->setFixedWidth(500);
+    //termViewWidget->setFixedSize(600, 400);
     termViewWidget->hide();
     termViewTable = new QTableWidget(termViewWidget);
-    termViewTable->setRowCount(2);
+    termViewTable->setRowCount(1);
     termViewTable->setColumnCount(5);
 //    termViewTable->setColumnWidth(0, 200);
 //    termViewTable->setColumnWidth(1, 200);
@@ -99,14 +95,18 @@ interface::interface(QWidget *parent) : QWidget(parent)
     termViewHorizontalHeaders << tr("Term") << tr("m") << tr("n") << tr("a") << tr("r");
     termViewTable->setHorizontalHeaderLabels(termViewHorizontalHeaders);
 
-    addTermButton = new QTableWidgetItem();
+    addTermButton = new QPushButton(tr("Add term..."));
     addTermButton->setIcon(*(new QIcon(":/Images/zoomin.png")));
-    termViewTable->setVerticalHeaderItem(1,addTermButton);
-    
+    termViewLayout->addWidget(addTermButton);
     // resize all columns to maximum stretch
     for (int c = 0; c < termViewTable->horizontalHeader()->count(); ++c)
     {
         termViewTable->horizontalHeader()->setSectionResizeMode(c, QHeaderView::Stretch);
+    }
+    
+    for (int r = 0; r < termViewTable->verticalHeader()->count(); ++r)
+    {
+        termViewTable->verticalHeader()->setSectionResizeMode(r, QHeaderView::Stretch);
     }
     
     
@@ -428,7 +428,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     imagePropsBoxOverallLayout->addLayout(imagePropsBoxLayout);
 
     // DISP SUBELEMENTS
-    disp = new Display(DEFAULT_PREVIEW_SIZE, displayWidget);
+    disp = new Display(DEFAULT_PREVIEW_SIZE, DEFAULT_IMAGE_SIZE, displayWidget);
     updatePreview = new QPushButton(tr("Update Preview"), this);
     exportImage = new QPushButton(tr("Export Image..."), this);
     resetImage = new QPushButton(tr("Reset"), this);
@@ -594,7 +594,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     coeffMapper->setMapping(scalePlaneEdit, GLOBAL_FLAG);
 
     //INITIALIZING PORT OBJECTS
-    previewDisplayPort = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings);
+    previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
     imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
 
     // CONNECT SIGNALS & SLOTS
@@ -803,7 +803,6 @@ void interface::changeFunction(int index)
 {
     delete currFunction;
     delete previewDisplayPort;
-    delete historyDisplayPort;
     delete imageExportPort;
 
     switch(index)
@@ -882,7 +881,7 @@ void interface::changeFunction(int index)
         break;
     }
 
-    previewDisplayPort = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings);
+    previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
     imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
 
     refreshTerms();
@@ -999,7 +998,7 @@ void interface::addToHistory()
     QVBoxLayout *historyItemsWithLabelLayout = new QVBoxLayout();
     QHBoxLayout *historyItemsLayout = new QHBoxLayout();
     QVBoxLayout *historyItemsButtonsLayout = new QVBoxLayout();
-    Display *d = new Display(HISTORY_ITEM_SIZE, viewHistoryBox);
+    Display *d = new Display(HISTORY_ITEM_SIZE, HISTORY_ITEM_SIZE, viewHistoryBox);
     QPushButton *viewButton = new QPushButton(tr("View"), viewHistoryBox);
     QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
     QLabel *timeStampLabel = new QLabel(viewHistoryBox);
@@ -1076,7 +1075,6 @@ void interface::removePreview(QObject *item)
     delete *(historyPortsMap.find(historyItemToRemove->savedTime));
     historyPortsMap.erase(historyPortsMap.find(historyItemToRemove->savedTime));
 
-    // delete historyItemToRemove->port;
     historyItemsMap.erase(historyItemsMap.find(historyItemToRemove->savedTime));
 
     QFile::remove(historyItemToRemove->filePathName);
@@ -1085,7 +1083,7 @@ void interface::removePreview(QObject *item)
 void interface::updatePreviewDisplay()
 {    
     // Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings);
-    qDebug() << QThread::currentThread() << " updates preview display";
+    // qDebug() << QThread::currentThread() << " updates preview display";
     previewDisplayPort->paintToDisplay(disp);
 }
 
@@ -1106,11 +1104,10 @@ void interface::updateSavePreview()
 }
 
 void interface::clearAllHistory()
-{
-    QMap<QDateTime, HistoryItem*>::iterator it;
-    
-    for (it = historyItemsMap.begin(); it != historyItemsMap.end(); ++it) {
-        removePreview(it.value());
+{    
+    while (!historyItemsMap.empty()) {
+        qDebug() << "removing";
+        removePreview(historyItemsMap.begin().value());
     }
 }
 
@@ -1149,7 +1146,7 @@ void interface::changeN(int val)
     // int passedval = val.toInt();
     currFunction->setN(termIndex, val);
     // nValueLabel->setText(QString::number(val));
-    qDebug() << "changing N";
+    // qDebug() << "changing N";
     updatePreviewDisplay();
 }
 
@@ -1158,7 +1155,7 @@ void interface::changeM(int val)
     // int passedval = val.toInt();
     currFunction->setM(termIndex, val);
     // mValueLabel->setText(QString::number(val));
-    qDebug() << "changing M";
+    // qDebug() << "changing M";
     updatePreviewDisplay();
 }
 
@@ -1167,7 +1164,7 @@ void interface::changeR(double val)
     // double passedval = val.toDouble();
     currFunction->setR(termIndex, val);
     rValueLabel->setText(QString::number(val));
-    qDebug() << "changing R";
+    // qDebug() << "changing R";
     updatePreviewDisplay();
 }
 
@@ -1176,7 +1173,7 @@ void interface::changeA(double val)
     // double passedval = val.toDouble();
     currFunction->setA(termIndex, val);
     aValueLabel->setText(QString::number(val));
-    qDebug() << "changing A";
+    // qDebug() << "changing A";
     updatePreviewDisplay();
 }
 

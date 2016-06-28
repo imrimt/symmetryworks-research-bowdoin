@@ -4,11 +4,11 @@
 
 #include "display.h"
 
-#include "renderthread.h"
+// #include "renderthread.h"
+#include "controllerthread.h"
+#include <QThread>
 
-
-#define NUM_DISPLAY_THREADS 2
-
+#define NUM_THREADS 4
 
 // TODO: move this to its own source file?
 class HistoryItem : public QObject
@@ -34,9 +34,9 @@ public:
     // Port *port;
 };
 
-
-class Port
+class Port : public QObject
 {
+    Q_OBJECT
     
 public:
     
@@ -49,8 +49,7 @@ public:
     QString exportImage(QImage *output, const QString &fileName);
     void paintToDisplay(Display *disp);
     void paintHistoryIcon(HistoryItem *item);
-    
-    
+
 protected:
     
     AbstractFunction *currFunction;
@@ -60,14 +59,19 @@ protected:
     
     int width, height;
     //double XCorner, YCorner, setWidth, setHeight;
-    
+
+// private slots:
+//     void checkProgress();
     
 private:
     void render(QImage *output);
     
     QVector<RenderThread *> threads;
-    // QVector<RenderThread> threads;
-    
+
+    // ControllerThread *controller;
+
+    // int numThreadsFinished;
+
 };
 
 

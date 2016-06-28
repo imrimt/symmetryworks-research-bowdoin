@@ -51,8 +51,6 @@ class AbstractFunction      //this is the base class for all other classes that 
     QVector<freqpair> freqs;
     unsigned int terms;
     coeffpair scale;
-    
-    int functionId;
 
     // PRIVATE MEMBER FUNCTIONS
     void refresh();

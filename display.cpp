@@ -1,14 +1,17 @@
 #include "display.h"
 
-Display::Display(int inputdim, QWidget *parent) :
+Display::Display(int inputDim, int imageDim, QWidget *parent) :
     QWidget(parent)
 {
     // setAttribute(Qt::WA_StaticContents);
     // setAttribute(Qt::WA_LayoutOnEntireRect);
     // setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    dimension = inputdim;
-    disp = QImage(dimension, dimension, QImage::Format_RGB32);
+    dimension = inputDim;
+    imageSize = imageDim;
+    disp = QImage(imageSize, imageSize, QImage::Format_RGB32);
+    // dispLabel = new QLabel(this);
+    // dispPixmap = new QPixmap(this);
     disp.fill(0);
 }
 
@@ -29,26 +32,32 @@ int Display::dim() const
 
 void Display::shrink() 
 {
-    if (dim() * (1 - SCALE) >= MIN_PREVIEW_SIZE) {
-        dimension *= (1 - SCALE);
+    int newSize = disp.width();
+    if (disp.width() * (1 - SCALE) >= MIN_PREVIEW_IMAGE_SIZE) {
+        newSize = (int)(newSize * (1 - SCALE));
     }
     else {
-        dimension = MIN_PREVIEW_SIZE;
+        newSize = MIN_PREVIEW_IMAGE_SIZE;
     }
-    resize(dimension, dimension);
-    disp.scaled(dimension, Qt::KeepAspectRatio);
+    // resize(dimension, dimension);
+    disp = disp.scaled(newSize, newSize, Qt::KeepAspectRatio);
+    update();
 }
 
 void Display::enlarge()
 {
-    if (dim() * (1 + SCALE) <= MAX_PREVIEW_SIZE) {
-        dimension *= (1 + SCALE);
+    int newSize = disp.width();
+    if (disp.width() * (1 + SCALE) <= MAX_PREVIEW_IMAGE_SIZE) {
+        newSize = (int)(newSize * (1 + SCALE));
     }
     else {
-        dimension = MAX_PREVIEW_SIZE;
+        newSize = MAX_PREVIEW_IMAGE_SIZE;
     }
-    resize(dimension, dimension);
-    disp.scaled(dimension, Qt::KeepAspectRatio);
+    // qDebug() <<"new size for image:" << newSize;
+    // resize(dimension, dimension);
+    disp = disp.scaled(newSize, newSize, Qt::KeepAspectRatio);
+    // qDebug() << "new size:" << disp.width();
+    update();
 }
 
 void Display::paintEvent(QPaintEvent * /* unused */)
@@ -56,12 +65,25 @@ void Display::paintEvent(QPaintEvent * /* unused */)
     QPainter painter(this);
     QColor color;
 
-    for(int i = 0; i < disp.width(); ++i)
-    // for (int i = 0; i < dimension; i++)
-    {
-        for(int j = 0; j<disp.height(); ++j)
-        // for (int j = 0; j < dimension; j++)
-        {
+    // qDebug() << "drawing from" << QPoint((int)((dimension - disp.width())/2), (int)((dimension - disp.height())/2)) << "to" << 
+    // QPoint((int)((dimension - disp.width())/2) + disp.width(), (int)((dimension - (int)disp.height())/2) + disp.height());
+
+    // for(int i = (int)((dimension - disp.width())/2); i < (int)((dimension - disp.width())/2) + disp.width(); i++)
+    // // for (int i = 0; i < dimension; i++)
+    // {
+    //     for(int j = (int)((dimension - (int)disp.height())/2); j < (int)((dimension - (int)disp.height())/2) + disp.height(); j++)
+    //     // for (int j = 0; j < dimension; j++)
+    //     {
+    //         color = QColor::fromRgb(disp.pixel(i,j));
+    //         painter.setPen(color);
+    //         painter.drawPoint(i, j);
+    //     }
+    // }
+
+    // qDebug() << "size of image:" << disp.width() << "x" << disp.height();
+
+    for (int i = 0; i < disp.width(); i++) {
+        for (int j = 0; j < disp.height(); j++) {
             color = QColor::fromRgb(disp.pixel(i,j));
             painter.setPen(color);
             painter.drawPoint(i, j);
