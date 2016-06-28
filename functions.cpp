@@ -2,11 +2,14 @@
 
 AbstractFunction::AbstractFunction(QVector<coeffpair> &in_coeffs, QVector<freqpair> &in_freqs)
 {
+    terms = 99;
     initWithVectors(in_coeffs, in_freqs);
 }
 
 int AbstractFunction::getN(unsigned int &i) const
 {
+
+    
     if(i < terms)
         return freqs[i].N();
     else
@@ -18,6 +21,8 @@ int AbstractFunction::getN(unsigned int &i) const
 
 int AbstractFunction::getM(unsigned int &i) const
 {
+    
+    
     if(i < terms)
         return freqs[i].M();
     else
@@ -51,6 +56,8 @@ double AbstractFunction::getA(unsigned int &i) const
 
 void AbstractFunction::setN(unsigned int &i, int &val)
 {
+    
+    
     if(i < terms)
         freqs[i].setN(val);
     else
@@ -59,6 +66,9 @@ void AbstractFunction::setN(unsigned int &i, int &val)
 
 void AbstractFunction::setM(unsigned int &i, int &val)
 {
+    
+    
+    
     if(i < terms)
         freqs[i].setM(val);
     else
@@ -68,6 +78,7 @@ void AbstractFunction::setM(unsigned int &i, int &val)
 
 void AbstractFunction::setR(unsigned int &i, double &val)
 {
+    
     if(i < terms)
         coeffs[i].setR(val);
     else
@@ -76,6 +87,8 @@ void AbstractFunction::setR(unsigned int &i, double &val)
 
 void AbstractFunction::setA(unsigned int &i, double &val)
 {
+    
+    
     if(i < terms)
         coeffs[i].setA(val);
     else
@@ -96,12 +109,26 @@ void AbstractFunction::setScaleA(double &val)
 
 void AbstractFunction::setNumTerms(int &val)
 {
+    
     if(val > 0 && val <= 99 && val != (int) terms)
     {
         terms = val;
         coeffs.resize(terms);
         freqs.resize(terms);
     }
+}
+
+void AbstractFunction::removeTerm(unsigned int &i)
+{
+    if (coeffs.size() >= 1 && freqs.size() >= 1) {
+        
+        int it = i;
+        coeffs.erase(coeffs.begin() + it);
+        
+        freqs.erase(freqs.begin() + it);
+        
+    }
+    
 }
 
 void AbstractFunction::refresh()

@@ -56,6 +56,7 @@ class CustomSpinBox : public QSpinBox
 
 };
 
+
 class QDoubleSlider : public QSlider
 {
     Q_OBJECT
@@ -153,7 +154,7 @@ public:
     
     QPushButton *termViewButton;
     QWidget *termViewWidget;
-    QHBoxLayout *termViewLayout;
+    QVBoxLayout *termViewLayout;
     QTableWidget *termViewTable;
     QHeaderView *termViewHeaderHorizontal;
     QHeaderView *termViewHeaderVertical;
@@ -173,8 +174,6 @@ public:
     QLabel *rValueLabel;
     QLabel *scaleALabel;
     QLabel *scaleRLabel;
-    // QSlider *nEdit;
-    // QSlider *mEdit;
 
     QSpinBox *nEdit;
     QSpinBox *mEdit;
@@ -189,7 +188,6 @@ public:
     QLineEdit *scaleREdit;
     QPushButton *scalePlaneEdit;
 
-    //CustomSpinBox *currTermEdit;
 
     QGroupBox *functionConstantsBox;
     
@@ -216,6 +214,9 @@ public:
 //    QSpacerItem *espacer7;
     QPushButton *loadButton;
     QPushButton *saveButton;
+    
+    QSignalMapper *termViewTableMapper;
+    QSignalMapper *removeTermMapper;
 
     // patternTypeBox SUBELEMENTS
     QGroupBox *patternTypeBox;
@@ -327,10 +328,10 @@ private slots:
     void changeYCorner(const QString &val);
     void changeOWidth(const QString &val);
     void changeOHeight(const QString &val);
-    void changeN(int val);
-    void changeM(int val);
-    void changeR(double val);
-    void changeA(double val);
+//    void changeN(int val);
+//    void changeM(int val);
+//    void changeR(double val);
+//    void changeA(double val);
     void changeScaleR(const QString &val);
     void changeScaleA(const QString &val);
     void saveImageStart();
@@ -345,7 +346,9 @@ private slots:
     void clearAllHistory();
     void termViewPopUp();
     void addNewTerm();
-
+    void updateTermTable(QObject *cell);
+    void handleTermViewCellClicked(int row, int col);
+    
     void showPlanePopUp(int flag);
     void updatePolarCoordinatesWithIndex(const int &index);
     void updatePolarCoordinates();
@@ -362,7 +365,19 @@ private:
     QString getCurrSettings(const HistoryItem &item);
     QString saveSettings(const QString &fileName);
 
+    // interface display and formatting functions
+    void initInterfaceLayout();
+    void initPreviewDisplay();
+    void initFunctionConstants();
+    void initPatternType();
+    void initViewHistory();
+    void initImageProps();
+    void initCoeffPlane();
+    void connectAllSignals();
+
+    void removeTerm(int row);
     void refreshLabels();
+    void addTerm();
     void updatePreviewDisplay();
     void addToHistory();
     void errorHandler(const int &flag);    
@@ -370,6 +385,7 @@ private:
 
     void updatePolarCoordinates(QPointF point);
 
+    int numTerms;
     unsigned int termIndex;  //internal index:  starts at 0 
     QString saveloadPath;
     AbstractFunction * currFunction;
