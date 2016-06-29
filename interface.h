@@ -317,8 +317,8 @@ public:
 
 private slots:
     void toggleViewMode();
-    void updateTerms(int i);
-    void changeMaxTerms(int i);
+    void updateCurrTerm(int i);
+    //void changeMaxTerms(int i);
     void colorWheelChanged(int index);
     void setImagePushed();
     void changeFunction(int index);
@@ -328,10 +328,10 @@ private slots:
     void changeYCorner(const QString &val);
     void changeOWidth(const QString &val);
     void changeOHeight(const QString &val);
-//    void changeN(int val);
-//    void changeM(int val);
-//    void changeR(double val);
-//    void changeA(double val);
+    void changeN(int val);
+    void changeM(int val);
+    void changeR(double val);
+    void changeA(double val);
     void changeScaleR(const QString &val);
     void changeScaleA(const QString &val);
     void saveImageStart();
@@ -347,7 +347,7 @@ private slots:
     void termViewPopUp();
     void addNewTerm();
     void updateTermTable(QObject *cell);
-    void handleTermViewCellClicked(int row, int col);
+    void termViewCellClicked(int row, int col);
     
     void showPlanePopUp(int flag);
     void updatePolarCoordinatesWithIndex(const int &index);
@@ -382,11 +382,13 @@ private:
     void addToHistory();
     void errorHandler(const int &flag);    
     void refreshTerms();
+    void refreshMainWindowTerms();
 
     void updatePolarCoordinates(QPointF point);
 
     int numTerms;
-    unsigned int termIndex;  //internal index:  starts at 0 
+    unsigned int termIndex; 
+    unsigned int highestIndex;
     QString saveloadPath;
     AbstractFunction * currFunction;
     ColorWheel * currColorWheel;
