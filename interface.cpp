@@ -878,8 +878,16 @@ void interface::addTerm()
 void interface::resetImageFunction()
 {
     delete currFunction;
+    // delete previewDisplayPort;
+    // delete imageExportPort;
     
     currFunction = new hex3Function();
+    // imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
+    // previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
+
+    imageExportPort->changeFunction(currFunction);
+    previewDisplayPort->changeFunction(currFunction);
+
     functionSel->setCurrentIndex(0);
     colorwheelSel->setCurrentIndex(0);
     

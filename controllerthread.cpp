@@ -93,7 +93,12 @@ void ControllerThread::run()
     	{
     		threads[i]->render(function, colorwheel, QPoint(i * overallWidth/numThreadsActive, 0), QPoint((i + 1) * overallWidth/numThreadsActive, 
     			overallHeight), settings, output, controllerObject, &allWorkersFinishedCondition);
+            qDebug() << "thread" << i << "starts";
     	}
+
+        clock_t start, end;
+        double cpu_time_used;
+        start = clock();
 
         while (controllerObject->getNumThreadsRunning() > 0) 
         {
@@ -102,6 +107,10 @@ void ControllerThread::run()
             allWorkersFinishedCondition.wait(&mutex);
             qDebug() << "wake up in while loop";
         }
+
+        end = clock();
+        cpu_time_used = (double)(end - start)/CLOCKS_PER_SEC;
+        qDebug() << "TIME TO RENDER ALL PIXELS: " << cpu_time_used << " sec";
 
         if (!restart) {
             emit resultReady(actionFlag);
