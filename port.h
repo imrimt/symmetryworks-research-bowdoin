@@ -57,6 +57,8 @@ protected:
     
 private:
     void render(QImage *output, const int &actionFlag);
+    void changeFunction(AbstractFunction *newFunction) { currFunction = newFunction; }
+
     // void render(QImage *output, Display *display, const int &actionFlag);s
 
     Display *display;
