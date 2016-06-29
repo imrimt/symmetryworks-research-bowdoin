@@ -36,6 +36,9 @@ private:
     QImage disp;
     int dimension;
     int imageSize;
+
+    QPoint topLeft;
+    QPoint bottomRight;
     // QLabel *dispLabel;
     // QPixmap *dispPixmap;
 };

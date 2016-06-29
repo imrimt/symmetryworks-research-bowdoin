@@ -3,25 +3,6 @@
 
 #include "renderthread.h"
 
-// class Controller : public QObject
-// {
-// 	Q_OBJECT
-// public:	
-// 	int getNumThreadsRunning() {return numThreadsRunning;}
-// 	void setNumThreadsRunning(int value) {numThreadsRunning = value;}
-
-// private slots:
-// 	void checkProgress() 
-// 	{
-// 		--numThreadsRunning;
-// 		qDebug() << "reducing numThreadsRunning to" << numThreadsRunning;
-// 	}
-
-// private:
-// 	int numThreadsRunning;
-
-// };
-
 class ControllerThread : public QThread 
 {
     Q_OBJECT
@@ -29,35 +10,41 @@ class ControllerThread : public QThread
 public:
     ControllerThread(QObject *parent = 0);
     ~ControllerThread();
-    void prepareToRun(QVector<RenderThread *> workerThreads, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings, QImage *output);
+    void prepareToRun(QVector<RenderThread *> workerThreads, AbstractFunction *function, 
+        ColorWheel *colorwheel, Settings *settings, QImage *output, const int &actionFlag);
+    // void prepareToRun(QVector<RenderThread *> workerThreads, AbstractFunction *function, 
+    //     ColorWheel *colorwheel, Settings *settings, QImage *output, Display *display, const int &actionFlag);
     Controller* getControllerObject() {return controllerObject;}
 
 protected:
     void run() Q_DECL_OVERRIDE;
 
+signals:
+    void resultReady(const int &actionFlag);
+
 private:
 	QMutex mutex;
-	QWaitCondition condition;
+	QWaitCondition allWorkersFinishedCondition;
+    QWaitCondition restartCondition;
 
-	bool notFinished, restart, abort;
+	bool restart, abort;
 
-	int numThreadsRunning;
 	int numThreadsActive;
-
 	int overallWidth, overallHeight;
+    int actionFlag;
+
+    // QPoint topLeft;
+    // QPoint bottomRight;
 
     AbstractFunction *function;
     ColorWheel *colorwheel;
     Settings *settings;
     Controller *controllerObject;
-    
+    Display *display;
+
     QImage *output;
 
 	QVector<RenderThread *> threads;
-
-// private slots:
-// 	void checkProgress();
-// 	void updateProgress();
 };
 
 #endif // CONTROLLERTHREAD_H

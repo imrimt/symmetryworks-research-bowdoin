@@ -1,14 +1,13 @@
 #ifndef PORT_H
 #define PORT_H
 
-
 #include "display.h"
-
-// #include "renderthread.h"
 #include "controllerthread.h"
+
 #include <QThread>
 
-#define NUM_THREADS 4
+// CONSTANT ACTION FLAGS
+const int NUM_THREADS = 4;
 
 // TODO: move this to its own source file?
 class HistoryItem : public QObject
@@ -29,9 +28,7 @@ public:
     QPushButton *removeButton;
     QLabel *labelItem;
     QString filePathName;
-    // QStringList settings;
     QDateTime savedTime;
-    // Port *port;
 };
 
 class Port : public QObject
@@ -46,31 +43,33 @@ public:
     virtual ~Port(){;}
     
     // ACTIONS
-    QString exportImage(QImage *output, const QString &fileName);
-    void paintToDisplay(Display *disp);
+    void exportImage(QImage *output, const QString &fileName);
+    void paintToDisplay(Display *display);
     void paintHistoryIcon(HistoryItem *item);
 
 protected:
     
     AbstractFunction *currFunction;
     ColorWheel *currColorWheel;
-    
-    Settings *currSettings;
-    
+    Settings *currSettings;    
     int width, height;
     //double XCorner, YCorner, setWidth, setHeight;
-
-// private slots:
-//     void checkProgress();
     
 private:
-    void render(QImage *output);
+    void render(QImage *output, const int &actionFlag);
+    // void render(QImage *output, Display *display, const int &actionFlag);s
+
+    Display *display;
+    QImage *output;
+    QString filePathToExport;
     
     QVector<RenderThread *> threads;
-
-    // ControllerThread *controller;
+    ControllerThread *controller;
 
     // int numThreadsFinished;
+
+private slots:
+    QString handleRenderedImage(const int &actionFlag);
 
 };
 

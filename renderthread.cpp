@@ -36,7 +36,6 @@ void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QP
     this->settings = settings;
     this->controllerCondition = controllerCondition;
     this->controllerObject = controllerObject;
-    // this->mutex = mutex;
     
     worldYStart1 = settings->Height + settings->YCorner;
     worldYStart2 = settings->Height/overallHeight;
@@ -59,8 +58,6 @@ void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QP
 void RenderThread::run()
 {
     forever {
-        // qDebug() << QThread::currentThread() << "begins rendering and tries to obtain lock" << &mutex;
-        // if (mutex.tryLock()) qDebug() << QThread::currentThread() << "obtains lock" << &mutex;
         mutex.lock();
         
         double worldX, worldY;
@@ -73,7 +70,8 @@ void RenderThread::run()
         // qDebug() << "lock unlocked";
 
         // controllerObject->setNumThreadsRunning(controllerObject->getNumThreadsRunning() + 1);
-        // qDebug() << "drawing at" << topLeft << "and" << bottomRight;
+
+        qDebug() << "drawing at" << topLeft << "and" << bottomRight;
         
         for (int x = topLeft.x(); x < bottomRight.x(); x++)
         {   
@@ -85,8 +83,8 @@ void RenderThread::run()
                 // worldY= settings->Height-y*settings->Height/disp->dim()+settings->YCorner;
                 // worldX= x*settings->Width/disp->dim()+settings->XCorner;
                 
-                worldY = worldYStart1 - y * worldYStart2;
                 worldX = x * worldXStart + XCorner;
+                worldY = worldYStart1 - y * worldYStart2;
                 
                 //run the point through our mathematical function
                 //...then convert that complex output to a color according to our color wheel
@@ -97,17 +95,14 @@ void RenderThread::run()
                 
                 //finally push the determined color to the corresponding point on the display
                 output->setPixel(x, y, color);
-                
             }
         }  
-
-        // emit renderingFinished();
         
         mutex.lock();
         controllerObject->setNumThreadsRunning(controllerObject->getNumThreadsRunning() - 1);
         // qDebug() << "thread" << QThread::currentThread() << "finishes rendering";
         if (!restart) {
-            // qDebug() << "thread" << QThread::currentThread() << "goes to wait before restarting";
+            qDebug() << "thread" << QThread::currentThread() << "goes to wait before restarting";
             // emit renderingFinished();
             controllerCondition->wakeOne();
             condition.wait(&mutex);

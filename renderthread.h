@@ -44,6 +44,10 @@
 
 #include "geomath.h"
 
+const int DISPLAY_REPAINT_FLAG = 1;
+const int HISTORY_ICON_REPAINT_FLAG = 2;
+const int IMAGE_EXPORT_FLAG = 3;
+
 class Controller : public QObject
 {
     Q_OBJECT
@@ -51,16 +55,8 @@ public:
     int getNumThreadsRunning() {return numThreadsRunning;}
     void setNumThreadsRunning(int value) {numThreadsRunning = value;}
 
-private slots:
-    void checkProgress() 
-    {
-        --numThreadsRunning;
-        qDebug() << "reducing numThreadsRunning to" << numThreadsRunning;
-    }
-
 private:
     int numThreadsRunning;
-
 };
 
 class RenderThread : public QThread
@@ -76,9 +72,8 @@ public:
 protected:
     void run() Q_DECL_OVERRIDE;
     
-signals:
-    // void renderingStarted();
-    void renderingFinished();
+// signals:
+//     void renderingFinished();
     
 private:
     QMutex mutex;

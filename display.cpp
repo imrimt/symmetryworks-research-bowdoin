@@ -89,4 +89,12 @@ void Display::paintEvent(QPaintEvent * /* unused */)
             painter.drawPoint(i, j);
         }
     }
+
+    // for (int i = topLeft.x(); i < bottomRight.x(); i++) {
+    //     for (int j = topLeft.y(); i < bottomRight.y(); j++) {
+    //         color = QColor::fromRgb(disp.pixel(i,j));
+    //         painter.setPen(color);
+    //         painter.drawPoint(i, j);
+    //     }
+    // }
 }

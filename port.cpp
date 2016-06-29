@@ -1,62 +1,53 @@
-//
-//  port.cpp
-//  
-//
-//  Created by Bridget E. Went on 6/21/16.
-//
-//
-
 #include "port.h"
 
 Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height, Settings *currSettings)
 {
     this->width = width;
-    this->height = height;
-    
-    // this->currFunction = currFunction->clone();
-    // this->currColorWheel = currColorWheel->clone();
-    
+    this->height = height;    
     this->currFunction = currFunction;
     this->currColorWheel = currColorWheel;
-
     this->currSettings = currSettings;
 
-    // numThreadsFinished = 0;
+    // display = new Display(DEFAULT_PREVIEW_SIZE, DEFAULT_IMAGE_SIZE);
+    output = new QImage();
     
     // qDebug() << "creating 2 threads: " << QThread::currentThread();
 
+    controller = new ControllerThread();
+    connect(controller, SIGNAL(resultReady(int)), this, SLOT(handleRenderedImage(int)));
     for (int i = 0; i < NUM_THREADS; i++) {
         RenderThread *nextThread = new RenderThread();
         threads.push_back(nextThread);
-        // connect(nextThread, SIGNAL(finished()), nextThread, SLOT(deleteLater()));
-        // connect(nextThread, SIGNAL(renderingFinished()), controller->getControllerObject(), SLOT(checkProgress()));
     }
 
 }
 
 
-QString Port::exportImage(QImage *output, const QString &fileName)
+void Port::exportImage(QImage *output, const QString &fileName)
 {
+    filePathToExport = fileName;
+    this->output = output;
+    render(output, IMAGE_EXPORT_FLAG);
     
-    render(output);
+    // output->save(fileName);
     
-    output->save(fileName);
-    
-    QDir stickypath(fileName);
-    stickypath.cdUp();
-    return stickypath.path();
-    
+    // QDir stickypath(fileName);
+    // stickypath.cdUp();
+    // return stickypath.path();
 }
 
 
 void Port::paintToDisplay(Display *display)
 { 
-    
-    render(display->getImage());
+    this->display = display;
+    render(display->getImage(), DISPLAY_REPAINT_FLAG);
+
+    //overloading with display
+    // render(this->display->getImage(), display, DISPLAY_REPAINT_FLAG);
 
     // qDebug() << "repainting display";
     
-    display->repaint();
+    // display->repaint();
     
 }
 
@@ -64,12 +55,32 @@ void Port::paintToDisplay(Display *display)
 void Port::paintHistoryIcon(HistoryItem *item)
 {
     
-    render(item->getImage());
+    render(item->getImage(), HISTORY_ICON_REPAINT_FLAG);
     
     //item->getImage()->repaint();
 }
 
-void Port::render(QImage *output)
+QString Port::handleRenderedImage(const int &actionFlag)
+{
+    QString result = "";
+    qDebug() << "print out result";
+    switch (actionFlag) {
+    case DISPLAY_REPAINT_FLAG:
+        display->repaint();
+        break;
+    case HISTORY_ICON_REPAINT_FLAG:
+        break;
+    case IMAGE_EXPORT_FLAG:
+        output->save(filePathToExport);
+        QDir stickypath(filePathToExport);
+        stickypath.cdUp();
+        result = stickypath.path();
+        break;
+    }
+    return result;
+}
+
+void Port::render(QImage *output, const int &actionFlag)
 {
     
     // temporary timing elements used for code profiling
@@ -77,64 +88,21 @@ void Port::render(QImage *output)
     double cpu_time_used;
     start = clock();
 
-    // qDebug() << "Port Thread: " << QThread::currentThread() << " starts rendering: " << threads[0]->currentThread() << " and " << threads[1]->currentThread();
-    
-    // for (int i = 0; i < NUM_THREADS; i++) {
-    //     RenderThread *nextThread = new RenderThread();
-    //     threads.push_back(nextThread);
-    //     QThread::connect(nextThread, SIGNAL(finished()), this, SLOT(deleteLater()));
-    // }
-
-    // for (int i = 0; i < NUM_THREADS; i++) {
-    //     connect(threads[i], SIGNAL(started()), controller, SLOT(updateProgress()));
-    //     connect(threads[i], SIGNAL(finished()), controller, SLOT(checkProgress()));
-    // }
-
-    ControllerThread *controller = new ControllerThread();
-    controller->prepareToRun(threads, currFunction, currColorWheel, currSettings, output);
-    // controller->start(QThread::InheritPriority);
-    controller->wait();
-    
-    // for (int i = 0; i < NUM_THREADS; i++) {
-    //     threads[i]->render(currFunction, currColorWheel, QPoint(i * width/NUM_THREADS,0), QPoint((i + 1) * width/NUM_THREADS, height), width, height, currSettings, output);
-    // }
-    
-    // QThread::yieldCurrentThread();
-//    double worldYStart1= setHeight + YCorner;
-//    double worldYStart2 = setHeight/height;
-//    double worldXStart = setWidth/width;
-//    
-//    double worldX, worldY;
-//    
-//    
-//    for (int y = 0; y < height; y++)
-//    {
-//        for (int x = 0; x < width; x++)
-//        {
-//            // worldY= settings->Height-y*settings->Height/disp->dim()+settings->YCorner;
-//            // worldX= x*settings->Width/disp->dim()+settings->XCorner;
-//            
-//            worldY = worldYStart1 - y * worldYStart2;
-//            worldX = x * worldXStart + XCorner;
-//            
-//        
-//            //run the point through our mathematical function
-//            //...then convert that complex output to a color according to our color wheel
-//        
-//            std::complex<double> fout=(*currFunction)(worldX,worldY);
-//            QRgb color = (*currColorWheel)(fout);
-//            
-//            //finally push the determined color to the corresponding point on the display
-//            output->setPixel(x, y, color);
-//            
-//        }
-//    }
+    // ControllerThread *controller = new ControllerThread();
+    controller->prepareToRun(threads, currFunction, currColorWheel, currSettings, output, actionFlag);
+    // controller->wait();
     
     // calc time elapsed to render all pixels
     end = clock();
     cpu_time_used = (double)(end - start)/CLOCKS_PER_SEC;
     // qDebug() << "TIME TO RENDER ALL PIXELS: " << cpu_time_used << " sec";
 }
+
+//overloading with display
+// void Port::render(QImage *output, Display *display, const int &actionFlag)
+// {
+//     controller->prepareToRun(threads, currFunction, currColorWheel, currSettings, output, display, actionFlag);
+// }
 
 // void Port::checkProgress()
 // {
