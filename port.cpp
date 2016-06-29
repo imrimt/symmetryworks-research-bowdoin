@@ -2,6 +2,8 @@
 
 Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height, Settings *currSettings)
 {
+    
+    
     this->width = width;
     this->height = height;    
     this->currFunction = currFunction;

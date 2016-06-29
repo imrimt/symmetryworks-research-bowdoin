@@ -42,6 +42,7 @@ class AbstractFunction      //this is the base class for all other classes that 
     void setScaleR(double &val);
     void setScaleA(double &val);
     void setNumTerms(int &val);
+    void removeTerm(unsigned int &i);
 
 
   protected:

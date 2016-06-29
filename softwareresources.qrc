@@ -5,5 +5,7 @@
     <qresource prefix="/Images">
         <file>zoomout.png</file>
         <file>zoomin.png</file>
+        <file>add.png</file>
+        <file>remove.png</file>
     </qresource>
 </RCC>
