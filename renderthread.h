@@ -36,6 +36,7 @@
 #include <QMessageBox>
 #include <QTableWidget>
 #include <QStringList>
+#include <QMetaType>
 
 #include <time.h>
 
@@ -47,6 +48,8 @@
 const int DISPLAY_REPAINT_FLAG = 1;
 const int HISTORY_ICON_REPAINT_FLAG = 2;
 const int IMAGE_EXPORT_FLAG = 3;
+
+typedef QVector<QVector<QRgb> > Q2DArray;
 
 class Controller : public QObject
 {
@@ -67,13 +70,14 @@ public:
     RenderThread(QObject *parent = 0);
     ~RenderThread();
     
-    void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, Settings *settings, QImage *output, Controller *controllerObject, QWaitCondition *controllerCondition);
-    
+    // void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, Settings *settings, QImage *output, Controller *controllerObject, QWaitCondition *controllerCondition);
+    void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, Settings *settings, Controller *controllerObject, QWaitCondition *controllerCondition);
+
 protected:
     void run() Q_DECL_OVERRIDE;
     
-// signals:
-//     void renderingFinished();
+signals:
+    void renderingFinished(const QPoint &startPoint, const Q2DArray &result);
     
 private:
     QMutex mutex;
@@ -81,10 +85,9 @@ private:
     QWaitCondition *controllerCondition;
     
     int overallWidth, overallHeight;
+    int topLeftXValue, topLeftYValue, bottomRightXValue, bottomRightYValue;
     QPoint topLeft, bottomRight;
-    double worldYStart1;
-    double worldYStart2;
-    double worldXStart;
+    double worldYStart1, worldYStart2, worldXStart;
     
     bool restart;
     bool abort;
@@ -94,8 +97,7 @@ private:
     Settings *settings;
     Controller *controllerObject;
     
-    QImage *output;
-    
+    // QImage *output;  
 };
 
 

@@ -28,6 +28,7 @@ ControllerThread::~ControllerThread()
 
 void ControllerThread::prepareToRun(QVector<RenderThread *> workerThreads, AbstractFunction *function, 
     ColorWheel *colorwheel, Settings *settings, QImage *output, const int &actionFlag)
+    // ColorWheel *colorwheel, Settings *settings, const int &actionFlag)
 {
 
 	QMutexLocker locker(&mutex);
@@ -89,11 +90,14 @@ void ControllerThread::run()
     forever {
     	mutex.lock();
 
+        QEventLoop q;
+
     	for (int i = 0; i < numThreadsActive; i++)
     	{
     		threads[i]->render(function, colorwheel, QPoint(i * overallWidth/numThreadsActive, 0), QPoint((i + 1) * overallWidth/numThreadsActive, 
-    			overallHeight), settings, output, controllerObject, &allWorkersFinishedCondition);
-            qDebug() << "thread" << i << "starts";
+    			// overallHeight), settings, output, controllerObject, &allWorkersFinishedCondition);
+                overallHeight), settings, controllerObject, &allWorkersFinishedCondition);
+            // qDebug() << "thread" << i << "starts";
     	}
 
         clock_t start, end;
@@ -105,7 +109,7 @@ void ControllerThread::run()
             if (restart) break;
             if (abort) return;
             allWorkersFinishedCondition.wait(&mutex);
-            qDebug() << "wake up in while loop";
+            // qDebug() << "wake up in while loop";
         }
 
         end = clock();
@@ -115,7 +119,7 @@ void ControllerThread::run()
         if (!restart) {
             emit resultReady(actionFlag);
             restartCondition.wait(&mutex);
-            qDebug() << "wake up after finishing one loop";
+            // qDebug() << "wake up after finishing one loop";
         }
         restart = false;
 

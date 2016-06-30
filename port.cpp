@@ -15,11 +15,15 @@ Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width
     
     // qDebug() << "creating 2 threads: " << QThread::currentThread();
 
+    qRegisterMetaType<Q2DArray>("Q2DArray");
+
     controller = new ControllerThread();
     connect(controller, SIGNAL(resultReady(int)), this, SLOT(handleRenderedImage(int)));
     for (int i = 0; i < NUM_THREADS; i++) {
         RenderThread *nextThread = new RenderThread();
         threads.push_back(nextThread);
+        connect(nextThread, SIGNAL(renderingFinished(QPoint, Q2DArray)), this, 
+            SLOT(combineRenderedImageParts(QPoint, Q2DArray)));
     }
 
 }
@@ -80,6 +84,20 @@ QString Port::handleRenderedImage(const int &actionFlag)
         break;
     }
     return result;
+}
+
+// void Port::combineRenderedImageParts(QPoint startPoint, QVector<QVector<QRgb>> result)
+void Port::combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result)
+{
+    int width = result.size();
+    int height = result[0].size();
+    int translatedX = startPoint.x();
+    int translatedY = startPoint.y();
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            display->setPixel(translatedX + x, translatedY + y, result[x][y]);
+        }
+    }
 }
 
 void Port::render(QImage *output, const int &actionFlag)

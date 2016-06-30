@@ -20,17 +20,23 @@ RenderThread::~RenderThread()
 }
 
 
+// void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight,  
+//     Settings *settings, QImage *output, Controller *controllerObject, QWaitCondition *controllerCondition)
+// {
 void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight,  
-    Settings *settings, QImage *output, Controller *controllerObject, QWaitCondition *controllerCondition)
+    Settings *settings, Controller *controllerObject, QWaitCondition *controllerCondition)
 {
-
     QMutexLocker locker(&mutex);
     
     this->topLeft = topLeft;
     this->bottomRight = bottomRight;
-    this->output = output;
-    overallWidth = output->width();
-    overallHeight = output->height();
+    topLeftXValue = topLeft.x();
+    topLeftYValue = topLeft.y();
+    bottomRightXValue = bottomRight.x();
+    bottomRightYValue = bottomRight.y();
+    // this->output = output;
+    overallWidth = bottomRightXValue - topLeftXValue;
+    overallHeight = bottomRightYValue - topLeftYValue;
     this->function = function;
     this->colorwheel = colorwheel;
     this->settings = settings;
@@ -65,36 +71,46 @@ void RenderThread::run()
         double worldYStart2 = this->worldYStart2;
         double worldXStart = this->worldXStart;
         double XCorner = settings->XCorner;
+        // int topLeftXValue = this->topLeftXValue;
+        // int topLeftYValue = this->topLeftYValue;
+        // int bottomRightXValue = this->bottomRightXValue;
+        // int bottomRightYValue = this->bottomRightYValue; 
+        double outputWidth = overallWidth;
+        double outputHeight = overallHeight;
+        QPoint topLeft = this->topLeft;
+        int translated = topLeft.x();
+        // QImage *output = new QImage(outputWidth, outputHeight);
+        QVector<QVector<QRgb>> colorMap(outputWidth, QVector<QRgb>(outputHeight));
+
+        std::complex<double> fout;
         
         mutex.unlock();
         // qDebug() << "lock unlocked";
 
         // controllerObject->setNumThreadsRunning(controllerObject->getNumThreadsRunning() + 1);
 
-        qDebug() << "drawing at" << topLeft << "and" << bottomRight;
+        qDebug() << "drawing from" << topLeft << "to" << bottomRight;
         
-        for (int x = topLeft.x(); x < bottomRight.x(); x++)
+        // for (int x = topLeftXValue; x < bottomRightXValue; x++)
+        for (int x = 0; x < outputWidth; x++)
         {   
             if (restart) break;
             if (abort) return;
-            for (int y = topLeft.y(); y < bottomRight.y(); y++)
+            // for (int y = topLeftYValue; y < bottomRightYValue; y++)
+            for (int y = 0; y < outputHeight; y++)
             {
-                
-                // worldY= settings->Height-y*settings->Height/disp->dim()+settings->YCorner;
-                // worldX= x*settings->Width/disp->dim()+settings->XCorner;
-                
-                worldX = x * worldXStart + XCorner;
+                worldX = (x + translated) * worldXStart + XCorner;
                 worldY = worldYStart1 - y * worldYStart2;
                 
                 //run the point through our mathematical function
                 //...then convert that complex output to a color according to our color wheel
                 
-                std::complex<double> fout=(*function)(worldX,worldY);
+                fout = (*function)(worldX,worldY);
                 // std::complex<double> fout = (*function)(x,y);
                 QRgb color = (*colorwheel)(fout);
                 
                 //finally push the determined color to the corresponding point on the display
-                output->setPixel(x, y, color);
+                colorMap[x][y] = color;
             }
         }  
         
@@ -103,7 +119,7 @@ void RenderThread::run()
         // qDebug() << "thread" << QThread::currentThread() << "finishes rendering";
         if (!restart) {
             qDebug() << "thread" << QThread::currentThread() << "goes to wait before restarting";
-            // emit renderingFinished();
+            emit renderingFinished(topLeft, colorMap);
             controllerCondition->wakeOne();
             condition.wait(&mutex);
         }

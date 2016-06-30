@@ -484,35 +484,7 @@ void interface::initImageProps()
     imagePropsBoxLayout->addLayout(imagePropsEditStack);
     imagePropsBoxLayout->addItem(pspacer4);
     
-    imagePropsBoxOverallLayout->addLayout(imagePropsBoxLayout);
-// <<<<<<< HEAD
-
-//     // DISP SUBELEMENTS
-//     disp = new Display(DEFAULT_PREVIEW_SIZE, DEFAULT_IMAGE_SIZE, displayWidget);
-//     updatePreview = new QPushButton(tr("Update Preview"), this);
-//     exportImage = new QPushButton(tr("Export Image..."), this);
-//     resetImage = new QPushButton(tr("Reset"), this);
-//     dispLayout = new QVBoxLayout(displayWidget);
-//     buttonLayout = new QHBoxLayout();
-
-//     // updatePreview->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-//     // exportImage->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-//     // resetImage->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
-//     // updatePreview->setFixedWidth(200);
-//     // exportImage->setFixedWidth(200);
-//     // resetImage->setFixedWidth(200);
-
-//     buttonLayout->addWidget(updatePreview);
-//     buttonLayout->addWidget(exportImage);
-//     buttonLayout->addWidget(resetImage);
-
-//     dispLayout->addWidget(disp);
-//     dispLayout->setAlignment(disp, Qt::AlignCenter);
-//     dispLayout->addLayout(buttonLayout);
-// =======
-// >>>>>>> 832ff61eeb0a2b5e164b38d4d5827468f7675b5d
-    
+    imagePropsBoxOverallLayout->addLayout(imagePropsBoxLayout);    
 }
 
 void interface::initCoeffPlane()
@@ -1057,8 +1029,11 @@ void interface::changeFunction(int index)
         break;
     }
 
-    previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
-    imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
+    // previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
+    // imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
+
+    previewDisplayPort->changeFunction(currFunction);
+    imageExportPort->changeFunction(currFunction);
 
     refreshTerms();
 }

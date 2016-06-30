@@ -47,6 +47,10 @@ public:
     void paintToDisplay(Display *display);
     void paintHistoryIcon(HistoryItem *item);
 
+    // SETTERS
+    void changeFunction(AbstractFunction *newFunction) { currFunction = newFunction; }
+    void changeColorWheel(ColorWheel *newColorWheel) { currColorWheel = newColorWheel; }
+
 protected:
     
     AbstractFunction *currFunction;
@@ -57,7 +61,6 @@ protected:
     
 private:
     void render(QImage *output, const int &actionFlag);
-    void changeFunction(AbstractFunction *newFunction) { currFunction = newFunction; }
 
     // void render(QImage *output, Display *display, const int &actionFlag);s
 
@@ -72,7 +75,8 @@ private:
 
 private slots:
     QString handleRenderedImage(const int &actionFlag);
-
+    // void combineRenderedImageParts(QPoint startPoint, QVector<QVector<QRgb>> result);
+    void combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result);
 };
 
 

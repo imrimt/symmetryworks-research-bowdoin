@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QDebug>
+#include <QVector>
 
 const double SCALE = 0.25;
 const double MAX_PREVIEW_IMAGE_SIZE = 600;
@@ -34,13 +35,12 @@ protected:
 
 private:
     QImage disp;
+    QVector<QVector<QRgb>> colorMap;
     int dimension;
     int imageSize;
 
     QPoint topLeft;
     QPoint bottomRight;
-    // QLabel *dispLabel;
-    // QPixmap *dispPixmap;
 };
 
 

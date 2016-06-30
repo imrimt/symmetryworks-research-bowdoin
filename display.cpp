@@ -10,14 +10,21 @@ Display::Display(int inputDim, int imageDim, QWidget *parent) :
     dimension = inputDim;
     imageSize = imageDim;
     disp = QImage(imageSize, imageSize, QImage::Format_RGB32);
-    // dispLabel = new QLabel(this);
-    // dispPixmap = new QPixmap(this);
     disp.fill(0);
+
+    // for (int i = 0; i < imageSize; i++) {
+    //     for (int j = 0; j < imageSize; j++) {
+    //         colorMap[i][j] = QColor().rgb();
+    //     }
+    // }
+
+    colorMap = QVector<QVector<QRgb>>(imageSize, QVector<QRgb>(imageSize));
 }
 
 void Display::setPixel(int i, int j, QRgb color)
 {
-    disp.setPixel(i, j, color);
+    // disp.setPixel(i, j, color);
+    colorMap[i][j] = color;
 }
 
 QSize Display::sizeHint() const
@@ -82,9 +89,12 @@ void Display::paintEvent(QPaintEvent * /* unused */)
 
     // qDebug() << "size of image:" << disp.width() << "x" << disp.height();
 
-    for (int i = 0; i < disp.width(); i++) {
-        for (int j = 0; j < disp.height(); j++) {
-            color = QColor::fromRgb(disp.pixel(i,j));
+    // for (int i = 0; i < disp.width(); i++) {
+        // for (int j = 0; j < disp.height(); j++) {
+    for (int i = 0; i < imageSize; i++) {
+        for (int j = 0; j < imageSize; j++) {
+            // color = QColor::fromRgb(disp.pixel(i,j));
+            color = QColor::fromRgb(colorMap[i][j]);
             painter.setPen(color);
             painter.drawPoint(i, j);
         }
