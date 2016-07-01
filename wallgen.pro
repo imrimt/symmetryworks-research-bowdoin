@@ -21,7 +21,8 @@ SOURCES += \
     port.cpp \
     mainwindow.cpp \
     renderthread.cpp \
-    controllerthread.cpp
+    controllerthread.cpp \
+    historydisplay.cpp
 
 HEADERS  += \
     interface.h \
@@ -33,7 +34,9 @@ HEADERS  += \
     port.h \
     mainwindow.h \
     renderthread.h \
-    controllerthread.h
+    controllerthread.h \
+    shared.h \
+    historydisplay.h
 
 RESOURCES += \
     softwareresources.qrc

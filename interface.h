@@ -1,8 +1,6 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-#include <complex>
-
 #include <QWidget>
 #include <QLabel>
 #include <QLineEdit>
@@ -15,7 +13,6 @@
 #include <QGroupBox>
 #include <QComboBox>
 #include <QString>
-#include <QDebug>
 #include <QPushButton>
 #include <QImage>
 #include <QDir>
@@ -33,18 +30,19 @@
 #include <QLineSeries>
 #include <QScatterSeries>
 #include <QMouseEvent>
+#include <QProgressBar>
+#include <QTableWidget>
+#include <QHeaderView>
 
-#include <time.h>
-
+#include "historydisplay.h"
 #include "port.h"
-
 
 using namespace QtCharts;
 
-const int MAX_HISTORY_ITEMS = 5;
+//const int MAX_HISTORY_ITEMS = 5;
 const int LOCAL_FLAG = 0;
 const int GLOBAL_FLAG = 1;
-const int HISTORY_ITEM_SIZE = 60;
+//const int HISTORY_ITEM_SIZE = 60;
 
 const unsigned int INVALID_FILE_ERROR = 0;
 
@@ -136,7 +134,7 @@ public:
     QGroupBox *imagePropsBox;
     QWidget *toggleViewWidget;
     QWidget *patternTypeWidget;
-    QWidget *viewHistoryWidget;
+    //QWidget *viewHistoryWidget;
     QMessageBox *errorMessageBox;
 
     // INPUT VALIDATORS
@@ -240,14 +238,15 @@ public:
     QComboBox *colorwheelSel;
     QComboBox *functionSel;
     QPushButton *setLoadedImage;
-    
-    // viewHistoryBox SUBELEMENTS
-    QGroupBox *viewHistoryBox;
-    QVBoxLayout *viewHistoryBoxLayout;
-    QVBoxLayout *viewHistoryBoxOverallLayout;
-    QPushButton *clearHistoryButton;
-    QSignalMapper *viewMapper;
-    QSignalMapper *removeMapper;
+//    
+//    // viewHistoryBox SUBELEMENTS
+//    QGroupBox *viewHistoryBox;
+//    QVBoxLayout *viewHistoryBoxLayout;
+//    QVBoxLayout *viewHistoryBoxOverallLayout;
+//    QPushButton *clearHistoryButton;
+//    QSignalMapper *viewMapper;
+//    QSignalMapper *removeMapper;
+    HistoryDisplay *historyDisplay;
     
     // imagePropsBox SUBELEMENTS
     QVBoxLayout *imagePropsBoxStack;
@@ -313,6 +312,10 @@ public:
 
     // SHORTCUTS
     QShortcut *updatePreviewShortcut;
+    
+    QProgressBar *progressBar;
+    QLabel *progressBarLabel;
+    QHBoxLayout *progressBarLayout;
 
     // void mouseReleaseEvent(QMouseEvent *event);
 
@@ -337,16 +340,17 @@ private slots:
     void changeScaleA(const QString &val);
     void saveImageStart();
     void resetImageFunction();
-    void removePreview(QObject *item);
+//    void removePreview(QObject *item);
     void loadFromSettings();
     void saveCurrSettings();
     void previewDisplayEnlarge() {disp->enlarge();}
     void previewDisplayShrink() {disp->shrink();}
     void previewDisplayResetSize() {disp->resetSize();}
     void updateSavePreview();
-    void clearAllHistory();
+//    void clearAllHistory();
+    
     void termViewPopUp();
-    void addNewTerm();
+    void addTerm();
     void updateTermTable(QObject *cell);
     void termViewCellClicked(int row, int col);
     
@@ -360,6 +364,7 @@ private slots:
     void resetPolarCoordinates();
     
     QString loadSettings(const QString &fileName);
+    void updateProgressBar(int numThreadsFinished, int numTotalThreads);
     
 private:    
     QString genLabel(const char * in);    
@@ -371,17 +376,16 @@ private:
     void initPreviewDisplay();
     void initFunctionConstants();
     void initPatternType();
-    void initViewHistory();
+  //  void initViewHistory();
     void initImageProps();
     void initCoeffPlane();
     void connectAllSignals();
 
     void removeTerm(int row);
     void refreshLabels();
-    void addTerm();
     void updatePreviewDisplay();
-    void addToHistory();
-    void errorHandler(const int &flag);    
+//    void addToHistory();
+    void errorHandler(const int &flag);
     void refreshTerms();
     void refreshMainWindowTerms();
 
@@ -399,8 +403,8 @@ private:
     
     Settings *settings;
 
-    QMap<QDateTime, HistoryItem*> historyItemsMap;
-    QMap<QDateTime, Port*> historyPortsMap;
+//    QMap<QDateTime, HistoryItem*> historyItemsMap;
+//    QMap<QDateTime, Port*> historyPortsMap;
     
 };
 

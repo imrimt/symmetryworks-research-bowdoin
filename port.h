@@ -1,31 +1,7 @@
 #ifndef PORT_H
 #define PORT_H
 
-#include "display.h"
 #include "controllerthread.h"
-#include <QThread>
-
-// TODO: move this to its own source file?
-class HistoryItem : public QObject
-{
-    Q_OBJECT
-
-public:
-    
-    HistoryItem(QObject *parent = 0) : QObject(parent) { }
-    
-    QImage *getImage() { return preview->getImage(); }
-    
-    QVBoxLayout *layoutWithLabelItem;
-    QHBoxLayout *layoutItem;
-    QVBoxLayout *buttonLayoutItem;
-    Display *preview;
-    QPushButton *viewButton;
-    QPushButton *removeButton;
-    QLabel *labelItem;
-    QString filePathName;
-    QDateTime savedTime;
-};
 
 class Port : public QObject
 {
