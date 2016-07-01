@@ -3,11 +3,7 @@
 
 #include "display.h"
 #include "controllerthread.h"
-
 #include <QThread>
-
-// CONSTANT ACTION FLAGS
-const int NUM_THREADS = 4;
 
 // TODO: move this to its own source file?
 class HistoryItem : public QObject
@@ -56,11 +52,12 @@ protected:
     AbstractFunction *currFunction;
     ColorWheel *currColorWheel;
     Settings *currSettings;    
-    int width, height;
+    int overallWidth, overallHeight;
     //double XCorner, YCorner, setWidth, setHeight;
     
 private:
     void render(QImage *output, const int &actionFlag);
+    void render(Display *display, const int &actionFlag);
 
     // void render(QImage *output, Display *display, const int &actionFlag);s
 
@@ -68,15 +65,16 @@ private:
     QImage *output;
     QString filePathToExport;
     
-    QVector<RenderThread *> threads;
+    // QVector<RenderThread *> threads;
     ControllerThread *controller;
+    Controller *controllerObject;
 
     // int numThreadsFinished;
 
 private slots:
     QString handleRenderedImage(const int &actionFlag);
     // void combineRenderedImageParts(QPoint startPoint, QVector<QVector<QRgb>> result);
-    void combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result);
+    // void combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result);
 };
 
 
