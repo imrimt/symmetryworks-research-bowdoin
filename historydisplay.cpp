@@ -30,10 +30,11 @@ HistoryDisplay::HistoryDisplay(AbstractFunction *currFunction, ColorWheel *currC
     this->currColorWheel = currColorWheel;
     this->settings = settings;
     
+    connect(clearHistoryButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
     
 //    connect(clearHistoryButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
 //    connect(viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
-//    connect(removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removePreview(QObject*)));
+    connect(removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removePreview(QObject*)));
     
 }
 

@@ -11,8 +11,8 @@ ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *color
     this->colorwheel = colorwheel;
     this->settings = settings;
 
-    display = new Display();
-    output = new QImage();
+//    display = new Display();
+//    output = new QImage();
 
     // controllerObject = new Controller(display, output);
     // controllerObject->moveToThread(this);
@@ -47,6 +47,8 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 	QMutexLocker locker(&mutex);
 
     //delete display;
+    
+    qDebug() << "prepare to run, is it a history item? " << (bool)(actionFlag == HISTORY_ICON_REPAINT_FLAG);
 
     this->output = output;
     overallWidth = output->width();
@@ -64,6 +66,7 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
     }
     else {
         restart = true;
+        emit newWork();
         restartCondition.wakeOne();
     }
 }

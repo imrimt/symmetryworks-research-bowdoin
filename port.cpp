@@ -38,8 +38,8 @@ void Port::paintToDisplay(Display *display)
 
 void Port::paintHistoryIcon(HistoryItem *item)
 {
-    
-    render(item->getImage(), HISTORY_ICON_REPAINT_FLAG);
+    this->display = item->preview;
+    render(display, HISTORY_ICON_REPAINT_FLAG);
     
     //item->getImage()->repaint();
 }
@@ -53,6 +53,7 @@ QString Port::handleRenderedImage(const int &actionFlag)
         display->repaint();
         break;
     case HISTORY_ICON_REPAINT_FLAG:
+        display->repaint();
         break;
     case IMAGE_EXPORT_FLAG:
         output->save(filePathToExport);

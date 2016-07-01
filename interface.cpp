@@ -693,9 +693,9 @@ void interface::connectAllSignals()
     connect(XCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeXCorner(QString)));
     connect(YCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeYCorner(QString)));
     
-    connect(historyDisplay->clearHistoryButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
+    
     connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
-    connect(historyDisplay->removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removePreview(QObject*)));
+    //connect(historyDisplay->removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removePreview(QObject*)));
     
     
     connect(coeffMapper,SIGNAL(mapped(int)), this, SLOT(showPlanePopUp(int)));
