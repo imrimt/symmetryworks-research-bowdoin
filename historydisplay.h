@@ -14,7 +14,6 @@
 const int MAX_HISTORY_ITEMS = 5;
 const int HISTORY_ITEM_SIZE = 60;
 
-
 class HistoryDisplay : public QObject
 {
     Q_OBJECT

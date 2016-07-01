@@ -153,14 +153,12 @@ void interface::initPreviewDisplay()
     
     //SET UP SHORTCUTS...add for save, open, undo?
     updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
-
-
     
     imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
     previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
     
-    connect(previewDisplayPort, SIGNAL(threadFinished(int, int)), this, SLOT(updateProgressBar(int, int)));
-    connect(imageExportPort, SIGNAL(threadFinished(int, int)), this, SLOT(updateProgressBar(int, int)));
+    connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), this, SLOT(updateProgressBar(int)));
+    connect(imageExportPort->getControllerObject(), SIGNAL(progressChanged(int)), this, SLOT(updateProgressBar(int)));
     
 }
 
@@ -1567,10 +1565,10 @@ void interface::updateTermTable(QObject *cell)
 }
 
 
-void interface::updateProgressBar(int numThreadsFinished, int numTotalThreads)
+void interface::updateProgressBar(const int &numThreadsFinished)
 {
     
-    double percentComplete = ((double)(numThreadsFinished)/(double)(numTotalThreads) * 100.0);
+    double percentComplete = ((double)(numThreadsFinished)/(double)(NUM_THREADS) * 100.0);
     
     progressBar->setValue(percentComplete);
     progressBarLabel->setText(progressBar->text());
