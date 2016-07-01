@@ -26,6 +26,8 @@ public:
     QImage *getImage() { return &disp; }
     void shrink();
     void enlarge();
+    int width() { return imageSize;}
+    int height() { return imageSize;}
     void resetSize() {resize(imageSize, imageSize); update();}
 
 protected:

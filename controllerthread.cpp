@@ -7,22 +7,16 @@ ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *color
     restart = false;
     abort = false;
 
-    this->function = function;
-    this->colorwheel = colorwheel;
-    this->settings = settings;
-
-//    display = new Display();
-//    output = new QImage();
-
-    // controllerObject = new Controller(display, output);
-    // controllerObject->moveToThread(this);
+    currFunction = function;
+    currColorWheel = colorwheel;
+    currSettings = settings;
 
     this->controllerObject = controllerObject;
 
     qRegisterMetaType<Q2DArray>("Q2DArray");
 
     for (int i = 0; i < NUM_THREADS; i++) {
-        RenderThread *nextThread = new RenderThread(this->function, this->colorwheel, this->settings = settings, outputSize);
+        RenderThread *nextThread = new RenderThread(currFunction, currColorWheel, currSettings, outputSize);
         threads.push_back(nextThread);
         connect(nextThread, SIGNAL(renderingFinished(QPoint, Q2DArray)), controllerObject, SLOT(handleRenderedImageParts(QPoint, Q2DArray)));
     }

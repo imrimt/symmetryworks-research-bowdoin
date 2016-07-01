@@ -62,6 +62,7 @@ QString Port::handleRenderedImage(const int &actionFlag)
         result = stickypath.path();
         break;
     }
+    
     return result;
 }
 

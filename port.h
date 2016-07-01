@@ -23,6 +23,8 @@ public:
     void changeFunction(AbstractFunction *newFunction) { currFunction = newFunction; }
     void changeColorWheel(ColorWheel *newColorWheel) { currColorWheel = newColorWheel; }
 
+    Controller *getControllerObject() { return controllerObject; }
+
 protected:
     
     AbstractFunction *currFunction;
@@ -46,6 +48,9 @@ private:
     Controller *controllerObject;
 
     // int numThreadsFinished;
+
+signals:
+    void threadFinished(const int &numThreadsCompleted);
 
 private slots:
     QString handleRenderedImage(const int &actionFlag);

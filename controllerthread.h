@@ -25,6 +25,7 @@ public:
 signals:
     void workFinished(const int &actionFlag);
     void allThreadsFinished();
+    void progressChanged(const int &actionFlag);
 
 private:
     int numThreadsRunning;
@@ -77,6 +78,8 @@ private slots:
         --numThreadsRunning;
         // qDebug() << "numThreadsRunning = " << numThreadsRunning;
 
+        emit progressChanged(NUM_THREADS - numThreadsRunning);
+
         if (numThreadsRunning == 0) {
             //qDebug() << "emit workFinished signal";
             // restart = false;
@@ -122,9 +125,9 @@ private:
     // QPoint topLeft;
     // QPoint bottomRight;
 
-    AbstractFunction *function;
-    ColorWheel *colorwheel;
-    Settings *settings;
+    AbstractFunction *currFunction;
+    ColorWheel *currColorWheel;
+    Settings *currSettings;
     Controller *controllerObject;
     Display *display;
 

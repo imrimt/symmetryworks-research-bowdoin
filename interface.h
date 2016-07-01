@@ -364,7 +364,7 @@ private slots:
     void resetPolarCoordinates();
     
     QString loadSettings(const QString &fileName);
-    void updateProgressBar(int numThreadsFinished, int numTotalThreads);
+    void updateProgressBar(const int &numThreadsFinished);
     
 private:    
     QString genLabel(const char * in);    
