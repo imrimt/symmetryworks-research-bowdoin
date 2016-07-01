@@ -44,6 +44,8 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 	QMutexLocker locker(&mutex);
 
     //delete display;
+    
+    qDebug() << "prepare to run, is it a history item? " << (bool)(actionFlag == HISTORY_ICON_REPAINT_FLAG);
 
     this->output = output;
     overallWidth = output->width();
