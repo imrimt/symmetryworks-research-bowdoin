@@ -20,8 +20,18 @@ public:
     void paintHistoryIcon(HistoryItem *item);
 
     // SETTERS
-    void changeFunction(AbstractFunction *newFunction) { currFunction = newFunction; }
-    void changeColorWheel(ColorWheel *newColorWheel) { currColorWheel = newColorWheel; }
+    void changeFunction(AbstractFunction *newFunction) { 
+        currFunction = newFunction;
+        controller->changeFunction(newFunction); 
+    }
+    void changeColorWheel(ColorWheel *newColorWheel) { 
+        currColorWheel = newColorWheel;
+        controller->changeColorWheel(newColorWheel); 
+    }
+    void changeSettings(Settings *newSettings) {
+        currSettings = newSettings;
+        controller->changeSettings(newSettings);
+    }
 
     Controller *getControllerObject() { return controllerObject; }
 

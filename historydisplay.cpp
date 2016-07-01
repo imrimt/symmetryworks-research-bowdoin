@@ -9,7 +9,7 @@
 #include "historydisplay.h"
 
 
-HistoryDisplay::HistoryDisplay(AbstractFunction *currFunction, ColorWheel *currColorWheel, Settings *settings, QObject *parent) : QObject(parent)
+HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
 {
   
     viewHistoryWidget = new QWidget(static_cast<QWidget *>(parent));
@@ -26,10 +26,6 @@ HistoryDisplay::HistoryDisplay(AbstractFunction *currFunction, ColorWheel *currC
     viewMapper = new QSignalMapper(this);
     removeMapper = new QSignalMapper(this);
     
-    this->currFunction = currFunction;
-    this->currColorWheel = currColorWheel;
-    this->settings = settings;
-    
     connect(clearHistoryButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
     
 //    connect(clearHistoryButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
@@ -38,8 +34,11 @@ HistoryDisplay::HistoryDisplay(AbstractFunction *currFunction, ColorWheel *currC
     
 }
 
-void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &filePathName)
+void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings)
 {
+
+    qDebug() << "adding new item to history";
+
     HistoryItem *item = new HistoryItem();
     
     QVBoxLayout *historyItemsWithLabelLayout = new QVBoxLayout();
@@ -73,8 +72,12 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     item->removeButton = removeButton;
     item->labelItem = timeStampLabel;
     item->filePathName = filePathName;
+
+    AbstractFunction *currFunction = function;
+    ColorWheel *currColorWheel = colorwheel;
+    Settings *clonedSettings = settings;
     
-    Port *historyDisplayPort = new Port(currFunction, currColorWheel, item->preview->width(), item->preview->height(), settings);
+    Port *historyDisplayPort = new Port(currFunction, currColorWheel, item->preview->width(), item->preview->height(), clonedSettings);
     historyDisplayPort->paintHistoryIcon(item);
     
     connect(viewButton, SIGNAL(clicked()), viewMapper, SLOT(map()));
@@ -84,8 +87,9 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     removeMapper->setMapping(removeButton, item);
     
     historyItemsMap.insert(savedTime, item);
-    historyPortsMap.insert(savedTime, historyDisplayPort);
-    
+    historyPortsMap.insert(savedTime, historyDisplayPort);    
+
+    qDebug() << "finishes adding new item to history";
 }
 
 void HistoryDisplay::removePreview(QObject *item)
@@ -126,23 +130,23 @@ void HistoryDisplay::removePreview(QObject *item)
 void HistoryDisplay::clearAllHistory()
 {
     while (!historyItemsMap.empty()) {
-        qDebug() << "removing";
+        // qDebug() << "removing";
         removePreview(historyItemsMap.begin().value());
     }
 }
 
 
 // TODO rewrite and call from udpateSavePreview in interface class
-void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName)
+void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings)
 {
     
     // qDebug() << "Updating Preview";
     
     if (historyItemsMap.size() < MAX_HISTORY_ITEMS) {
-        addToHistory(savedTime, filePathName);
+        addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
     } else {
         removePreview(*(historyItemsMap.begin()));
-        addToHistory(savedTime, filePathName);
+        addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
     }
     
     //updatePreviewDisplay();

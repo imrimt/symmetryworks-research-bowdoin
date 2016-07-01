@@ -40,6 +40,17 @@ struct Settings
     double YCorner = DEFAULT_YCORNER;
     int OWidth = DEFAULT_OUTPUT_WIDTH;
     int OHeight = DEFAULT_OUTPUT_HEIGHT;
+
+    Settings* clone() {
+        Settings* newSettings = new Settings;
+        newSettings->Width = this->Width;
+        newSettings->Height = this->Height;
+        newSettings->XCorner = this->XCorner;
+        newSettings->YCorner = this->YCorner;
+        newSettings->OWidth = this->OWidth;
+        newSettings->OHeight = this->OHeight;
+        return newSettings;
+    }
 };
 
 

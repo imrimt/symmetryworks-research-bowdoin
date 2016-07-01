@@ -11,7 +11,25 @@ interface::interface(QWidget *parent) : QWidget(parent)
     saveloadPath = QDir::homePath();
     
     // FUNCTIONAL OBJECTS
-    currFunction = new hex3Function();
+    functionVector.push_back(new hex3Function());
+    functionVector.push_back(new hex6Function());
+    functionVector.push_back(new squareFunction());
+    functionVector.push_back(new generalpairedFunction());
+    functionVector.push_back(new generalFunction());
+    functionVector.push_back(new cmmFunction());
+    functionVector.push_back(new p31mFunction());
+    functionVector.push_back(new p3m1Function());
+    functionVector.push_back(new p6mFunction());
+    functionVector.push_back(new p4gFunction());
+    functionVector.push_back(new p4mFunction());
+    functionVector.push_back(new pmmFunction());
+    functionVector.push_back(new pmgFunction());
+    functionVector.push_back(new pggFunction());
+    functionVector.push_back(new pmFunction());
+    functionVector.push_back(new pgFunction());
+    functionVector.push_back(new rhombicFunction());
+    functionVector.push_back(new zzbarFunction());
+    currFunction = functionVector[0];
     currColorWheel = new ColorWheel();
     
     // store defaults in settings struct
@@ -45,7 +63,7 @@ void interface::initInterfaceLayout()
     patternTypeWidget = new QWidget(this);
     functionConstantsWidget = new QWidget(this);
     
-    historyDisplay = new HistoryDisplay(currFunction, currColorWheel, settings, this);
+    historyDisplay = new HistoryDisplay(this);
     
     toggleViewWidget = new QWidget(this);
     
@@ -155,7 +173,7 @@ void interface::initPreviewDisplay()
     updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
     
     imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
-    previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
+    previewDisplayPort = new Port(currFunction, currColorWheel, disp->width(), disp->height(), settings);
     
     connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), this, SLOT(updateProgressBar(int)));
     connect(imageExportPort->getControllerObject(), SIGNAL(progressChanged(int)), this, SLOT(updateProgressBar(int)));
@@ -876,19 +894,25 @@ void interface::addTerm()
 
 void interface::resetImageFunction()
 {
-    delete currFunction;
+    // delete currFunction;
     // delete previewDisplayPort;
     // delete imageExportPort;
     
-    currFunction = new hex3Function();
+    // currFunction = new hex3Function();
     // imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
     // previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
 
-    imageExportPort->changeFunction(currFunction);
-    previewDisplayPort->changeFunction(currFunction);
+    // imageExportPort->changeFunction(currFunction);
+    // previewDisplayPort->changeFunction(currFunction);
 
-    functionSel->setCurrentIndex(0);
-    colorwheelSel->setCurrentIndex(0);
+    // currFunction = functionVector[0];
+
+    numTerms = 1;
+
+    currFunction->reset();
+
+    // functionSel->setCurrentIndex(0);
+    // colorwheelSel->setCurrentIndex(0);
     
     refreshTerms();
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
@@ -976,93 +1000,100 @@ void interface::setImagePushed()
 
 void interface::changeFunction(int index)
 {
-    delete currFunction;
-    delete previewDisplayPort;
-    delete imageExportPort;
+    // delete currFunction;
+    // delete previewDisplayPort;
+    // delete imageExportPort;
 
-    switch(index)
-    {
-    case 0:
-        currFunction = new hex3Function();
-        colorwheelSel->setCurrentIndex(7);
-        break;
-    case 1:
-        currFunction = new hex6Function();
-        colorwheelSel->setCurrentIndex(7);
-        break;
-    case 2:
-        currFunction = new squareFunction();
-        colorwheelSel->setCurrentIndex(6);
-        break;
-    case 3:
-        currFunction = new generalpairedFunction();
-        colorwheelSel->setCurrentIndex(3);
-        break;
-    case 4:
-        currFunction = new generalFunction();
-        colorwheelSel->setCurrentIndex(7);
-        break;
-    case 5:
-        currFunction = new cmmFunction();
-        colorwheelSel->setCurrentIndex(7);
-        break;
-    case 6:
-        currFunction = new p31mFunction();
-        colorwheelSel->setCurrentIndex(1);
-        break;
-    case 7:
-        currFunction = new p3m1Function();
-        colorwheelSel->setCurrentIndex(1);
-        break;
-    case 8:
-        currFunction = new p6mFunction();
-        colorwheelSel->setCurrentIndex(6);
-        break;
-    case 9:
-        currFunction = new p4gFunction();
-        colorwheelSel->setCurrentIndex(6);
-        break;
-    case 10:
-        currFunction = new p4mFunction();
-        colorwheelSel->setCurrentIndex(6);
-        break;
-    case 11:
-        currFunction = new pmmFunction();
-        colorwheelSel->setCurrentIndex(9);
-        break;
-    case 12:
-        currFunction = new pmgFunction();
-        colorwheelSel->setCurrentIndex(9);
-        break;
-    case 13:
-        currFunction = new pggFunction();
-        colorwheelSel->setCurrentIndex(9);
-        break;
-    case 14:
-        currFunction = new pmFunction();
-        colorwheelSel->setCurrentIndex(9);
-        break;
-    case 15:
-        currFunction = new pgFunction();
-        colorwheelSel->setCurrentIndex(9);
-        break;
-    case 16:
-        currFunction = new rhombicFunction();
-        colorwheelSel->setCurrentIndex(9);
-        break;
-    case 17:
-        currFunction = new zzbarFunction();
-        colorwheelSel->setCurrentIndex(9);
-        break;
-    }
+    // switch(index)
+    // {
+    // case 0:
+    //     currFunction = new hex3Function();
+    //     colorwheelSel->setCurrentIndex(7);
+    //     break;
+    // case 1:
+    //     currFunction = new hex6Function();
+    //     colorwheelSel->setCurrentIndex(7);
+    //     break;
+    // case 2:
+    //     currFunction = new squareFunction();
+    //     colorwheelSel->setCurrentIndex(6);
+    //     break;
+    // case 3:
+    //     currFunction = new generalpairedFunction();
+    //     colorwheelSel->setCurrentIndex(3);
+    //     break;
+    // case 4:
+    //     currFunction = new generalFunction();
+    //     colorwheelSel->setCurrentIndex(7);
+    //     break;
+    // case 5:
+    //     currFunction = new cmmFunction();
+    //     colorwheelSel->setCurrentIndex(7);
+    //     break;
+    // case 6:
+    //     currFunction = new p31mFunction();
+    //     colorwheelSel->setCurrentIndex(1);
+    //     break;
+    // case 7:
+    //     currFunction = new p3m1Function();
+    //     colorwheelSel->setCurrentIndex(1);
+    //     break;
+    // case 8:
+    //     currFunction = new p6mFunction();
+    //     colorwheelSel->setCurrentIndex(6);
+    //     break;
+    // case 9:
+    //     currFunction = new p4gFunction();
+    //     colorwheelSel->setCurrentIndex(6);
+    //     break;
+    // case 10:
+    //     currFunction = new p4mFunction();
+    //     colorwheelSel->setCurrentIndex(6);
+    //     break;
+    // case 11:
+    //     currFunction = new pmmFunction();
+    //     colorwheelSel->setCurrentIndex(9);
+    //     break;
+    // case 12:
+    //     currFunction = new pmgFunction();
+    //     colorwheelSel->setCurrentIndex(9);
+    //     break;
+    // case 13:
+    //     currFunction = new pggFunction();
+    //     colorwheelSel->setCurrentIndex(9);
+    //     break;
+    // case 14:
+    //     currFunction = new pmFunction();
+    //     colorwheelSel->setCurrentIndex(9);
+    //     break;
+    // case 15:
+    //     currFunction = new pgFunction();
+    //     colorwheelSel->setCurrentIndex(9);
+    //     break;
+    // case 16:
+    //     currFunction = new rhombicFunction();
+    //     colorwheelSel->setCurrentIndex(9);
+    //     break;
+    // case 17:
+    //     currFunction = new zzbarFunction();
+    //     colorwheelSel->setCurrentIndex(9);
+    //     break;
+    // }
+
+    currFunction = functionVector[index];
+
+    // currFunction->setNumTerms(1);
 
     // previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
     // imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
+
+    // numTerms = 1;
 
     previewDisplayPort->changeFunction(currFunction);
     imageExportPort->changeFunction(currFunction);
 
     refreshTerms();
+    updatePreviewDisplay();
 }
 
 // SLOT function called only when user attempts to save current settings into a wpr file
@@ -1265,13 +1296,13 @@ void interface::updatePreviewDisplay()
 
 void interface::updateSavePreview()
 {
-    
+    qDebug() << "Crashed here";
     
     QDateTime savedTime = QDateTime::currentDateTimeUtc();
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
     QString filePath = saveSettings(newFile).append("/" + newFile);
     // qDebug() << "Updating Preview";
-    historyDisplay->triggerAddToHistory(savedTime, filePath);
+    historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
 
     
 //    if (historyItemsMap.size() < MAX_HISTORY_ITEMS) {

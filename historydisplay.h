@@ -20,10 +20,7 @@ class HistoryDisplay : public QObject
 
 public:
     
-    HistoryDisplay(QObject *parent = 0) : QObject(parent) { }
-    
-    explicit HistoryDisplay(AbstractFunction *currFunction, ColorWheel *currColorWheel, Settings *settings, QObject *parent = 0);
-    ~HistoryDisplay() {}
+    HistoryDisplay(QObject *parent = 0);
     
     QWidget *viewHistoryWidget;
     QGroupBox *viewHistoryBox;
@@ -33,7 +30,7 @@ public:
     QSignalMapper *viewMapper;
     QSignalMapper *removeMapper;
     
-    void triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName);
+    void triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings);
 
     
     private slots:
@@ -41,17 +38,10 @@ public:
         void clearAllHistory();
     
     
-private:
-    
+private:    
     QMap<QDateTime, HistoryItem*> historyItemsMap;
     QMap<QDateTime, Port*> historyPortsMap;
-    void addToHistory(const QDateTime &savedTime, const QString &filePathName);
-    
-    AbstractFunction *currFunction;
-    ColorWheel *currColorWheel;
-    Settings *settings;
-    
-    
+    void addToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings);    
 };
 
 

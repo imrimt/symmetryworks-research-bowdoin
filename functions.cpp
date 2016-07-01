@@ -163,7 +163,7 @@ void AbstractFunction::initWithVectors(QVector<coeffpair> &in_coeffs, QVector<fr
 
 std::complex<double> generalFunction::bundle(double &x, double &y, unsigned int &i) const
 {
-    int N,M;
+    int N, M;
     N = freqs[i].N();
     M = freqs[i].M();
     std::complex<double> part1 = ei(N*Xgen + M*Ygen);

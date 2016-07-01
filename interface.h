@@ -400,6 +400,8 @@ private:
     Port *previewDisplayPort, *imageExportPort;
     bool advancedMode;
     int coeffFlag;
+
+    QVector<AbstractFunction *> functionVector;
     
     Settings *settings;
 

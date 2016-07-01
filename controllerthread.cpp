@@ -45,8 +45,6 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 
     //delete display;
     
-    
-
     this->output = output;
     overallWidth = output->width();
     overallHeight = output->height();
@@ -89,29 +87,14 @@ void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
     controllerObject->setNumThreadsRunning(numThreadsActive);
 
     if (!isRunning()) {
-        
         start(InheritPriority);
     }
     else {
-        // controllerObject->setRestart(true);
         restart = true;
         emit newWork();
         restartCondition.wakeOne();
     }
 }
-
-// void ControllerThread::combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result)
-// {
-//     int width = result.size();
-//     int height = result[0].size();
-//     int translatedX = startPoint.x();
-//     int translatedY = startPoint.y();
-//     for (int x = 0; x < width; x++) {
-//         for (int y = 0; y < height; y++) {
-//             display->setPixel(translatedX + x, translatedY + y, result[x][y]);
-//         }
-//     }
-// }
 
 void ControllerThread::run() 
 {
@@ -124,9 +107,12 @@ void ControllerThread::run()
 
     	for (int i = 0; i < numThreadsActive; i++)
     	{
+            if (i == numThreadsActive - 1) {
+                threads[i]->render(QPoint(i * counter, 0), QPoint(overallWidth, overallHeight), &allWorkersFinishedCondition);
+            }
+            else {
     		threads[i]->render(QPoint(i * counter, 0), QPoint((i + 1) * counter, overallHeight), &allWorkersFinishedCondition);
-            // qDebug() << "thread" << i << "starts";
-            
+            }
     	}
 
         mutex.unlock();

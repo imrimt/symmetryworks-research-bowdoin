@@ -30,6 +30,16 @@ public:
     // void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, Settings *settings, QImage *output, Controller *controllerObject, QWaitCondition *controllerCondition);
     void render(QPoint topLeft, QPoint bottomRight, QWaitCondition *controllerCondition);
 
+    // SETTERS 
+    void changeFunction(AbstractFunction *newFunction) { currFunction = newFunction; }
+    void changeColorWheel(ColorWheel *newColorWheel) { currColorWheel = newColorWheel; }
+    void changeSettings(Settings *newSettings) { 
+        currSettings = newSettings; 
+        worldYStart1 = currSettings->Height + currSettings->YCorner;
+        worldYStart2 = currSettings->Height/overallHeight;
+        worldXStart = currSettings->Width/overallWidth;
+    }
+
 protected:
     void run() Q_DECL_OVERRIDE;
     

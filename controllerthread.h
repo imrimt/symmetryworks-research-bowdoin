@@ -101,8 +101,31 @@ public:
     ~ControllerThread();
     void prepareToRun(QImage *output, const int &actionFlag);
     void prepareToRun(Display *display, const int &actionFlag);
+
+    // GETTERS
     Controller* getControllerObject() {return controllerObject;}
 
+    // SETTERS
+    void changeFunction(AbstractFunction *newFunction) { 
+        currFunction = newFunction;
+        for (int i = 0; i < threads.size(); i++) {
+            threads[i]->changeFunction(newFunction);
+        } 
+    }
+    void changeColorWheel(ColorWheel *newColorWheel) { 
+        currColorWheel = newColorWheel;
+        for (int i = 0; i < threads.size(); i++) {
+            threads[i]->changeColorWheel(newColorWheel);
+        } 
+    }
+    void changeSettings(Settings *newSettings) { 
+        currSettings = newSettings; 
+        for (int i = 0; i < threads.size(); i++) {
+            threads[i]->changeSettings(newSettings);
+        }
+    }
+
+    // CONSTANTS (SET VALUE ONCE)
     int NUM_THREADS;
 
 protected:
