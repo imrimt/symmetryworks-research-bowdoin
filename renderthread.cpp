@@ -1,10 +1,20 @@
 #include "renderthread.h"
 
-RenderThread::RenderThread(QObject *parent)
-: QThread(parent)
+RenderThread::RenderThread(AbstractFunction *function, ColorWheel *colorwheel, Settings *settings, QSize outputSize, QObject *parent) : QThread(parent)
 {
     restart = false;
     abort = false;
+
+    this->function = function;
+    this->colorwheel = colorwheel;
+    this->settings = settings;
+
+    overallWidth = outputSize.width();
+    overallHeight = outputSize.height();
+
+    worldYStart1 = settings->Height + settings->YCorner;
+    worldYStart2 = settings->Height/overallHeight;
+    worldXStart = settings->Width/overallWidth;
 
     controllerCondition = new QWaitCondition();
 }
@@ -19,12 +29,7 @@ RenderThread::~RenderThread()
     wait();
 }
 
-
-// void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight,  
-//     Settings *settings, QImage *output, Controller *controllerObject, QWaitCondition *controllerCondition)
-// {
-void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight,  
-    Settings *settings, Controller *controllerObject, QWaitCondition *controllerCondition)
+void RenderThread::render(QPoint topLeft, QPoint bottomRight, QWaitCondition *controllerCondition)
 {
     QMutexLocker locker(&mutex);
     
@@ -34,19 +39,8 @@ void RenderThread::render(AbstractFunction *function, ColorWheel *colorwheel, QP
     topLeftYValue = topLeft.y();
     bottomRightXValue = bottomRight.x();
     bottomRightYValue = bottomRight.y();
-    // this->output = output;
-    overallWidth = bottomRightXValue - topLeftXValue;
-    overallHeight = bottomRightYValue - topLeftYValue;
-    this->function = function;
-    this->colorwheel = colorwheel;
-    this->settings = settings;
     this->controllerCondition = controllerCondition;
-    this->controllerObject = controllerObject;
     
-    worldYStart1 = settings->Height + settings->YCorner;
-    worldYStart2 = settings->Height/overallHeight;
-    worldXStart = settings->Width/overallWidth;
-
     // qDebug() << QThread::currentThread() << "starts running as controller thread";
     
     if (!isRunning()) {
@@ -75,30 +69,28 @@ void RenderThread::run()
         // int topLeftYValue = this->topLeftYValue;
         // int bottomRightXValue = this->bottomRightXValue;
         // int bottomRightYValue = this->bottomRightYValue; 
-        double outputWidth = overallWidth;
-        double outputHeight = overallHeight;
+        double outputWidth = bottomRightXValue - topLeftXValue;
+        double outputHeight = bottomRightYValue - topLeftYValue;
         QPoint topLeft = this->topLeft;
-        int translated = topLeft.x();
+        int translated = bottomRightXValue;
         // QImage *output = new QImage(outputWidth, outputHeight);
         QVector<QVector<QRgb>> colorMap(outputWidth, QVector<QRgb>(outputHeight));
 
         std::complex<double> fout;
         
         mutex.unlock();
-        // qDebug() << "lock unlocked";
 
-        // controllerObject->setNumThreadsRunning(controllerObject->getNumThreadsRunning() + 1);
+        // qDebug() << "drawing from" << topLeft << "to" << bottomRight;
 
-        qDebug() << "drawing from" << topLeft << "to" << bottomRight;
-        
-        // for (int x = topLeftXValue; x < bottomRightXValue; x++)
         for (int x = 0; x < outputWidth; x++)
         {   
             if (restart) break;
             if (abort) return;
-            // for (int y = topLeftYValue; y < bottomRightYValue; y++)
             for (int y = 0; y < outputHeight; y++)
             {
+                if (restart) break;
+                if (abort) return;
+
                 worldX = (x + translated) * worldXStart + XCorner;
                 worldY = worldYStart1 - y * worldYStart2;
                 
@@ -115,12 +107,13 @@ void RenderThread::run()
         }  
         
         mutex.lock();
-        controllerObject->setNumThreadsRunning(controllerObject->getNumThreadsRunning() - 1);
+        
         // qDebug() << "thread" << QThread::currentThread() << "finishes rendering";
         if (!restart) {
-            qDebug() << "thread" << QThread::currentThread() << "goes to wait before restarting";
+            // qDebug() << "thread" << QThread::currentThread() << "goes to wait before restarting";
             emit renderingFinished(topLeft, colorMap);
-            controllerCondition->wakeOne();
+            // qDebug() << "emit successfully";
+            //controllerCondition->wakeOne();
             condition.wait(&mutex);
         }
         // qDebug() << "thread" << QThread::currentThread() << "wakes up from restarting";

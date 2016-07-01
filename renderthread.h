@@ -42,6 +42,7 @@
 
 #include "functions.h"
 #include "colorwheel.h"
+#include "display.h"
 
 #include "geomath.h"
 
@@ -51,27 +52,17 @@ const int IMAGE_EXPORT_FLAG = 3;
 
 typedef QVector<QVector<QRgb> > Q2DArray;
 
-class Controller : public QObject
-{
-    Q_OBJECT
-public: 
-    int getNumThreadsRunning() {return numThreadsRunning;}
-    void setNumThreadsRunning(int value) {numThreadsRunning = value;}
-
-private:
-    int numThreadsRunning;
-};
-
 class RenderThread : public QThread
 {
     Q_OBJECT
     
 public:
-    RenderThread(QObject *parent = 0);
+    RenderThread(QObject *parent = 0) : QThread(parent) { } 
+    explicit RenderThread(AbstractFunction *function, ColorWheel *colorwheel, Settings *settings, QSize outputSize, QObject *parent = 0);
     ~RenderThread();
     
     // void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, Settings *settings, QImage *output, Controller *controllerObject, QWaitCondition *controllerCondition);
-    void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, Settings *settings, Controller *controllerObject, QWaitCondition *controllerCondition);
+    void render(QPoint topLeft, QPoint bottomRight, QWaitCondition *controllerCondition);
 
 protected:
     void run() Q_DECL_OVERRIDE;
@@ -95,7 +86,6 @@ private:
     AbstractFunction *function;
     ColorWheel *colorwheel;
     Settings *settings;
-    Controller *controllerObject;
     
     // QImage *output;  
 };

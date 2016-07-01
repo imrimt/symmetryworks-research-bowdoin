@@ -3,17 +3,99 @@
 
 #include "renderthread.h"
 
+const int NUM_THREADS = 4;
+
+class Controller : public QObject
+{
+    Q_OBJECT
+public:
+    Controller(QObject *parent = 0) : QObject(parent) { } 
+    explicit Controller(Display *display, QImage *output, QObject *parent = 0) : QObject(parent) { 
+        this->display = display;
+        this->output = output;
+        restart = false;
+    } 
+    int getNumThreadsRunning() {return numThreadsRunning;}
+    void setNumThreadsRunning(int value) {numThreadsRunning = value;}
+    void setActionFlag(int flag) {actionFlag = flag;}
+    void setDisplay(Display *display) {this->display = display;}
+    void setOutput(QImage *output) {this->output = output;}
+    void setRestart(bool status) {restart = status;}
+    
+signals:
+    void workFinished(const int &actionFlag);
+    void allThreadsFinished();
+
+private:
+    int numThreadsRunning;
+    int actionFlag;
+    QImage *output;     //for file writing
+    Display *display;   //for display repainting
+    bool restart;
+    void repaintWork(Display *display, const QPoint &startPoint, const Q2DArray &result) {
+        int width = result.size();
+        int height = result[0].size();
+        int translatedX = startPoint.x();
+        int translatedY = startPoint.y();
+        for (int x = 0; x < width; x++) {
+            if (restart) return;
+            for (int y = 0; y < height; y++) {
+                if (restart) return;
+                display->setPixel(translatedX + x, translatedY + y, result[x][y]);
+            }
+        }
+    }
+    void repaintWork(QImage *output, const QPoint &startPoint, const Q2DArray &result) {
+        int width = result.size();
+        int height = result[0].size();
+        int translatedX = startPoint.x();
+        int translatedY = startPoint.y();
+        for (int x = 0; x < width; x++) {
+            if (restart) return;
+            for (int y = 0; y < height; y++) {
+                if (restart) return;
+                output->setPixel(translatedX + x, translatedY + y, result[x][y]);
+            }
+        }
+    }
+
+private slots: 
+    void handleRenderedImageParts(const QPoint &startPoint, const Q2DArray &result) {
+        if (restart) return;
+        //qDebug() << "detecting signals";
+        switch (actionFlag) {
+        case DISPLAY_REPAINT_FLAG:
+            repaintWork(display, startPoint, result);
+            break;
+        case HISTORY_ICON_REPAINT_FLAG:
+            break;
+        case IMAGE_EXPORT_FLAG:
+            repaintWork(output, startPoint, result);
+            break;
+        } 
+
+        --numThreadsRunning;
+        // qDebug() << "numThreadsRunning = " << numThreadsRunning;
+
+        if (numThreadsRunning == 0) {
+            //qDebug() << "emit workFinished signal";
+            // restart = false;
+            emit allThreadsFinished();
+            emit workFinished(actionFlag);
+        }
+    }
+};
+
 class ControllerThread : public QThread 
 {
     Q_OBJECT
 
 public:
-    ControllerThread(QObject *parent = 0);
+    ControllerThread(QObject *parent = 0) : QThread(parent) { } 
+    explicit ControllerThread(AbstractFunction *function, ColorWheel *colorwheel, Settings *settings, Controller *controllerObject, const QSize &outputSize, QObject *parent = 0);
     ~ControllerThread();
-    void prepareToRun(QVector<RenderThread *> workerThreads, AbstractFunction *function, 
-        ColorWheel *colorwheel, Settings *settings, QImage *output, const int &actionFlag);
-    // void prepareToRun(QVector<RenderThread *> workerThreads, AbstractFunction *function, 
-    //     ColorWheel *colorwheel, Settings *settings, QImage *output, Display *display, const int &actionFlag);
+    void prepareToRun(QImage *output, const int &actionFlag);
+    void prepareToRun(Display *display, const int &actionFlag);
     Controller* getControllerObject() {return controllerObject;}
 
 protected:
@@ -21,6 +103,10 @@ protected:
 
 signals:
     void resultReady(const int &actionFlag);
+    void newWork();
+
+// private slots:
+//     void combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result);
 
 private:
 	QMutex mutex;
