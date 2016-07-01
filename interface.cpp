@@ -128,28 +128,13 @@ void interface::initPreviewDisplay()
     resetImage = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
     buttonLayout = new QHBoxLayout();
-    progressBarLayout = new QHBoxLayout();
+    //progressBarLayout = new QHBoxLayout();
     
     buttonLayout->addWidget(updatePreview);
     buttonLayout->addWidget(exportImage);
     buttonLayout->addWidget(resetImage);
     
-    progressBarLabel = new QLabel(displayWidget);
-    progressBar = new QProgressBar(displayWidget);
-    progressBar->setRange(0, 100);
-  
-    progressBar->setAlignment(Qt::AlignCenter);
-    progressBar->setValue(0);
-    progressBarLayout->addWidget(progressBar);
-    progressBarLayout->addWidget(progressBarLabel);
-    
-    
-   
-    dispLayout->setAlignment(disp, Qt::AlignCenter);
-    dispLayout->addWidget(disp);
-    dispLayout->addLayout(progressBarLayout);
-    dispLayout->addLayout(buttonLayout);
-    
+
     
     //SET UP SHORTCUTS...add for save, open, undo?
     updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
@@ -157,9 +142,18 @@ void interface::initPreviewDisplay()
     imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
     previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
     
-    connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), this, SLOT(updateProgressBar(int)));
-    connect(imageExportPort->getControllerObject(), SIGNAL(progressChanged(int)), this, SLOT(updateProgressBar(int)));
+    displayProgressBar = new ProgressBar(tr("Preview"), true, previewDisplayPort);
+    exportProgressBar = new ProgressBar(tr("Exporting"), false, imageExportPort);
     
+    connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), displayProgressBar, SLOT(update(int)));
+    connect(imageExportPort->getControllerObject(), SIGNAL(progressChanged(int)), exportProgressBar, SLOT(update(int)));
+    connect(imageExportPort, SIGNAL(finishedExport(QString)), this, SLOT(popUpImageExportFinished(QString)));
+    
+    dispLayout->setAlignment(disp, Qt::AlignCenter);
+    dispLayout->addWidget(disp);
+    dispLayout->addLayout(displayProgressBar->layout);
+    dispLayout->addLayout(exportProgressBar->layout);
+    dispLayout->addLayout(buttonLayout);
 }
 
 
@@ -1257,7 +1251,7 @@ QString interface::loadSettings(const QString &fileName) {
 
 void interface::updatePreviewDisplay()
 {
-    progressBar->reset();
+    displayProgressBar->reset();
     // Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings);
     // qDebug() << QThread::currentThread() << " updates preview display";
     previewDisplayPort->paintToDisplay(disp);
@@ -1378,7 +1372,7 @@ void interface::changeScaleR(const QString &val)
 
 void interface::saveImageStart()
 {
-    progressBar->reset();
+    exportProgressBar->reset();
     
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,
@@ -1564,13 +1558,24 @@ void interface::updateTermTable(QObject *cell)
 }
 
 
-void interface::updateProgressBar(const int &numThreadsFinished)
+//void interface::updateProgressBar(const int &numThreadsFinished)
+//{
+//    
+//    double percentComplete = ((double)(numThreadsFinished)/(double)(previewDisplayPort->getControllerObject()->getNumThreadsActive()) * 100.0);
+//    
+//    progressBar->setValue(percentComplete);
+//    progressBarLabel->setText(progressBar->text());
+//    
+//    
+//}
+
+void interface::popUpImageExportFinished(const QString &filePath)
 {
     
-    double percentComplete = ((double)(numThreadsFinished)/(double)(previewDisplayPort->getControllerObject()->getNumThreadsActive()) * 100.0);
+    QMessageBox msgBox;
+    msgBox.setText(tr("The file has been successfully saved to: ").append(filePath));
+    msgBox.exec();
     
-    progressBar->setValue(percentComplete);
-    progressBarLabel->setText(progressBar->text());
     
     
 }

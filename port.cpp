@@ -44,7 +44,7 @@ void Port::paintHistoryIcon(HistoryItem *item)
     //item->getImage()->repaint();
 }
 
-QString Port::handleRenderedImage(const int &actionFlag)
+void Port::handleRenderedImage(const int &actionFlag)
 {
     QString result = "";
     // qDebug() << "print out result";
@@ -54,14 +54,17 @@ QString Port::handleRenderedImage(const int &actionFlag)
         display->repaint();
         break;
     case IMAGE_EXPORT_FLAG:
-        output->save(filePathToExport);
-        QDir stickypath(filePathToExport);
-        stickypath.cdUp();
-        result = stickypath.path();
+        ioThread = new IOThread();
+        connect(ioThread, SIGNAL(finishedExport(QString)), this, SLOT(handleFinishedExport(QString)));
+        ioThread->render(output, filePathToExport);
+        
+//        output->save(filePathToExport);
+//        QDir stickypath(filePathToExport);
+//        stickypath.cdUp();
+//        result = stickypath.path();
         break;
     }
 
-    return result;
 }
 
 void Port::render(QImage *output, const int &actionFlag)

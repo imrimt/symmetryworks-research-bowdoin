@@ -44,9 +44,11 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 	QMutexLocker locker(&mutex);
 
     //delete display;
+    if (actionFlag == IMAGE_EXPORT_FLAG) {
+        currFunction = currFunction->clone();
+        currColorWheel = currColorWheel->clone();
+    }
     
-    
-
     this->output = output;
     overallWidth = output->width();
     overallHeight = output->height();
