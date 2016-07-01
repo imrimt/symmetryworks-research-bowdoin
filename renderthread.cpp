@@ -82,7 +82,7 @@ void RenderThread::run()
 
         // qDebug() << "drawing from" << topLeft << "to" << bottomRight;
 
-        int count = 0;
+        //int count = 0;
 
         for (int x = 0; x < outputWidth; x++)
         {   

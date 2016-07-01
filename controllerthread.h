@@ -69,8 +69,6 @@ private slots:
         //qDebug() << "detecting signals";
         switch (actionFlag) {
         case DISPLAY_REPAINT_FLAG:
-            repaintWork(display, startPoint, result);
-            break;
         case HISTORY_ICON_REPAINT_FLAG:
             break;
         case IMAGE_EXPORT_FLAG:

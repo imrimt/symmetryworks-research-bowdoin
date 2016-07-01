@@ -130,7 +130,7 @@ void ControllerThread::run()
         mutex.unlock();
 
         time_t timer;
-        struct tm y2k = {0};
+        struct tm y2k;
         double seconds;
         y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
         y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
@@ -144,7 +144,7 @@ void ControllerThread::run()
         q.exec();
 
         time_t timer2;
-        struct tm y2k2 = {0};
+        struct tm y2k2;
         double seconds2;
         y2k2.tm_hour = 0;   y2k2.tm_min = 0; y2k2.tm_sec = 0;
         y2k2.tm_year = 100; y2k2.tm_mon = 0; y2k2.tm_mday = 1;
@@ -152,7 +152,7 @@ void ControllerThread::run()
         seconds2 = difftime(timer2,mktime(&y2k2));
         // printf ("%.f seconds2: ", seconds2);
 
-        qDebug() << "TIME TO RENDER ALL PIXELS: " << seconds2 - seconds << " msec";
+        qDebug() << "TIME TO RENDER ALL PIXELS: " << seconds2 - seconds << " secs";
 
         mutex.lock();
         if (!restart) {

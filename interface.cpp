@@ -693,7 +693,6 @@ void interface::connectAllSignals()
     connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
     //connect(historyDisplay->removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removePreview(QObject*)));
     
-    
     connect(coeffMapper,SIGNAL(mapped(int)), this, SLOT(showPlanePopUp(int)));
     
     connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(updateSavePreview()));
