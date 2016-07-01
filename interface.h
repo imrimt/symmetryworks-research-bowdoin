@@ -77,6 +77,59 @@ class QDoubleSlider : public QSlider
 
 };
 
+class ProgressBar : public QProgressBar
+{
+    Q_OBJECT
+    
+public:
+    ProgressBar(const QString &title, bool visible, Port *port) {
+        
+        label = new QLabel(title);
+        percentLabel = new QLabel();
+        progBar = new QProgressBar();
+        progBar->setRange(0, 100);
+        progBar->setAlignment(Qt::AlignCenter);
+        progBar->setValue(0);
+        progBar->setVisible(visible);
+        label->setVisible(visible);
+        
+        layout = new QHBoxLayout();
+        layout->addWidget(label);
+        layout->addWidget(progBar);
+        layout->addWidget(percentLabel);
+        
+        this->port = port;
+        this->visible = visible;
+        
+    }
+    
+    QProgressBar *progBar;
+    QLabel *label;
+    QLabel *percentLabel;
+    QHBoxLayout *layout;
+    
+private:
+    bool visible;
+    Port *port;
+    
+protected:
+    void setValue(int val)
+    {
+        progBar->setValue(val);
+        percentLabel->setText(progBar->text());
+    }
+        
+public slots:
+    void update(const int &numThreadsFinished)
+    {
+        if (!visible) { progBar->setVisible(true); label->setVisible(true); }
+        double percentComplete = ((double)(numThreadsFinished)/(double)(port->getControllerObject()->getNumThreadsActive()) * 100.0);
+        this->setValue(percentComplete);
+        
+    }
+    
+};
+
 class CoeffPlaneView : public QChartView {
     Q_OBJECT
   public:
@@ -313,9 +366,17 @@ public:
     // SHORTCUTS
     QShortcut *updatePreviewShortcut;
     
-    QProgressBar *progressBar;
-    QLabel *progressBarLabel;
-    QHBoxLayout *progressBarLayout;
+//    QProgressBar *progressBarDisp;
+//    QLabel *progressBarDispLabel;
+//    QHBoxLayout *progressBarDispLayout;
+//    
+//    QProgressBar *progressBarDisp;
+//    QLabel *progressBarDispLabel;
+//    QHBoxLayout *progressBarDispLayout;
+    ProgressBar *displayProgressBar;
+    ProgressBar *exportProgressBar;
+    
+    
 
     // void mouseReleaseEvent(QMouseEvent *event);
 
@@ -364,7 +425,8 @@ private slots:
     void resetPolarCoordinates();
     
     QString loadSettings(const QString &fileName);
-    void updateProgressBar(const int &numThreadsFinished);
+  //  void updateProgressBar(const int &numThreadsFinished);
+    void popUpImageExportFinished(const QString &filePath);
     
 private:    
     QString genLabel(const char * in);    

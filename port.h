@@ -2,6 +2,7 @@
 #define PORT_H
 
 #include "controllerthread.h"
+#include "iothread.h"
 
 class Port : public QObject
 {
@@ -56,14 +57,20 @@ private:
     // QVector<RenderThread *> threads;
     ControllerThread *controller;
     Controller *controllerObject;
+    
+    IOThread *ioThread;
 
     // int numThreadsFinished;
 
 signals:
     void threadFinished(const int &numThreadsCompleted);
+    void finishedExport(const QString &filePath);
 
 private slots:
-    QString handleRenderedImage(const int &actionFlag);
+    void handleRenderedImage(const int &actionFlag);
+    
+    void handleFinishedExport(const QString &filePath) { qDebug() << "HI"; emit finishedExport(filePath); }
+
     // void combineRenderedImageParts(QPoint startPoint, QVector<QVector<QRgb>> result);
     // void combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result);
 };
