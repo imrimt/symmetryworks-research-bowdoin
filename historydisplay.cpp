@@ -50,9 +50,9 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     QLabel *timeStampLabel = new QLabel(viewHistoryBox);
     
 //    QDateTime savedTime = QDateTime::currentDateTimeUtc();
-     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
-     QString savedTimeLabel = "Saved: " + savedTime.toString("MM/dd/yyyy") + " at " + savedTime.toString("hh:mm:ss");
-     timeStampLabel->setText(savedTimeLabel);
+    QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
+    QString savedTimeLabel = "Saved: " + savedTime.toString("MM/dd/yyyy") + " at " + savedTime.toString("hh:mm:ss");
+    timeStampLabel->setText(savedTimeLabel);
     
     historyItemsLayout->addWidget(d);
     historyItemsButtonsLayout->addWidget(viewButton);
@@ -73,7 +73,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     item->labelItem = timeStampLabel;
     item->filePathName = filePathName;
     
-    Port *historyDisplayPort = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim(), settings);
+    Port *historyDisplayPort = new Port(currFunction, currColorWheel, item->preview->width(), item->preview->height(), settings);
     historyDisplayPort->paintHistoryIcon(item);
     
     connect(viewButton, SIGNAL(clicked()), viewMapper, SLOT(map()));

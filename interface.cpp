@@ -1568,7 +1568,7 @@ void interface::updateTermTable(QObject *cell)
 void interface::updateProgressBar(const int &numThreadsFinished)
 {
     
-    double percentComplete = ((double)(numThreadsFinished)/(double)(NUM_THREADS) * 100.0);
+    double percentComplete = ((double)(numThreadsFinished)/(double)(previewDisplayPort->getControllerObject()->getNumThreadsActive()) * 100.0);
     
     progressBar->setValue(percentComplete);
     progressBarLabel->setText(progressBar->text());

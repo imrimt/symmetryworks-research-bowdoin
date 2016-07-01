@@ -82,6 +82,8 @@ void RenderThread::run()
 
         // qDebug() << "drawing from" << topLeft << "to" << bottomRight;
 
+        int count = 0;
+
         for (int x = 0; x < outputWidth; x++)
         {   
             if (restart) break;
@@ -103,6 +105,7 @@ void RenderThread::run()
                 //finally push the determined color to the corresponding point on the display
                 colorMap[x][y] = color;
             }
+            //if (x % 100 == 0) qDebug() << currentThreadId() << "finishes" << count++ << "row";
         }  
         
         mutex.lock();

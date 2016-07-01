@@ -38,8 +38,8 @@ void Port::paintToDisplay(Display *display)
 
 void Port::paintHistoryIcon(HistoryItem *item)
 {
-    
-    render(item->getImage(), HISTORY_ICON_REPAINT_FLAG);
+    this->display = item->preview;
+    render(display, HISTORY_ICON_REPAINT_FLAG);
     
     //item->getImage()->repaint();
 }
@@ -50,9 +50,8 @@ QString Port::handleRenderedImage(const int &actionFlag)
     // qDebug() << "print out result";
     switch (actionFlag) {
     case DISPLAY_REPAINT_FLAG:
-        display->repaint();
-        break;
     case HISTORY_ICON_REPAINT_FLAG:
+        display->repaint();
         break;
     case IMAGE_EXPORT_FLAG:
         output->save(filePathToExport);
@@ -61,7 +60,7 @@ QString Port::handleRenderedImage(const int &actionFlag)
         result = stickypath.path();
         break;
     }
-    
+
     return result;
 }
 
@@ -69,9 +68,9 @@ void Port::render(QImage *output, const int &actionFlag)
 {
     
     // temporary timing elements used for code profiling
-    clock_t start, end;
+    time_t start, end;
     double cpu_time_used;
-    start = clock();
+    start = time(&start);
 
     controller->prepareToRun(output, actionFlag);
 

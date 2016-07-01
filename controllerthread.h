@@ -2,8 +2,8 @@
 #define CONTROLLERTHREAD_H
 
 #include "renderthread.h"
-
-const int NUM_THREADS = 4;
+#include <time.h>
+#include <stdio.h>
 
 class Controller : public QObject
 {
@@ -15,12 +15,14 @@ public:
         this->output = output;
         restart = false;
     } 
-    int getNumThreadsRunning() {return numThreadsRunning;}
-    void setNumThreadsRunning(int value) {numThreadsRunning = value;}
-    void setActionFlag(int flag) {actionFlag = flag;}
-    void setDisplay(Display *display) {this->display = display;}
-    void setOutput(QImage *output) {this->output = output;}
-    void setRestart(bool status) {restart = status;}
+    int getNumThreadsRunning() { return numThreadsRunning; }
+    int getNumThreadsActive() { return numThreadsActive; }
+    void setNumThreadsRunning(int value) { numThreadsRunning = value; }
+    void setNumThreadsActive(int value) { numThreadsActive = value; }
+    void setActionFlag(int flag) { actionFlag = flag; }
+    void setDisplay(Display *display) { this->display = display; }
+    void setOutput(QImage *output) { this->output = output; }
+    void setRestart(bool status) { restart = status; }    
     
 signals:
     void workFinished(const int &actionFlag);
@@ -29,6 +31,7 @@ signals:
 
 private:
     int numThreadsRunning;
+    int numThreadsActive;
     int actionFlag;
     QImage *output;     //for file writing
     Display *display;   //for display repainting
@@ -78,7 +81,7 @@ private slots:
         --numThreadsRunning;
         // qDebug() << "numThreadsRunning = " << numThreadsRunning;
 
-        emit progressChanged(NUM_THREADS - numThreadsRunning);
+        emit progressChanged(numThreadsActive - numThreadsRunning);
 
         if (numThreadsRunning == 0) {
             //qDebug() << "emit workFinished signal";
@@ -100,6 +103,8 @@ public:
     void prepareToRun(QImage *output, const int &actionFlag);
     void prepareToRun(Display *display, const int &actionFlag);
     Controller* getControllerObject() {return controllerObject;}
+
+    int NUM_THREADS;
 
 protected:
     void run() Q_DECL_OVERRIDE;

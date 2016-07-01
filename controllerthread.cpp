@@ -4,6 +4,8 @@ ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *color
 {
     numThreadsActive = 0;
 
+    NUM_THREADS = idealThreadCount() != -1 ? idealThreadCount() : 8;
+
     restart = false;
     abort = false;
 
@@ -12,6 +14,7 @@ ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *color
     currSettings = settings;
 
     this->controllerObject = controllerObject;
+    this->controllerObject->setNumThreadsActive(NUM_THREADS);
 
     qRegisterMetaType<Q2DArray>("Q2DArray");
 
@@ -58,6 +61,7 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
     }
     else {
         restart = true;
+        emit newWork();
         restartCondition.wakeOne();
     }
 }
@@ -121,22 +125,32 @@ void ControllerThread::run()
             // qDebug() << "thread" << i << "starts";
     	}
 
-        clock_t start, end;
-        double cpu_time_used;
-        start = clock();
-
         mutex.unlock();
+
+        time_t timer;
+        struct tm y2k = {0};
+        double seconds;
+        y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
+        y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
+        time(&timer);  /* get current time; same as: timer = time(NULL)  */
+        seconds = difftime(timer,mktime(&y2k));
+        // printf ("%.f seconds: ", seconds);
 
         QEventLoop q;
         connect(this, SIGNAL(newWork()), &q, SLOT(quit()));
         connect(controllerObject, SIGNAL(allThreadsFinished()), &q, SLOT(quit()));
         q.exec();
 
-        // qDebug() << "this is what happens after exec";
+        time_t timer2;
+        struct tm y2k2 = {0};
+        double seconds2;
+        y2k2.tm_hour = 0;   y2k2.tm_min = 0; y2k2.tm_sec = 0;
+        y2k2.tm_year = 100; y2k2.tm_mon = 0; y2k2.tm_mday = 1;
+        time(&timer2);  /* get current time; same as: timer = time(NULL)  */
+        seconds2 = difftime(timer2,mktime(&y2k2));
+        // printf ("%.f seconds2: ", seconds2);
 
-        end = clock();
-        cpu_time_used = (double)(end - start)/CLOCKS_PER_SEC;
-        qDebug() << "TIME TO RENDER ALL PIXELS: " << cpu_time_used << " sec";
+        qDebug() << "TIME TO RENDER ALL PIXELS: " << seconds2 - seconds << " msec";
 
         mutex.lock();
         if (!restart) {
