@@ -38,7 +38,7 @@ void Port::paintToDisplay(Display *display)
 
 void Port::paintHistoryIcon(HistoryItem *item)
 {
-    this->display = item->preview;
+    this->display = item->getDisplay();
     render(display, HISTORY_ICON_REPAINT_FLAG);
     
     //item->getImage()->repaint();

@@ -63,12 +63,13 @@ private:
 private slots: 
     void handleRenderedImageParts(const QPoint &startPoint, const Q2DArray &result) {
         if (restart) return;
-        //qDebug() << "detecting signals";
+        
         switch (actionFlag) {
         case DISPLAY_REPAINT_FLAG:
             repaintWork(display, startPoint, result);
             break;
         case HISTORY_ICON_REPAINT_FLAG:
+            repaintWork(display, startPoint, result);
             break;
         case IMAGE_EXPORT_FLAG:
             repaintWork(output, startPoint, result);

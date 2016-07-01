@@ -42,7 +42,7 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 
     //delete display;
     
-    qDebug() << "prepare to run, is it a history item? " << (bool)(actionFlag == HISTORY_ICON_REPAINT_FLAG);
+    
 
     this->output = output;
     overallWidth = output->width();
@@ -71,7 +71,7 @@ void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
     QMutexLocker locker(&mutex);
 
     //delete output;
-
+    
     this->display = display;
     overallWidth = display->width();
     overallHeight = display->height();
@@ -86,6 +86,7 @@ void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
     controllerObject->setNumThreadsRunning(numThreadsActive);
 
     if (!isRunning()) {
+        
         start(InheritPriority);
     }
     else {
@@ -113,15 +114,16 @@ void ControllerThread::run()
 {
     forever {
     	mutex.lock();
-
+        
         // qDebug() << currentThread() << "starts running";
-
+        
         int counter = overallWidth/numThreadsActive;
 
     	for (int i = 0; i < numThreadsActive; i++)
     	{
     		threads[i]->render(QPoint(i * counter, 0), QPoint((i + 1) * counter, overallHeight), &allWorkersFinishedCondition);
             // qDebug() << "thread" << i << "starts";
+            
     	}
 
         clock_t start, end;
@@ -135,17 +137,18 @@ void ControllerThread::run()
         connect(controllerObject, SIGNAL(allThreadsFinished()), &q, SLOT(quit()));
         q.exec();
 
-        // qDebug() << "this is what happens after exec";
 
         end = clock();
         cpu_time_used = (double)(end - start)/CLOCKS_PER_SEC;
-        qDebug() << "TIME TO RENDER ALL PIXELS: " << cpu_time_used << " sec";
+        //qDebug() << "TIME TO RENDER ALL PIXELS: " << cpu_time_used << " sec";
 
         mutex.lock();
         if (!restart) {
             //qDebug() << "controller goes to wait for restart";
+
             restartCondition.wait(&mutex);
         }
+        
         restart = false;
         mutex.unlock();
     }
