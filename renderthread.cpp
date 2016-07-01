@@ -41,8 +41,6 @@ void RenderThread::render(QPoint topLeft, QPoint bottomRight, QWaitCondition *co
     bottomRightYValue = bottomRight.y();
     this->controllerCondition = controllerCondition;
     
-    // qDebug() << QThread::currentThread() << "starts running as controller thread";
-    
     if (!isRunning()) {
         // qDebug() << QThread::currentThread() << "starts running as render thread";
         start(InheritPriority);
@@ -88,6 +86,7 @@ void RenderThread::run()
         {   
             if (restart) break;
             if (abort) return;
+            
             for (int y = 0; y < outputHeight; y++)
             {
                 if (restart) break;
@@ -112,9 +111,8 @@ void RenderThread::run()
         
         // qDebug() << "thread" << QThread::currentThread() << "finishes rendering";
         if (!restart) {
-            // qDebug() << "thread" << QThread::currentThread() << "goes to wait before restarting";
+            //qDebug() << "thread" << QThread::currentThread() << "goes to wait before restarting";
             emit renderingFinished(topLeft, colorMap);
-            // qDebug() << "emit successfully";
             //controllerCondition->wakeOne();
             condition.wait(&mutex);
         }
