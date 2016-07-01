@@ -5,16 +5,16 @@ RenderThread::RenderThread(AbstractFunction *function, ColorWheel *colorwheel, S
     restart = false;
     abort = false;
 
-    this->function = function;
-    this->colorwheel = colorwheel;
-    this->settings = settings;
+    currFunction = function;
+    currColorWheel = colorwheel;
+    currSettings = settings;
 
     overallWidth = outputSize.width();
     overallHeight = outputSize.height();
 
-    worldYStart1 = settings->Height + settings->YCorner;
-    worldYStart2 = settings->Height/overallHeight;
-    worldXStart = settings->Width/overallWidth;
+    worldYStart1 = currSettings->Height + currSettings->YCorner;
+    worldYStart2 = currSettings->Height/overallHeight;
+    worldXStart = currSettings->Width/overallWidth;
 
     controllerCondition = new QWaitCondition();
 }
@@ -64,7 +64,7 @@ void RenderThread::run()
         double worldYStart1 = this->worldYStart1;
         double worldYStart2 = this->worldYStart2;
         double worldXStart = this->worldXStart;
-        double XCorner = settings->XCorner;
+        double XCorner = currSettings->XCorner;
         // int topLeftXValue = this->topLeftXValue;
         // int topLeftYValue = this->topLeftYValue;
         // int bottomRightXValue = this->bottomRightXValue;
@@ -97,9 +97,8 @@ void RenderThread::run()
                 //run the point through our mathematical function
                 //...then convert that complex output to a color according to our color wheel
                 
-                fout = (*function)(worldX,worldY);
-                // std::complex<double> fout = (*function)(x,y);
-                QRgb color = (*colorwheel)(fout);
+                fout = (*currFunction)(worldX,worldY);
+                QRgb color = (*currColorWheel)(fout);
                 
                 //finally push the determined color to the corresponding point on the display
                 colorMap[x][y] = color;

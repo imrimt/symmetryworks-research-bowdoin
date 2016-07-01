@@ -107,9 +107,7 @@ void interface::initInterfaceLayout()
     setTabOrder(YCornerEdit, worldwidthEdit);
     setTabOrder(worldwidthEdit, worldheightEdit);
     setTabOrder(worldheightEdit, outwidthEdit);
-    setTabOrder(outwidthEdit, outheightEdit);
-    
-    
+    setTabOrder(outwidthEdit, outheightEdit);    
 }
 
 

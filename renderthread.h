@@ -83,9 +83,9 @@ private:
     bool restart;
     bool abort;
     
-    AbstractFunction *function;
-    ColorWheel *colorwheel;
-    Settings *settings;
+    AbstractFunction *currFunction;
+    ColorWheel *currColorWheel;
+    Settings *currSettings;
     
     // QImage *output;  
 };

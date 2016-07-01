@@ -122,9 +122,9 @@ private:
     // QPoint topLeft;
     // QPoint bottomRight;
 
-    AbstractFunction *function;
-    ColorWheel *colorwheel;
-    Settings *settings;
+    AbstractFunction *currFunction;
+    ColorWheel *currColorWheel;
+    Settings *currSettings;
     Controller *controllerObject;
     Display *display;
 
