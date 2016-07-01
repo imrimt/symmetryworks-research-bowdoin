@@ -2,49 +2,15 @@
 #define RENDERTHREAD_H
 
 #include <QThread>
-#include <complex>
-#include <QVector>
-#include <QDebug>
-#include <QtCore/qmath.h>
-#include <complex>
-#include <QtWidgets>
-
-#include <QScrollArea>
-#include <QWidget>
-#include <QLabel>
-#include <QLineEdit>
-#include <QSpinBox>
-#include <QSlider>
-#include <QKeyEvent>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QSpacerItem>
-#include <QGroupBox>
-#include <QComboBox>
-#include <QString>
-#include <QDebug>
-#include <QPushButton>
-#include <QAbstractButton>
-#include <QImage>
-#include <QDir>
-#include <QInputDialog>
-#include <QFileDialog>
-#include <QSignalMapper>
-#include <QDateTime>
-#include <QShortCut>
-#include <QAction>
-#include <QMessageBox>
-#include <QTableWidget>
-#include <QStringList>
+#include <QWaitCondition>
 #include <QMetaType>
-
-#include <time.h>
+#include <QEventLoop>
 
 #include "functions.h"
 #include "colorwheel.h"
-#include "display.h"
 
 #include "geomath.h"
+#include "shared.h"
 
 const int DISPLAY_REPAINT_FLAG = 1;
 const int HISTORY_ICON_REPAINT_FLAG = 2;

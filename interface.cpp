@@ -6,7 +6,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     // FUNCTIONAL VARIABLES
     advancedMode = false;
     numTerms = 0;
-    termIndex = -1;
+    termIndex = 0;
     highestIndex = -1;
     saveloadPath = QDir::homePath();
     
@@ -44,7 +44,9 @@ void interface::initInterfaceLayout()
     displayWidget = new QWidget(this);
     patternTypeWidget = new QWidget(this);
     functionConstantsWidget = new QWidget(this);
-    viewHistoryWidget = new QWidget(this);
+    
+    historyDisplay = new HistoryDisplay(currFunction, currColorWheel, settings, this);
+    
     toggleViewWidget = new QWidget(this);
     
     leftbarLayout->addWidget(toggleViewWidget);
@@ -53,7 +55,9 @@ void interface::initInterfaceLayout()
     
     topbarLayout->addLayout(leftbarLayout);
     topbarLayout->addWidget(displayWidget);
-    topbarLayout->addWidget(viewHistoryWidget);
+    
+    topbarLayout->addWidget(historyDisplay->viewHistoryWidget);
+    
     interfaceLayout->addLayout(topbarLayout);
     interfaceLayout->addWidget(functionConstantsWidget);
     setLayout(interfaceLayout);
@@ -77,9 +81,12 @@ void interface::initInterfaceLayout()
     initPreviewDisplay();
     initFunctionConstants();
     initPatternType();
-    initViewHistory();
+    //initViewHistory();
+    //historyDisplay = new HistoryDisplay();
+    
     initImageProps();
     initCoeffPlane();
+    
     connectAllSignals();
     
     // SET DEFAULTS
@@ -123,20 +130,40 @@ void interface::initPreviewDisplay()
     resetImage = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
     buttonLayout = new QHBoxLayout();
+    progressBarLayout = new QHBoxLayout();
     
     buttonLayout->addWidget(updatePreview);
     buttonLayout->addWidget(exportImage);
     buttonLayout->addWidget(resetImage);
     
-    dispLayout->addWidget(disp);
+    progressBarLabel = new QLabel(displayWidget);
+    progressBar = new QProgressBar(displayWidget);
+    progressBar->setRange(0, 100);
+  
+    progressBar->setAlignment(Qt::AlignCenter);
+    progressBar->setValue(0);
+    progressBarLayout->addWidget(progressBar);
+    progressBarLayout->addWidget(progressBarLabel);
+    
+    
+   
     dispLayout->setAlignment(disp, Qt::AlignCenter);
+    dispLayout->addWidget(disp);
+    dispLayout->addLayout(progressBarLayout);
     dispLayout->addLayout(buttonLayout);
+    
     
     //SET UP SHORTCUTS...add for save, open, undo?
     updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
 
+
+    
     imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
     previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
+    
+    connect(previewDisplayPort, SIGNAL(threadFinished(int, int)), this, SLOT(updateProgressBar(int, int)));
+    connect(imageExportPort, SIGNAL(threadFinished(int, int)), this, SLOT(updateProgressBar(int, int)));
+    
 }
 
 
@@ -397,23 +424,23 @@ void interface::initPatternType()
 
 
 
-void interface::initViewHistory()
-{
-    
-    viewHistoryBox = new QGroupBox(tr("History"), viewHistoryWidget);
-    viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
-    
-    clearHistoryButton = new QPushButton(tr("Clear All History"), viewHistoryBox);
-    viewHistoryBoxLayout = new QVBoxLayout(viewHistoryBox);
-    
-    viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);
-    viewHistoryBoxLayout->addWidget(clearHistoryButton);
-    viewHistoryBoxOverallLayout->addStretch();
-    
-    viewMapper = new QSignalMapper(this);
-    removeMapper = new QSignalMapper(this);
-    
-}
+//void interface::initViewHistory()
+//{
+//    
+//    viewHistoryBox = new QGroupBox(tr("History"), viewHistoryWidget);
+//    viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
+//    
+//    clearHistoryButton = new QPushButton(tr("Clear All History"), viewHistoryBox);
+//    viewHistoryBoxLayout = new QVBoxLayout(viewHistoryBox);
+//    
+//    viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);
+//    viewHistoryBoxLayout->addWidget(clearHistoryButton);
+//    viewHistoryBoxOverallLayout->addStretch();
+//    
+//    viewMapper = new QSignalMapper(this);
+//    removeMapper = new QSignalMapper(this);
+//    
+//}
 
 
 // TODO compress this...
@@ -648,7 +675,7 @@ void interface::connectAllSignals()
     //connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeMaxTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateCurrTerm(int)));
     connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
-    connect(addTermButton, SIGNAL(clicked()), this, SLOT(addNewTerm()));
+    connect(addTermButton, SIGNAL(clicked()), this, SLOT(addTerm()));
     
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
@@ -666,10 +693,11 @@ void interface::connectAllSignals()
     connect(XCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeXCorner(QString)));
     connect(YCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeYCorner(QString)));
     
-    connect(clearHistoryButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
+    connect(historyDisplay->clearHistoryButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
+    connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
+    connect(historyDisplay->removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removePreview(QObject*)));
     
-    connect(viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
-    connect(removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removePreview(QObject*)));
+    
     connect(coeffMapper,SIGNAL(mapped(int)), this, SLOT(showPlanePopUp(int)));
     
     connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(updateSavePreview()));
@@ -749,6 +777,11 @@ void interface::refreshMainWindowTerms()
 
 void interface::removeTerm(int row)
 {
+    
+    if (row <= 0) {
+        return;
+    }
+    
     for (int c = 0; c < termViewTable->columnCount(); ++c)
     {
         delete termViewTable->cellWidget(row, c);
@@ -779,8 +812,8 @@ void interface::removeTerm(int row)
 // function called when adding a new term to the termViewTable
 void interface::addTerm()
 {
+    
     highestIndex++;
-    termIndex++;
     numTerms++;
     
     termViewTable->setRowCount(numTerms);
@@ -805,9 +838,9 @@ void interface::addTerm()
     aEditTable->setAlignment(Qt::AlignCenter);
     rEditTable->setAlignment(Qt::AlignCenter);
     
-    termViewTable->verticalHeader()->setSectionResizeMode(termIndex, QHeaderView::ResizeToContents);
+    termViewTable->verticalHeader()->setSectionResizeMode(highestIndex, QHeaderView::ResizeToContents);
     
-    QLabel *termLabel = new QLabel(QString::number(termIndex + 1));
+    QLabel *termLabel = new QLabel(QString::number(highestIndex + 1));
     termLabel->setAlignment(Qt::AlignCenter);
     termViewTable->setCellWidget(highestIndex, 0, termLabel);
     
@@ -819,8 +852,7 @@ void interface::addTerm()
     QTableWidgetItem *removeTermItem = new QTableWidgetItem();
     removeTermItem->setIcon(QIcon(":/Images/remove.png"));
     
-    termViewTable->setItem(termIndex, 5, removeTermItem);
-    qDebug() << "highest index: " << highestIndex;
+    termViewTable->setItem(highestIndex, 5, removeTermItem);
     
     
     // set defaults
@@ -896,14 +928,14 @@ void interface::termViewPopUp()
     
 }
 
-void interface::addNewTerm() {
-    // handles adding a new term to the termViewTable
-    addTerm();
-}
+//void interface::addNewTerm() {
+//    // handles adding a new term to the termViewTable
+//    addTerm();
+//}
 
 void interface::updateCurrTerm(int i)
 {
-    termIndex = i - 1;
+    if (i > 0) termIndex = i - 1;
     
     refreshTerms();
     refreshLabels();
@@ -1142,94 +1174,95 @@ QString interface::loadSettings(const QString &fileName) {
 }
 
 
-void interface::addToHistory()
-{
-    HistoryItem *item = new HistoryItem();
-    
-    QVBoxLayout *historyItemsWithLabelLayout = new QVBoxLayout();
-    QHBoxLayout *historyItemsLayout = new QHBoxLayout();
-    QVBoxLayout *historyItemsButtonsLayout = new QVBoxLayout();
-    Display *d = new Display(HISTORY_ITEM_SIZE, HISTORY_ITEM_SIZE, viewHistoryBox);
-    QPushButton *viewButton = new QPushButton(tr("View"), viewHistoryBox);
-    QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
-    QLabel *timeStampLabel = new QLabel(viewHistoryBox);
-    
-    QDateTime savedTime = QDateTime::currentDateTimeUtc();
-    
-    QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
-    
-    QString savedTimeLabel = "Saved: " + savedTime.toString("MM/dd/yyyy") + " at " + savedTime.toString("hh:mm:ss");
-    
-    timeStampLabel->setText(savedTimeLabel);
-    
-    historyItemsLayout->addWidget(d);
-    historyItemsButtonsLayout->addWidget(viewButton);
-    historyItemsButtonsLayout->addWidget(removeButton);
-    historyItemsLayout->addLayout(historyItemsButtonsLayout);
-    historyItemsWithLabelLayout->addLayout(historyItemsLayout);
-    historyItemsWithLabelLayout->addWidget(timeStampLabel);
-    viewHistoryBoxLayout->insertLayout(1, historyItemsWithLabelLayout);
-    
-    //saving all values to history item
-    item->preview = d;
-    item->savedTime = savedTime;
-    item->layoutWithLabelItem = historyItemsWithLabelLayout;
-    item->layoutItem = historyItemsLayout;
-    item->buttonLayoutItem = historyItemsButtonsLayout;
-    item->viewButton = viewButton;
-    item->removeButton = removeButton;
-    item->labelItem = timeStampLabel;
-    item->filePathName = saveSettings(newFile).append("/" + newFile);
-
-    Port *historyDisplayPort = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim(), settings);
-    historyDisplayPort->paintHistoryIcon(item);    
-
-    connect(viewButton, SIGNAL(clicked()), viewMapper, SLOT(map()));
-    connect(removeButton, SIGNAL(clicked()), removeMapper, SLOT(map()));
-    
-    viewMapper->setMapping(viewButton, newFile);
-    removeMapper->setMapping(removeButton, item);   
-
-    historyItemsMap.insert(savedTime, item);
-    historyPortsMap.insert(savedTime, historyDisplayPort);
-    
-}
-
-void interface::removePreview(QObject *item)
-{
-    HistoryItem *historyItemToRemove = qobject_cast<HistoryItem*>(item);
-    
-    historyItemToRemove->buttonLayoutItem->removeWidget(historyItemToRemove->viewButton);
-    delete historyItemToRemove->viewButton;
-    
-    historyItemToRemove->buttonLayoutItem->removeWidget(historyItemToRemove->removeButton);
-    delete historyItemToRemove->removeButton;
-    
-    historyItemToRemove->layoutItem->removeItem(historyItemToRemove->buttonLayoutItem);
-    delete historyItemToRemove->buttonLayoutItem;
-    
-    historyItemToRemove->layoutItem->removeWidget(historyItemToRemove->preview);
-    delete historyItemToRemove->preview;
-    
-    historyItemToRemove->layoutWithLabelItem->removeItem(historyItemToRemove->layoutItem);
-    delete historyItemToRemove->layoutItem;
-    
-    historyItemToRemove->layoutWithLabelItem->removeWidget(historyItemToRemove->labelItem);
-    delete historyItemToRemove->labelItem;
-    
-    viewHistoryBoxLayout->removeItem(historyItemToRemove->layoutWithLabelItem);
-    delete historyItemToRemove->layoutWithLabelItem;
-
-    delete *(historyPortsMap.find(historyItemToRemove->savedTime));
-    historyPortsMap.erase(historyPortsMap.find(historyItemToRemove->savedTime));
-
-    historyItemsMap.erase(historyItemsMap.find(historyItemToRemove->savedTime));
-    
-    QFile::remove(historyItemToRemove->filePathName);
-}
+//void interface::addToHistory()
+//{
+//    HistoryItem *item = new HistoryItem();
+//    
+//    QVBoxLayout *historyItemsWithLabelLayout = new QVBoxLayout();
+//    QHBoxLayout *historyItemsLayout = new QHBoxLayout();
+//    QVBoxLayout *historyItemsButtonsLayout = new QVBoxLayout();
+//    Display *d = new Display(HISTORY_ITEM_SIZE, HISTORY_ITEM_SIZE, viewHistoryBox);
+//    QPushButton *viewButton = new QPushButton(tr("View"), viewHistoryBox);
+//    QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
+//    QLabel *timeStampLabel = new QLabel(viewHistoryBox);
+//    
+//    QDateTime savedTime = QDateTime::currentDateTimeUtc();
+//    
+//    QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
+//    
+//    QString savedTimeLabel = "Saved: " + savedTime.toString("MM/dd/yyyy") + " at " + savedTime.toString("hh:mm:ss");
+//    
+//    timeStampLabel->setText(savedTimeLabel);
+//    
+//    historyItemsLayout->addWidget(d);
+//    historyItemsButtonsLayout->addWidget(viewButton);
+//    historyItemsButtonsLayout->addWidget(removeButton);
+//    historyItemsLayout->addLayout(historyItemsButtonsLayout);
+//    historyItemsWithLabelLayout->addLayout(historyItemsLayout);
+//    historyItemsWithLabelLayout->addWidget(timeStampLabel);
+//    viewHistoryBoxLayout->insertLayout(1, historyItemsWithLabelLayout);
+//    
+//    //saving all values to history item
+//    item->preview = d;
+//    item->savedTime = savedTime;
+//    item->layoutWithLabelItem = historyItemsWithLabelLayout;
+//    item->layoutItem = historyItemsLayout;
+//    item->buttonLayoutItem = historyItemsButtonsLayout;
+//    item->viewButton = viewButton;
+//    item->removeButton = removeButton;
+//    item->labelItem = timeStampLabel;
+//    item->filePathName = saveSettings(newFile).append("/" + newFile);
+//
+//    Port *historyDisplayPort = new Port(currFunction, currColorWheel, item->preview->dim(), item->preview->dim(), settings);
+//    historyDisplayPort->paintHistoryIcon(item);    
+//
+//    connect(viewButton, SIGNAL(clicked()), viewMapper, SLOT(map()));
+//    connect(removeButton, SIGNAL(clicked()), removeMapper, SLOT(map()));
+//    
+//    viewMapper->setMapping(viewButton, newFile);
+//    removeMapper->setMapping(removeButton, item);   
+//
+//    historyItemsMap.insert(savedTime, item);
+//    historyPortsMap.insert(savedTime, historyDisplayPort);
+//    
+//}
+//
+//void interface::removePreview(QObject *item)
+//{
+//    HistoryItem *historyItemToRemove = qobject_cast<HistoryItem*>(item);
+//    
+//    historyItemToRemove->buttonLayoutItem->removeWidget(historyItemToRemove->viewButton);
+//    delete historyItemToRemove->viewButton;
+//    
+//    historyItemToRemove->buttonLayoutItem->removeWidget(historyItemToRemove->removeButton);
+//    delete historyItemToRemove->removeButton;
+//    
+//    historyItemToRemove->layoutItem->removeItem(historyItemToRemove->buttonLayoutItem);
+//    delete historyItemToRemove->buttonLayoutItem;
+//    
+//    historyItemToRemove->layoutItem->removeWidget(historyItemToRemove->preview);
+//    delete historyItemToRemove->preview;
+//    
+//    historyItemToRemove->layoutWithLabelItem->removeItem(historyItemToRemove->layoutItem);
+//    delete historyItemToRemove->layoutItem;
+//    
+//    historyItemToRemove->layoutWithLabelItem->removeWidget(historyItemToRemove->labelItem);
+//    delete historyItemToRemove->labelItem;
+//    
+//    viewHistoryBoxLayout->removeItem(historyItemToRemove->layoutWithLabelItem);
+//    delete historyItemToRemove->layoutWithLabelItem;
+//
+//    delete *(historyPortsMap.find(historyItemToRemove->savedTime));
+//    historyPortsMap.erase(historyPortsMap.find(historyItemToRemove->savedTime));
+//
+//    historyItemsMap.erase(historyItemsMap.find(historyItemToRemove->savedTime));
+//    
+//    QFile::remove(historyItemToRemove->filePathName);
+//}
 
 void interface::updatePreviewDisplay()
-{    
+{
+    progressBar->reset();
     // Port *previewDisplay = new Port(currFunction, currColorWheel, disp->dim(), disp->dim(), settings);
     // qDebug() << QThread::currentThread() << " updates preview display";
     previewDisplayPort->paintToDisplay(disp);
@@ -1238,26 +1271,33 @@ void interface::updatePreviewDisplay()
 void interface::updateSavePreview()
 {
     
-    // qDebug() << "Updating Preview";
     
-    if (historyItemsMap.size() < MAX_HISTORY_ITEMS) {
-        addToHistory();
-    } else {
-        removePreview(*(historyItemsMap.begin()));
-        addToHistory();
-    }
+    QDateTime savedTime = QDateTime::currentDateTimeUtc();
+    QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
+    QString filePath = saveSettings(newFile).append("/" + newFile);
+    // qDebug() << "Updating Preview";
+    historyDisplay->triggerAddToHistory(savedTime, filePath);
+
+    
+//    if (historyItemsMap.size() < MAX_HISTORY_ITEMS) {
+//        addToHistory();
+//    } else {
+//        removePreview(*(historyItemsMap.begin()));
+//        addToHistory();
+//    }
     
     updatePreviewDisplay();
     
 }
 
-void interface::clearAllHistory()
-{    
-    while (!historyItemsMap.empty()) {
-        qDebug() << "removing";
-        removePreview(historyItemsMap.begin().value());
-    }
-}
+
+//void interface::clearAllHistory()
+//{    
+//    while (!historyItemsMap.empty()) {
+//        qDebug() << "removing";
+//        removePreview(historyItemsMap.begin().value());
+//    }
+//}
 
 void interface::changeOHeight(const QString &val)
 {
@@ -1343,9 +1383,7 @@ void interface::changeScaleR(const QString &val)
 
 void interface::saveImageStart()
 {
-    
-    
-    // Port *imageExport = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
+    progressBar->reset();
     
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,
@@ -1355,54 +1393,9 @@ void interface::saveImageStart()
     if (!inFile.open(QIODevice::WriteOnly))
         return;
     
-    double worldY, worldX ;
-    QImage outputImage(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
-    
-    double worldYPreCalculations1 = settings->Height + settings->YCorner;
-    double worldYPreCalculations2 = settings->Height/settings->OHeight;
-    double worldXPreCalculations = settings->Width/settings->OWidth;
-    
-    for (int y = 0; y < settings->OHeight; y++)
-    {
-        for (int x = 0; x <= ((settings->OWidth)-1); x++)
-        {
-            // worldY = settings->Height - y*settings->Height/settings->OHeight + settings->YCorner;
-            // worldX = x*settings->Width/settings->OWidth + settings->XCorner;
-            
-            worldY = worldYPreCalculations1 - y * worldYPreCalculations2;
-            worldX = x * worldXPreCalculations + settings->XCorner;
-            
-            //run the point through our mathematical function
-            //...then turn that complex output into a color per our color wheel
-            clock_t start, end;
-            double cpu_time_used;
-            
-            start = clock();
-            std::complex<double> fout=(*currFunction)(worldX,worldY);
-            end = clock();
-            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-            // qDebug() << "function: " << cpu_time_used;
-            
-            start = clock();
-            QRgb color = (*currColorWheel)(fout);
-            end = clock();
-            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-            // qDebug() << "function: " << cpu_time_used;
-            
-            outputImage.setPixel(x, y, color);
-        }
-    }
-    
-    outputImage.save(fileName);
-    
-    QDir stickypath(fileName);
-    stickypath.cdUp();
-    saveloadPath = stickypath.path();
-    return;
-    
     QImage *output = new QImage(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
-    
     imageExportPort->exportImage(output, fileName);
+    
 }
 
 void interface::errorHandler(const int &flag)
@@ -1573,6 +1566,18 @@ void interface::updateTermTable(QObject *cell)
     
     refreshTerms();
     updatePreviewDisplay();
+}
+
+
+void interface::updateProgressBar(int numThreadsFinished, int numTotalThreads)
+{
+    
+    double percentComplete = ((double)(numThreadsFinished)/(double)(numTotalThreads) * 100.0);
+    
+    progressBar->setValue(percentComplete);
+    progressBarLabel->setText(progressBar->text());
+    
+    
 }
 
 
