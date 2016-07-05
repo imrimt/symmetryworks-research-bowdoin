@@ -472,33 +472,36 @@ QRgb ColorWheel::WinCol(std::complex<double> zin)
     E2 = initVect5(0.0,s2/ma,s4/ma,s6/ma,s8/ma);
     E3 = initVect5(1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0));
 
-    xa=zin.real();
-    ya=zin.imag();
+    xa = zin.real();
+    ya = zin.imag();
 
     //1st do stereographic proj
-    xtm=2.0*xa/(1.0+xa*xa+ya*ya);
-    ytm=2.0*ya/(1.0+xa*xa+ya*ya);
-    ztm= 2.0/(1.0+xa*xa+ya*ya) -1.0;
+    xtm = 2.0*xa/(1.0+xa*xa+ya*ya);
+    ytm = 2.0*ya/(1.0+xa*xa+ya*ya);
+    ztm = 2.0/(1.0+xa*xa+ya*ya) -1.0;
 
     //put sphere up in R5
-    B1=Bvect5(xtm,ytm,ztm);
+    B1 = Bvect5(xtm,ytm,ztm);
 
     //take cube roots
     B2 = initVect5(cubeRoot(B1.xv),cubeRoot(B1.yv),cubeRoot(B1.zv),cubeRoot(B1.uv),cubeRoot(B1.vv));
-    Xf = B2.xv*E1.xv+B2.yv*E1.yv+B2.zv*E1.zv+B2.uv*E1.uv+B2.vv*E1.vv;
-    Yf = B2.xv*E2.xv+B2.yv*E2.yv+B2.zv*E2.zv+B2.uv*E2.uv+B2.vv*E2.vv;
-    Zf = B2.xv*E3.xv+B2.yv*E3.yv+B2.zv*E3.zv+B2.uv*E3.uv+B2.vv*E3.vv;
+    Xf = B2.xv * E1.xv + B2.yv * E1.yv + B2.zv * E1.zv + B2.uv * E1.uv + B2.vv * E1.vv;
+    Yf = B2.xv * E2.xv + B2.yv * E2.yv + B2.zv * E2.zv + B2.uv * E2.uv + B2.vv * E2.vv;
+    Zf = B2.xv * E3.xv + B2.yv * E3.yv + B2.zv * E3.zv + B2.uv * E3.uv + B2.vv * E3.vv;
 
     //following accomplishes "tilt," but it was already written out, so fine.
     X = (Xf*q2+Zf)/q3;
-    Z = 0.0-Xf/q2/q3-Yf/q2+Zf/q3;
-    Y = 0.0-Xf/q2/q3+Yf/q2+Zf/q3;
-    r = int(double(MAX_RGB) * (1.0+X)/2.0);
-    g = int(double(MAX_RGB) * (1.0+Z)/2.0);
-    b = int(double(MAX_RGB) * (1.0+Y)/2.0);
-    if(r > MAX_RGB){ r=MAX_RGB; }
-    if(g > MAX_RGB){ g=MAX_RGB; }
-    if(b > MAX_RGB){ b=MAX_RGB; }
+    Z = 0.0 - Xf/q2/q3-Yf/q2+Zf/q3;
+    Y = 0.0 - Xf/q2/q3+Yf/q2+Zf/q3;
+    r = int(double(MAX_RGB) * (1.0 + X)/2.0);
+    g = int(double(MAX_RGB) * (1.0 + Z)/2.0);
+    b = int(double(MAX_RGB) * (1.0 + Y)/2.0);
+    if(r > MAX_RGB){ r = MAX_RGB; }
+    if(g > MAX_RGB){ g = MAX_RGB; }
+    if(b > MAX_RGB){ b = MAX_RGB; }
+    if(r < MIN_RGB){ r = MIN_RGB; }
+    if(g < MIN_RGB){ g = MIN_RGB; }
+    if(b < MIN_RGB){ b = MIN_RGB; }
 
     return QColor(r, g, b).rgb();
     

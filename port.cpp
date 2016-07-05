@@ -54,7 +54,7 @@ void Port::handleRenderedImage(const int &actionFlag)
         display->repaint();
         break;
     case IMAGE_EXPORT_FLAG:
-        ioThread = new IOThread();
+        IOThread *ioThread = new IOThread();
         connect(ioThread, SIGNAL(finishedExport(QString)), this, SLOT(handleFinishedExport(QString)));
         ioThread->render(output, filePathToExport);
         

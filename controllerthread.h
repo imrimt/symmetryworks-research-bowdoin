@@ -4,6 +4,7 @@
 #include "renderthread.h"
 #include <time.h>
 #include <stdio.h>
+#include <chrono>
 
 class Controller : public QObject
 {
@@ -108,19 +109,19 @@ public:
     // SETTERS
     void changeFunction(AbstractFunction *newFunction) { 
         currFunction = newFunction;
-        for (int i = 0; i < threads.size(); i++) {
+        for (int i = 0; i < NUM_THREADS; i++) {
             threads[i]->changeFunction(newFunction);
         } 
     }
     void changeColorWheel(ColorWheel *newColorWheel) { 
         currColorWheel = newColorWheel;
-        for (int i = 0; i < threads.size(); i++) {
+        for (int i = 0; i < NUM_THREADS; i++) {
             threads[i]->changeColorWheel(newColorWheel);
         } 
     }
     void changeSettings(Settings *newSettings) { 
         currSettings = newSettings; 
-        for (int i = 0; i < threads.size(); i++) {
+        for (int i = 0; i < NUM_THREADS; i++) {
             threads[i]->changeSettings(newSettings);
         }
     }
@@ -161,6 +162,7 @@ private:
     QImage *output;
 
 	QVector<RenderThread *> threads;
+
 };
 
 #endif // CONTROLLERTHREAD_H

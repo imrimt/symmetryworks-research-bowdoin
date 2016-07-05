@@ -48,19 +48,14 @@ private:
     void render(QImage *output, const int &actionFlag);
     void render(Display *display, const int &actionFlag);
 
-    // void render(QImage *output, Display *display, const int &actionFlag);s
+    // void render(QImage *output, Display *display, const int &actionFlag);
 
     Display *display;
     QImage *output;
     QString filePathToExport;
     
-    // QVector<RenderThread *> threads;
     ControllerThread *controller;
     Controller *controllerObject;
-    
-    IOThread *ioThread;
-
-    // int numThreadsFinished;
 
 signals:
     void threadFinished(const int &numThreadsCompleted);

@@ -1,10 +1,13 @@
 #include "iothread.h"
 
 IOThread::IOThread(QObject *parent) : QThread(parent)
-{
-    
-    connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
-    
+{    
+    connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));    
+}
+
+IOThread::~IOThread()
+{    
+    wait();
 }
 
 
@@ -15,7 +18,6 @@ void IOThread::render(QImage *output, const QString &filePathToExport)
     this->output = output;
     this->filePathToExport = filePathToExport;
     
-   
     start(InheritPriority);
     
 }

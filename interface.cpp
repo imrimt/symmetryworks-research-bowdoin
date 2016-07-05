@@ -46,7 +46,6 @@ interface::interface(QWidget *parent) : QWidget(parent)
     
     functionSel->setCurrentIndex(0);
     colorwheelSel->setCurrentIndex(0);
-    
 }
 
 
@@ -197,7 +196,7 @@ void interface::initFunctionConstants()
     rValueLabel = new QLabel(functionConstantsBox);
     
     
-    globalConsantsLabel = new QLabel(tr("<b>Global Function Constants:       <\b>"), functionConstantsBox);
+    globalConsantsLabel = new QLabel(tr("<b>Global Function Constants: <\b>"), functionConstantsBox);
     scaleALabel = new QLabel(tr("Scaling Angle"), functionConstantsBox);
     scaleRLabel = new QLabel(tr("Scaling Radius"), functionConstantsBox);
     refreshLabels();
@@ -208,8 +207,8 @@ void interface::initFunctionConstants()
     rEdit = new QDoubleSlider();
     
     
-    nEdit->setFixedWidth(40);
-    mEdit->setFixedWidth(40);
+    nEdit->setFixedWidth(100);
+    mEdit->setFixedWidth(100);
     rEdit->setFixedWidth(100);
     aEdit->setFixedWidth(100);
     nEdit->setRange(-10,10);
@@ -230,8 +229,10 @@ void interface::initFunctionConstants()
     mLabel->setFixedWidth(18);
     rLabel->setFixedWidth(18);
     aLabel->setFixedWidth(18);
-    //    scaleALabel->setFixedWidth(100);
-    //    scaleRLabel->setFixedWidth(100);
+    aValueLabel->setFixedWidth(35);
+    rValueLabel->setFixedWidth(35);
+    // scaleALabel->setFixedWidth(50);
+    // scaleRLabel->setFixedWidth(50);
     
     aEdit->setOrientation(Qt::Horizontal);
     rEdit->setOrientation(Qt::Horizontal);
@@ -239,8 +240,10 @@ void interface::initFunctionConstants()
     
     scaleAEdit = new QLineEdit(functionConstantsBox);
     scaleREdit = new QLineEdit(functionConstantsBox);
-    scaleAEdit->setFixedWidth(20);
-    scaleREdit->setFixedWidth(20);
+    scaleAEdit->setFixedWidth(100);
+    scaleREdit->setFixedWidth(100);
+    scaleAEdit->setAlignment(Qt::AlignCenter);
+    scaleREdit->setAlignment(Qt::AlignCenter);
     scalePlaneEdit = new QPushButton(tr("Set on plane"), functionConstantsBox);
     
     coeffPlaneEdit = new QPushButton(tr("Set on plane"), functionConstantsBox);
@@ -258,32 +261,58 @@ void interface::initFunctionConstants()
     functionConstantsFreqs = new QHBoxLayout();
     functionConstantsCoeffs = new QHBoxLayout();
     functionConstantsPairs = new QVBoxLayout();
+
+    QSpacerItem *spacerItem1 = new QSpacerItem(30, 30);
+    QSpacerItem *spacerItem2 = new QSpacerItem(30, 30);
+    QSpacerItem *spacerItem3 = new QSpacerItem(400, 30);
+    QSpacerItem *spacerItem4 = new QSpacerItem(30, 30);
+    QSpacerItem *spacerItem5 = new QSpacerItem(87, 30);
+    QSpacerItem *spacerItem6 = new QSpacerItem(30, 30);
+    QSpacerItem *spacerItem7 = new QSpacerItem(50, 30);
+    QSpacerItem *spacerItem8 = new QSpacerItem(400, 30);
+    // QSpacerItem *spacerItem9 = new QSpacerItem(400, 30);
+    // QSpacerItem *spacerItem10 = new QSpacerItem(30, 30);
+    // QSpacerItem *spacerItem11 = new QSpacerItem(30, 30);
+    // QSpacerItem *spacerItem12 = new QSpacerItem(30, 30);
+    // QSpacerItem *spacerItem13 = new QSpacerItem(30, 30);
+    // QSpacerItem *spacerItem4 = new QSpacerItem(20, 30);
     
     functionConstantsScalingTerms->addWidget(globalConsantsLabel);
+    functionConstantsScalingTerms->addItem(spacerItem1);
     functionConstantsScalingTerms->addWidget(scaleRLabel);
     functionConstantsScalingTerms->addWidget(scaleREdit);
+    functionConstantsScalingTerms->addItem(spacerItem2);
     functionConstantsScalingTerms->addWidget(scaleALabel);
     functionConstantsScalingTerms->addWidget(scaleAEdit);
+    functionConstantsScalingTerms->addItem(spacerItem3);
     functionConstantsScalingTerms->addWidget(scalePlaneEdit);
-    functionConstantsScalingTerms->setAlignment(Qt::AlignLeft);
     functionConstantsScalingTerms->addStretch();
+    functionConstantsScalingTerms->setAlignment(Qt::AlignLeft);
     
     functionConstantsFreqs->addWidget(freqpairLabel);
+    functionConstantsFreqs->addItem(spacerItem4);
     functionConstantsFreqs->addWidget(nLabel);
     functionConstantsFreqs->addWidget(nEdit);
+    functionConstantsFreqs->addItem(spacerItem5);
     functionConstantsFreqs->addWidget(mLabel);
     functionConstantsFreqs->addWidget(mEdit);
+    functionConstantsFreqs->addStretch();
     functionConstantsFreqs->setAlignment(Qt::AlignLeft);
     
     functionConstantsCoeffs->addWidget(coeffLabel);
+    functionConstantsCoeffs->addItem(spacerItem6);
     functionConstantsCoeffs->addWidget(rLabel);
     functionConstantsCoeffs->addWidget(rEdit);
     functionConstantsCoeffs->addWidget(rValueLabel);
+    functionConstantsCoeffs->addItem(spacerItem7);
     functionConstantsCoeffs->addWidget(aLabel);
     functionConstantsCoeffs->addWidget(aEdit);
     functionConstantsCoeffs->addWidget(aValueLabel);
+    functionConstantsCoeffs->addItem(spacerItem8);
     functionConstantsCoeffs->addWidget(coeffPlaneEdit);
+    functionConstantsCoeffs->addStretch();
     functionConstantsCoeffs->setAlignment(Qt::AlignLeft);
+
     
     termViewButton = new QPushButton(tr("View/Edit All Terms"), functionConstantsBox);
     termViewWidget = new QWidget(this, Qt::Window);
@@ -758,6 +787,9 @@ void interface::refreshTerms()
         nEdit->setValue(currFunction->getN(index));
         aEdit->setValue(currFunction->getA(index));
         rEdit->setValue(currFunction->getR(index));
+
+        aValueLabel->setText(QString::number(currFunction->getA(index)));
+        rValueLabel->setText(QString::number(currFunction->getR(index)));
         
         mEdit->blockSignals(false);
         nEdit->blockSignals(false);
@@ -973,6 +1005,7 @@ void interface::colorWheelChanged(int index)
         setLoadedImage->show();
     else
         setLoadedImage->hide();
+    updatePreviewDisplay();
 }
 
 void interface::setImagePushed()
@@ -1322,31 +1355,37 @@ void interface::updateSavePreview()
 void interface::changeOHeight(const QString &val)
 {
     settings->OHeight = val.toInt();
+    updatePreviewDisplay();
 }
 
 void interface::changeOWidth(const QString &val)
 {
     settings->OWidth = val.toInt();
+    updatePreviewDisplay();
 }
 
 void interface::changeWorldHeight(const QString &val)
 {
     settings->Height = val.toDouble();
+    updatePreviewDisplay();
 }
 
 void interface::changeWorldWidth(const QString &val)
 {
     settings->Width = val.toDouble();
+    updatePreviewDisplay();
 }
 
 void interface::changeXCorner(const QString &val)
 {
     settings->XCorner = val.toDouble();
+    updatePreviewDisplay();
 }
 
 void interface::changeYCorner(const QString &val)
 {
     settings->YCorner = val.toDouble();
+    updatePreviewDisplay();
 }
 
 void interface::changeN(int val)

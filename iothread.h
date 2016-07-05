@@ -13,24 +13,22 @@ class IOThread : public QThread
     
 public:
     IOThread(QObject *parent = 0);
-    ~IOThread() {}
+    ~IOThread();
     
     void render(QImage *output, const QString &filePathToExport);
     
+signals:
+    void finishedExport(const QString &result);
+
 protected:
     void run() Q_DECL_OVERRIDE;
-    
     
 private:
     QMutex mutex;
     
     QImage *output;
     QString filePathToExport;
-    QString result;
-    
-signals:
-    void finishedExport(const QString &result);
-    
+    QString result;    
 };
 
 #endif // IOTHREAD_H

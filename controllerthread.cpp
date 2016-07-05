@@ -20,6 +20,15 @@ ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *color
 
     for (int i = 0; i < NUM_THREADS; i++) {
         RenderThread *nextThread = new RenderThread(currFunction, currColorWheel, currSettings, outputSize);
+        // if (i < NUM_THREADS) {
+        //     displayThreads.push_back(nextThread);
+        // }
+        // if (NUM_THREADS >= i && i < 2 * NUM_THREADS) {
+        //     exportThreads.push_back(nextThread);
+        // }
+        // if (i >= 2 * NUM_THREADS) {
+        //     historyThreads.push_back(nextThread);
+        // }
         threads.push_back(nextThread);
         connect(nextThread, SIGNAL(renderingFinished(QPoint, Q2DArray)), controllerObject, SLOT(handleRenderedImageParts(QPoint, Q2DArray)));
     }
@@ -44,11 +53,17 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 	QMutexLocker locker(&mutex);
 
     //delete display;
-    if (actionFlag == IMAGE_EXPORT_FLAG) {
-        currFunction = currFunction->clone();
-        currColorWheel = currColorWheel->clone();
+    qDebug() << "cloning" << currFunction;
+    currFunction = currFunction->clone();
+    currColorWheel = currColorWheel->clone();
+    qDebug() << "after cloning:" << currFunction;
+
+    //change exportThreads functions & colorwheel
+    for (int i = 0; i < threads.size(); i++) {
+        threads[i]->changeFunction(currFunction);
+        threads[i]->changeColorWheel(currColorWheel);
     }
-    
+
     this->output = output;
     overallWidth = output->width();
     overallHeight = output->height();
@@ -86,7 +101,7 @@ void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
 
     numThreadsActive = threads.size();
 
-    // qDebug() << "new work with " << threads.size() << "numThreadsRunning";
+    // qDebug() << "new work with " << displayThreads.size() << "numThreadsRunning";
 
     controllerObject->setNumThreadsRunning(numThreadsActive);
 
@@ -115,36 +130,21 @@ void ControllerThread::run()
                 threads[i]->render(QPoint(i * counter, 0), QPoint(overallWidth, overallHeight), &allWorkersFinishedCondition);
             }
             else {
-    		threads[i]->render(QPoint(i * counter, 0), QPoint((i + 1) * counter, overallHeight), &allWorkersFinishedCondition);
+                threads[i]->render(QPoint(i * counter, 0), QPoint((i + 1) * counter, overallHeight), &allWorkersFinishedCondition);
             }
     	}
 
         mutex.unlock();
 
-        time_t timer;
-        struct tm y2k;
-        double seconds;
-        y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
-        y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
-        time(&timer);  /* get current time; same as: timer = time(NULL)  */
-        seconds = difftime(timer,mktime(&y2k));
-        // printf ("%.f seconds: ", seconds);
+        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
         QEventLoop q;
         connect(this, SIGNAL(newWork()), &q, SLOT(quit()));
         connect(controllerObject, SIGNAL(allThreadsFinished()), &q, SLOT(quit()));
         q.exec();
 
-        time_t timer2;
-        struct tm y2k2;
-        double seconds2;
-        y2k2.tm_hour = 0;   y2k2.tm_min = 0; y2k2.tm_sec = 0;
-        y2k2.tm_year = 100; y2k2.tm_mon = 0; y2k2.tm_mday = 1;
-        time(&timer2);  /* get current time; same as: timer = time(NULL)  */
-        seconds2 = difftime(timer2,mktime(&y2k2));
-        // printf ("%.f seconds2: ", seconds2);
-
-        qDebug() << "TIME TO RENDER ALL PIXELS: " << seconds2 - seconds << " secs";
+        std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
+        qDebug() << "TIME TO RENDER ALL PIXELS:" << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / pow(10, 6) << "seconds";
 
         mutex.lock();
         if (!restart) {

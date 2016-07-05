@@ -12,10 +12,6 @@ RenderThread::RenderThread(AbstractFunction *function, ColorWheel *colorwheel, S
     overallWidth = outputSize.width();
     overallHeight = outputSize.height();
 
-    worldYStart1 = currSettings->Height + currSettings->YCorner;
-    worldYStart2 = currSettings->Height/overallHeight;
-    worldXStart = currSettings->Width/overallWidth;
-
     controllerCondition = new QWaitCondition();
 }
 
@@ -40,16 +36,16 @@ void RenderThread::render(QPoint topLeft, QPoint bottomRight, QWaitCondition *co
     bottomRightXValue = bottomRight.x();
     bottomRightYValue = bottomRight.y();
     this->controllerCondition = controllerCondition;
+    worldYStart1 = currSettings->Height + currSettings->YCorner;
+    worldYStart2 = currSettings->Height/overallHeight;
+    worldXStart = currSettings->Width/overallWidth;
     
     if (!isRunning()) {
-        // qDebug() << QThread::currentThread() << "starts running as render thread";
         start(InheritPriority);
     } else {
-        // qDebug() << QThread::currentThread() << " is running already, so wake one";
         restart = true;
         condition.wakeOne();
-    }
-        
+    }        
 }
 
 
