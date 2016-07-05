@@ -64,7 +64,7 @@ signals:
 private slots:
     void handleRenderedImage(const int &actionFlag);
     
-    void handleFinishedExport(const QString &filePath) { qDebug() << "HI"; emit finishedExport(filePath); }
+    void handleFinishedExport(const QString &filePath) { emit finishedExport(filePath); }
 
     // void combineRenderedImageParts(QPoint startPoint, QVector<QVector<QRgb>> result);
     // void combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result);
