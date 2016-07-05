@@ -23,7 +23,8 @@ SOURCES += \
     renderthread.cpp \
     controllerthread.cpp \
     historydisplay.cpp \
-    iothread.cpp
+    iothread.cpp \
+    coeffplane.cpp
 
 HEADERS  += \
     interface.h \
@@ -38,7 +39,8 @@ HEADERS  += \
     controllerthread.h \
     shared.h \
     historydisplay.h \
-    iothread.h
+    iothread.h \
+    coeffplane.h
 
 RESOURCES += \
     softwareresources.qrc

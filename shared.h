@@ -32,6 +32,7 @@ const int DEFAULT_OUTPUT_HEIGHT = 4800;
 const int DEFAULT_PREVIEW_SIZE = 600;
 const double DEFAULT_IMAGE_SIZE = 600;
 
+
 struct Settings
 {
     double Width = DEFAULT_WIDTH;

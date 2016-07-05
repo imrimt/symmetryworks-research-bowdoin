@@ -23,26 +23,17 @@
 #include <QShortCut>
 #include <QAction>
 #include <QMessageBox>
-#include <QChart>
-#include <QChartView>
-#include <QValueAxis>
-#include <QSplineSeries>
-#include <QLineSeries>
-#include <QScatterSeries>
-#include <QMouseEvent>
+
 #include <QProgressBar>
 #include <QTableWidget>
 #include <QHeaderView>
 
 #include "historydisplay.h"
+#include "coeffplane.h"
 #include "port.h"
 
-using namespace QtCharts;
+#define MAX_NUM_TERMS 99
 
-//const int MAX_HISTORY_ITEMS = 5;
-const int LOCAL_FLAG = 0;
-const int GLOBAL_FLAG = 1;
-//const int HISTORY_ITEM_SIZE = 60;
 
 const unsigned int INVALID_FILE_ERROR = 0;
 
@@ -130,48 +121,6 @@ public slots:
     
 };
 
-class CoeffPlaneView : public QChartView {
-    Q_OBJECT
-  public:
-    CoeffPlaneView(QChart *chart, QScatterSeries *coordinateSeries) : QChartView(chart) { this->chart = chart; this->coordinateSeries = coordinateSeries; setMouseTracking(false);}
-
-  protected:
-    void mouseReleaseEvent(QMouseEvent *event) 
-    {
-        if(event->button() == Qt::LeftButton)
-        {
-            // qDebug() << "Clicked on: " << event->pos();
-            coordinateSeries->replace(0, chart->mapToValue(event->pos(), coordinateSeries));
-            mouseMoving = false;   
-        }     
-    };
-
-    void mousePressEvent(QMouseEvent *event)
-    {
-        if(event->button() == Qt::LeftButton)
-        {
-            // qDebug() << "Clicked on: " << event->pos();
-            coordinateSeries->replace(0, chart->mapToValue(event->pos(), coordinateSeries));
-            mouseMoving = true;   
-        } 
-    }
-
-    void mouseMoveEvent(QMouseEvent *event)
-    {
-        // qDebug() << "in move event " << event->pos();;
-        if(mouseMoving)
-        {
-            // qDebug() << "Clicked on: " << event->pos();
-            coordinateSeries->replace(0, chart->mapToValue(event->pos(), coordinateSeries));   
-        } 
-    };
-    
-  private:
-    QScatterSeries* coordinateSeries;
-    QChart *chart;
-    bool mouseMoving;
-};
-
 class interface : public QWidget
 {
     Q_OBJECT
@@ -240,14 +189,17 @@ public:
     QLineEdit *scaleAEdit;
     QLineEdit *scaleREdit;
     QPushButton *scalePlaneEdit;
-
+    
+    QSignalMapper *coeffMapper;
 
     QGroupBox *functionConstantsBox;
     
     QVBoxLayout *functionConstantsBoxLayout;
     QVBoxLayout *functionConstantsWidgetLayout;
     QHBoxLayout *functionConstantsScalingTerms;
-    QHBoxLayout *functionConstantsTerm1;
+    QHBoxLayout *numTermsLayout;
+    QVBoxLayout *termsLayout;
+    QHBoxLayout *termEditLayout;
     QVBoxLayout *functionConstantsPairs;
     QHBoxLayout *functionConstantsFreqs;
     QHBoxLayout *functionConstantsCoeffs;
@@ -283,7 +235,7 @@ public:
     QLabel *numTermsLabel;
     QLabel *freqpairLabel;
     QLabel *coeffLabel;
-    CustomSpinBox *numTermsEdit;
+    QSpinBox *numTermsEdit;
     QSpacerItem *gspacer1;
     QSpacerItem *gspacer2;
     QSpacerItem *gspacer3;
@@ -300,6 +252,7 @@ public:
 //    QSignalMapper *viewMapper;
 //    QSignalMapper *removeMapper;
     HistoryDisplay *historyDisplay;
+    CoeffPlane *coeffPlane;
     
     // imagePropsBox SUBELEMENTS
     QVBoxLayout *imagePropsBoxStack;
@@ -326,35 +279,6 @@ public:
     QSpacerItem *pspacer4;
     QSpacerItem *pspacer5;
 
-    // PolarPlane SUBELEMENTS
-    QWidget *coeffPlanePopUp;
-    QGroupBox *polarCoordinatesBox;
-    QHBoxLayout *coeffPlanePopUpLayout;
-    QVBoxLayout *polarCoordinatesLayout;
-    QHBoxLayout *actionButtonLayout;
-    QHBoxLayout *zoomButtonLayout;
-    QVBoxLayout *polarPlaneWithZoomLayout;
-    CoeffPlaneView *graphDisplay;
-    QChart *graph;
-    QValueAxis *axisX;
-    QValueAxis *axisY;
-    QLabel *radiusLabel;
-    QLabel *angleLabel;
-    QLineEdit *radiusEdit;
-    QLineEdit *angleEdit;
-    QPushButton *confirmButton;
-    QPushButton *resetButton;
-    QPushButton *zoomInButton;
-    QPushButton *zoomOutButton;
-    QSpacerItem *planeSpacer1;
-    QSpacerItem *planeSpacer2;
-    QLineSeries *series;
-    QLineSeries *series2;
-    QScatterSeries *coordinateSeries;
-    QLineSeries *xSeries;
-    QLineSeries *ySeries;
-    QSignalMapper *coeffMapper;
-
     // DISP SUBELEMENTS
     QPushButton *updatePreview;
     QPushButton *exportImage;
@@ -366,13 +290,6 @@ public:
     // SHORTCUTS
     QShortcut *updatePreviewShortcut;
     
-//    QProgressBar *progressBarDisp;
-//    QLabel *progressBarDispLabel;
-//    QHBoxLayout *progressBarDispLayout;
-//    
-//    QProgressBar *progressBarDisp;
-//    QLabel *progressBarDispLabel;
-//    QHBoxLayout *progressBarDispLayout;
     ProgressBar *displayProgressBar;
     ProgressBar *exportProgressBar;
     
@@ -383,7 +300,7 @@ public:
 private slots:
     void toggleViewMode();
     void updateCurrTerm(int i);
-    //void changeMaxTerms(int i);
+    void changeNumTerms(int i);
     void colorWheelChanged(int index);
     void setImagePushed();
     void changeFunction(int index);
@@ -415,14 +332,9 @@ private slots:
     void updateTermTable(QObject *cell);
     void termViewCellClicked(int row, int col);
     
-    void showPlanePopUp(int flag);
-    void updatePolarCoordinatesWithIndex(const int &index);
-    void updatePolarCoordinates();
-    void polarPlaneZoomIn();
-    void polarPlaneZoomOut();
+    
+    void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
 
-    void setPolarCoordinates();
-    void resetPolarCoordinates();
     
     QString loadSettings(const QString &fileName);
   //  void updateProgressBar(const int &numThreadsFinished);
@@ -451,17 +363,22 @@ private:
     void refreshTerms();
     void refreshMainWindowTerms();
 
-    void updatePolarCoordinates(QPointF point);
+//    void updatePolarCoordinates(QPointF point);
 
     int numTerms;
     unsigned int termIndex; 
     unsigned int highestIndex;
     QString saveloadPath;
+    
     AbstractFunction * currFunction;
     ColorWheel * currColorWheel;
+    QSharedPointer<AbstractFunction> currFunctionPtr;
+    QSharedPointer<ColorWheel> currColorWheelPtr;
+    
+    
     Port *previewDisplayPort, *imageExportPort;
     bool advancedMode;
-    int coeffFlag;
+//    int coeffFlag;
     
     Settings *settings;
 

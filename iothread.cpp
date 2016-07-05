@@ -10,6 +10,7 @@ IOThread::IOThread(QObject *parent) : QThread(parent)
 
 void IOThread::render(QImage *output, const QString &filePathToExport)
 {
+    
     QMutexLocker locked(&mutex);
     
     this->output = output;
@@ -23,6 +24,7 @@ void IOThread::render(QImage *output, const QString &filePathToExport)
 
 void IOThread::run()
 {
+    
     output->save(filePathToExport);
     QDir stickypath(filePathToExport);
     stickypath.cdUp();
