@@ -165,22 +165,19 @@ void interface::initPreviewDisplay()
     previewDisplayPort = new Port(currFunction, currColorWheel, disp->width(), disp->height(), settings);
     
     displayProgressBar = new ProgressBar(tr("Preview"), true, previewDisplayPort);
-    exportProgressBar = new ProgressBar(tr("Exporting"), false, imageExportPort);
+//    exportProgressBar = new ProgressBar(tr("Exporting"), false, imageExportPort);
     
     connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), displayProgressBar, SLOT(update(int)));
     connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
 
-    connect(imageExportPort->getControllerObject(), SIGNAL(progressChanged(int)), exportProgressBar, SLOT(update(int)));
-    connect(imageExportPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), exportProgressBar, SLOT(partialUpdate(double)));
-
-    connect(imageExportPort, SIGNAL(finishedExport(QString)), this, SLOT(popUpImageExportFinished(QString)));
+    
     
     connect(displayProgressBar, SIGNAL(renderFinished()), this, SLOT(resetTableButton()));
     
     dispLayout->setAlignment(disp, Qt::AlignCenter);
     dispLayout->addWidget(disp);
     dispLayout->addLayout(displayProgressBar->layout);
-    dispLayout->addLayout(exportProgressBar->layout);
+    //dispLayout->addLayout(exportProgressBar->layout);
     dispLayout->addLayout(buttonLayout);
 }
 
@@ -893,26 +890,23 @@ void interface::updateCurrTerm(int i)
     
     if (i > 0) termIndex = i - 1;
     
-    //refreshTableTerms();
+    refreshTableTerms();
     refreshMainWindowTerms();
     //refreshLabels();
 }
 
 void interface::changeNumTerms(int i)
 {
-   // qDebug() << "HI num terms in curr function" << currFunction->numterms() << " num terms" << numTerms;
-//    currTermEdit->blockSignals(true);
-    currTermEdit->setMaximum(i);
-    updateCurrTerm(i);
-    
-    //qDebug() << "num terms: " << numTerms << "i:" << i;
     
     if (i < numTerms) {
         for (int k = numTerms; k > i; --k) { removeTerm(k-1); }
     } else if (i > numTerms) {
+        //qDebug() << "adding terms";
         for (int k = numTerms; k < i; ++k) addTerm();
     }
-   // qDebug() << "term index" << termIndex;
+   
+    updateCurrTerm(i);
+    currTermEdit->setMaximum(i);
     
 }
 
@@ -1189,7 +1183,7 @@ void interface::changeScaleR(const QString &val)
 
 void interface::saveImageStart()
 {
-    exportProgressBar->reset();
+    
     
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,
@@ -1199,8 +1193,19 @@ void interface::saveImageStart()
     if (!inFile.open(QIODevice::WriteOnly))
         return;
     
+    exportProgressBar = new ProgressBar(tr("Exporting"), true, imageExportPort);
+    dispLayout->insertLayout(2, exportProgressBar->layout);
+    exportProgressBar->reset();
+    
+    connect(imageExportPort->getControllerObject(), SIGNAL(progressChanged(int)), exportProgressBar, SLOT(update(int)));
+    connect(imageExportPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), exportProgressBar, SLOT(partialUpdate(double)));
+    
+    connect(imageExportPort, SIGNAL(finishedExport(QString)), this, SLOT(popUpImageExportFinished(QString)));
+    
     QImage *output = new QImage(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
     imageExportPort->exportImage(output, fileName);
+    
+    
     
 }
 
@@ -1238,7 +1243,6 @@ void interface::setPolarCoordinates(int coeffFlag, const QString &radius, const 
 
 void interface::termViewCellClicked(int row, int col)
 {
-    qDebug() << "click on row" << row;
     termViewTable->blockSignals(true);
     if (col == 5) {
         removeTerm(row);
@@ -1270,6 +1274,7 @@ void interface::updateTermTable(QObject *cell)
     int coeff = val;
     double freq = val;
     
+    
     switch(col) {
         case 1:
             currFunction->setM(index, coeff);
@@ -1298,6 +1303,9 @@ void interface::popUpImageExportFinished(const QString &filePath)
     QMessageBox msgBox;
     msgBox.setText(tr("The file has been successfully saved to: ").append(filePath));
     msgBox.exec();
+    
+    exportProgressBar->remove();
+    delete exportProgressBar;
     
     
 }
