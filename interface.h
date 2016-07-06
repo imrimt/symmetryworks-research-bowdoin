@@ -355,6 +355,7 @@ private slots:
     void termViewPopUp();
     void addTerm();
     void updateTermTable(QObject *cell);
+    void addTermTable();
     void termViewCellClicked(int row, int col);
     void resetTableButton();
     
