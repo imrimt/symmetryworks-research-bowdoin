@@ -93,6 +93,11 @@ public:
         this->visible = visible;
         
     }
+
+    double value()
+    {
+        return this->text().toDouble();
+    }
     
     QProgressBar *progBar;
     QLabel *label;
@@ -109,7 +114,10 @@ protected:
         progBar->setValue(val);
         percentLabel->setText(progBar->text());
     }
-        
+
+signals: 
+    void renderFinished();
+
 public slots:
     void update(const int &numThreadsFinished)
     {
@@ -117,6 +125,15 @@ public slots:
         double percentComplete = ((double)(numThreadsFinished)/(double)(port->getControllerObject()->getNumThreadsActive()) * 100.0);
         this->setValue(percentComplete);
         
+        if (percentComplete == 100) {
+            emit renderFinished();
+        }
+    }
+
+    void partialUpdate(const double &progress)
+    {
+        if (!visible) { progBar->setVisible(true); label->setVisible(true); }
+        this->setValue(progress);
     }
     
 };
@@ -331,7 +348,7 @@ private slots:
     void addTerm();
     void updateTermTable(QObject *cell);
     void termViewCellClicked(int row, int col);
-    
+    void resetTableButton();
     
     void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
 
@@ -360,7 +377,7 @@ private:
     void updatePreviewDisplay();
 //    void addToHistory();
     void errorHandler(const int &flag);
-    void refreshTerms();
+    void refreshTableTerms();
     void refreshMainWindowTerms();
 
 //    void updatePolarCoordinates(QPointF point);

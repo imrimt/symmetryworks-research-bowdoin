@@ -28,7 +28,8 @@ public:
 signals:
     void workFinished(const int &actionFlag);
     void allThreadsFinished();
-    void progressChanged(const int &actionFlag);
+    void progressChanged(const int &progress);
+    void partialProgressChanged(const double &progress);
 
 private:
     int numThreadsRunning;
@@ -94,6 +95,14 @@ private slots:
             emit allThreadsFinished();
             emit workFinished(actionFlag);
         }
+    }
+
+    void handleNewProgress(const double &progress) {
+        if (restart) {
+            return;
+        }
+
+        emit partialProgressChanged(progress * numThreadsRunning / numThreadsActive);
     }
 };
 

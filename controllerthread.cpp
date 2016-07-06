@@ -24,6 +24,7 @@ ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *color
         RenderThread *nextThread = new RenderThread(currFunction, currColorWheel, currSettings, outputSize);
         threads.push_back(nextThread);
         connect(nextThread, SIGNAL(renderingFinished(QPoint, Q2DArray)), controllerObject, SLOT(handleRenderedImageParts(QPoint, Q2DArray)));
+        connect(nextThread, SIGNAL(newProgress(double)), controllerObject, SLOT(handleNewProgress(double)));
     }
 
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));

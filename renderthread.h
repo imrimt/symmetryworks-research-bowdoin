@@ -45,6 +45,7 @@ protected:
     
 signals:
     void renderingFinished(const QPoint &startPoint, const Q2DArray &result);
+    void newProgress(const double &progress);
     
 private:
     QMutex mutex;

@@ -94,7 +94,7 @@ void RenderThread::run()
                 //finally push the determined color to the corresponding point on the display
                 colorMap[x][y] = color;
             }
-            //if (x % 100 == 0) qDebug() << currentThreadId() << "finishes" << count++ << "row";
+            if (x % 100 == 0) emit newProgress((x/outputWidth) * 100);
         }  
         
         mutex.lock();
