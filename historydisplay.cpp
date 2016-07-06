@@ -8,10 +8,11 @@
 
 #include "historydisplay.h"
 
-
+// CONSTRUCTOR
 HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
 {
   
+    // create layout elements
     viewHistoryWidget = new QWidget(static_cast<QWidget *>(parent));
     viewHistoryBox = new QGroupBox(tr("History"), viewHistoryWidget);
     viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
@@ -23,21 +24,19 @@ HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
     viewHistoryBoxLayout->addWidget(clearHistoryButton);
     viewHistoryBoxOverallLayout->addStretch();
     
+    
+    // connect signals
     viewMapper = new QSignalMapper(this);
     removeMapper = new QSignalMapper(this);
     
     connect(clearHistoryButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
-    
-//    connect(clearHistoryButton, SIGNAL(clicked()), this, SLOT(clearAllHistory()));
-//    connect(viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
     connect(removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removePreview(QObject*)));
     
 }
 
+// add an instance of the function to the running history
 void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings)
 {
-
-    qDebug() << "adding new item to history";
 
     HistoryItem *item = new HistoryItem();
     
@@ -49,7 +48,6 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
     QLabel *timeStampLabel = new QLabel(viewHistoryBox);
     
-//    QDateTime savedTime = QDateTime::currentDateTimeUtc();
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
     QString savedTimeLabel = "Saved: " + savedTime.toString("MM/dd/yyyy") + " at " + savedTime.toString("hh:mm:ss");
     timeStampLabel->setText(savedTimeLabel);
@@ -62,7 +60,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     historyItemsWithLabelLayout->addWidget(timeStampLabel);
     viewHistoryBoxLayout->insertLayout(1, historyItemsWithLabelLayout);
     
-    //saving all values to history item
+    // saving all values to history item object
     item->preview = d;
     item->savedTime = savedTime;
     item->layoutWithLabelItem = historyItemsWithLabelLayout;
@@ -72,7 +70,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     item->removeButton = removeButton;
     item->labelItem = timeStampLabel;
     item->filePathName = filePathName;
-
+    
     AbstractFunction *currFunction = function;
     ColorWheel *currColorWheel = colorwheel;
     Settings *clonedSettings = settings;
@@ -80,18 +78,20 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     Port *historyDisplayPort = new Port(currFunction, currColorWheel, item->preview->width(), item->preview->height(), clonedSettings);
     historyDisplayPort->paintHistoryIcon(item);
     
+    // connect and map signals
     connect(viewButton, SIGNAL(clicked()), viewMapper, SLOT(map()));
     connect(removeButton, SIGNAL(clicked()), removeMapper, SLOT(map()));
     
     viewMapper->setMapping(viewButton, newFile);
     removeMapper->setMapping(removeButton, item);
     
+    // map the timestamp to the history item and port
     historyItemsMap.insert(savedTime, item);
     historyPortsMap.insert(savedTime, historyDisplayPort);    
 
-    qDebug() << "finishes adding new item to history";
 }
 
+// remove all elements of the history item and its UI
 void HistoryDisplay::removePreview(QObject *item)
 {
     HistoryItem *historyItemToRemove = qobject_cast<HistoryItem*>(item);
@@ -126,7 +126,7 @@ void HistoryDisplay::removePreview(QObject *item)
 }
 
 
-
+// remove all elements from the history
 void HistoryDisplay::clearAllHistory()
 {
     while (!historyItemsMap.empty()) {
@@ -135,12 +135,9 @@ void HistoryDisplay::clearAllHistory()
 }
 
 
-// TODO rewrite and call from udpateSavePreview in interface class
+// called from interface to add to history if we haven't reached the maximum number of history items
 void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings)
 {
-    
-    // qDebug() << "Updating Preview";
-    
     if (historyItemsMap.size() < MAX_HISTORY_ITEMS) {
         addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
     } else {
@@ -148,7 +145,6 @@ void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QStri
         addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
     }
     
-    //updatePreviewDisplay();
     
 }
 

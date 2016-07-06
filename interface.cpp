@@ -4,7 +4,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
 {
     
     // FUNCTIONAL VARIABLES
-    advancedMode = false;
+   // advancedMode = false;
     numTerms = 0;
     termIndex = 0;
     highestIndex = -1;
@@ -32,7 +32,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     currFunction = functionVector[0];
     currColorWheel = new ColorWheel();
     
-    // store defaults in settings struct
+    // DEFAULT SETTINGS
     settings = new Settings;
     settings->Width = DEFAULT_WIDTH;
     settings->Height = DEFAULT_HEIGHT;
@@ -41,7 +41,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     settings->OWidth = DEFAULT_OUTPUT_WIDTH;
     settings->OHeight = DEFAULT_OUTPUT_HEIGHT;
     
-    // set up all layout elements for the interface
+    // INITIALIZE LAYOUT
     initInterfaceLayout();
     
     functionSel->setCurrentIndex(0);
@@ -64,15 +64,14 @@ void interface::initInterfaceLayout()
     
     historyDisplay = new HistoryDisplay(this);
     
-    toggleViewWidget = new QWidget(this);
+    //toggleViewWidget = new QWidget(this);
     
-    leftbarLayout->addWidget(toggleViewWidget);
+    //leftbarLayout->addWidget(toggleViewWidget);
     leftbarLayout->addWidget(imagePropsBox);
     leftbarLayout->addWidget(patternTypeWidget);
     
     topbarLayout->addLayout(leftbarLayout);
     topbarLayout->addWidget(displayWidget);
-    
     topbarLayout->addWidget(historyDisplay->viewHistoryWidget);
     
     interfaceLayout->addLayout(topbarLayout);
@@ -91,24 +90,20 @@ void interface::initInterfaceLayout()
     numtermsValidate = new QIntValidator(1, 99, this);
     dimValidate = new QIntValidator(1, 10000, this);
 
-    toggleViewButton = new QPushButton(tr("Switch to Advanced View"), this);
-    toggleViewLayout = new QVBoxLayout(toggleViewWidget);
-    toggleViewLayout->addWidget(toggleViewButton);
-        
+//    toggleViewButton = new QPushButton(tr("Switch to Advanced View"), this);
+//    toggleViewLayout = new QVBoxLayout(toggleViewWidget);
+//    toggleViewLayout->addWidget(toggleViewButton);
+    
+    // INIT UI SUBELEMENTS
     initPreviewDisplay();
     initFunctionConstants();
     initPatternType();
-    //initViewHistory();
-    //historyDisplay = new HistoryDisplay();
+
     coeffPlane = new CoeffPlane(currFunction, &termIndex);
     coeffMapper = new QSignalMapper(this);
     
-    
     initImageProps();
-    //initCoeffPlane();
-    
-    
-    
+
     connectAllSignals();
     
     // SET DEFAULTS
@@ -126,22 +121,12 @@ void interface::initInterfaceLayout()
     // FINALIZE WINDOW
     setFixedSize(sizeHint());
     setWindowTitle(tr("Wallpaper Generation"));
-    setTabOrder(nEdit, mEdit);
-    setTabOrder(mEdit, rEdit);
-    setTabOrder(rEdit, aEdit);
-    setTabOrder(aEdit, scaleREdit);
-    setTabOrder(scaleREdit, scaleAEdit);
-    setTabOrder(scaleAEdit, XCornerEdit);
-    setTabOrder(XCornerEdit, YCornerEdit);
-    setTabOrder(YCornerEdit, worldwidthEdit);
-    setTabOrder(worldwidthEdit, worldheightEdit);
-    setTabOrder(worldheightEdit, outwidthEdit);
-    setTabOrder(outwidthEdit, outheightEdit);    
+
 }
 
 
 
-
+// INIT PREVIEW DISPLAY ELEMENTS
 void interface::initPreviewDisplay()
 {
     disp = new Display(DEFAULT_PREVIEW_SIZE, DEFAULT_IMAGE_SIZE, displayWidget);
@@ -150,13 +135,10 @@ void interface::initPreviewDisplay()
     resetImage = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
     buttonLayout = new QHBoxLayout();
-    //progressBarLayout = new QHBoxLayout();
     
     buttonLayout->addWidget(updatePreview);
     buttonLayout->addWidget(exportImage);
     buttonLayout->addWidget(resetImage);
-    
-
     
     //SET UP SHORTCUTS...add for save, open, undo?
     updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
@@ -165,24 +147,18 @@ void interface::initPreviewDisplay()
     previewDisplayPort = new Port(currFunction, currColorWheel, disp->width(), disp->height(), settings);
     
     displayProgressBar = new ProgressBar(tr("Preview"), true, previewDisplayPort);
-//    exportProgressBar = new ProgressBar(tr("Exporting"), false, imageExportPort);
-    
     connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), displayProgressBar, SLOT(update(int)));
     connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
-
-    
-    
     connect(displayProgressBar, SIGNAL(renderFinished()), this, SLOT(resetTableButton()));
     
     dispLayout->setAlignment(disp, Qt::AlignCenter);
     dispLayout->addWidget(disp);
     dispLayout->addLayout(displayProgressBar->layout);
-    //dispLayout->addLayout(exportProgressBar->layout);
     dispLayout->addLayout(buttonLayout);
 }
 
 
-
+// INIT FUNCTION CONSTANTS EDIT BOX
 void interface::initFunctionConstants()
 {
     functionConstantsBox = new QGroupBox(tr("Function Constants"), functionConstantsWidget);
@@ -229,20 +205,15 @@ void interface::initFunctionConstants()
     
     nEdit->setAlignment(Qt::AlignCenter);
     mEdit->setAlignment(Qt::AlignCenter);
+    aEdit->setOrientation(Qt::Horizontal);
+    rEdit->setOrientation(Qt::Horizontal);
     
-    
-    //    scalePlaneEdit->setFixedWidth(120);
     nLabel->setFixedWidth(18);
     mLabel->setFixedWidth(18);
     rLabel->setFixedWidth(18);
     aLabel->setFixedWidth(18);
     aValueLabel->setFixedWidth(35);
     rValueLabel->setFixedWidth(35);
-    // scaleALabel->setFixedWidth(50);
-    // scaleRLabel->setFixedWidth(50);
-    
-    aEdit->setOrientation(Qt::Horizontal);
-    rEdit->setOrientation(Qt::Horizontal);
     
     
     scaleAEdit = new QLineEdit(functionConstantsBox);
@@ -254,8 +225,6 @@ void interface::initFunctionConstants()
     scalePlaneEdit = new QPushButton(tr("Set on plane"), functionConstantsBox);
     coeffPlaneEdit = new QPushButton(tr("Set on plane"), functionConstantsBox);
     
-    
-    // ORGANIZATIONAL ELEMENTS
     functionConstantsWidgetLayout = new QVBoxLayout(functionConstantsWidget);
     functionConstantsBoxLayout = new QVBoxLayout(functionConstantsBox);
     
@@ -276,11 +245,6 @@ void interface::initFunctionConstants()
     QSpacerItem *spacerItem7 = new QSpacerItem(50, 30);
     QSpacerItem *spacerItem8 = new QSpacerItem(50, 30);
     QSpacerItem *spacerItem9 = new QSpacerItem(50, 30);
-    // QSpacerItem *spacerItem10 = new QSpacerItem(30, 30);
-    // QSpacerItem *spacerItem11 = new QSpacerItem(30, 30);
-    // QSpacerItem *spacerItem12 = new QSpacerItem(30, 30);
-    // QSpacerItem *spacerItem13 = new QSpacerItem(30, 30);
-    // QSpacerItem *spacerItem14 = new QSpacerItem(20, 30);
     
     functionConstantsScalingTerms->addWidget(globalConsantsLabel);
     functionConstantsScalingTerms->addItem(spacerItem1);
@@ -324,8 +288,6 @@ void interface::initFunctionConstants()
     numTermsEdit = new QSpinBox(functionConstantsBox);
     numTermsEdit->setRange(1,MAX_NUM_TERMS);
     
-    //numTermsEdit->setFixedWidth(50);
-    
     termViewButton = new QPushButton(tr("View/Edit All Terms"), functionConstantsBox);
     termViewWidget = new QWidget(this, Qt::Window);
     termViewWidget->setWindowTitle(tr("Edit Function Terms"));
@@ -361,13 +323,14 @@ void interface::initFunctionConstants()
     termViewTableMapper = new QSignalMapper(this);
     removeTermMapper = new QSignalMapper(this);
     
+    // add initial term
     addTerm();
     
     termViewHeaderVertical= termViewTable->verticalHeader();
     termViewHeaderVertical->resizeSections(QHeaderView::Stretch);
     
+    // ASSEMBLE LAYOUT
     termViewWidget->setLayout(termViewLayout);
-    
     
     numTermsLayout->addWidget(numTermsLabel);
     numTermsLayout->addWidget(numTermsEdit);
@@ -377,7 +340,6 @@ void interface::initFunctionConstants()
    
     termEditLayout->addWidget(currTermLabel);
     termEditLayout->addWidget(currTermEdit);
-//    termEditLayout->setAlignment(Qt::AlignRight);
     
     functionConstantsPairs->addLayout(functionConstantsFreqs);
     functionConstantsPairs->addLayout(functionConstantsCoeffs);
@@ -385,19 +347,17 @@ void interface::initFunctionConstants()
     
     functionConstantsBoxLayout->addLayout(functionConstantsScalingTerms);
     functionConstantsBoxLayout->addLayout(termEditLayout);
-    
-    
     functionConstantsWidgetLayout->addWidget(functionConstantsBox);
-    
-    
+
 }
 
+
+// INIT PATTERN TYPE BOX
 void interface::initPatternType()
 {
     
-    // patternType SUBELEMENTS
     patternTypeBox = new QGroupBox(tr("Pattern Type"), patternTypeWidget);
-    functionSel = new QComboBox(patternTypeBox);        //initialize elements
+    functionSel = new QComboBox(patternTypeBox);
     colorwheelSel = new QComboBox(patternTypeBox);
     functionLabel = new QLabel(patternTypeBox);
     colorwheelLabel = new QLabel(patternTypeBox);
@@ -411,7 +371,7 @@ void interface::initPatternType()
     functionLayout = new QVBoxLayout();
     colorwheelLayout = new QVBoxLayout();
     
-    
+    // function selector
     functionSel->addItem("Hex3");
     functionSel->addItem("Hex6");
     functionSel->addItem("p4");
@@ -430,6 +390,8 @@ void interface::initPatternType()
     functionSel->addItem("pg");
     functionSel->addItem("cm");
     functionSel->addItem("Cx Polyn");
+    
+    // color wheel selector
     colorwheelSel->addItem("IcosColor");
     colorwheelSel->addItem("IcosColorC");
     colorwheelSel->addItem("StCol");
@@ -448,10 +410,8 @@ void interface::initPatternType()
     functionSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     functionLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     
-    
-    //numTermsEdit->setValidator(numtermsValidate);
-    
-    // ORGANIZATIONAL ELEMENTS
+
+    // ASSEMBLE LAYOUT
     patternTypeBoxLayout = new QVBoxLayout(patternTypeBox);
     functionLayout->addWidget(functionLabel);
     functionLayout->addWidget(functionSel);
@@ -472,26 +432,7 @@ void interface::initPatternType()
 }
 
 
-
-//void interface::initViewHistory()
-//{
-//    
-//    viewHistoryBox = new QGroupBox(tr("History"), viewHistoryWidget);
-//    viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
-//    
-//    clearHistoryButton = new QPushButton(tr("Clear All History"), viewHistoryBox);
-//    viewHistoryBoxLayout = new QVBoxLayout(viewHistoryBox);
-//    
-//    viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);
-//    viewHistoryBoxLayout->addWidget(clearHistoryButton);
-//    viewHistoryBoxOverallLayout->addStretch();
-//    
-//    viewMapper = new QSignalMapper(this);
-//    removeMapper = new QSignalMapper(this);
-//    
-//}
-
-
+// INIT IMAGE PROPERTIES BOX
 // TODO compress this...
 void interface::initImageProps()
 {
@@ -533,6 +474,7 @@ void interface::initImageProps()
     worldwidthEdit->setFixedWidth(100);
     worldheightEdit->setFixedWidth(100);
     
+    // ASSEMBLE LAYOUT
     imagePropsBoxStack->addWidget(XCornerLabel);
     imagePropsBoxStack->addWidget(YCornerLabel);
     imagePropsBoxStack->addWidget(worldwidthLabel);
@@ -565,7 +507,7 @@ void interface::initImageProps()
 
 
 
-
+// CONNECT SIGNALS TO SLOTS
 void interface::connectAllSignals()
 {
     
@@ -577,7 +519,7 @@ void interface::connectAllSignals()
     coeffMapper->setMapping(scalePlaneEdit, GLOBAL_FLAG);
     connect(coeffMapper,SIGNAL(mapped(int)), coeffPlane, SLOT(showPlanePopUp(int)));
 
-    connect(toggleViewButton, SIGNAL(clicked()), this, SLOT(toggleViewMode()));
+   // connect(toggleViewButton, SIGNAL(clicked()), this, SLOT(toggleViewMode()));
     connect(updatePreview, SIGNAL(clicked()), this, SLOT(updateSavePreview()));
     connect(exportImage, SIGNAL(clicked()), this, SLOT(saveImageStart()));
     connect(resetImage, SIGNAL(clicked()), this, SLOT(resetImageFunction()));
@@ -594,9 +536,7 @@ void interface::connectAllSignals()
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
     connect(rEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeR(double)));
-//    connect(radiusEdit, SIGNAL(editingFinished()), this, SLOT(updatePolarCoordinates()));
     connect(aEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeA(double)));
-//    connect(angleEdit, SIGNAL(editingFinished()), this, SLOT(updatePolarCoordinates()));
     connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
     connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
     
@@ -609,19 +549,16 @@ void interface::connectAllSignals()
     
     
     connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
-    //connect(historyDisplay->removeMapper, SIGNAL(mapped(QObject*)), this, SLOT(removePreview(QObject*)));
-    
     connect(coeffPlane, SIGNAL(setPolarCoordinates(int, QString, QString)), this, SLOT(setPolarCoordinates(int, QString, QString)));
     
     connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(updateSavePreview()));
     
-    
 }
 
 
-
-QString interface::genLabel(const char *in)     //concatenate the constant name
-{                                               //with the current index number
+// concatenate constant name with current index number
+QString interface::genLabel(const char *in)
+{
     QString out;
     out.setNum(termIndex + 1);
     out.prepend(in);
@@ -629,26 +566,19 @@ QString interface::genLabel(const char *in)     //concatenate the constant name
     return out;
 }
 
-void interface::refreshLabels()                 //for updating our label names
-{                                               //with the current term #
+// update main window label names with appropriate text
+void interface::refreshLabels()
+{
     nLabel->setText(genLabel("n"));
     mLabel->setText(genLabel("m"));
     rLabel->setText(genLabel("r"));
     aLabel->setText(genLabel("a"));
 }
 
+// update term view table with appropriate values
 void interface::refreshTableTerms()
 {
     
-//    if (termViewTable->rowCount() == 0) {
-//        for (int i = 0; i < numTerms; ++i) {
-//            addTerm();
-//        }
-//    }
-   
-    //qDebug() << "num rows" << termViewTable->rowCount();
-    
-    // refresh all terms in term table
     for (int r = 0; r < numTerms; ++r) {
         
         QSpinBox *mEdit = static_cast<QSpinBox *>(termViewTable->cellWidget(r,1));
@@ -656,9 +586,7 @@ void interface::refreshTableTerms()
         QDoubleSpinBox *aEdit = static_cast<QDoubleSpinBox *>(termViewTable->cellWidget(r,3));
         QDoubleSpinBox *rEdit = static_cast<QDoubleSpinBox *>(termViewTable->cellWidget(r,4));
         
-        
-//        qDebug() << "curr function num terms" << currFunction->numterms();
-//        qDebug() << "is it null? " << (bool)(mEdit == nullptr);
+    
         // block spinBox signals while setting the values internally
         mEdit->blockSignals(true);
         nEdit->blockSignals(true);
@@ -684,8 +612,10 @@ void interface::refreshTableTerms()
     
 }
 
+// update main window term editor with appropriate values
 void interface::refreshMainWindowTerms()
-{    
+{
+    
     currTermEdit->blockSignals(true);
     numTermsEdit->blockSignals(true);
 
@@ -713,10 +643,11 @@ void interface::refreshMainWindowTerms()
     aEdit->blockSignals(false);
     rEdit->blockSignals(false);
     
-    refreshLabels();
+    refreshLabels(); // update labels with appropriate text
     
 }
 
+// removes a term
 void interface::removeTerm(int row)
 {
     
@@ -755,7 +686,7 @@ void interface::removeTerm(int row)
 }
 
 
-// function called when adding a new term to the termViewTable
+// adds a new term
 void interface::addTerm()
 {
     addTermButton->blockSignals(true);
@@ -822,33 +753,17 @@ void interface::addTerm()
     
     refreshMainWindowTerms();
     updatePreviewDisplay();
-    // addTermButton->blockSignals(false);
+    
     
 }
 
 
+// reset the image to its default settings
 void interface::resetImageFunction()
 {
-    // delete currFunction;
-    // delete previewDisplayPort;
-    // delete imageExportPort;
-    
-    // currFunction = new hex3Function();
-    // imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
-    // previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
-
-    // imageExportPort->changeFunction(currFunction);
-    // previewDisplayPort->changeFunction(currFunction);
-
-    // currFunction = functionVector[0];
-
-    //numTerms = 1;
 
     currFunction->reset();
 
-    // functionSel->setCurrentIndex(0);
-    // colorwheelSel->setCurrentIndex(0);
-    
     refreshTableTerms();
     refreshMainWindowTerms();
     
@@ -865,16 +780,17 @@ void interface::resetImageFunction()
     updatePreviewDisplay();
 }
 
-void interface::toggleViewMode()
-{
-    if (advancedMode) {
-        advancedMode = false;
-        toggleViewButton->setText(tr("Switch to Advanced View"));
-    } else {
-        advancedMode = true;
-        toggleViewButton->setText(tr("Switch to Default View"));
-    }
-}
+//void interface::toggleViewMode()
+//{
+//    if (advancedMode) {
+//        advancedMode = false;
+//        toggleViewButton->setText(tr("Switch to Advanced View"));
+//    } else {
+//        advancedMode = true;
+//        toggleViewButton->setText(tr("Switch to Default View"));
+//    }
+//}
+
 
 void interface::termViewPopUp()
 {
@@ -884,7 +800,7 @@ void interface::termViewPopUp()
     
 }
 
-
+// updates the term that is currently being edited
 void interface::updateCurrTerm(int i)
 {
     
@@ -892,16 +808,16 @@ void interface::updateCurrTerm(int i)
     
     refreshTableTerms();
     refreshMainWindowTerms();
-    //refreshLabels();
+
 }
 
+// updates the number of terms of the current function
 void interface::changeNumTerms(int i)
 {
     
     if (i < numTerms) {
         for (int k = numTerms; k > i; --k) { removeTerm(k-1); }
     } else if (i > numTerms) {
-        //qDebug() << "adding terms";
         for (int k = numTerms; k < i; ++k) addTerm();
     }
    
@@ -910,6 +826,7 @@ void interface::changeNumTerms(int i)
     
 }
 
+// handles changing to a new color wheel
 void interface::colorWheelChanged(int index)
 {
     if(index == 9)
@@ -919,6 +836,7 @@ void interface::colorWheelChanged(int index)
     updatePreviewDisplay();
 }
 
+// handles loading an image to use as a color wheel
 void interface::setImagePushed()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
@@ -936,6 +854,7 @@ void interface::setImagePushed()
     saveloadPath = stickypath.path();
 }
 
+// handles changing to a new function
 void interface::changeFunction(int index)
 {
     
@@ -947,27 +866,22 @@ void interface::changeFunction(int index)
     currFunction = functionVector[index];
     
     numTerms = currFunction->numterms();
-    termViewTable->setRowCount(currFunction->numterms());
-   // qDebug() << "curr num terms " << currFunction->numterms();
-    //changeNumTerms(currFunction->numterms());
+    termViewTable->setRowCount(0);
+    
     
     previewDisplayPort->changeFunction(currFunction);
     imageExportPort->changeFunction(currFunction);
-    //qDebug() << "made it here";
-    
     
     refreshMainWindowTerms();
     refreshTableTerms();
     updatePreviewDisplay();
     
-    qDebug() << "CHANGING FUNCTION...";
-    qDebug() << "num terms" << numTerms << "term index" << termIndex << "highest index" << highestIndex;
+//    qDebug() << "CHANGING FUNCTION...";
+//    qDebug() << "num terms" << numTerms << "term index" << termIndex << "highest index" << highestIndex;
 }
 
 
-
-
-// SLOT function called only when user attempts to save current settings into a wpr file
+// SLOT function called when user attempts to save current settings into a wpr file
 void interface::saveCurrSettings()
 {
     
@@ -1070,7 +984,7 @@ QString interface::loadSettings(const QString &fileName) {
     return stickypath.path();
 }
 
-
+// updates the preview to reflect changes to the settings, function, and color wheel
 void interface::updatePreviewDisplay()
 {
     displayProgressBar->reset();
@@ -1078,6 +992,7 @@ void interface::updatePreviewDisplay()
     previewDisplayPort->paintToDisplay(disp);
 }
 
+// slot function called when clicked "update preview" button to add to history and update the preview display to reflect current settings
 void interface::updateSavePreview()
 {
     
@@ -1085,14 +1000,13 @@ void interface::updateSavePreview()
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
     QString filePath = saveSettings(newFile).append("/" + newFile);
 
-    // qDebug() << "Updating Preview";
     historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
     
     updatePreviewDisplay();
     
 }
 
-
+// SLOT FUNCTIONS TO CHANGE OUTPUT IMAGE PROPERTIES
 void interface::changeOHeight(const QString &val)
 {
     settings->OHeight = val.toInt();
@@ -1129,6 +1043,8 @@ void interface::changeYCorner(const QString &val)
     updatePreviewDisplay();
 }
 
+
+// SLOT FUNCTIONS TO CHANGE FREQ AND COEFF PAIRS
 void interface::changeN(int val)
 {
     // int passedval = val.toInt();
@@ -1181,6 +1097,7 @@ void interface::changeScaleR(const QString &val)
     currFunction->setScaleR(passedval);
 }
 
+// SLOT function to handle exporting an image to ppm or jpeg format
 void interface::saveImageStart()
 {
     
@@ -1209,6 +1126,7 @@ void interface::saveImageStart()
     
 }
 
+// function for error handling
 void interface::errorHandler(const int &flag)
 {
     switch(flag)
@@ -1221,7 +1139,7 @@ void interface::errorHandler(const int &flag)
     
 }
 
-
+// sets coefficient pair using data from CoeffPlane
 void interface::setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle)
 {
     if (coeffFlag == LOCAL_FLAG)
@@ -1240,7 +1158,7 @@ void interface::setPolarCoordinates(int coeffFlag, const QString &radius, const 
 }
 
 
-
+// SLOT function to handle when a cell is clicked in the term table
 void interface::termViewCellClicked(int row, int col)
 {
     termViewTable->blockSignals(true);
@@ -1255,6 +1173,7 @@ void interface::termViewCellClicked(int row, int col)
 }
 
 
+// updates the tem table to changed values
 void interface::updateTermTable(QObject *cell)
 {
     
@@ -1296,7 +1215,7 @@ void interface::updateTermTable(QObject *cell)
 }
 
 
-
+// pop up window to appear when image file has finished exporting
 void interface::popUpImageExportFinished(const QString &filePath)
 {
     
@@ -1310,6 +1229,7 @@ void interface::popUpImageExportFinished(const QString &filePath)
     
 }
 
+// reset the table to receive signals
 void interface::resetTableButton() 
 {
     addTermButton->blockSignals(false);

@@ -34,9 +34,9 @@
 
 #define MAX_NUM_TERMS 99
 
-
 const unsigned int INVALID_FILE_ERROR = 0;
 
+// QSpinBox subclass that disallows user input
 class CustomSpinBox : public QSpinBox
 {
   public:
@@ -47,7 +47,7 @@ class CustomSpinBox : public QSpinBox
 
 };
 
-
+// QSlider subclass that takes doubles
 class QDoubleSlider : public QSlider
 {
     Q_OBJECT
@@ -68,6 +68,7 @@ class QDoubleSlider : public QSlider
 
 };
 
+// QProgressBar subclass for tracking wallgen rendering
 class ProgressBar : public QProgressBar
 {
     Q_OBJECT
@@ -94,16 +95,12 @@ public:
         
     }
 
-    double value()
-    {
-        return this->text().toDouble();
-    }
-    void remove()
-    {
+    double value() { return this->text().toDouble(); }
+    
+    void remove() {
         delete label;
         delete percentLabel;
         delete progBar;
-        //delete layout;
     }
     
     QProgressBar *progBar;
@@ -116,8 +113,8 @@ private:
     Port *port;
     
 protected:
-    void setValue(int val)
-    {
+    
+    void setValue(int val) {
         progBar->setValue(val);
         percentLabel->setText(progBar->text());
     }
@@ -127,17 +124,18 @@ signals:
     void renderFinished();
 
 public slots:
+    // called when a thread has finished rendering its portion of the work
     void update(const int &numThreadsFinished)
     {
         if (!visible) { progBar->setVisible(true); label->setVisible(true); }
+        
         double percentComplete = ((double)(numThreadsFinished)/(double)(port->getControllerObject()->getNumThreadsActive()) * 100.0);
         this->setValue(percentComplete);
         
-        if (percentComplete == 100) {
-            emit renderFinished();
-        }
+        if (percentComplete == 100) { emit renderFinished(); }
     }
 
+    // called to update progress bar throughout the rendering process
     void partialUpdate(const double &progress)
     {
         if (!visible) { progBar->setVisible(true); label->setVisible(true); }
@@ -146,6 +144,8 @@ public slots:
     
 };
 
+
+// interface class
 class interface : public QWidget
 {
     Q_OBJECT
@@ -159,9 +159,8 @@ public:
     QHBoxLayout *topbarLayout;
     QVBoxLayout *leftbarLayout;
     QGroupBox *imagePropsBox;
-    QWidget *toggleViewWidget;
+    //QWidget *toggleViewWidget;
     QWidget *patternTypeWidget;
-    //QWidget *viewHistoryWidget;
     QMessageBox *errorMessageBox;
 
     // INPUT VALIDATORS
@@ -174,11 +173,10 @@ public:
     QIntValidator *dimValidate;
 
     //modeToggle SUBELEMENTS
-    QPushButton *toggleViewButton;
-    QVBoxLayout *toggleViewLayout;
+//    QPushButton *toggleViewButton;
+//    QVBoxLayout *toggleViewLayout;
     
     // functionConstants SUBELEMENTS
-    
     QPushButton *termViewButton;
     QWidget *termViewWidget;
     QVBoxLayout *termViewLayout;
@@ -195,22 +193,16 @@ public:
     QLabel *mLabel;
     QLabel *aLabel;
     QLabel *rLabel;
-    // QLabel *nValueLabel;
-    // QLabel *mValueLabel;
     QLabel *aValueLabel;
     QLabel *rValueLabel;
     QLabel *scaleALabel;
     QLabel *scaleRLabel;
-
     QSpinBox *nEdit;
     QSpinBox *mEdit;
-
     QDoubleSlider *aEdit;
     QDoubleSlider *rEdit;
     QPushButton *coeffPlaneEdit;
-    
     QLabel *globalConsantsLabel;
-
     QLineEdit *scaleAEdit;
     QLineEdit *scaleREdit;
     QPushButton *scalePlaneEdit;
@@ -229,19 +221,6 @@ public:
     QHBoxLayout *functionConstantsFreqs;
     QHBoxLayout *functionConstantsCoeffs;
     
-    
-//    QHBoxLayout *functionConstantsBoxLayoutLower;
-//    QVBoxLayout *functionConstantsBoxLayoutStack;
-//    QHBoxLayout *functionConstantsBoxLayoutFirstLevel;
-//    QHBoxLayout *functionConstantsBoxLayoutSecondLevel;
-//    QHBoxLayout *functionConstantsBoxLayoutThirdLevel;
-//    QSpacerItem *espacer1;
-//    QSpacerItem *espacer2;
-//    QSpacerItem *espacer3;
-//    QSpacerItem *espacer4;
-//    QSpacerItem *espacer5;
-//    QSpacerItem *espacer6;
-//    QSpacerItem *espacer7;
     QPushButton *loadButton;
     QPushButton *saveButton;
     
@@ -268,14 +247,7 @@ public:
     QComboBox *colorwheelSel;
     QComboBox *functionSel;
     QPushButton *setLoadedImage;
-//    
-//    // viewHistoryBox SUBELEMENTS
-//    QGroupBox *viewHistoryBox;
-//    QVBoxLayout *viewHistoryBoxLayout;
-//    QVBoxLayout *viewHistoryBoxOverallLayout;
-//    QPushButton *clearHistoryButton;
-//    QSignalMapper *viewMapper;
-//    QSignalMapper *removeMapper;
+
     HistoryDisplay *historyDisplay;
     CoeffPlane *coeffPlane;
     
@@ -315,15 +287,13 @@ public:
     // SHORTCUTS
     QShortcut *updatePreviewShortcut;
     
+    
+    // PROGRESS BARS
     ProgressBar *displayProgressBar;
     ProgressBar *exportProgressBar;
     
-    
-
-    // void mouseReleaseEvent(QMouseEvent *event);
-
 private slots:
-    void toggleViewMode();
+    //void toggleViewMode();
     void updateCurrTerm(int i);
     void changeNumTerms(int i);
     void colorWheelChanged(int index);
@@ -343,26 +313,19 @@ private slots:
     void changeScaleA(const QString &val);
     void saveImageStart();
     void resetImageFunction();
-//    void removePreview(QObject *item);
     void loadFromSettings();
     void saveCurrSettings();
     void previewDisplayEnlarge() {disp->enlarge();}
     void previewDisplayShrink() {disp->shrink();}
     void previewDisplayResetSize() {disp->resetSize();}
     void updateSavePreview();
-//    void clearAllHistory();
-    
     void termViewPopUp();
     void addTerm();
     void updateTermTable(QObject *cell);
     void termViewCellClicked(int row, int col);
     void resetTableButton();
-    
     void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
-
-    
     QString loadSettings(const QString &fileName);
-  //  void updateProgressBar(const int &numThreadsFinished);
     void popUpImageExportFinished(const QString &filePath);
     
 private:    
@@ -375,20 +338,15 @@ private:
     void initPreviewDisplay();
     void initFunctionConstants();
     void initPatternType();
-  //  void initViewHistory();
     void initImageProps();
     void initCoeffPlane();
     void connectAllSignals();
-
     void removeTerm(int row);
     void refreshLabels();
     void updatePreviewDisplay();
-//    void addToHistory();
     void errorHandler(const int &flag);
     void refreshTableTerms();
     void refreshMainWindowTerms();
-
-//    void updatePolarCoordinates(QPointF point);
 
     int numTerms;
     unsigned int termIndex; 
@@ -401,15 +359,13 @@ private:
     QSharedPointer<ColorWheel> currColorWheelPtr;
     
     Port *previewDisplayPort, *imageExportPort;
-    bool advancedMode;
+    //bool advancedMode;
     int coeffFlag;
 
     QVector<AbstractFunction *> functionVector;
     
     Settings *settings;
 
-//    QMap<QDateTime, HistoryItem*> historyItemsMap;
-//    QMap<QDateTime, Port*> historyPortsMap;
     
 };
 

@@ -1,7 +1,7 @@
 #include "coeffplane.h"
 
 
-
+// CONSTRUCTOR sets up layout for plane pop-up window
 CoeffPlane::CoeffPlane(AbstractFunction *currFunction, unsigned int *termIndex)
 {
     this->currFunction = currFunction;
@@ -10,12 +10,10 @@ CoeffPlane::CoeffPlane(AbstractFunction *currFunction, unsigned int *termIndex)
     // INPUT VALIDATORS (NUMERICAL)
     doubleValidate = new QDoubleValidator(-9999999.0, 9999999.0, 5, this);
     angleValidate = new QDoubleValidator(-pi, pi, 5, this);
-   
     
     
     //SET UP COEFFICIENT PLANE
     coeffPlanePopUp = new QWidget(this, Qt::Window);
-    
     coeffPlanePopUpLayout = new QHBoxLayout();
     polarPlaneWithZoomLayout = new QVBoxLayout();
     polarCoordinatesBox = new QGroupBox(tr("Polar Cooridnates"), coeffPlanePopUp);
@@ -24,6 +22,7 @@ CoeffPlane::CoeffPlane(AbstractFunction *currFunction, unsigned int *termIndex)
     zoomButtonLayout = new QHBoxLayout();
     
     
+    // GRAPH ELEMENTS
     graph = new QChart();
     
     axisX = new QValueAxis();
@@ -40,13 +39,6 @@ CoeffPlane::CoeffPlane(AbstractFunction *currFunction, unsigned int *termIndex)
     
     radiusEdit = new QLineEdit();
     angleEdit = new QLineEdit();
-    
-    confirmButton = new QPushButton(tr("OK"));
-    resetButton = new QPushButton(tr("Reset"));
-    zoomInButton = new QPushButton(QIcon(":/Images/zoomin.png"), "Zoom In");
-    zoomInButton->setStyleSheet("QPushButton { text-align:center; padding:5px}");
-    zoomOutButton = new QPushButton(QIcon(":/Images/zoomout.png"), "Zoom Out");
-    zoomOutButton->setStyleSheet("QPushButton { text-align:center; padding:5px}");
     
     planeSpacer1 = new QSpacerItem(15,15);
     planeSpacer2 = new QSpacerItem(5,5);
@@ -129,8 +121,7 @@ CoeffPlane::CoeffPlane(AbstractFunction *currFunction, unsigned int *termIndex)
     polarCoordinatesLayout->addItem(planeSpacer1);
     polarCoordinatesLayout->addLayout(actionButtonLayout);
     polarCoordinatesLayout->addStretch(0);
-    
-    // coeffPlanePopUpLayout->addWidget(polarPlaneBox);
+
     
     polarCoordinatesLayout->setSizeConstraint(QLayout::SetFixedSize);
     
@@ -144,12 +135,19 @@ CoeffPlane::CoeffPlane(AbstractFunction *currFunction, unsigned int *termIndex)
     coeffPlanePopUpLayout->addWidget(polarCoordinatesBox);
     
     coeffPlanePopUp->setLayout(coeffPlanePopUpLayout);
-    
     coeffPlanePopUp->setFixedSize(1000, 600);
     
+    // UI ELEMENTS
+    confirmButton = new QPushButton(tr("OK"));
+    resetButton = new QPushButton(tr("Reset"));
+    zoomInButton = new QPushButton(QIcon(":/Images/zoomin.png"), "Zoom In");
+    zoomInButton->setStyleSheet("QPushButton { text-align:center; padding:5px}");
+    zoomOutButton = new QPushButton(QIcon(":/Images/zoomout.png"), "Zoom Out");
+    zoomOutButton->setStyleSheet("QPushButton { text-align:center; padding:5px}");
+    
+    // CONNECT ALL SIGNALS
     connect(radiusEdit, SIGNAL(editingFinished()), this, SLOT(updatePolarCoordinates()));
     connect(angleEdit, SIGNAL(editingFinished()), this, SLOT(updatePolarCoordinates()));
-    
     connect(coordinateSeries, SIGNAL(pointReplaced(int)), this, SLOT(updatePolarCoordinatesWithIndex(int)));
     connect(confirmButton, SIGNAL(clicked()), this, SLOT(setPolarCoordinates()));
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetPolarCoordinates()));
@@ -160,7 +158,7 @@ CoeffPlane::CoeffPlane(AbstractFunction *currFunction, unsigned int *termIndex)
 }
 
 
-
+// show plane in new window
 void CoeffPlane::showPlanePopUp(int flag)
 {
     
@@ -188,8 +186,9 @@ void CoeffPlane::showPlanePopUp(int flag)
     coordinateSeries->replace(0, point);
     // updatePolarCoordinates(QPointF(tempR * cos(tempA), tempR * sin(tempA)));
     coeffPlanePopUp->show();
-    // hide();
+    
 }
+
 
 void CoeffPlane::updatePolarCoordinatesWithIndex(const int &index)
 {
@@ -210,19 +209,6 @@ void CoeffPlane::setPolarCoordinates()
 {
     
     emit setPolarCoordinates(coeffFlag, radiusEdit->text(), angleEdit->text());
-    
-//    if (coeffFlag == LOCAL_FLAG)
-//    {
-//        rEdit->setValue(radiusEdit->text().toDouble() * 100);
-//        aEdit->setValue(angleEdit->text().toDouble() * 100);
-//        rValueLabel->setText(radiusEdit->text());
-//        aValueLabel->setText(angleEdit->text());
-//    }
-//    else if (coeffFlag == GLOBAL_FLAG)
-//    {
-//        scaleREdit->setText(radiusEdit->text());
-//        scaleAEdit->setText(angleEdit->text());
-//    }
     
     coeffPlanePopUp->hide();
 }

@@ -27,18 +27,22 @@
 
 using namespace QtCharts;
 
-//const int MAX_HISTORY_ITEMS = 5;
 const int LOCAL_FLAG = 0;
 const int GLOBAL_FLAG = 1;
-//const int HISTORY_ITEM_SIZE = 60;
 
 
+// object for creating a plane pop-up view for function constants
 class CoeffPlaneView : public QChartView {
+    
     Q_OBJECT
+    
 public:
+    
     CoeffPlaneView(QChart *chart, QScatterSeries *coordinateSeries) : QChartView(chart) { this->chart = chart; this->coordinateSeries = coordinateSeries; setMouseTracking(false);}
     
 protected:
+    // MOUSE EVENTS
+    
     void mouseReleaseEvent(QMouseEvent *event)
     {
         if(event->button() == Qt::LeftButton)
@@ -89,6 +93,7 @@ signals:
     void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
     
 private:
+    // organizational elements
     QWidget *coeffPlanePopUp;
     QGroupBox *polarCoordinatesBox;
     QHBoxLayout *coeffPlanePopUpLayout;
@@ -115,7 +120,8 @@ private:
     QScatterSeries *coordinateSeries;
     QLineSeries *xSeries;
     QLineSeries *ySeries;
-    int coeffFlag;
+    
+    int coeffFlag; // stores type of function constant pair
     
     QDoubleValidator *doubleValidate;
     QDoubleValidator *angleValidate;
@@ -125,7 +131,8 @@ private:
     AbstractFunction *currFunction;
     unsigned int *termIndex;
     
-    private slots:
+private slots:
+    
     void showPlanePopUp(int flag);
     void updatePolarCoordinatesWithIndex(const int &index);
     void updatePolarCoordinates();
@@ -134,9 +141,6 @@ private:
     
     void setPolarCoordinates();
     void resetPolarCoordinates();
-    
-    
-    
     
     
 };
