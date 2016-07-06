@@ -112,7 +112,7 @@ void interface::initInterfaceLayout()
     connectAllSignals();
     
     // SET DEFAULTS
-    refreshTerms();
+    refreshTableTerms();
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
     
@@ -636,8 +636,17 @@ void interface::refreshLabels()                 //for updating our label names
     aLabel->setText(genLabel("a"));
 }
 
-void interface::refreshTerms()
+void interface::refreshTableTerms()
 {
+    
+//    if (termViewTable->rowCount() == 0) {
+//        for (int i = 0; i < numTerms; ++i) {
+//            addTerm();
+//        }
+//    }
+   
+    //qDebug() << "num rows" << termViewTable->rowCount();
+    
     // refresh all terms in term table
     for (int r = 0; r < numTerms; ++r) {
         
@@ -646,6 +655,9 @@ void interface::refreshTerms()
         QDoubleSpinBox *aEdit = static_cast<QDoubleSpinBox *>(termViewTable->cellWidget(r,3));
         QDoubleSpinBox *rEdit = static_cast<QDoubleSpinBox *>(termViewTable->cellWidget(r,4));
         
+        
+//        qDebug() << "curr function num terms" << currFunction->numterms();
+//        qDebug() << "is it null? " << (bool)(mEdit == nullptr);
         // block spinBox signals while setting the values internally
         mEdit->blockSignals(true);
         nEdit->blockSignals(true);
@@ -658,6 +670,7 @@ void interface::refreshTerms()
         nEdit->setValue(currFunction->getN(index));
         aEdit->setValue(currFunction->getA(index));
         rEdit->setValue(currFunction->getR(index));
+        
 
         aValueLabel->setText(QString::number(currFunction->getA(index)));
         rValueLabel->setText(QString::number(currFunction->getR(index)));
@@ -673,14 +686,28 @@ void interface::refreshTerms()
 
 void interface::refreshMainWindowTerms()
 {
-    
+   //qDebug() << "num terms in curr function" << currFunction->numterms() << " num terms" << numTerms;
+    currTermEdit->blockSignals(true);
+    numTermsEdit->blockSignals(true);
     currTermEdit->setValue(termIndex + 1);
-    numTermsEdit->setValue(numTerms);
+    numTermsEdit->setValue(currFunction->numterms());
+    currTermEdit->blockSignals(false);
+    numTermsEdit->blockSignals(false);
+  
+    mEdit->blockSignals(true);
+    nEdit->blockSignals(true);
+    aEdit->blockSignals(true);
+    rEdit->blockSignals(true);
     
     mEdit->setValue(currFunction->getM(termIndex));
     nEdit->setValue(currFunction->getN(termIndex));
     aEdit->setValue(currFunction->getA(termIndex) * 100);
     rEdit->setValue(currFunction->getR(termIndex) * 100);
+    
+    mEdit->blockSignals(false);
+    nEdit->blockSignals(false);
+    aEdit->blockSignals(false);
+    rEdit->blockSignals(false);
     
     refreshLabels();
     
@@ -715,8 +742,14 @@ void interface::removeTerm(int row)
     unsigned int term = row;
     currFunction->removeTerm(term);
     currFunction->setNumTerms(numTerms);
-    currTermEdit->setMaximum(numTerms + 1);
+    
+    
+    currTermEdit->blockSignals(true);
+    numTermsEdit->blockSignals(true);
+    currTermEdit->setMaximum(numTerms);
     numTermsEdit->setValue(numTerms);
+    currTermEdit->blockSignals(false);
+    numTermsEdit->blockSignals(false);
     
 }
 
@@ -729,7 +762,7 @@ void interface::addTerm()
     numTerms++;
     
     termViewTable->setRowCount(numTerms);
-    currTermEdit->setMaximum(numTerms + 1);
+    currTermEdit->setMaximum(numTerms);
     currFunction->setNumTerms(numTerms);
     
     QSpinBox *nEditTable = new QSpinBox();
@@ -806,14 +839,16 @@ void interface::resetImageFunction()
 
     // currFunction = functionVector[0];
 
-    numTerms = 1;
+    //numTerms = 1;
 
     currFunction->reset();
 
     // functionSel->setCurrentIndex(0);
     // colorwheelSel->setCurrentIndex(0);
     
-    refreshTerms();
+    refreshTableTerms();
+    refreshMainWindowTerms();
+    
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
     
@@ -849,22 +884,29 @@ void interface::termViewPopUp()
 
 void interface::updateCurrTerm(int i)
 {
+    
     if (i > 0) termIndex = i - 1;
     
-    refreshTerms();
-    refreshLabels();
+    //refreshTableTerms();
+    refreshMainWindowTerms();
+    //refreshLabels();
 }
 
 void interface::changeNumTerms(int i)
 {
-    
+   // qDebug() << "HI num terms in curr function" << currFunction->numterms() << " num terms" << numTerms;
+//    currTermEdit->blockSignals(true);
     currTermEdit->setMaximum(i);
+    updateCurrTerm(i);
+    
+    //qDebug() << "num terms: " << numTerms << "i:" << i;
     
     if (i < numTerms) {
-        for (int k = numTerms - 1; k >= i; --k) removeTerm(k);
+        for (int k = numTerms; k > i; --k) { removeTerm(k-1); }
     } else if (i > numTerms) {
         for (int k = numTerms; k < i; ++k) addTerm();
     }
+   // qDebug() << "term index" << termIndex;
     
 }
 
@@ -896,101 +938,34 @@ void interface::setImagePushed()
 
 void interface::changeFunction(int index)
 {
-    // delete currFunction;
-    // delete previewDisplayPort;
-    // delete imageExportPort;
-
-    // switch(index)
-    // {
-    // case 0:
-    //     currFunction = new hex3Function();
-    //     colorwheelSel->setCurrentIndex(7);
-    //     break;
-    // case 1:
-    //     currFunction = new hex6Function();
-    //     colorwheelSel->setCurrentIndex(7);
-    //     break;
-    // case 2:
-    //     currFunction = new squareFunction();
-    //     colorwheelSel->setCurrentIndex(6);
-    //     break;
-    // case 3:
-    //     currFunction = new generalpairedFunction();
-    //     colorwheelSel->setCurrentIndex(3);
-    //     break;
-    // case 4:
-    //     currFunction = new generalFunction();
-    //     colorwheelSel->setCurrentIndex(7);
-    //     break;
-    // case 5:
-    //     currFunction = new cmmFunction();
-    //     colorwheelSel->setCurrentIndex(7);
-    //     break;
-    // case 6:
-    //     currFunction = new p31mFunction();
-    //     colorwheelSel->setCurrentIndex(1);
-    //     break;
-    // case 7:
-    //     currFunction = new p3m1Function();
-    //     colorwheelSel->setCurrentIndex(1);
-    //     break;
-    // case 8:
-    //     currFunction = new p6mFunction();
-    //     colorwheelSel->setCurrentIndex(6);
-    //     break;
-    // case 9:
-    //     currFunction = new p4gFunction();
-    //     colorwheelSel->setCurrentIndex(6);
-    //     break;
-    // case 10:
-    //     currFunction = new p4mFunction();
-    //     colorwheelSel->setCurrentIndex(6);
-    //     break;
-    // case 11:
-    //     currFunction = new pmmFunction();
-    //     colorwheelSel->setCurrentIndex(9);
-    //     break;
-    // case 12:
-    //     currFunction = new pmgFunction();
-    //     colorwheelSel->setCurrentIndex(9);
-    //     break;
-    // case 13:
-    //     currFunction = new pggFunction();
-    //     colorwheelSel->setCurrentIndex(9);
-    //     break;
-    // case 14:
-    //     currFunction = new pmFunction();
-    //     colorwheelSel->setCurrentIndex(9);
-    //     break;
-    // case 15:
-    //     currFunction = new pgFunction();
-    //     colorwheelSel->setCurrentIndex(9);
-    //     break;
-    // case 16:
-    //     currFunction = new rhombicFunction();
-    //     colorwheelSel->setCurrentIndex(9);
-    //     break;
-    // case 17:
-    //     currFunction = new zzbarFunction();
-    //     colorwheelSel->setCurrentIndex(9);
-    //     break;
-    // }
-
+    
+   // termViewTable->clearContents();
+    
+    termIndex = 0;
+    highestIndex = 0;
+    
     currFunction = functionVector[index];
-
-    // currFunction->setNumTerms(1);
-
-    // previewDisplayPort = new Port(currFunction, currColorWheel, disp->getImage()->width(), disp->getImage()->height(), settings);
-    // imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
-
-    // numTerms = 1;
-
+    
+    numTerms = currFunction->numterms();
+    termViewTable->setRowCount(currFunction->numterms());
+   // qDebug() << "curr num terms " << currFunction->numterms();
+    //changeNumTerms(currFunction->numterms());
+    
     previewDisplayPort->changeFunction(currFunction);
     imageExportPort->changeFunction(currFunction);
-
-    refreshTerms();
+    //qDebug() << "made it here";
+    
+    
+    refreshMainWindowTerms();
+    refreshTableTerms();
     updatePreviewDisplay();
+    
+    qDebug() << "CHANGING FUNCTION...";
+    qDebug() << "num terms" << numTerms << "term index" << termIndex << "highest index" << highestIndex;
 }
+
+
+
 
 // SLOT function called only when user attempts to save current settings into a wpr file
 void interface::saveCurrSettings()
@@ -1081,7 +1056,7 @@ QString interface::loadSettings(const QString &fileName) {
     
     inFile.close();
     
-    refreshTerms();
+    refreshTableTerms();
     outwidthEdit->setText(QString::number(settings->OWidth));
     outheightEdit->setText(QString::number(settings->OHeight));
     worldwidthEdit->setText(QString::number(settings->Width));
@@ -1105,7 +1080,6 @@ void interface::updatePreviewDisplay()
 
 void interface::updateSavePreview()
 {
-    qDebug() << "Crashed here";
     
     QDateTime savedTime = QDateTime::currentDateTimeUtc();
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
@@ -1160,7 +1134,7 @@ void interface::changeN(int val)
     // int passedval = val.toInt();
     currFunction->setN(termIndex, val);
     // nValueLabel->setText(QString::number(val));
-    refreshTerms();
+    refreshTableTerms();
     refreshMainWindowTerms();
     updatePreviewDisplay();
 }
@@ -1170,7 +1144,7 @@ void interface::changeM(int val)
     // int passedval = val.toInt();
     currFunction->setM(termIndex, val);
     // mValueLabel->setText(QString::number(val));
-    refreshTerms();
+    refreshTableTerms();
     refreshMainWindowTerms();
     updatePreviewDisplay();
 }
@@ -1180,7 +1154,7 @@ void interface::changeR(double val)
     // double passedval = val.toDouble();
     currFunction->setR(termIndex, val);
     rValueLabel->setText(QString::number(val));
-    refreshTerms();
+    refreshTableTerms();
     refreshMainWindowTerms();
     updatePreviewDisplay();
 }
@@ -1190,7 +1164,7 @@ void interface::changeA(double val)
     // double passedval = val.toDouble();
     currFunction->setA(termIndex, val);
     aValueLabel->setText(QString::number(val));
-    refreshTerms();
+    refreshTableTerms();
     refreshMainWindowTerms();
     updatePreviewDisplay();
 }
@@ -1285,16 +1259,19 @@ void interface::updateTermTable(QObject *cell)
     int coeff = val;
     double freq = val;
     
-    if (col == 1)
-        currFunction->setM(index, coeff);
-    else if (col == 2)
-        currFunction->setN(index, coeff);
-    else if (col == 3)
-        currFunction->setA(index, freq);
-    else if (col == 4)
-        currFunction->setR(index, freq);
+    switch(col) {
+        case 1:
+           currFunction->setM(index, coeff);
+            break;
+        case 2:
+            currFunction->setN(index, coeff);
+        case 3:
+            currFunction->setA(index, freq);
+        case 4:
+            currFunction->setR(index, freq);
+    }
     
-    refreshTerms();
+    refreshTableTerms();
     updatePreviewDisplay();
 }
 

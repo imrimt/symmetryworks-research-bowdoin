@@ -360,7 +360,7 @@ private:
     void updatePreviewDisplay();
 //    void addToHistory();
     void errorHandler(const int &flag);
-    void refreshTerms();
+    void refreshTableTerms();
     void refreshMainWindowTerms();
 
 //    void updatePolarCoordinates(QPointF point);
