@@ -174,7 +174,7 @@ void interface::initPreviewDisplay()
     connect(imageExportPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), exportProgressBar, SLOT(partialUpdate(double)));
 
     connect(imageExportPort, SIGNAL(finishedExport(QString)), this, SLOT(popUpImageExportFinished(QString)));
-    
+
     connect(displayProgressBar, SIGNAL(renderFinished()), this, SLOT(resetTableButton()));
     
     dispLayout->setAlignment(disp, Qt::AlignCenter);
@@ -649,7 +649,8 @@ void interface::refreshTableTerms()
 //        }
 //    }
    
-    //qDebug() << "num rows" << termViewTable->rowCount();
+    qDebug() << "num rows" << termViewTable->rowCount();
+    qDebug() << "num terms" << numTerms;
     
     // refresh all terms in term table
     for (int r = 0; r < numTerms; ++r) {
@@ -953,6 +954,7 @@ void interface::changeFunction(int index)
     currFunction = functionVector[index];
     
     numTerms = currFunction->numterms();
+
     termViewTable->setRowCount(currFunction->numterms());
    // qDebug() << "curr num terms " << currFunction->numterms();
     //changeNumTerms(currFunction->numterms());
@@ -962,10 +964,13 @@ void interface::changeFunction(int index)
     //qDebug() << "made it here";
     
     
+    // qDebug() << "crashed here?";
     refreshMainWindowTerms();
+    // qDebug() << "crashed here 2?";
     refreshTableTerms();
+    qDebug() << "crashed here 3?";
     updatePreviewDisplay();
-    
+     
     qDebug() << "CHANGING FUNCTION...";
     qDebug() << "num terms" << numTerms << "term index" << termIndex << "highest index" << highestIndex;
 }

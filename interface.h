@@ -51,16 +51,16 @@ class CustomSpinBox : public QSpinBox
 class QDoubleSlider : public QSlider
 {
     Q_OBJECT
-  public:
+public:
     QDoubleSlider(QWidget *parent = 0) : QSlider(parent) { 
         connect(this, SIGNAL(valueChanged(int)),
             this, SLOT(notifyValueChanged(int)));
     }
 
-  signals:
+signals:
     void doubleValueChanged(double value);
 
-  public slots:
+public slots:
     void notifyValueChanged(int value) {
         double doubleValue = value / 100.0;
         emit doubleValueChanged(doubleValue);

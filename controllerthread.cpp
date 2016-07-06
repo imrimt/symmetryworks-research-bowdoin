@@ -4,9 +4,9 @@ ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *color
 {
     numThreadsActive = 0;
 
-    // NUM_THREADS = idealThreadCount() != -1 ? idealThreadCount() : 8;
+    NUM_THREADS = idealThreadCount() != -1 ? idealThreadCount() : 8;
 
-    NUM_THREADS = 1;
+    // NUM_THREADS = 1;         //for testing
 
     restart = false;
     abort = false;
@@ -48,11 +48,13 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 
     currFunction = currFunction->clone();
     currColorWheel = currColorWheel->clone();
+    currSettings = currSettings->clone();
 
     //clone when dealing with image (usually I/O)
     for (int i = 0; i < threads.size(); i++) {
         threads[i]->changeFunction(currFunction);
         threads[i]->changeColorWheel(currColorWheel);
+        threads[i]->changeSettings(currSettings);
     }
 
     this->output = output;
@@ -90,8 +92,6 @@ void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
     controllerObject->setDisplay(this->display);
 
     numThreadsActive = threads.size();
-
-    // qDebug() << "new work with " << displayThreads.size() << "numThreadsRunning";
 
     controllerObject->setNumThreadsRunning(numThreadsActive);
 
@@ -146,7 +146,6 @@ void ControllerThread::run()
         mutex.lock();
         if (!restart) {
             //qDebug() << "controller goes to wait for restart";
-
             restartCondition.wait(&mutex);
         }
         
