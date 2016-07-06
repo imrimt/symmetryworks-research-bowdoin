@@ -59,28 +59,22 @@ void RenderThread::run()
         double worldYStart2 = this->worldYStart2;
         double worldXStart = this->worldXStart;
         double XCorner = currSettings->XCorner;
-        // int topLeftXValue = this->topLeftXValue;
-        // int topLeftYValue = this->topLeftYValue;
-        // int bottomRightXValue = this->bottomRightXValue;
-        // int bottomRightYValue = this->bottomRightYValue; 
         double outputWidth = bottomRightXValue - topLeftXValue;
         double outputHeight = bottomRightYValue - topLeftYValue;
-        QPoint topLeft = this->topLeft;
         int translated = bottomRightXValue;
-        // QImage *output = new QImage(outputWidth, outputHeight);
-        QVector<QVector<QRgb>> colorMap(outputWidth, QVector<QRgb>(outputHeight));
-
         std::complex<double> fout;
-        
+        QPoint topLeft = this->topLeft;
+        QVector<QVector<QRgb>> colorMap(outputWidth, QVector<QRgb>(outputHeight));
+           
         mutex.unlock();
 
         // qDebug() << "drawing from" << topLeft << "to" << bottomRight;
 
-        //int count = 0;
+        // int count = 0;
 
         for (int x = 0; x < outputWidth; x++)
         {   
-            if (restart) break;
+            if (restart) { /* qDebug() << "renderThread aborts" ; */ break; }
             if (abort) return;
             
             for (int y = 0; y < outputHeight; y++)
@@ -107,7 +101,7 @@ void RenderThread::run()
         
         // qDebug() << "thread" << QThread::currentThread() << "finishes rendering";
         if (!restart) {
-            //qDebug() << "thread" << QThread::currentThread() << "goes to wait before restarting";
+            // qDebug() << "thread" << QThread::currentThread() << "goes to wait before restarting";
             emit renderingFinished(topLeft, colorMap);
             //controllerCondition->wakeOne();
             condition.wait(&mutex);

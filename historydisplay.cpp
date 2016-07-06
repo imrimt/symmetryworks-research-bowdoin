@@ -130,7 +130,6 @@ void HistoryDisplay::removePreview(QObject *item)
 void HistoryDisplay::clearAllHistory()
 {
     while (!historyItemsMap.empty()) {
-        // qDebug() << "removing";
         removePreview(historyItemsMap.begin().value());
     }
 }

@@ -66,10 +66,15 @@ private:
 
 private slots: 
     void handleRenderedImageParts(const QPoint &startPoint, const Q2DArray &result) {
-        if (restart) return;
+        if (restart) {
+            // qDebug() << "abort combining because of restart"; 
+            return;
+        }
+
+        // qDebug() << "start combining";
         
         switch (actionFlag) {
-        case DISPLAY_REPAINT_FLAG:
+        case DISPLAY_REPAINT_FLAG: 
         case HISTORY_ICON_REPAINT_FLAG:
             repaintWork(display, startPoint, result);
             break;
@@ -84,8 +89,8 @@ private slots:
         emit progressChanged(numThreadsActive - numThreadsRunning);
 
         if (numThreadsRunning == 0) {
-            //qDebug() << "emit workFinished signal";
-            // restart = false;
+            // qDebug() << "emit workFinished signal";
+            restart = false;
             emit allThreadsFinished();
             emit workFinished(actionFlag);
         }

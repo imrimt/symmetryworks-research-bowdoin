@@ -30,7 +30,6 @@ ColorWheel* ColorWheel::clone()
         copy->image = this->image.copy();
     }
     return copy;
-    
 }
 
 QRgb ColorWheel::operator() (std::complex<double> zin)

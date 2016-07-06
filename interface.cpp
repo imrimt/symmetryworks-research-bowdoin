@@ -207,8 +207,8 @@ void interface::initFunctionConstants()
     
     nEdit = new QSpinBox(functionConstantsBox);
     mEdit = new QSpinBox(functionConstantsBox);
-    aEdit = new QDoubleSlider();
-    rEdit = new QDoubleSlider();
+    aEdit = new QDoubleSlider(functionConstantsBox);
+    rEdit = new QDoubleSlider(functionConstantsBox);
     
     
     nEdit->setFixedWidth(100);
@@ -264,24 +264,25 @@ void interface::initFunctionConstants()
     functionConstantsCoeffs = new QHBoxLayout();
     functionConstantsPairs = new QVBoxLayout();
 
-    QSpacerItem *spacerItem1 = new QSpacerItem(30, 30);
+    QSpacerItem *spacerItem1 = new QSpacerItem(80, 30);
     QSpacerItem *spacerItem2 = new QSpacerItem(30, 30);
-    QSpacerItem *spacerItem3 = new QSpacerItem(400, 30);
+    QSpacerItem *spacerItem3 = new QSpacerItem(100, 30);
     QSpacerItem *spacerItem4 = new QSpacerItem(30, 30);
     QSpacerItem *spacerItem5 = new QSpacerItem(87, 30);
     QSpacerItem *spacerItem6 = new QSpacerItem(30, 30);
     QSpacerItem *spacerItem7 = new QSpacerItem(50, 30);
-    QSpacerItem *spacerItem8 = new QSpacerItem(400, 30);
-    // QSpacerItem *spacerItem9 = new QSpacerItem(400, 30);
+    QSpacerItem *spacerItem8 = new QSpacerItem(50, 30);
+    QSpacerItem *spacerItem9 = new QSpacerItem(50, 30);
     // QSpacerItem *spacerItem10 = new QSpacerItem(30, 30);
     // QSpacerItem *spacerItem11 = new QSpacerItem(30, 30);
     // QSpacerItem *spacerItem12 = new QSpacerItem(30, 30);
     // QSpacerItem *spacerItem13 = new QSpacerItem(30, 30);
-    // QSpacerItem *spacerItem4 = new QSpacerItem(20, 30);
+    // QSpacerItem *spacerItem14 = new QSpacerItem(20, 30);
     
     functionConstantsScalingTerms->addWidget(globalConsantsLabel);
     functionConstantsScalingTerms->addItem(spacerItem1);
     functionConstantsScalingTerms->addWidget(scaleRLabel);
+    functionConstantsScalingTerms->addItem(spacerItem9);
     functionConstantsScalingTerms->addWidget(scaleREdit);
     functionConstantsScalingTerms->addItem(spacerItem2);
     functionConstantsScalingTerms->addWidget(scaleALabel);
@@ -316,14 +317,11 @@ void interface::initFunctionConstants()
     functionConstantsCoeffs->setAlignment(Qt::AlignLeft);
 
     
-    
-    
     numTermsLabel = new QLabel(tr("Num Terms: "), functionConstantsBox);
     numTermsEdit = new QSpinBox(functionConstantsBox);
     numTermsEdit->setRange(1,MAX_NUM_TERMS);
     
     //numTermsEdit->setFixedWidth(50);
-    
     
     termViewButton = new QPushButton(tr("View/Edit All Terms"), functionConstantsBox);
     termViewWidget = new QWidget(this, Qt::Window);
@@ -622,7 +620,7 @@ void interface::connectAllSignals()
 QString interface::genLabel(const char *in)     //concatenate the constant name
 {                                               //with the current index number
     QString out;
-    out.setNum(termIndex+1);
+    out.setNum(termIndex + 1);
     out.prepend(in);
     
     return out;
@@ -674,6 +672,13 @@ void interface::refreshTerms()
 void interface::refreshMainWindowTerms()
 {
     
+    currTermEdit->blockSignals(true);
+    numTermsEdit->blockSignals(true);
+    mEdit->blockSignals(true);
+    nEdit->blockSignals(true);
+    aEdit->blockSignals(true);
+    rEdit->blockSignals(true);
+
     currTermEdit->setValue(termIndex + 1);
     numTermsEdit->setValue(numTerms);
     
@@ -681,6 +686,13 @@ void interface::refreshMainWindowTerms()
     nEdit->setValue(currFunction->getN(termIndex));
     aEdit->setValue(currFunction->getA(termIndex) * 100);
     rEdit->setValue(currFunction->getR(termIndex) * 100);
+
+    currTermEdit->blockSignals(false);
+    numTermsEdit->blockSignals(false);
+    mEdit->blockSignals(false);
+    nEdit->blockSignals(false);
+    aEdit->blockSignals(false);
+    rEdit->blockSignals(false);
     
     refreshLabels();
     
@@ -716,8 +728,10 @@ void interface::removeTerm(int row)
     currFunction->removeTerm(term);
     currFunction->setNumTerms(numTerms);
     currTermEdit->setMaximum(numTerms + 1);
+
+    numTermsEdit->blockSignals(true);
     numTermsEdit->setValue(numTerms);
-    
+    numTermsEdit->blockSignals(false);
 }
 
 
@@ -1105,12 +1119,11 @@ void interface::updatePreviewDisplay()
 
 void interface::updateSavePreview()
 {
-    qDebug() << "Crashed here";
     
     QDateTime savedTime = QDateTime::currentDateTimeUtc();
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
     QString filePath = saveSettings(newFile).append("/" + newFile);
-    
+
     // qDebug() << "Updating Preview";
     historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
     
@@ -1262,9 +1275,10 @@ void interface::termViewCellClicked(int row, int col)
         removeTerm(row);
     } else if (col == 0) {
         termIndex = row;
-        
         refreshMainWindowTerms();
     }
+
+    updatePreviewDisplay();
 }
 
 

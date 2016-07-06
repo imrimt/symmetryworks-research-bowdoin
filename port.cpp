@@ -40,8 +40,6 @@ void Port::paintHistoryIcon(HistoryItem *item)
 {
     this->display = item->getDisplay();
     render(display, HISTORY_ICON_REPAINT_FLAG);
-    
-    //item->getImage()->repaint();
 }
 
 void Port::handleRenderedImage(const int &actionFlag)
@@ -69,40 +67,11 @@ void Port::handleRenderedImage(const int &actionFlag)
 
 void Port::render(QImage *output, const int &actionFlag)
 {
-    
-    // temporary timing elements used for code profiling
-    time_t start, end;
-    double cpu_time_used;
-    start = time(&start);
-
     controller->prepareToRun(output, actionFlag);
-
-    // ControllerThread *controller = new ControllerThread();
-    // controller->prepareToRun(output, actionFlag);
-    // controller->wait();
-    
-    // calc time elapsed to render all pixels
-    end = clock();
-    cpu_time_used = (double)(end - start)/CLOCKS_PER_SEC;
-    // qDebug() << "TIME TO RENDER ALL PIXELS: " << cpu_time_used << " sec";
 }
 
 void Port::render(Display *display, const int &actionFlag)
 {
-        // temporary timing elements used for code profiling
-    clock_t start, end;
-    double cpu_time_used;
-    start = clock();
-
     controller->prepareToRun(display, actionFlag);
-
-    // ControllerThread *controller = new ControllerThread();
-    // controller->prepareToRun(output, actionFlag);
-    // controller->wait();
-    
-    // calc time elapsed to render all pixels
-    end = clock();
-    cpu_time_used = (double)(end - start)/CLOCKS_PER_SEC;
-    // qDebug() << "TIME TO RENDER ALL PIXELS: " << cpu_time_used << " sec";
 }
 

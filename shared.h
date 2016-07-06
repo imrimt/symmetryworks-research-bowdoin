@@ -1,11 +1,3 @@
-//
-//  shared.h
-//  
-//
-//  Created by Bridget E. Went on 7/1/16.
-//
-//
-
 #ifndef shared_h
 #define shared_h
 
@@ -22,7 +14,6 @@
 
 #include <time.h>
 
-
 const double DEFAULT_WIDTH = 2.5;
 const double DEFAULT_HEIGHT = 2.0;
 const double DEFAULT_XCORNER = -0.5;
@@ -31,7 +22,6 @@ const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art
 const int DEFAULT_OUTPUT_HEIGHT = 4800;
 const int DEFAULT_PREVIEW_SIZE = 600;
 const double DEFAULT_IMAGE_SIZE = 600;
-
 
 struct Settings
 {
