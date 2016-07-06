@@ -98,6 +98,13 @@ public:
     {
         return this->text().toDouble();
     }
+    void remove()
+    {
+        delete label;
+        delete percentLabel;
+        delete progBar;
+        //delete layout;
+    }
     
     QProgressBar *progBar;
     QLabel *label;
@@ -114,6 +121,7 @@ protected:
         progBar->setValue(val);
         percentLabel->setText(progBar->text());
     }
+    
 
 signals: 
     void renderFinished();
