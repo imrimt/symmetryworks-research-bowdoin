@@ -83,6 +83,7 @@ public:
         progBar->setAlignment(Qt::AlignCenter);
         progBar->setValue(0);
         progBar->setVisible(visible);
+        progBar->setPalette(QColor(Qt::gray));
         label->setVisible(visible);
         
         layout = new QHBoxLayout();
@@ -125,16 +126,6 @@ signals:
 
 public slots:
     // called when a thread has finished rendering its portion of the work
-    // void update(const int &numThreadsFinished)
-    // {
-    //     if (!visible) { progBar->setVisible(true); label->setVisible(true); }
-        
-    //     double percentComplete = ((double)(numThreadsFinished)/(double)(port->getControllerObject()->getNumThreadsActive()) * 100.0);
-    //     this->setValue(percentComplete);
-        
-    //     if (percentComplete == 100) { emit renderFinished(); }
-    // }
-
     // called to update progress bar throughout the rendering process
     void partialUpdate(const double &progress)
     {
@@ -257,15 +248,13 @@ public:
     QHBoxLayout *imagePropsBoxLayout;
     QHBoxLayout *savePushLayout;
     QVBoxLayout *imagePropsBoxOverallLayout;
-    QLabel *outheightLabel;
-    QLabel *outwidthLabel;
+//    QLabel *outHeightLabel;
+//    QLabel *outWidthLabel;
     QLabel *XCornerLabel;
     QLabel *YCornerLabel;
     QLabel *worldwidthLabel;
     QLabel *worldheightLabel;
-    QLineEdit
-     *outheightEdit;
-    QLineEdit *outwidthEdit;
+    
     QLineEdit *XCornerEdit;
     QLineEdit *YCornerEdit;
     QLineEdit *worldwidthEdit;
@@ -292,6 +281,16 @@ public:
     ProgressBar *displayProgressBar;
     ProgressBar *exportProgressBar;
     
+    // OUTPUT IMAGE DIM POP UP
+    QWidget *settingsPopUp;
+    QVBoxLayout *settingsPopUpLayout;
+    QHBoxLayout *outWidthLayout;
+    QHBoxLayout *outHeightLayout;
+    QLabel *outWidthLabel;
+    QLabel *outHeightLabel;
+    QLineEdit*outHeightEdit;
+    QLineEdit *outWidthEdit;
+    
 private slots:
     //void toggleViewMode();
     void updateCurrTerm(int i);
@@ -311,7 +310,10 @@ private slots:
     void changeA(double val);
     void changeScaleR(const QString &val);
     void changeScaleA(const QString &val);
+
     void exportImageFunction();
+    void startImageExport();
+
     void resetImageFunction();
     void loadFromSettings();
     void saveCurrSettings();
@@ -341,6 +343,7 @@ private:
     void initFunctionConstants();
     void initPatternType();
     void initImageProps();
+    void initImageExportPopUp();
     void initCoeffPlane();
     void connectAllSignals();
     void removeTerm(int row);

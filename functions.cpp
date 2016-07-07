@@ -117,6 +117,7 @@ void AbstractFunction::removeTerm(unsigned int &i)
 
 void AbstractFunction::refresh()
 {
+    
     coeffs.clear();
     coeffs.fill(coeffpair(), terms);
 

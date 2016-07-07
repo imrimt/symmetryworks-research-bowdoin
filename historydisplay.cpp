@@ -14,10 +14,10 @@ HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
   
     // create layout elements
     viewHistoryWidget = new QWidget(static_cast<QWidget *>(parent));
-    viewHistoryBox = new QGroupBox(tr("History"), viewHistoryWidget);
+    viewHistoryBox = new QGroupBox(tr("Snapshots"), viewHistoryWidget);
     viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
     
-    clearHistoryButton = new QPushButton(tr("Clear All History"), viewHistoryBox);
+    clearHistoryButton = new QPushButton(tr("Clear All"), viewHistoryBox);
     viewHistoryBoxLayout = new QVBoxLayout(viewHistoryBox);
     
     viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);

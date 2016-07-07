@@ -30,7 +30,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     currFunction = functionVector[0];
     currColorWheel = new ColorWheel();
 
-    numTerms = currFunction->numterms();
+    numTerms = currFunction->getNumTerms();
     
     // DEFAULT SETTINGS
     settings = new Settings;
@@ -105,7 +105,8 @@ void interface::initInterfaceLayout()
     polarPlaneMapper = new QSignalMapper(this);
     
     initImageProps();
-
+    initImageExportPopUp();
+    
     connectAllSignals();
     
     // SET DEFAULTS
@@ -113,12 +114,12 @@ void interface::initInterfaceLayout()
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
     
-    outwidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
-    outheightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
+    
     worldwidthEdit->setText(QString::number(DEFAULT_WIDTH));
     worldheightEdit->setText(QString::number(DEFAULT_HEIGHT));
     XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
     YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
+
     
     // FINALIZE WINDOW
     setFixedSize(sizeHint());
@@ -132,8 +133,8 @@ void interface::initInterfaceLayout()
 void interface::initPreviewDisplay()
 {
     disp = new Display(DEFAULT_PREVIEW_SIZE, DEFAULT_IMAGE_SIZE, displayWidget);
-    updatePreview = new QPushButton(tr("Update Preview"), this);
-    exportImage = new QPushButton(tr("Export Image..."), this);
+    updatePreview = new QPushButton(tr("Snapshot"), this);
+    exportImage = new QPushButton(tr("Export..."), this);
     resetImage = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
     buttonLayout = new QHBoxLayout();
@@ -440,14 +441,14 @@ void interface::initPatternType()
 // TODO compress this...
 void interface::initImageProps()
 {
-    outheightLabel = new QLabel(tr("Output Height"), imagePropsBox);
-    outwidthLabel = new QLabel(tr("Output Width"), imagePropsBox);
+//    outHeightLabel = new QLabel(tr("Output Height"), imagePropsBox);
+//    outWidthLabel = new QLabel(tr("Output Width"), imagePropsBox);
     XCornerLabel = new QLabel(tr("XCorner"), imagePropsBox);
     YCornerLabel = new QLabel(tr("YCorner"), imagePropsBox);
     worldwidthLabel = new QLabel(tr("World Width"), imagePropsBox);
     worldheightLabel = new QLabel(tr("World Height"), imagePropsBox);
-    outheightEdit = new QLineEdit(imagePropsBox);
-    outwidthEdit = new QLineEdit(imagePropsBox);
+//    outHeightEdit = new QLineEdit(imagePropsBox);
+//    outWidthEdit = new QLineEdit(imagePropsBox);
     XCornerEdit = new QLineEdit(imagePropsBox);
     YCornerEdit = new QLineEdit(imagePropsBox);
     worldwidthEdit = new QLineEdit(imagePropsBox);
@@ -464,15 +465,14 @@ void interface::initImageProps()
     imagePropsBoxStack = new QVBoxLayout();
     savePushLayout = new QHBoxLayout();
     
-    outheightEdit->setValidator(dimValidate);
-    outwidthEdit->setValidator(dimValidate);
+
     XCornerEdit->setValidator(doubleValidate);
     YCornerEdit->setValidator(doubleValidate);
     worldwidthEdit->setValidator(doubleValidate);
     worldheightEdit->setValidator(doubleValidate);
     
-    outheightEdit->setFixedWidth(100);
-    outwidthEdit->setFixedWidth(100);
+//    outHeightEdit->setFixedWidth(100);
+//    outWidthEdit->setFixedWidth(100);
     XCornerEdit->setFixedWidth(100);
     YCornerEdit->setFixedWidth(100);
     worldwidthEdit->setFixedWidth(100);
@@ -484,23 +484,23 @@ void interface::initImageProps()
     imagePropsBoxStack->addWidget(worldwidthLabel);
     imagePropsBoxStack->addWidget(worldheightLabel);
     imagePropsBoxStack->addItem(pspacer1);
-    imagePropsBoxStack->addWidget(outwidthLabel);
-    imagePropsBoxStack->addWidget(outheightLabel);
+//    imagePropsBoxStack->addWidget(outWidthLabel);
+//    imagePropsBoxStack->addWidget(outHeightLabel);
     
     imagePropsBoxStack->setAlignment(XCornerLabel, Qt::AlignLeft);
     imagePropsBoxStack->setAlignment(YCornerLabel, Qt::AlignLeft);
     imagePropsBoxStack->setAlignment(worldwidthLabel, Qt::AlignLeft);
     imagePropsBoxStack->setAlignment(worldheightLabel, Qt::AlignLeft);
-    imagePropsBoxStack->setAlignment(outwidthLabel, Qt::AlignLeft);
-    imagePropsBoxStack->setAlignment(outheightLabel, Qt::AlignLeft);
+//    imagePropsBoxStack->setAlignment(outWidthLabel, Qt::AlignLeft);
+//    imagePropsBoxStack->setAlignment(outHeightLabel, Qt::AlignLeft);
     
     imagePropsEditStack->addWidget(XCornerEdit);
     imagePropsEditStack->addWidget(YCornerEdit);
     imagePropsEditStack->addWidget(worldwidthEdit);
     imagePropsEditStack->addWidget(worldheightEdit);
     imagePropsEditStack->addItem(pspacer2);
-    imagePropsEditStack->addWidget(outwidthEdit);
-    imagePropsEditStack->addWidget(outheightEdit);
+//    imagePropsEditStack->addWidget(outWidthEdit);
+//    imagePropsEditStack->addWidget(outHeightEdit);
     
     imagePropsBoxLayout->addLayout(imagePropsBoxStack);
     imagePropsBoxLayout->addLayout(imagePropsEditStack);
@@ -509,7 +509,41 @@ void interface::initImageProps()
     imagePropsBoxOverallLayout->addLayout(imagePropsBoxLayout);    
 }
 
+void interface::initImageExportPopUp()
+{
+    // IMAGE DIMENSIONS POP UP WINDOW
+    settingsPopUp = new QWidget(this, Qt::Window);
+    settingsPopUp->setWindowTitle(tr("Image Settings"));
+    settingsPopUpLayout = new QVBoxLayout(settingsPopUp);
+    settingsPopUp->setMinimumWidth(300);
+    
+    outHeightEdit = new QLineEdit(settingsPopUp);
+    outWidthEdit = new QLineEdit(settingsPopUp);
+    
+    outWidthLayout = new QHBoxLayout(settingsPopUp);
+    outWidthLayout->addWidget(new QLabel("Image Width"));
+    outWidthLayout->addWidget(outWidthEdit);
+    
+    outHeightLayout = new QHBoxLayout(settingsPopUp);
+    outHeightLayout->addWidget(new QLabel("Image Height"));
+    outHeightLayout->addWidget(outHeightEdit);
+    
+    settingsPopUpLayout->addLayout(outWidthLayout);
+    settingsPopUpLayout->addLayout(outHeightLayout);
+    
+    QPushButton *button = new QPushButton(tr("OK"), settingsPopUp);
+    settingsPopUpLayout->addWidget(button);
+    
+    connect(button, SIGNAL(clicked()), this, SLOT(startImageExport()));
+    
+    outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
+    outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
+    outHeightEdit->setValidator(dimValidate);
+    outWidthEdit->setValidator(dimValidate);
+    
+    settingsPopUp->hide();
 
+}
 
 // CONNECT SIGNALS TO SLOTS
 void interface::connectAllSignals()
@@ -544,8 +578,8 @@ void interface::connectAllSignals()
     connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
     connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
     
-    connect(outwidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOWidth(QString)));
-    connect(outheightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOHeight(QString)));
+    connect(outWidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOWidth(QString)));
+    connect(outHeightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOHeight(QString)));
     connect(worldwidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeWorldWidth(QString)));
     connect(worldheightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeWorldHeight(QString)));
     connect(XCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeXCorner(QString)));
@@ -583,7 +617,7 @@ void interface::refreshLabels()
 void interface::refreshTableTerms()
 {
 
-    numTerms = currFunction->numterms();
+    numTerms = currFunction->getNumTerms();
     
 
     if (termViewTable->rowCount() == 0) {
@@ -636,7 +670,7 @@ void interface::refreshMainWindowTerms()
 
     currTermEdit->setValue(termIndex + 1);
     
-    numTermsEdit->setValue(currFunction->numterms());
+    numTermsEdit->setValue(currFunction->getNumTerms());
 
     currTermEdit->blockSignals(false);
     numTermsEdit->blockSignals(false);
@@ -691,11 +725,11 @@ void interface::removeTerm(int row)
 
     unsigned int term = row;
     currFunction->removeTerm(term);
-    numTerms = currFunction->numterms();
+    numTerms = currFunction->getNumTerms();
     currTermEdit->blockSignals(true);
     // numTermsEdit->blockSignals(true);
-    currTermEdit->setMaximum(currFunction->numterms() + 1);
-    // numTermsEdit->setValue(currFunction->numterms());
+    currTermEdit->setMaximum(currFunction->getNumTerms() + 1);
+    // numTermsEdit->setValue(currFunction->getNumTerms());
     currTermEdit->blockSignals(false);
 
     // updatePreviewDisplay();
@@ -773,27 +807,21 @@ void interface::addTerm()
 void interface::resetImageFunction()
 {
 
-    // qDebug() << "reset pressed";
-
     termIndex = 0;
-
-    // qDebug() << "current numterms: " << numTerms;
 
     currFunction->refresh();
     numTermsEdit->setValue(1);
-
-    // qDebug() << "new numterms:" << currFunction->numterms();
     
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
     
-    outwidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
-    outheightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
+//    outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
+//    outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
     worldwidthEdit->setText(QString::number(DEFAULT_WIDTH));
     worldheightEdit->setText(QString::number(DEFAULT_HEIGHT));
     XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
     YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
-    
+
     // refreshTableTerms();
     // refreshMainWindowTerms();
     // updatePreviewDisplay();
@@ -844,7 +872,7 @@ void interface::changeNumTerms(int i)
         for (int k = oldNumTerms; k > i; --k) { removeTerm(k-1); }
     } else if (i > oldNumTerms) {
         currFunction->setNumTerms(i);
-        numTerms = currFunction->numterms();
+        numTerms = currFunction->getNumTerms();
         for (int k = oldNumTerms; k < i; ++k) addTerm();
     }
     
@@ -894,7 +922,7 @@ void interface::changeFunction(int index)
     
     currFunction = functionVector[index];
     
-    numTerms = currFunction->numterms();
+    numTerms = currFunction->getNumTerms();
 
     termViewTable->setRowCount(0);
 
@@ -942,11 +970,11 @@ QString interface::saveSettings(const QString &fileName) {
     out << functionSel->currentIndex();
     out << colorwheelSel->currentIndex();
     out << currFunction->getScaleR() << currFunction->getScaleA();
-    out << currFunction->numterms();
+    out << currFunction->getNumTerms();
     
     unsigned int i;
 
-    for(int index = 0; index < currFunction->numterms(); index++)
+    for(int index = 0; index < currFunction->getNumTerms(); index++)
     {
         i = index;
         out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
@@ -1009,8 +1037,8 @@ QString interface::loadSettings(const QString &fileName) {
     inFile.close();
     
     refreshTableTerms();
-    outwidthEdit->setText(QString::number(settings->OWidth));
-    outheightEdit->setText(QString::number(settings->OHeight));
+//    outWidthEdit->setText(QString::number(settings->OWidth));
+//    outHeightEdit->setText(QString::number(settings->OHeight));
     worldwidthEdit->setText(QString::number(settings->Width));
     worldheightEdit->setText(QString::number(settings->Height));
     XCornerEdit->setText(QString::number(settings->XCorner));
@@ -1138,10 +1166,15 @@ void interface::changeScaleR(const QString &val)
 // SLOT function to handle exporting an image to ppm or jpeg format
 void interface::exportImageFunction()
 {    
+    settingsPopUp->show(); 
+}
+
+void interface::startImageExport() 
+{
     
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,
-                                                    tr("PPM (*.ppm);;JPEG (*.jpg *.jpeg)"));
+                                                    tr("JPEG (*.jpg *.jpeg);;TIFF (*.tiff);; PNG (*.png);;PPM (*.ppm)"));
     
     QFile inFile(fileName);
     if (!inFile.open(QIODevice::WriteOnly))
@@ -1156,8 +1189,8 @@ void interface::exportImageFunction()
     connect(imageExportPort, SIGNAL(finishedExport(QString)), this, SLOT(popUpImageExportFinished(QString)));
     
     QImage *output = new QImage(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
-    imageExportPort->exportImage(output, fileName);       
-    
+
+    imageExportPort->exportImage(output, fileName);    
 }
 
 // function for error handling
@@ -1251,7 +1284,7 @@ void interface::updateTermTable(QObject *cell)
 void interface::addTermTable() 
 {
     addTermButton->blockSignals(true);
-    int newNumTerms = currFunction->numterms() + 1;
+    int newNumTerms = currFunction->getNumTerms() + 1;
     currFunction->setNumTerms(newNumTerms);
     numTermsEdit->setValue(newNumTerms);
 } 
