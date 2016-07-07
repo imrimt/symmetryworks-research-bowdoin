@@ -30,7 +30,7 @@ interface::interface(QWidget *parent) : QWidget(parent)
     currFunction = functionVector[0];
     currColorWheel = new ColorWheel();
 
-    numTerms = currFunction->numterms();
+    numTerms = currFunction->getNumTerms();
     
     // DEFAULT SETTINGS
     settings = new Settings;
@@ -132,8 +132,8 @@ void interface::initInterfaceLayout()
 void interface::initPreviewDisplay()
 {
     disp = new Display(DEFAULT_PREVIEW_SIZE, DEFAULT_IMAGE_SIZE, displayWidget);
-    updatePreview = new QPushButton(tr("Update Preview"), this);
-    exportImage = new QPushButton(tr("Export Image..."), this);
+    updatePreview = new QPushButton(tr("Snapshot"), this);
+    exportImage = new QPushButton(tr("Export..."), this);
     resetImage = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
     buttonLayout = new QHBoxLayout();
@@ -582,7 +582,7 @@ void interface::refreshLabels()
 void interface::refreshTableTerms()
 {
 
-    numTerms = currFunction->numterms();
+    numTerms = currFunction->getNumTerms();
     
 
     if (termViewTable->rowCount() == 0) {
@@ -632,7 +632,7 @@ void interface::refreshMainWindowTerms()
 
     currTermEdit->setValue(termIndex + 1);
     
-    numTermsEdit->setValue(currFunction->numterms());
+    numTermsEdit->setValue(currFunction->getNumTerms());
 
     currTermEdit->blockSignals(false);
     numTermsEdit->blockSignals(false);
@@ -685,11 +685,11 @@ void interface::removeTerm(int row)
 
     unsigned int term = row;
     currFunction->removeTerm(term);
-    numTerms = currFunction->numterms();
+    numTerms = currFunction->getNumTerms();
     currTermEdit->blockSignals(true);
     // numTermsEdit->blockSignals(true);
-    currTermEdit->setMaximum(currFunction->numterms() + 1);
-    // numTermsEdit->setValue(currFunction->numterms());
+    currTermEdit->setMaximum(currFunction->getNumTerms() + 1);
+    // numTermsEdit->setValue(currFunction->getNumTerms());
     currTermEdit->blockSignals(false);
 
     // updatePreviewDisplay();
@@ -767,31 +767,12 @@ void interface::addTerm()
 void interface::resetImageFunction()
 {
 
-    qDebug() << "reset pressed";
-
-    // currFunction->reset();
-    // numTermsEdit->setValue(1);
-
-
-    // functionSel->setCurrentIndex(0);
-    // colorwheelSel->setCurrentIndex(0);
-
     termIndex = 0;
-    //numTerms = currFunction->numterms();
-
-    qDebug() << "current numterms: " << numTerms;
 
     currFunction->refresh();
     
     numTermsEdit->setValue(1);
-    currTermEdit->setMaximum(currFunction->numterms());
-
-
-    //refreshTableTerms();
-    qDebug() << "new numterms:" << currFunction->numterms();
-
-    //refreshMainWindowTerms();
-
+    currTermEdit->setMaximum(currFunction->getNumTerms());
     
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
@@ -803,6 +784,7 @@ void interface::resetImageFunction()
     XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
     YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
     
+    refreshMainWindowTerms();
     updatePreviewDisplay();
 }
 
@@ -849,7 +831,7 @@ void interface::changeNumTerms(int i)
         for (int k = oldNumTerms; k > i; --k) { removeTerm(k-1); }
     } else if (i > oldNumTerms) {
         currFunction->setNumTerms(i);
-        numTerms = currFunction->numterms();
+        numTerms = currFunction->getNumTerms();
         for (int k = oldNumTerms; k < i; ++k) addTerm();
     }
    
@@ -897,7 +879,7 @@ void interface::changeFunction(int index)
     
     currFunction = functionVector[index];
     
-    numTerms = currFunction->numterms();
+    numTerms = currFunction->getNumTerms();
 
     termViewTable->setRowCount(0);
 
@@ -943,11 +925,11 @@ QString interface::saveSettings(const QString &fileName) {
     out << functionSel->currentIndex();
     out << colorwheelSel->currentIndex();
     out << currFunction->getScaleR() << currFunction->getScaleA();
-    out << currFunction->numterms();
+    out << currFunction->getNumTerms();
     
     unsigned int i;
 
-    for(int index = 0; index < currFunction->numterms(); index++)
+    for(int index = 0; index < currFunction->getNumTerms(); index++)
     {
         i = index;
         out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
@@ -1143,7 +1125,7 @@ void interface::saveImageStart()
     
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,
-                                                    tr("PPM (*.ppm);;JPEG (*.jpg *.jpeg)"));
+                                                    tr("JPEG (*.jpg *.jpeg);;TIFF (*.tiff);; PNG (*.png);;PPM (*.ppm)"));
     
     QFile inFile(fileName);
     if (!inFile.open(QIODevice::WriteOnly))
@@ -1256,7 +1238,7 @@ void interface::updateTermTable(QObject *cell)
 void interface::addTermTable() 
 {
     addTermButton->blockSignals(true);
-    int newNumTerms = currFunction->numterms() + 1;
+    int newNumTerms = currFunction->getNumTerms() + 1;
     currFunction->setNumTerms(newNumTerms);
     numTermsEdit->setValue(newNumTerms);
 } 

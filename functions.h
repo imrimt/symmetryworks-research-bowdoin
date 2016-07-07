@@ -22,7 +22,7 @@ class AbstractFunction      //this is the base class for all other classes that 
     virtual ~AbstractFunction(){;}
 
     // CONST MEMBER FUNCTIONS
-    int numterms() { return terms; }
+    int getNumTerms() { return terms; }
     virtual std::complex<double> bundle(double &x, double &y, unsigned int &i) const = 0;
     virtual std::complex<double> operator() (double i, double j) = 0;
     int getN(unsigned int &i) const;

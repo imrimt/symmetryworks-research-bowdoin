@@ -83,6 +83,7 @@ public:
         progBar->setAlignment(Qt::AlignCenter);
         progBar->setValue(0);
         progBar->setVisible(visible);
+        progBar->setPalette(QColor(Qt::gray));
         label->setVisible(visible);
         
         layout = new QHBoxLayout();
@@ -128,7 +129,6 @@ public slots:
     void update(const int &numThreadsFinished)
     {
         if (!visible) { progBar->setVisible(true); label->setVisible(true); }
-        
         double percentComplete = ((double)(numThreadsFinished)/(double)(port->getControllerObject()->getNumThreadsActive()) * 100.0);
         this->setValue(percentComplete);
         
