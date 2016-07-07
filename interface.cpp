@@ -101,8 +101,8 @@ void interface::initInterfaceLayout()
     initFunctionConstants();
     initPatternType();
 
-    coeffPlane = new CoeffPlane(currFunction, &termIndex);
-    coeffMapper = new QSignalMapper(this);
+    polarPlane = new PolarPlane(currFunction, &termIndex, this);
+    polarPlaneMapper = new QSignalMapper(this);
     
     initImageProps();
 
@@ -149,8 +149,9 @@ void interface::initPreviewDisplay()
     previewDisplayPort = new Port(currFunction, currColorWheel, disp->width(), disp->height(), settings);
     
     displayProgressBar = new ProgressBar(tr("Preview"), true, previewDisplayPort);
-    connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), displayProgressBar, SLOT(update(int)));
+    // connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), displayProgressBar, SLOT(update(int)));
     connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
+    connect(previewDisplayPort, SIGNAL(paintingFinished(bool)), this, SLOT(resetMainWindowButton(bool)));
     connect(displayProgressBar, SIGNAL(renderFinished()), this, SLOT(resetTableButton()));
     
     dispLayout->setAlignment(disp, Qt::AlignCenter);
@@ -516,15 +517,15 @@ void interface::connectAllSignals()
     
     connect(termViewTable, SIGNAL(cellClicked(int, int)), this, SLOT(termViewCellClicked(int, int)));
     
-    connect(coeffPlaneEdit, SIGNAL(clicked()), coeffMapper, SLOT(map()));
-    connect(scalePlaneEdit, SIGNAL(clicked()), coeffMapper, SLOT(map()));
-    coeffMapper->setMapping(coeffPlaneEdit, LOCAL_FLAG);
-    coeffMapper->setMapping(scalePlaneEdit, GLOBAL_FLAG);
-    connect(coeffMapper,SIGNAL(mapped(int)), coeffPlane, SLOT(showPlanePopUp(int)));
+    connect(coeffPlaneEdit, SIGNAL(clicked()), polarPlaneMapper, SLOT(map()));
+    connect(scalePlaneEdit, SIGNAL(clicked()), polarPlaneMapper, SLOT(map()));
+    polarPlaneMapper->setMapping(coeffPlaneEdit, LOCAL_FLAG);
+    polarPlaneMapper->setMapping(scalePlaneEdit, GLOBAL_FLAG);
+    connect(polarPlaneMapper,SIGNAL(mapped(int)), polarPlane, SLOT(showPlanePopUp(int)));
 
    // connect(toggleViewButton, SIGNAL(clicked()), this, SLOT(toggleViewMode()));
     connect(updatePreview, SIGNAL(clicked()), this, SLOT(updateSavePreview()));
-    connect(exportImage, SIGNAL(clicked()), this, SLOT(saveImageStart()));
+    connect(exportImage, SIGNAL(clicked()), this, SLOT(exportImageFunction()));
     connect(resetImage, SIGNAL(clicked()), this, SLOT(resetImageFunction()));
     
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), currColorWheel, SLOT(setCurrent(int)));
@@ -552,7 +553,7 @@ void interface::connectAllSignals()
     
     
     connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
-    connect(coeffPlane, SIGNAL(setPolarCoordinates(int, QString, QString)), this, SLOT(setPolarCoordinates(int, QString, QString)));
+    connect(polarPlane, SIGNAL(setPolarCoordinates(int, QString, QString)), this, SLOT(setPolarCoordinates(int, QString, QString)));
     
     connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(updateSavePreview()));
     
@@ -627,6 +628,9 @@ void interface::refreshTableTerms()
 // update main window term editor with appropriate values
 void interface::refreshMainWindowTerms()
 {
+
+    qDebug() << "in refreshMainWindowTerms";
+
     currTermEdit->blockSignals(true);
     numTermsEdit->blockSignals(true);
 
@@ -663,6 +667,8 @@ void interface::refreshMainWindowTerms()
 void interface::removeTerm(int row)
 {
     
+    qDebug() << "removing term" << row + 1;
+
     if (row <= 0 && termViewTable->rowCount() == 1) {
         return;
     }
@@ -763,35 +769,20 @@ void interface::addTerm()
 }
 
 
-// reset the image to its default settings
+// reset the image to its default settings with the current function and colorwheel
 void interface::resetImageFunction()
 {
 
-    qDebug() << "reset pressed";
-
-    // currFunction->reset();
-    // numTermsEdit->setValue(1);
-
-
-    // functionSel->setCurrentIndex(0);
-    // colorwheelSel->setCurrentIndex(0);
+    // qDebug() << "reset pressed";
 
     termIndex = 0;
-    //numTerms = currFunction->numterms();
 
-    qDebug() << "current numterms: " << numTerms;
+    // qDebug() << "current numterms: " << numTerms;
 
     currFunction->refresh();
-    
     numTermsEdit->setValue(1);
-    currTermEdit->setMaximum(currFunction->numterms());
 
-
-    //refreshTableTerms();
-    qDebug() << "new numterms:" << currFunction->numterms();
-
-    //refreshMainWindowTerms();
-
+    // qDebug() << "new numterms:" << currFunction->numterms();
     
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
@@ -803,7 +794,9 @@ void interface::resetImageFunction()
     XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
     YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
     
-    updatePreviewDisplay();
+    // refreshTableTerms();
+    // refreshMainWindowTerms();
+    // updatePreviewDisplay();
 }
 
 //void interface::toggleViewMode()
@@ -841,6 +834,8 @@ void interface::updateCurrTerm(int i)
 void interface::changeNumTerms(int i)
 {
 
+    numTermsEdit->setEnabled(false);
+
     int oldNumTerms = numTerms;
 
     qDebug() << "old:" << oldNumTerms << "| new:" << i;    
@@ -852,10 +847,12 @@ void interface::changeNumTerms(int i)
         numTerms = currFunction->numterms();
         for (int k = oldNumTerms; k < i; ++k) addTerm();
     }
-   
+    
+    currTermEdit->blockSignals(true);
     currTermEdit->setMaximum(i);
+    currTermEdit->blockSignals(false);
 
-    updateCurrTerm(i);    
+    updateCurrTerm(i);
     updatePreviewDisplay();
 }
 
@@ -900,6 +897,8 @@ void interface::changeFunction(int index)
     numTerms = currFunction->numterms();
 
     termViewTable->setRowCount(0);
+
+    currTermEdit->setMaximum(numTerms);
 
     
     previewDisplayPort->changeFunction(currFunction);
@@ -1137,9 +1136,8 @@ void interface::changeScaleR(const QString &val)
 }
 
 // SLOT function to handle exporting an image to ppm or jpeg format
-void interface::saveImageStart()
-{
-    
+void interface::exportImageFunction()
+{    
     
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,
@@ -1153,15 +1151,12 @@ void interface::saveImageStart()
     dispLayout->insertLayout(2, exportProgressBar->layout);
     exportProgressBar->reset();
     
-    connect(imageExportPort->getControllerObject(), SIGNAL(progressChanged(int)), exportProgressBar, SLOT(update(int)));
+    // connect(imageExportPort->getControllerObject(), SIGNAL(progressChanged(int)), exportProgressBar, SLOT(update(int)));
     connect(imageExportPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), exportProgressBar, SLOT(partialUpdate(double)));
-    
     connect(imageExportPort, SIGNAL(finishedExport(QString)), this, SLOT(popUpImageExportFinished(QString)));
     
     QImage *output = new QImage(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
-    imageExportPort->exportImage(output, fileName);
-    
-    
+    imageExportPort->exportImage(output, fileName);       
     
 }
 
@@ -1178,7 +1173,7 @@ void interface::errorHandler(const int &flag)
     
 }
 
-// sets coefficient pair using data from CoeffPlane
+// sets coefficient pair using data from polarPlane
 void interface::setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle)
 {
     if (coeffFlag == LOCAL_FLAG)
@@ -1271,8 +1266,6 @@ void interface::popUpImageExportFinished(const QString &filePath)
     
     exportProgressBar->remove();
     delete exportProgressBar;
-    
-    
 }
 
 // reset the table to receive signals
@@ -1280,5 +1273,10 @@ void interface::resetTableButton()
 {
     addTermButton->blockSignals(false);
     termViewTable->blockSignals(false);
+}
+
+void interface::resetMainWindowButton(const bool &status) 
+{
+    numTermsEdit->setEnabled(status);
 }
 

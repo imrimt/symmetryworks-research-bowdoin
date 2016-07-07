@@ -29,7 +29,7 @@
 #include <QHeaderView>
 
 #include "historydisplay.h"
-#include "coeffplane.h"
+#include "polarplane.h"
 #include "port.h"
 
 #define MAX_NUM_TERMS 99
@@ -125,15 +125,15 @@ signals:
 
 public slots:
     // called when a thread has finished rendering its portion of the work
-    void update(const int &numThreadsFinished)
-    {
-        if (!visible) { progBar->setVisible(true); label->setVisible(true); }
+    // void update(const int &numThreadsFinished)
+    // {
+    //     if (!visible) { progBar->setVisible(true); label->setVisible(true); }
         
-        double percentComplete = ((double)(numThreadsFinished)/(double)(port->getControllerObject()->getNumThreadsActive()) * 100.0);
-        this->setValue(percentComplete);
+    //     double percentComplete = ((double)(numThreadsFinished)/(double)(port->getControllerObject()->getNumThreadsActive()) * 100.0);
+    //     this->setValue(percentComplete);
         
-        if (percentComplete == 100) { emit renderFinished(); }
-    }
+    //     if (percentComplete == 100) { emit renderFinished(); }
+    // }
 
     // called to update progress bar throughout the rendering process
     void partialUpdate(const double &progress)
@@ -207,7 +207,7 @@ public:
     QLineEdit *scaleREdit;
     QPushButton *scalePlaneEdit;
     
-    QSignalMapper *coeffMapper;
+    QSignalMapper *polarPlaneMapper;
 
     QGroupBox *functionConstantsBox;
     
@@ -249,7 +249,7 @@ public:
     QPushButton *setLoadedImage;
 
     HistoryDisplay *historyDisplay;
-    CoeffPlane *coeffPlane;
+    PolarPlane *polarPlane;
     
     // imagePropsBox SUBELEMENTS
     QVBoxLayout *imagePropsBoxStack;
@@ -311,7 +311,7 @@ private slots:
     void changeA(double val);
     void changeScaleR(const QString &val);
     void changeScaleA(const QString &val);
-    void saveImageStart();
+    void exportImageFunction();
     void resetImageFunction();
     void loadFromSettings();
     void saveCurrSettings();
@@ -328,6 +328,7 @@ private slots:
     void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
     QString loadSettings(const QString &fileName);
     void popUpImageExportFinished(const QString &filePath);
+    void resetMainWindowButton(const bool &status);
     
 private:    
     QString genLabel(const char * in);    

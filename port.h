@@ -58,12 +58,11 @@ private:
     Controller *controllerObject;
 
 signals:
-    void threadFinished(const int &numThreadsCompleted);
     void finishedExport(const QString &filePath);
+    void paintingFinished(const bool &status);
 
 private slots:
     void handleRenderedImage(const int &actionFlag);
-    
     void handleFinishedExport(const QString &filePath) { emit finishedExport(filePath); }
 
     // void combineRenderedImageParts(QPoint startPoint, QVector<QVector<QRgb>> result);

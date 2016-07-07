@@ -86,13 +86,20 @@ private slots:
         --numThreadsRunning;
         // qDebug() << "numThreadsRunning = " << numThreadsRunning;
 
-        emit progressChanged(numThreadsActive - numThreadsRunning);
+        //emit progressChanged(numThreadsActive - numThreadsRunning);
 
         if (numThreadsRunning == 0) {
             // qDebug() << "emit workFinished signal";
             restart = false;
+
+            //quit the event loop
             emit allThreadsFinished();
+
+            //signal to the port object
             emit workFinished(actionFlag);
+
+            //signal to update progress bar
+            emit partialProgressChanged(100);
         }
     }
 

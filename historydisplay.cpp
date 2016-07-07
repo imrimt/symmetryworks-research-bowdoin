@@ -59,6 +59,8 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     historyItemsWithLabelLayout->addLayout(historyItemsLayout);
     historyItemsWithLabelLayout->addWidget(timeStampLabel);
     viewHistoryBoxLayout->insertLayout(1, historyItemsWithLabelLayout);
+
+    //need to remove layout when exceeding the max num of history items
     
     // saving all values to history item object
     item->preview = d;
@@ -123,6 +125,8 @@ void HistoryDisplay::removePreview(QObject *item)
     historyItemsMap.erase(historyItemsMap.find(historyItemToRemove->savedTime));
     
     QFile::remove(historyItemToRemove->filePathName);
+
+    delete historyItemToRemove;
 }
 
 

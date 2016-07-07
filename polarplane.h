@@ -32,13 +32,13 @@ const int GLOBAL_FLAG = 1;
 
 
 // object for creating a plane pop-up view for function constants
-class CoeffPlaneView : public QChartView {
+class PolarPlaneView : public QChartView {
     
     Q_OBJECT
     
 public:
     
-    CoeffPlaneView(QChart *chart, QScatterSeries *coordinateSeries) : QChartView(chart) { this->chart = chart; this->coordinateSeries = coordinateSeries; setMouseTracking(false);}
+    PolarPlaneView(QChart *chart, QScatterSeries *coordinateSeries) : QChartView(chart) { this->chart = chart; this->coordinateSeries = coordinateSeries; setMouseTracking(false);}
     
 protected:
     // MOUSE EVENTS
@@ -81,27 +81,27 @@ private:
 
 
 
-class CoeffPlane : public QWidget
+class PolarPlane : public QWidget
 {
     Q_OBJECT
 public:
-    CoeffPlane(QWidget *parent = 0) : QWidget(parent) { }
-    explicit CoeffPlane(AbstractFunction *currFunction, unsigned int *termIndex);
-    ~CoeffPlane() { }
+    PolarPlane(QWidget *parent = 0) : QWidget(parent) { }
+    explicit PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, QWidget *parent);
+    ~PolarPlane() { }
     
 signals:
     void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
     
 private:
     // organizational elements
-    QWidget *coeffPlanePopUp;
+    QWidget *polarPlanePopUp;
     QGroupBox *polarCoordinatesBox;
-    QHBoxLayout *coeffPlanePopUpLayout;
+    QHBoxLayout *polarPlanePopUpLayout;
     QVBoxLayout *polarCoordinatesLayout;
     QHBoxLayout *actionButtonLayout;
     QHBoxLayout *zoomButtonLayout;
     QVBoxLayout *polarPlaneWithZoomLayout;
-    CoeffPlaneView *graphDisplay;
+    PolarPlaneView *graphDisplay;
     QChart *graph;
     QValueAxis *axisX;
     QValueAxis *axisY;
@@ -111,6 +111,7 @@ private:
     QLineEdit *angleEdit;
     QPushButton *confirmButton;
     QPushButton *resetButton;
+    QPushButton *cancelButton;
     QPushButton *zoomInButton;
     QPushButton *zoomOutButton;
     QSpacerItem *planeSpacer1;
@@ -138,6 +139,7 @@ private slots:
     void updatePolarCoordinates();
     void polarPlaneZoomIn();
     void polarPlaneZoomOut();
+    void hidePolarPlane() { polarPlanePopUp->hide(); }
     
     void setPolarCoordinates();
     void resetPolarCoordinates();

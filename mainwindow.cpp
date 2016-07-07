@@ -129,7 +129,7 @@ void MainWindow::createActions()
     exportImageAct = new QAction(tr("Export Image"), this);
     // exportImageAct->setShortCuts()
     exportImageAct->setStatusTip(tr("Export to an image file"));
-    connect(exportImageAct, SIGNAL(triggered()), currInterface, SLOT(saveImageStart()));
+    connect(exportImageAct, SIGNAL(triggered()), currInterface, SLOT(exportImageFunction()));
 
     // exitAct = new QAction(tr("Exit"), this);
     // exitAct->setShortcuts(QKeySequence::Quit);

@@ -24,7 +24,7 @@ SOURCES += \
     controllerthread.cpp \
     historydisplay.cpp \
     iothread.cpp \
-    coeffplane.cpp
+    polarplane.cpp
 
 HEADERS  += \
     interface.h \
@@ -40,7 +40,7 @@ HEADERS  += \
     shared.h \
     historydisplay.h \
     iothread.h \
-    coeffplane.h
+    polarplane.h
 
 RESOURCES += \
     softwareresources.qrc

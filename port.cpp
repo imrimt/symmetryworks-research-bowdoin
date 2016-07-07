@@ -63,6 +63,8 @@ void Port::handleRenderedImage(const int &actionFlag)
         break;
     }
 
+    emit paintingFinished(true);
+
 }
 
 void Port::render(QImage *output, const int &actionFlag)
