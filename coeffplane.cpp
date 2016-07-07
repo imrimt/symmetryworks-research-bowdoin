@@ -43,9 +43,9 @@ CoeffPlane::CoeffPlane(AbstractFunction *currFunction, unsigned int *termIndex)
     
     confirmButton = new QPushButton(tr("OK"));
     resetButton = new QPushButton(tr("Reset"));
-    zoomInButton = new QPushButton(QIcon(":/Images/zoomin.png"), "Zoom In");
+    zoomInButton = new QPushButton(QIcon(":/Images/Icons/zoomin.png"), "Zoom In");
     zoomInButton->setStyleSheet("QPushButton { text-align:center; padding:5px}");
-    zoomOutButton = new QPushButton(QIcon(":/Images/zoomout.png"), "Zoom Out");
+    zoomOutButton = new QPushButton(QIcon(":/Images/Icons/zoomout.png"), "Zoom Out");
     zoomOutButton->setStyleSheet("QPushButton { text-align:center; padding:5px}");
     
     planeSpacer1 = new QSpacerItem(15,15);

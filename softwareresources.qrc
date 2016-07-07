@@ -3,9 +3,9 @@
         <file>wallgen.pro</file>
     </qresource>
     <qresource prefix="/Images">
-        <file>zoomout.png</file>
-        <file>zoomin.png</file>
-        <file>add.png</file>
-        <file>remove.png</file>
+        <file>Icons/add.png</file>
+        <file>Icons/remove.png</file>
+        <file>Icons/zoomin.png</file>
+        <file>Icons/zoomout.png</file>
     </qresource>
 </RCC>

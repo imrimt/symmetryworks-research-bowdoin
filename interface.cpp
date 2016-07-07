@@ -343,7 +343,7 @@ void interface::initFunctionConstants()
     termViewTable->verticalHeader()->hide();
     
     addTermButton = new QPushButton(tr("Add term..."));
-    addTermButton->setIcon(*(new QIcon(":/Images/add.png")));
+    addTermButton->setIcon(*(new QIcon(":/Images/Icons/add.png")));
     termViewLayout->addWidget(addTermButton);
     
     // resize all columns to maximum stretch
@@ -750,8 +750,8 @@ void interface::removeTerm(int row)
     
     // highestIndex--;
     // highestIndex = numTerms - 1;
-    // if (termIndex > highestIndex)
-    //     termIndex = highestIndex;
+    if (termIndex > termViewTable->rowCount())
+        termIndex = termViewTable->rowCount() - 1;
     
     // numTerms--;
     unsigned int term = row;
@@ -816,7 +816,7 @@ void interface::addTerm()
     termViewTable->setCellWidget(highestIndex, 4, rEditTable);
 
     QTableWidgetItem *removeTermItem = new QTableWidgetItem();
-    removeTermItem->setIcon(QIcon(":/Images/remove.png"));
+    removeTermItem->setIcon(QIcon(":/Images/Icons/remove.png"));
     removeTermItem->setFlags(removeTermItem->flags() ^ Qt::ItemIsEditable);
     
     termViewTable->setItem(highestIndex, 5, removeTermItem);
@@ -870,13 +870,29 @@ void interface::resetImageFunction()
 
     //numTerms = 1;
 
+    qDebug() << "reset pressed";
+
     currFunction->reset();
 
     // functionSel->setCurrentIndex(0);
     // colorwheelSel->setCurrentIndex(0);
-    
-    refreshTableTerms();
-    refreshMainWindowTerms();
+
+    termIndex = 0;
+    //numTerms = currFunction->numterms();
+
+    qDebug() << "current numterms: " << numTerms;
+
+    // numTermsEdit->blockSignals(false);
+
+    qDebug() << "new numterms:" << currFunction->numterms();
+
+    currTermEdit->setMaximum(currFunction->numterms());
+    numTermsEdit->setValue(currFunction->numterms());
+
+    //refreshTableTerms();
+    qDebug() << "finish changing num terms";
+
+    //refreshMainWindowTerms();
     
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
@@ -974,7 +990,6 @@ void interface::changeFunction(int index)
    // termViewTable->clearContents();
     
     termIndex = 0;
-    highestIndex = 0;
     
     currFunction = functionVector[index];
     
@@ -990,15 +1005,14 @@ void interface::changeFunction(int index)
     //qDebug() << "made it here";
     
     
-    qDebug() << "crashed here?";
+    // qDebug() << "crashed here?";
     refreshMainWindowTerms();
-    qDebug() << "crashed here 2?";
+    // qDebug() << "crashed here 2?";
     refreshTableTerms();
-    qDebug() << "crashed here 3?";
+    // qDebug() << "crashed here 3?";
     updatePreviewDisplay();
      
     qDebug() << "CHANGING FUNCTION...";
-    qDebug() << "num terms" << numTerms << "term index" << termIndex << "highest index" << highestIndex;
 }
 
 
