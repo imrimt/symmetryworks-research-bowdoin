@@ -105,7 +105,8 @@ void interface::initInterfaceLayout()
     coeffMapper = new QSignalMapper(this);
     
     initImageProps();
-
+    initImageExportPopUp();
+    
     connectAllSignals();
     
     // SET DEFAULTS
@@ -113,12 +114,12 @@ void interface::initInterfaceLayout()
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
     
-    outwidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
-    outheightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
+    
     worldwidthEdit->setText(QString::number(DEFAULT_WIDTH));
     worldheightEdit->setText(QString::number(DEFAULT_HEIGHT));
     XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
     YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
+
     
     // FINALIZE WINDOW
     setFixedSize(sizeHint());
@@ -439,14 +440,14 @@ void interface::initPatternType()
 // TODO compress this...
 void interface::initImageProps()
 {
-    outheightLabel = new QLabel(tr("Output Height"), imagePropsBox);
-    outwidthLabel = new QLabel(tr("Output Width"), imagePropsBox);
+//    outHeightLabel = new QLabel(tr("Output Height"), imagePropsBox);
+//    outWidthLabel = new QLabel(tr("Output Width"), imagePropsBox);
     XCornerLabel = new QLabel(tr("XCorner"), imagePropsBox);
     YCornerLabel = new QLabel(tr("YCorner"), imagePropsBox);
     worldwidthLabel = new QLabel(tr("World Width"), imagePropsBox);
     worldheightLabel = new QLabel(tr("World Height"), imagePropsBox);
-    outheightEdit = new QLineEdit(imagePropsBox);
-    outwidthEdit = new QLineEdit(imagePropsBox);
+//    outHeightEdit = new QLineEdit(imagePropsBox);
+//    outWidthEdit = new QLineEdit(imagePropsBox);
     XCornerEdit = new QLineEdit(imagePropsBox);
     YCornerEdit = new QLineEdit(imagePropsBox);
     worldwidthEdit = new QLineEdit(imagePropsBox);
@@ -463,15 +464,14 @@ void interface::initImageProps()
     imagePropsBoxStack = new QVBoxLayout();
     savePushLayout = new QHBoxLayout();
     
-    outheightEdit->setValidator(dimValidate);
-    outwidthEdit->setValidator(dimValidate);
+
     XCornerEdit->setValidator(doubleValidate);
     YCornerEdit->setValidator(doubleValidate);
     worldwidthEdit->setValidator(doubleValidate);
     worldheightEdit->setValidator(doubleValidate);
     
-    outheightEdit->setFixedWidth(100);
-    outwidthEdit->setFixedWidth(100);
+//    outHeightEdit->setFixedWidth(100);
+//    outWidthEdit->setFixedWidth(100);
     XCornerEdit->setFixedWidth(100);
     YCornerEdit->setFixedWidth(100);
     worldwidthEdit->setFixedWidth(100);
@@ -483,23 +483,23 @@ void interface::initImageProps()
     imagePropsBoxStack->addWidget(worldwidthLabel);
     imagePropsBoxStack->addWidget(worldheightLabel);
     imagePropsBoxStack->addItem(pspacer1);
-    imagePropsBoxStack->addWidget(outwidthLabel);
-    imagePropsBoxStack->addWidget(outheightLabel);
+//    imagePropsBoxStack->addWidget(outWidthLabel);
+//    imagePropsBoxStack->addWidget(outHeightLabel);
     
     imagePropsBoxStack->setAlignment(XCornerLabel, Qt::AlignLeft);
     imagePropsBoxStack->setAlignment(YCornerLabel, Qt::AlignLeft);
     imagePropsBoxStack->setAlignment(worldwidthLabel, Qt::AlignLeft);
     imagePropsBoxStack->setAlignment(worldheightLabel, Qt::AlignLeft);
-    imagePropsBoxStack->setAlignment(outwidthLabel, Qt::AlignLeft);
-    imagePropsBoxStack->setAlignment(outheightLabel, Qt::AlignLeft);
+//    imagePropsBoxStack->setAlignment(outWidthLabel, Qt::AlignLeft);
+//    imagePropsBoxStack->setAlignment(outHeightLabel, Qt::AlignLeft);
     
     imagePropsEditStack->addWidget(XCornerEdit);
     imagePropsEditStack->addWidget(YCornerEdit);
     imagePropsEditStack->addWidget(worldwidthEdit);
     imagePropsEditStack->addWidget(worldheightEdit);
     imagePropsEditStack->addItem(pspacer2);
-    imagePropsEditStack->addWidget(outwidthEdit);
-    imagePropsEditStack->addWidget(outheightEdit);
+//    imagePropsEditStack->addWidget(outWidthEdit);
+//    imagePropsEditStack->addWidget(outHeightEdit);
     
     imagePropsBoxLayout->addLayout(imagePropsBoxStack);
     imagePropsBoxLayout->addLayout(imagePropsEditStack);
@@ -508,7 +508,41 @@ void interface::initImageProps()
     imagePropsBoxOverallLayout->addLayout(imagePropsBoxLayout);    
 }
 
+void interface::initImageExportPopUp()
+{
+    // IMAGE DIMENSIONS POP UP WINDOW
+    settingsPopUp = new QWidget(this, Qt::Window);
+    settingsPopUp->setWindowTitle(tr("Image Settings"));
+    settingsPopUpLayout = new QVBoxLayout(settingsPopUp);
+    settingsPopUp->setMinimumWidth(300);
+    
+    outHeightEdit = new QLineEdit(settingsPopUp);
+    outWidthEdit = new QLineEdit(settingsPopUp);
+    
+    outWidthLayout = new QHBoxLayout(settingsPopUp);
+    outWidthLayout->addWidget(new QLabel("Image Width"));
+    outWidthLayout->addWidget(outWidthEdit);
+    
+    outHeightLayout = new QHBoxLayout(settingsPopUp);
+    outHeightLayout->addWidget(new QLabel("Image Height"));
+    outHeightLayout->addWidget(outHeightEdit);
+    
+    settingsPopUpLayout->addLayout(outWidthLayout);
+    settingsPopUpLayout->addLayout(outHeightLayout);
+    
+    QPushButton *button = new QPushButton(tr("OK"), settingsPopUp);
+    settingsPopUpLayout->addWidget(button);
+    
+    connect(button, SIGNAL(clicked()), this, SLOT(startImageExport()));
+    
+    outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
+    outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
+    outHeightEdit->setValidator(dimValidate);
+    outWidthEdit->setValidator(dimValidate);
+    
+    settingsPopUp->hide();
 
+}
 
 // CONNECT SIGNALS TO SLOTS
 void interface::connectAllSignals()
@@ -543,8 +577,8 @@ void interface::connectAllSignals()
     connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
     connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
     
-    connect(outwidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOWidth(QString)));
-    connect(outheightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOHeight(QString)));
+    connect(outWidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOWidth(QString)));
+    connect(outHeightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOHeight(QString)));
     connect(worldwidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeWorldWidth(QString)));
     connect(worldheightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeWorldHeight(QString)));
     connect(XCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeXCorner(QString)));
@@ -777,8 +811,8 @@ void interface::resetImageFunction()
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
     
-    outwidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
-    outheightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
+//    outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
+//    outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
     worldwidthEdit->setText(QString::number(DEFAULT_WIDTH));
     worldheightEdit->setText(QString::number(DEFAULT_HEIGHT));
     XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
@@ -992,8 +1026,8 @@ QString interface::loadSettings(const QString &fileName) {
     inFile.close();
     
     refreshTableTerms();
-    outwidthEdit->setText(QString::number(settings->OWidth));
-    outheightEdit->setText(QString::number(settings->OHeight));
+//    outWidthEdit->setText(QString::number(settings->OWidth));
+//    outHeightEdit->setText(QString::number(settings->OHeight));
     worldwidthEdit->setText(QString::number(settings->Width));
     worldheightEdit->setText(QString::number(settings->Height));
     XCornerEdit->setText(QString::number(settings->XCorner));
@@ -1122,6 +1156,16 @@ void interface::changeScaleR(const QString &val)
 void interface::saveImageStart()
 {
     
+   
+    settingsPopUp->show();
+    
+   
+    
+    
+}
+
+void interface::startImageExport() {
+
     
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,
@@ -1143,7 +1187,7 @@ void interface::saveImageStart()
     QImage *output = new QImage(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
     imageExportPort->exportImage(output, fileName);
     
-    
+
     
 }
 

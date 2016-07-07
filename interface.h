@@ -257,15 +257,13 @@ public:
     QHBoxLayout *imagePropsBoxLayout;
     QHBoxLayout *savePushLayout;
     QVBoxLayout *imagePropsBoxOverallLayout;
-    QLabel *outheightLabel;
-    QLabel *outwidthLabel;
+//    QLabel *outHeightLabel;
+//    QLabel *outWidthLabel;
     QLabel *XCornerLabel;
     QLabel *YCornerLabel;
     QLabel *worldwidthLabel;
     QLabel *worldheightLabel;
-    QLineEdit
-     *outheightEdit;
-    QLineEdit *outwidthEdit;
+    
     QLineEdit *XCornerEdit;
     QLineEdit *YCornerEdit;
     QLineEdit *worldwidthEdit;
@@ -292,6 +290,16 @@ public:
     ProgressBar *displayProgressBar;
     ProgressBar *exportProgressBar;
     
+    // OUTPUT IMAGE DIM POP UP
+    QWidget *settingsPopUp;
+    QVBoxLayout *settingsPopUpLayout;
+    QHBoxLayout *outWidthLayout;
+    QHBoxLayout *outHeightLayout;
+    QLabel *outWidthLabel;
+    QLabel *outHeightLabel;
+    QLineEdit*outHeightEdit;
+    QLineEdit *outWidthEdit;
+    
 private slots:
     //void toggleViewMode();
     void updateCurrTerm(int i);
@@ -311,6 +319,7 @@ private slots:
     void changeA(double val);
     void changeScaleR(const QString &val);
     void changeScaleA(const QString &val);
+    void startImageExport();
     void saveImageStart();
     void resetImageFunction();
     void loadFromSettings();
@@ -340,6 +349,7 @@ private:
     void initFunctionConstants();
     void initPatternType();
     void initImageProps();
+    void initImageExportPopUp();
     void initCoeffPlane();
     void connectAllSignals();
     void removeTerm(int row);
