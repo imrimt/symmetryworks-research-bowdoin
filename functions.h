@@ -44,6 +44,7 @@ class AbstractFunction      //this is the base class for all other classes that 
     void setNumTerms(int &val);
     void removeTerm(unsigned int &i);
     void reset() {terms = 1; refresh();}
+    void refresh();
 
   protected:
 
@@ -54,7 +55,6 @@ class AbstractFunction      //this is the base class for all other classes that 
     coeffpair scale;
 
     // PRIVATE MEMBER FUNCTIONS
-    void refresh();
     void initWithVectors(QVector<coeffpair> &in_coeffs, QVector<freqpair> &in_freqs);
 };
 
