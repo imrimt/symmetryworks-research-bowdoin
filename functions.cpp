@@ -95,8 +95,7 @@ void AbstractFunction::setScaleA(double &val)
 void AbstractFunction::setNumTerms(int &val)
 {
     
-    if(val > 0 && val <= 99 && val != (int) terms)
-    {
+    if(val > 0 && val <= 99 && val != (int) terms) {
         terms = val;
         coeffs.resize(terms);
         freqs.resize(terms);
@@ -106,12 +105,12 @@ void AbstractFunction::setNumTerms(int &val)
 void AbstractFunction::removeTerm(unsigned int &i)
 {
     if (coeffs.size() >= 1 && freqs.size() >= 1) {
-        
         int it = i;
+
         coeffs.erase(coeffs.begin() + it);
-        
         freqs.erase(freqs.begin() + it);
-        
+
+        terms--;  
     }
     
 }

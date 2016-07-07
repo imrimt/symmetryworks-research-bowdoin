@@ -51,16 +51,16 @@ class CustomSpinBox : public QSpinBox
 class QDoubleSlider : public QSlider
 {
     Q_OBJECT
-  public:
+public:
     QDoubleSlider(QWidget *parent = 0) : QSlider(parent) { 
         connect(this, SIGNAL(valueChanged(int)),
             this, SLOT(notifyValueChanged(int)));
     }
 
-  signals:
+signals:
     void doubleValueChanged(double value);
 
-  public slots:
+public slots:
     void notifyValueChanged(int value) {
         double doubleValue = value / 100.0;
         emit doubleValueChanged(doubleValue);
@@ -322,6 +322,7 @@ private slots:
     void termViewPopUp();
     void addTerm();
     void updateTermTable(QObject *cell);
+    void addTermTable();
     void termViewCellClicked(int row, int col);
     void resetTableButton();
     void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
@@ -350,7 +351,7 @@ private:
 
     int numTerms;
     unsigned int termIndex; 
-    unsigned int highestIndex;
+    
     QString saveloadPath;
     
     AbstractFunction * currFunction;

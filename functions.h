@@ -22,7 +22,7 @@ class AbstractFunction      //this is the base class for all other classes that 
     virtual ~AbstractFunction(){;}
 
     // CONST MEMBER FUNCTIONS
-    unsigned int numterms() const { return terms; }
+    int numterms() { return terms; }
     virtual std::complex<double> bundle(double &x, double &y, unsigned int &i) const = 0;
     virtual std::complex<double> operator() (double i, double j) = 0;
     int getN(unsigned int &i) const;
@@ -44,6 +44,7 @@ class AbstractFunction      //this is the base class for all other classes that 
     void setNumTerms(int &val);
     void removeTerm(unsigned int &i);
     void reset() {terms = 1; refresh();}
+    void refresh();
 
   protected:
 
@@ -54,7 +55,6 @@ class AbstractFunction      //this is the base class for all other classes that 
     coeffpair scale;
 
     // PRIVATE MEMBER FUNCTIONS
-    void refresh();
     void initWithVectors(QVector<coeffpair> &in_coeffs, QVector<freqpair> &in_freqs);
 };
 

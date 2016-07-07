@@ -3,7 +3,6 @@
 
 #include "renderthread.h"
 #include <time.h>
-#include <stdio.h>
 #include <chrono>
 
 class Controller : public QObject

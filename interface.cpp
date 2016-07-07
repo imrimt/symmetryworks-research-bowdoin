@@ -4,10 +4,8 @@ interface::interface(QWidget *parent) : QWidget(parent)
 {
     
     // FUNCTIONAL VARIABLES
-   // advancedMode = false;
-    numTerms = 0;
+
     termIndex = 0;
-    highestIndex = -1;
     saveloadPath = QDir::homePath();
     
     // FUNCTIONAL OBJECTS
@@ -31,6 +29,8 @@ interface::interface(QWidget *parent) : QWidget(parent)
     functionVector.push_back(new zzbarFunction());
     currFunction = functionVector[0];
     currColorWheel = new ColorWheel();
+
+    numTerms = currFunction->numterms();
     
     // DEFAULT SETTINGS
     settings = new Settings;
@@ -46,6 +46,8 @@ interface::interface(QWidget *parent) : QWidget(parent)
     
     functionSel->setCurrentIndex(0);
     colorwheelSel->setCurrentIndex(0);
+
+    
 }
 
 
@@ -297,7 +299,7 @@ void interface::initFunctionConstants()
     termViewWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     termViewWidget->hide();
     termViewTable = new QTableWidget(termViewWidget);
-    termViewTable->setRowCount(numTerms);
+    // termViewTable->setRowCount(numTerms);
     termViewTable->setColumnCount(6);
     termViewLayout->addWidget(termViewTable);
     
@@ -306,7 +308,7 @@ void interface::initFunctionConstants()
     termViewTable->verticalHeader()->hide();
     
     addTermButton = new QPushButton(tr("Add term..."));
-    addTermButton->setIcon(*(new QIcon(":/Images/add.png")));
+    addTermButton->setIcon(*(new QIcon(":/Images/Icons/add.png")));
     termViewLayout->addWidget(addTermButton);
     
     // resize all columns to maximum stretch
@@ -325,6 +327,7 @@ void interface::initFunctionConstants()
     
     // add initial term
     addTerm();
+    // termViewTable->setRowCount(numTerms);
     
     termViewHeaderVertical= termViewTable->verticalHeader();
     termViewHeaderVertical->resizeSections(QHeaderView::Stretch);
@@ -531,7 +534,7 @@ void interface::connectAllSignals()
     connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeNumTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateCurrTerm(int)));
     connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
-    connect(addTermButton, SIGNAL(clicked()), this, SLOT(addTerm()));
+    connect(addTermButton, SIGNAL(clicked()), this, SLOT(addTermTable()));
     
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
@@ -578,7 +581,17 @@ void interface::refreshLabels()
 // update term view table with appropriate values
 void interface::refreshTableTerms()
 {
+
+    numTerms = currFunction->numterms();
     
+
+    if (termViewTable->rowCount() == 0) {
+        for (int i = 0; i < numTerms; ++i) {     
+            addTerm();
+        }
+    }    
+    
+    // refresh all terms in term table
     for (int r = 0; r < numTerms; ++r) {
         
         QSpinBox *mEdit = static_cast<QSpinBox *>(termViewTable->cellWidget(r,1));
@@ -586,7 +599,6 @@ void interface::refreshTableTerms()
         QDoubleSpinBox *aEdit = static_cast<QDoubleSpinBox *>(termViewTable->cellWidget(r,3));
         QDoubleSpinBox *rEdit = static_cast<QDoubleSpinBox *>(termViewTable->cellWidget(r,4));
         
-    
         // block spinBox signals while setting the values internally
         mEdit->blockSignals(true);
         nEdit->blockSignals(true);
@@ -615,11 +627,11 @@ void interface::refreshTableTerms()
 // update main window term editor with appropriate values
 void interface::refreshMainWindowTerms()
 {
-    
     currTermEdit->blockSignals(true);
     numTermsEdit->blockSignals(true);
 
     currTermEdit->setValue(termIndex + 1);
+    
     numTermsEdit->setValue(currFunction->numterms());
 
     currTermEdit->blockSignals(false);
@@ -668,35 +680,27 @@ void interface::removeTerm(int row)
         term->setText(QString::number(term->text().toInt() - 1));
     }
     
-    
-    highestIndex--;
-    if (termIndex > highestIndex)
-        termIndex = highestIndex;
-    
-    numTerms--;
+    if (termIndex > termViewTable->rowCount())
+        termIndex = termViewTable->rowCount() - 1;
+
     unsigned int term = row;
     currFunction->removeTerm(term);
-    currFunction->setNumTerms(numTerms);
+    numTerms = currFunction->numterms();
     currTermEdit->blockSignals(true);
-    numTermsEdit->blockSignals(true);
-    currTermEdit->setMaximum(numTerms);
-    numTermsEdit->setValue(numTerms);
+    // numTermsEdit->blockSignals(true);
+    currTermEdit->setMaximum(currFunction->numterms() + 1);
+    // numTermsEdit->setValue(currFunction->numterms());
     currTermEdit->blockSignals(false);
-    numTermsEdit->blockSignals(false);
+
+    // updatePreviewDisplay();
 }
 
 
 // adds a new term
 void interface::addTerm()
 {
-    addTermButton->blockSignals(true);
-    
-    highestIndex++;
-    numTerms++;
-    
-    termViewTable->setRowCount(numTerms);
-    currTermEdit->setMaximum(numTerms);
-    currFunction->setNumTerms(numTerms);
+    unsigned int highestIndex = termViewTable->rowCount();
+    termViewTable->setRowCount(highestIndex + 1);
     
     QSpinBox *nEditTable = new QSpinBox();
     QSpinBox *mEditTable = new QSpinBox();
@@ -716,19 +720,18 @@ void interface::addTerm()
     aEditTable->setAlignment(Qt::AlignCenter);
     rEditTable->setAlignment(Qt::AlignCenter);
     
-    termViewTable->verticalHeader()->setSectionResizeMode(highestIndex, QHeaderView::ResizeToContents);
+    termViewTable->verticalHeader()->setSectionResizeMode(highestIndex, QHeaderView::ResizeToContents); 
     
     QLabel *termLabel = new QLabel(QString::number(highestIndex + 1));
     termLabel->setAlignment(Qt::AlignCenter);
     termViewTable->setCellWidget(highestIndex, 0, termLabel);
-    
     termViewTable->setCellWidget(highestIndex, 1, mEditTable);
     termViewTable->setCellWidget(highestIndex, 2, nEditTable);
     termViewTable->setCellWidget(highestIndex, 3, aEditTable);
     termViewTable->setCellWidget(highestIndex, 4, rEditTable);
-    
+
     QTableWidgetItem *removeTermItem = new QTableWidgetItem();
-    removeTermItem->setIcon(QIcon(":/Images/remove.png"));
+    removeTermItem->setIcon(QIcon(":/Images/Icons/remove.png"));
     removeTermItem->setFlags(removeTermItem->flags() ^ Qt::ItemIsEditable);
     
     termViewTable->setItem(highestIndex, 5, removeTermItem);
@@ -738,6 +741,8 @@ void interface::addTerm()
     nEditTable->setValue(currFunction->getN(highestIndex));
     aEditTable->setValue(currFunction->getA(highestIndex));
     rEditTable->setValue(currFunction->getR(highestIndex));
+
+    // qDebug() << "Is null?" << (bool)(termViewTable->cellWidget(0,1) == nullptr);
     
     // connect signals
     connect(mEditTable, SIGNAL(valueChanged(int)), termViewTableMapper, SLOT(map()));
@@ -752,8 +757,8 @@ void interface::addTerm()
     connect(termViewTableMapper, SIGNAL(mapped(QObject*)), this, SLOT(updateTermTable(QObject*)));
     
     refreshMainWindowTerms();
-    updatePreviewDisplay();
-    
+    // updatePreviewDisplay();
+    // addTermButton->blockSignals(false);
     
 }
 
@@ -762,10 +767,31 @@ void interface::addTerm()
 void interface::resetImageFunction()
 {
 
-    currFunction->reset();
+    qDebug() << "reset pressed";
 
-    refreshTableTerms();
-    refreshMainWindowTerms();
+    // currFunction->reset();
+    // numTermsEdit->setValue(1);
+
+
+    // functionSel->setCurrentIndex(0);
+    // colorwheelSel->setCurrentIndex(0);
+
+    termIndex = 0;
+    //numTerms = currFunction->numterms();
+
+    qDebug() << "current numterms: " << numTerms;
+
+    currFunction->refresh();
+    
+    numTermsEdit->setValue(1);
+    currTermEdit->setMaximum(currFunction->numterms());
+
+
+    //refreshTableTerms();
+    qDebug() << "new numterms:" << currFunction->numterms();
+
+    //refreshMainWindowTerms();
+
     
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
@@ -814,16 +840,23 @@ void interface::updateCurrTerm(int i)
 // updates the number of terms of the current function
 void interface::changeNumTerms(int i)
 {
-    
-    if (i < numTerms) {
-        for (int k = numTerms; k > i; --k) { removeTerm(k-1); }
-    } else if (i > numTerms) {
-        for (int k = numTerms; k < i; ++k) addTerm();
+
+    int oldNumTerms = numTerms;
+
+    qDebug() << "old:" << oldNumTerms << "| new:" << i;    
+
+    if (i < oldNumTerms) {
+        for (int k = oldNumTerms; k > i; --k) { removeTerm(k-1); }
+    } else if (i > oldNumTerms) {
+        currFunction->setNumTerms(i);
+        numTerms = currFunction->numterms();
+        for (int k = oldNumTerms; k < i; ++k) addTerm();
     }
    
-    updateCurrTerm(i);
     currTermEdit->setMaximum(i);
-    
+
+    updateCurrTerm(i);    
+    updatePreviewDisplay();
 }
 
 // handles changing to a new color wheel
@@ -861,23 +894,24 @@ void interface::changeFunction(int index)
    // termViewTable->clearContents();
     
     termIndex = 0;
-    highestIndex = 0;
     
     currFunction = functionVector[index];
     
     numTerms = currFunction->numterms();
+
     termViewTable->setRowCount(0);
-    
+
     
     previewDisplayPort->changeFunction(currFunction);
     imageExportPort->changeFunction(currFunction);
     
+    // qDebug() << "crashed here?";
     refreshMainWindowTerms();
+    // qDebug() << "crashed here 2?";
     refreshTableTerms();
+    // qDebug() << "crashed here 3?";
     updatePreviewDisplay();
-    
-//    qDebug() << "CHANGING FUNCTION...";
-//    qDebug() << "num terms" << numTerms << "term index" << termIndex << "highest index" << highestIndex;
+
 }
 
 
@@ -885,6 +919,8 @@ void interface::changeFunction(int index)
 void interface::saveCurrSettings()
 {
     
+    qDebug() << "saving setting";
+
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     saveloadPath,
                                                     tr("Wallpapers (*.wpr)"));
@@ -909,8 +945,11 @@ QString interface::saveSettings(const QString &fileName) {
     out << currFunction->getScaleR() << currFunction->getScaleA();
     out << currFunction->numterms();
     
-    for(unsigned int i=0; i<currFunction->numterms(); i++)
+    unsigned int i;
+
+    for(int index = 0; index < currFunction->numterms(); index++)
     {
+        i = index;
         out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
     }
     outFile.close();
@@ -1214,6 +1253,13 @@ void interface::updateTermTable(QObject *cell)
     updatePreviewDisplay();
 }
 
+void interface::addTermTable() 
+{
+    addTermButton->blockSignals(true);
+    int newNumTerms = currFunction->numterms() + 1;
+    currFunction->setNumTerms(newNumTerms);
+    numTermsEdit->setValue(newNumTerms);
+} 
 
 // pop up window to appear when image file has finished exporting
 void interface::popUpImageExportFinished(const QString &filePath)
