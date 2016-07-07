@@ -644,18 +644,15 @@ void interface::refreshTableTerms()
     
     if (termViewTable->rowCount() == 0) {
         for (int i = 0; i < numTerms; ++i) {
-            qDebug() << "adding new term";
+            
             addTerm();
         }
     }
    
-    qDebug() << "num rows" << termViewTable->rowCount();
-    qDebug() << "num terms" << numTerms;
+    
     
     // refresh all terms in term table
     for (int r = 0; r < numTerms; ++r) {
-
-        qDebug() << "looking at row:" << r;
 
         // qDebug() << (bool)(termViewTable->cellWidget(r,1) == nullptr);
         
@@ -700,6 +697,7 @@ void interface::refreshMainWindowTerms()
     numTermsEdit->blockSignals(true);
 
     currTermEdit->setValue(termIndex + 1);
+    
     numTermsEdit->setValue(currFunction->numterms());
 
     currTermEdit->blockSignals(false);
@@ -760,7 +758,7 @@ void interface::removeTerm(int row)
     // currFunction->setNumTerms(numTerms);
     currTermEdit->blockSignals(true);
     // numTermsEdit->blockSignals(true);
-    currTermEdit->setMaximum(currFunction->numterms());
+    currTermEdit->setMaximum(currFunction->numterms() + 1);
     numTermsEdit->setValue(currFunction->numterms());
     currTermEdit->blockSignals(false);
     // numTermsEdit->blockSignals(false);
@@ -776,10 +774,10 @@ void interface::addTerm()
     
     // highestIndex++;
     // numTerms++;
-
+    
     // qDebug() << "table rows:" << termViewTable->rowCount();
 
-    highestIndex = termViewTable->rowCount();
+    unsigned int highestIndex = termViewTable->rowCount();
 
     // termViewTable->setRowCount(numTerms);
 
@@ -871,6 +869,7 @@ void interface::resetImageFunction()
     //numTerms = 1;
 
     currFunction->reset();
+    numTermsEdit->setValue(1);
 
     // functionSel->setCurrentIndex(0);
     // colorwheelSel->setCurrentIndex(0);
@@ -974,7 +973,7 @@ void interface::changeFunction(int index)
    // termViewTable->clearContents();
     
     termIndex = 0;
-    highestIndex = 0;
+    //highestIndex = 0;
     
     currFunction = functionVector[index];
     
@@ -997,8 +996,8 @@ void interface::changeFunction(int index)
     qDebug() << "crashed here 3?";
     updatePreviewDisplay();
      
-    qDebug() << "CHANGING FUNCTION...";
-    qDebug() << "num terms" << numTerms << "term index" << termIndex << "highest index" << highestIndex;
+//    qDebug() << "CHANGING FUNCTION...";
+//    qDebug() << "num terms" << numTerms << "term index" << termIndex << "highest index" << highestIndex;
 }
 
 

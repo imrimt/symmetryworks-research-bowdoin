@@ -393,7 +393,7 @@ private:
 
     int numTerms;
     unsigned int termIndex; 
-    unsigned int highestIndex;
+    
     QString saveloadPath;
     
     AbstractFunction * currFunction;
