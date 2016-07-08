@@ -71,7 +71,7 @@ void interface::initInterfaceLayout()
     //leftbarLayout->addWidget(toggleViewWidget);
     leftbarLayout->addWidget(imagePropsBox);
     leftbarLayout->addWidget(patternTypeWidget);
-    leftbarLayout->setSizeConstraint(QLayout::SetFixedSize);
+    //leftbarLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     topbarLayout->addLayout(leftbarLayout);
     topbarLayout->addWidget(displayWidget);
@@ -79,6 +79,7 @@ void interface::initInterfaceLayout()
     historyDisplay = new HistoryDisplay(this);
     historyDisplay->hide();
     topbarLayout->addWidget(historyDisplay->viewHistoryWidget);
+    
     
     interfaceLayout->addLayout(topbarLayout);
     interfaceLayout->addWidget(functionConstantsWidget);
@@ -118,15 +119,10 @@ void interface::initInterfaceLayout()
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
     
-    
-//    worldWidthEdit->setText(QString::number(DEFAULT_WIDTH));
-//    worldHeightEdit->setText(QString::number(DEFAULT_HEIGHT));
-//    XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
-//    YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
-    setFixedSize(1200,1000);
-    
+    //setFixedSize(1200,1000);
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     // FINALIZE WINDOW
-//    setFixedSize(sizeHint());
+     //setFixedSize(sizeHint());
 //    setWindowTitle(tr("Wallpaper Generation"));
 
 }
@@ -141,6 +137,7 @@ void interface::initPreviewDisplay()
     exportImage = new QPushButton(tr("Export..."), this);
     resetImage = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
+    //dispLayout->setSizeConstraint(QLayout::SetMinimumSize);
     buttonLayout = new QHBoxLayout();
     
     buttonLayout->addWidget(updatePreview);

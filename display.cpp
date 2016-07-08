@@ -6,7 +6,9 @@ Display::Display(int inputDim, int imageDim, QWidget *parent) :
     // setAttribute(Qt::WA_StaticContents);
     // setAttribute(Qt::WA_LayoutOnEntireRect);
     //setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
+    
+    
+    
     dimension = inputDim;
     imageSize = imageDim;
     disp = QImage(imageSize, imageSize, QImage::Format_RGB32);
