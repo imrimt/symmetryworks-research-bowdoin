@@ -36,6 +36,7 @@ protected:
 
 
 private:
+    
     QImage disp;
     QVector<QVector<QRgb>> colorMap;
     int dimension;

@@ -69,7 +69,7 @@ void interface::initInterfaceLayout()
     //leftbarLayout->addWidget(toggleViewWidget);
     leftbarLayout->addWidget(imagePropsBox);
     leftbarLayout->addWidget(patternTypeWidget);
-    leftbarLayout->setSizeConstraint(QLayout::SetFixedSize);
+    //leftbarLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     topbarLayout->addLayout(leftbarLayout);
     topbarLayout->addWidget(displayWidget);
@@ -77,6 +77,7 @@ void interface::initInterfaceLayout()
     historyDisplay = new HistoryDisplay(this);
     historyDisplay->hide();
     topbarLayout->addWidget(historyDisplay->viewHistoryWidget);
+    
     
     interfaceLayout->addLayout(topbarLayout);
     interfaceLayout->addWidget(functionConstantsWidget);
@@ -114,15 +115,17 @@ void interface::initInterfaceLayout()
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
 
     connectAllSignals();
-    
-    // setFixedSize(1200,1000);
+
+    refreshTableTerms();
+    updatePreviewDisplay();
 
     // FINALIZE WINDOW
     setFixedSize(sizeHint());
     setWindowTitle(tr("COOL WALLPAPER SOFTWARE"));
 
-    refreshTableTerms();
-    updatePreviewDisplay();
+    //will reload
+    //setFixedSize(1200,1000);
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 
 }
 
@@ -136,6 +139,7 @@ void interface::initPreviewDisplay()
     exportImage = new QPushButton(tr("Export..."), this);
     resetImage = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
+    //dispLayout->setSizeConstraint(QLayout::SetMinimumSize);
     buttonLayout = new QHBoxLayout();
     
     buttonLayout->addWidget(updatePreview);
