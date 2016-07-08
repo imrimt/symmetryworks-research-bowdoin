@@ -9,6 +9,7 @@
 #include <QGroupBox>
 #include <QSignalMapper>
 #include <QWidget>
+#include <QDockWidget>
 
 
 const int MAX_HISTORY_ITEMS = 5;
@@ -33,6 +34,8 @@ public:
     QSignalMapper *removeMapper;
     
     // used to call private addToHistory() function
+    void hide();
+    void show();
     void triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings);
 
     private slots:

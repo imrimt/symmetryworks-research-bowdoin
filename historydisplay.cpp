@@ -14,6 +14,7 @@ HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
   
     // create layout elements
     viewHistoryWidget = new QWidget(static_cast<QWidget *>(parent));
+    
     viewHistoryBox = new QGroupBox(tr("Snapshots"), viewHistoryWidget);
     viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
     
@@ -151,6 +152,22 @@ void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QStri
         removePreview(*(historyItemsMap.begin()));
         addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
     }    
+}
+
+void HistoryDisplay::show()
+{
+    viewHistoryWidget->show();
+    viewHistoryBox->show();
+
+}
+
+
+void HistoryDisplay::hide()
+{
+    
+    viewHistoryWidget->hide();
+    viewHistoryBox->hide();
+    
 }
 
 

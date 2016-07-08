@@ -23,6 +23,7 @@
 #include <QShortCut>
 #include <QAction>
 #include <QMessageBox>
+#include <QDialogButtonBox>
 
 #include <QProgressBar>
 #include <QTableWidget>
@@ -248,27 +249,45 @@ public:
     PolarPlane *polarPlane;
     
     // imagePropsBox SUBELEMENTS
-    QVBoxLayout *imagePropsBoxStack;
-    QVBoxLayout *imagePropsEditStack;
-    QHBoxLayout *imagePropsBoxLayout;
-    QHBoxLayout *savePushLayout;
-    QVBoxLayout *imagePropsBoxOverallLayout;
+    //QVBoxLayout *imagePropsBoxStack;
+    //QVBoxLayout *imagePropsEditStack;
+    QVBoxLayout *imagePropsBoxLayout;
+    //QHBoxLayout *savePushLayout;
+    //QVBoxLayout *imagePropsBoxOverallLayout;
+    
+    
+    QHBoxLayout *imageShiftXLayout;
+    QHBoxLayout *imageShiftYLayout;
+    QHBoxLayout *imageStretchXLayout;
+    QHBoxLayout *imageStretchYLayout;
+    
+    
+    QLabel *XShiftLabel;
+    QLabel *YShiftLabel;
+    QDoubleSlider *XShiftEdit;
+    QDoubleSlider *YShiftEdit;
+    QLineEdit *XShiftValueLabel;
+    QLineEdit *YShiftValueLabel;
+    
+    
 //    QLabel *outHeightLabel;
 //    QLabel *outWidthLabel;
-    QLabel *XCornerLabel;
-    QLabel *YCornerLabel;
-    QLabel *worldwidthLabel;
-    QLabel *worldheightLabel;
     
-    QLineEdit *XCornerEdit;
-    QLineEdit *YCornerEdit;
-    QLineEdit *worldwidthEdit;
-    QLineEdit *worldheightEdit;
+    QLabel *worldWidthLabel;
+    QLabel *worldHeightLabel;
+    
+//    QLineEdit *worldWidthEdit;
+//    QLineEdit *worldHeightEdit;
+    QDoubleSlider *worldWidthEdit;
+    QDoubleSlider *worldHeightEdit;
+    QLineEdit *worldWidthValueLabel;
+    QLineEdit *worldHeightValueLabel;
+    
     QSpacerItem *pspacer1;
-    QSpacerItem *pspacer2;
-    QSpacerItem *pspacer3;
-    QSpacerItem *pspacer4;
-    QSpacerItem *pspacer5;
+//    QSpacerItem *pspacer2;
+//    QSpacerItem *pspacer3;
+//    QSpacerItem *pspacer4;
+//    QSpacerItem *pspacer5;
 
     // DISP SUBELEMENTS
     QPushButton *updatePreview;
@@ -289,12 +308,15 @@ public:
     // OUTPUT IMAGE DIM POP UP
     QWidget *settingsPopUp;
     QVBoxLayout *settingsPopUpLayout;
+    QDialogButtonBox *buttonBox;
     QHBoxLayout *outWidthLayout;
     QHBoxLayout *outHeightLayout;
+    
     QLabel *outWidthLabel;
     QLabel *outHeightLabel;
     QLineEdit*outHeightEdit;
     QLineEdit *outWidthEdit;
+    
     
 private slots:
     //void toggleViewMode();
@@ -303,10 +325,14 @@ private slots:
     void colorWheelChanged(int index);
     void setImagePushed();
     void changeFunction(int index);
-    void changeWorldWidth(const QString &val);
-    void changeWorldHeight(const QString &val);
-    void changeXCorner(const QString &val);
-    void changeYCorner(const QString &val);
+    void changeWorldWidth(double val);
+    void changeWorldWidth();
+    void changeWorldHeight(double val);
+    void changeWorldHeight();
+    void changeXCorner(double val);
+    void changeXCorner();
+    void changeYCorner(double val);
+    void changeYCorner();
     void changeOWidth(const QString &val);
     void changeOHeight(const QString &val);
     void changeN(int val);
@@ -316,8 +342,10 @@ private slots:
     void changeScaleR(const QString &val);
     void changeScaleA(const QString &val);
 
-    void exportImageFunction();
+    void exportImageFunction() { settingsPopUp->show(); }
+    void cancelImageExport() { settingsPopUp->hide(); }
     void startImageExport();
+    
 
     void resetImageFunction();
     void loadFromSettings();

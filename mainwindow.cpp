@@ -64,7 +64,9 @@ MainWindow::MainWindow()
     centerWidget->setLayout(centerLayout);
 
     setCentralWidget(centerWidget);
-
+    
+    
+    
     // QWidget *topFiller = new QWidget;
     // topFiller->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -82,8 +84,7 @@ MainWindow::MainWindow()
     QString message = tr("A context menu is available by right-clicking");
     statusBar()->showMessage(message);
 
-    setWindowTitle(tr("Bridget & Son"));
-    setMinimumSize(160, 160);
+    setWindowTitle(tr("Wallpaper Generation"));
     resize(this->currInterface->width() * 1.05, this->currInterface->height() * 1.05);
 }
 

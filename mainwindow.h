@@ -66,6 +66,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
     ~MainWindow();
+    
 
 protected:
 // #ifndef QT_NO_CONTEXTMENU
@@ -73,6 +74,7 @@ protected:
 // #endif // QT_NO_CONTEXTMENU
 
 private slots:
+    
 
 private:
     void createActions();
