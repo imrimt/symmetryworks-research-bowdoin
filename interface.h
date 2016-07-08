@@ -312,6 +312,7 @@ public:
     QLineEdit*outHeightEdit;
     QLineEdit *outWidthEdit;
     
+    
 private slots:
     //void toggleViewMode();
     void updateCurrTerm(int i);

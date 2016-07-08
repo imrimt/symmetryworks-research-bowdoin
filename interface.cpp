@@ -64,16 +64,20 @@ void interface::initInterfaceLayout()
     patternTypeWidget = new QWidget(this);
     functionConstantsWidget = new QWidget(this);
     
-    historyDisplay = new HistoryDisplay(this);
+    
     
     //toggleViewWidget = new QWidget(this);
     
     //leftbarLayout->addWidget(toggleViewWidget);
     leftbarLayout->addWidget(imagePropsBox);
     leftbarLayout->addWidget(patternTypeWidget);
-    
+    leftbarLayout->setSizeConstraint(QLayout::SetFixedSize);
+
     topbarLayout->addLayout(leftbarLayout);
     topbarLayout->addWidget(displayWidget);
+    
+    historyDisplay = new HistoryDisplay(this);
+    historyDisplay->hide();
     topbarLayout->addWidget(historyDisplay->viewHistoryWidget);
     
     interfaceLayout->addLayout(topbarLayout);
@@ -119,11 +123,11 @@ void interface::initInterfaceLayout()
 //    worldHeightEdit->setText(QString::number(DEFAULT_HEIGHT));
 //    XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
 //    YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
-
+    setFixedSize(1200,1000);
     
     // FINALIZE WINDOW
-    setFixedSize(sizeHint());
-    setWindowTitle(tr("Wallpaper Generation"));
+//    setFixedSize(sizeHint());
+//    setWindowTitle(tr("Wallpaper Generation"));
 
 }
 
@@ -438,7 +442,6 @@ void interface::initPatternType()
 
 
 // INIT IMAGE PROPERTIES BOX
-// TODO compress this...
 void interface::initImageProps()
 {
      imagePropsBoxLayout = new QVBoxLayout(imagePropsBox);
@@ -448,10 +451,7 @@ void interface::initImageProps()
     
     imageStretchXLayout = new QHBoxLayout(imagePropsBox);
     imageStretchYLayout = new QHBoxLayout(imagePropsBox);
-//    outHeightLabel = new QLabel(tr("Output Height"), imagePropsBox);
-//    outWidthLabel = new QLabel(tr("Output Width"), imagePropsBox);
-   // XCornerLabel = new QLabel(tr("XCorner"), imagePropsBox);
-  //  YCornerLabel = new QLabel(tr("YCorner"), imagePropsBox);
+
     
     XShiftLabel = new QLabel(tr("Horizontal Shift"), imagePropsBox);
     YShiftLabel = new QLabel(tr("Vertical Shift"), imagePropsBox);
@@ -478,14 +478,6 @@ void interface::initImageProps()
     
     worldWidthLabel = new QLabel(tr("Horizontal Stretch"), imagePropsBox);
     worldHeightLabel = new QLabel(tr("Vertical Stretch"), imagePropsBox);
-//    outHeightEdit = new QLineEdit(imagePropsBox);
-//    outWidthEdit = new QLineEdit(imagePropsBox);
-  //  XCornerEdit = new QLineEdit(imagePropsBox);
- //   YCornerEdit = new QLineEdit(imagePropsBox);
-    
-//    worldWidthEdit = new QLineEdit(imagePropsBox);
-//    worldHeightEdit = new QLineEdit(imagePropsBox);
-  
     
     worldWidthEdit = new QDoubleSlider(imagePropsBox);
     worldHeightEdit = new QDoubleSlider(imagePropsBox);
@@ -507,29 +499,6 @@ void interface::initImageProps()
     imageStretchYLayout->addWidget(worldHeightValueLabel);
     
     pspacer1 = new QSpacerItem(0, 20);
-//    pspacer2 = new QSpacerItem(0, 14);
-//    pspacer3 = new QSpacerItem(15, 30);
-//    pspacer4 = new QSpacerItem(20, 40);
-//    pspacer5 = new QSpacerItem(20, 15);
-    
-    
-    //imagePropsBoxOverallLayout = new QVBoxLayout(imagePropsBox);
-   
-    //imagePropsEditStack = new QVBoxLayout();
-    //imagePropsBoxStack = new QVBoxLayout();
-   // savePushLayout = new QHBoxLayout();
-    
-
- //   XCornerEdit->setValidator(doubleValidate);
- //   YCornerEdit->setValidator(doubleValidate);
-//    worldWidthEdit->setValidator(doubleValidate);
-//    worldHeightEdit->setValidator(doubleValidate);
-    
-//    outHeightEdit->setFixedWidth(100);
-//    outWidthEdit->setFixedWidth(100);
- //   XCornerEdit->setFixedWidth(100);
- //   YCornerEdit->setFixedWidth(100);
-   
     
     XShiftEdit->setFixedWidth(100);
     YShiftEdit->setFixedWidth(100);
@@ -555,46 +524,19 @@ void interface::initImageProps()
     worldWidthEdit->setOrientation(Qt::Horizontal);
     worldHeightEdit->setOrientation(Qt::Horizontal);
     
-    
     worldWidthValueLabel->setText(QString::number(settings->Width));
     worldHeightValueLabel->setText(QString::number(settings->Height));
     worldWidthEdit->setValue(settings->Width * 100.0);
     worldHeightEdit->setValue(settings->Height * 100.0);
+    
     // ASSEMBLE LAYOUT
-//    imagePropsBoxStack->addWidget(XCornerLabel);
-//    imagePropsBoxStack->addWidget(YCornerLabel);
     
     imagePropsBoxLayout->addLayout(imageShiftXLayout);
     imagePropsBoxLayout->addLayout(imageShiftYLayout);
     imagePropsBoxLayout->addItem(pspacer1);
     imagePropsBoxLayout->addLayout(imageStretchXLayout);
     imagePropsBoxLayout->addLayout(imageStretchYLayout);
-    //imagePropsBox->setLayout(imagePropsBoxLayout);
-   
-//    imagePropsBoxStack->addWidget(outWidthLabel);
-//    imagePropsBoxStack->addWidget(outHeightLabel);
-    
-//    imagePropsBoxStack->setAlignment(XCornerLabel, Qt::AlignLeft);
-//    imagePropsBoxStack->setAlignment(YCornerLabel, Qt::AlignLeft);
-//    imagePropsBoxStack->setAlignment(worldWidthLabel, Qt::AlignLeft);
-//    imagePropsBoxStack->setAlignment(worldHeightLabel, Qt::AlignLeft);
-//    imagePropsBoxStack->setAlignment(outWidthLabel, Qt::AlignLeft);
-//    imagePropsBoxStack->setAlignment(outHeightLabel, Qt::AlignLeft);
-    
-//    imagePropsEditStack->addWidget(XCornerEdit);
-//    imagePropsEditStack->addWidget(YCornerEdit);
-//    imagePropsEditStack->addWidget(worldWidthEdit);
-//    imagePropsEditStack->addWidget(worldHeightEdit);
-  //  imagePropsEditStack->addItem(pspacer2);
-//    imagePropsEditStack->addWidget(outWidthEdit);
-//    imagePropsEditStack->addWidget(outHeightEdit);
-    
-   // imagePropsBoxLayout->addLayout(imagePropsBoxStack);
-//    imageProp
-//    imagePropsBoxLayout->addLayout(imagePropsEditStack);
-//    imagePropsBoxLayout->addItem(pspacer4);
-    
-    //imagePropsBoxOverallLayout->addLayout(imagePropsBoxLayout);
+
 }
 
 void interface::initImageExportPopUp()
@@ -1166,6 +1108,7 @@ void interface::updatePreviewDisplay()
 // slot function called when clicked "update preview" button to add to history and update the preview display to reflect current settings
 void interface::updateSavePreview()
 {
+    historyDisplay->show();
     
     QDateTime savedTime = QDateTime::currentDateTimeUtc();
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
