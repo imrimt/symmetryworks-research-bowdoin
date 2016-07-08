@@ -54,8 +54,7 @@ public:
     HistoryItem(QObject *parent = 0) : QObject(parent) { }
     
     QImage *getImage() { return preview->getImage(); }
-    Display *getDisplay() { return preview; }
-    
+    Display *getDisplay() { return preview; }    
     
     QVBoxLayout *layoutWithLabelItem;
     QHBoxLayout *layoutItem;

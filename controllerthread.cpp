@@ -46,6 +46,8 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 
 	QMutexLocker locker(&mutex);
 
+    qDebug() << "in to clone";
+
     currFunction = currFunction->clone();
     currColorWheel = currColorWheel->clone();
     currSettings = currSettings->clone();
@@ -83,7 +85,7 @@ void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
 {
 
     QMutexLocker locker(&mutex);
-    
+
     this->display = display;
     overallWidth = display->width();
     overallHeight = display->height();

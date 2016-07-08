@@ -193,7 +193,7 @@ public:
     QDoubleSlider *aEdit;
     QDoubleSlider *rEdit;
     QPushButton *coeffPlaneEdit;
-    QLabel *globalConsantsLabel;
+    QLabel *globalConstantsLabel;
     QLineEdit *scaleAEdit;
     QLineEdit *scaleREdit;
     QPushButton *scalePlaneEdit;
@@ -202,6 +202,8 @@ public:
 
     QGroupBox *functionConstantsBox;
     
+    QGridLayout *functionTermsGrid;
+
     QVBoxLayout *functionConstantsBoxLayout;
     QVBoxLayout *functionConstantsWidgetLayout;
     QHBoxLayout *functionConstantsScalingTerms;
@@ -225,6 +227,8 @@ public:
     QVBoxLayout *functionLayout;
     QVBoxLayout *colorwheelLayout;
     QHBoxLayout *numtermsLayout;
+    QVBoxLayout *globalConstantsLayout;
+    QGridLayout *globalConstantsGrid;
     QLabel *colorwheelLabel;
     QLabel *functionLabel;
     QLabel *numTermsLabel;
@@ -235,6 +239,7 @@ public:
     QSpacerItem *gspacer2;
     QSpacerItem *gspacer3;
     QSpacerItem *gspacer4;
+    QSpacerItem *gspacer5;
     QComboBox *colorwheelSel;
     QComboBox *functionSel;
     QPushButton *setLoadedImage;

@@ -210,9 +210,6 @@ void PolarPlane::updatePolarCoordinates()
 
 void PolarPlane::setPolarCoordinates()
 {
-    
-    qDebug() << "in here";
-
     emit setPolarCoordinates(coeffFlag, radiusEdit->text(), angleEdit->text());
     
     hidePolarPlane();

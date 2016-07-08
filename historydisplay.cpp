@@ -58,6 +58,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     historyItemsLayout->addLayout(historyItemsButtonsLayout);
     historyItemsWithLabelLayout->addLayout(historyItemsLayout);
     historyItemsWithLabelLayout->addWidget(timeStampLabel);
+
     viewHistoryBoxLayout->insertLayout(1, historyItemsWithLabelLayout);
 
     //need to remove layout when exceeding the max num of history items
@@ -89,7 +90,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     
     // map the timestamp to the history item and port
     historyItemsMap.insert(savedTime, item);
-    historyPortsMap.insert(savedTime, historyDisplayPort);    
+    historyPortsMap.insert(savedTime, historyDisplayPort);
 
 }
 
@@ -119,12 +120,14 @@ void HistoryDisplay::removePreview(QObject *item)
     viewHistoryBoxLayout->removeItem(historyItemToRemove->layoutWithLabelItem);
     delete historyItemToRemove->layoutWithLabelItem;
     
+    (*(historyPortsMap.find(historyItemToRemove->savedTime)))->deleteMembers();
+
     delete *(historyPortsMap.find(historyItemToRemove->savedTime));
     historyPortsMap.erase(historyPortsMap.find(historyItemToRemove->savedTime));
     
     historyItemsMap.erase(historyItemsMap.find(historyItemToRemove->savedTime));
     
-    QFile::remove(historyItemToRemove->filePathName);
+    QFile::remove(historyItemToRemove->filePathName); 
 
     delete historyItemToRemove;
 }
@@ -147,9 +150,7 @@ void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QStri
     } else {
         removePreview(*(historyItemsMap.begin()));
         addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
-    }
-    
-    
+    }    
 }
 
 

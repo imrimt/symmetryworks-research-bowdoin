@@ -107,23 +107,23 @@ void interface::initInterfaceLayout()
     initImageProps();
     initImageExportPopUp();
     
-    connectAllSignals();
-    
     // SET DEFAULTS
-    refreshTableTerms();
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
-    
     
     worldwidthEdit->setText(QString::number(DEFAULT_WIDTH));
     worldheightEdit->setText(QString::number(DEFAULT_HEIGHT));
     XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
     YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
 
-    
+    connectAllSignals();
+
     // FINALIZE WINDOW
     setFixedSize(sizeHint());
     setWindowTitle(tr("Wallpaper Generation"));
+
+    refreshTableTerms();
+    updatePreviewDisplay();
 
 }
 
@@ -161,16 +161,18 @@ void interface::initPreviewDisplay()
     dispLayout->addLayout(buttonLayout);
 }
 
-
 // INIT FUNCTION CONSTANTS EDIT BOX
 void interface::initFunctionConstants()
 {
+
     functionConstantsBox = new QGroupBox(tr("Function Constants"), functionConstantsWidget);
+    functionConstantsBoxLayout = new QVBoxLayout(functionConstantsBox);
+    functionTermsGrid = new QGridLayout();
     
     currTermLabel = new QLabel(functionConstantsBox);
-    currTermLabel->setText(tr("Term:"));
+    currTermLabel->setText(tr("<b>Current Term: <\b>"));
     currTermEdit = new CustomSpinBox(functionConstantsBox);
-    currTermEdit->setRange(1,numTerms);
+    currTermEdit->setRange(1, numTerms);
     
     freqpairLabel = new QLabel(tr("Frequency Pair: "), functionConstantsBox);
     coeffLabel = new QLabel(tr("Coefficient Pair: "), functionConstantsBox);
@@ -182,17 +184,10 @@ void interface::initFunctionConstants()
     aValueLabel = new QLabel(functionConstantsBox);
     rValueLabel = new QLabel(functionConstantsBox);
     
-    
-    globalConsantsLabel = new QLabel(tr("<b>Global Function Constants: <\b>"), functionConstantsBox);
-    scaleALabel = new QLabel(tr("Scaling Angle"), functionConstantsBox);
-    scaleRLabel = new QLabel(tr("Scaling Radius"), functionConstantsBox);
-    refreshLabels();
-    
     nEdit = new QSpinBox(functionConstantsBox);
     mEdit = new QSpinBox(functionConstantsBox);
     aEdit = new QDoubleSlider(functionConstantsBox);
     rEdit = new QDoubleSlider(functionConstantsBox);
-    
     
     nEdit->setFixedWidth(100);
     mEdit->setFixedWidth(100);
@@ -219,18 +214,7 @@ void interface::initFunctionConstants()
     aValueLabel->setFixedWidth(35);
     rValueLabel->setFixedWidth(35);
     
-    
-    scaleAEdit = new QLineEdit(functionConstantsBox);
-    scaleREdit = new QLineEdit(functionConstantsBox);
-    scaleAEdit->setFixedWidth(100);
-    scaleREdit->setFixedWidth(100);
-    scaleAEdit->setAlignment(Qt::AlignCenter);
-    scaleREdit->setAlignment(Qt::AlignCenter);
-    scalePlaneEdit = new QPushButton(tr("Set on plane"), functionConstantsBox);
-    coeffPlaneEdit = new QPushButton(tr("Set on plane"), functionConstantsBox);
-    
     functionConstantsWidgetLayout = new QVBoxLayout(functionConstantsWidget);
-    functionConstantsBoxLayout = new QVBoxLayout(functionConstantsBox);
     
     functionConstantsScalingTerms = new QHBoxLayout();
     numTermsLayout = new QHBoxLayout();
@@ -240,57 +224,11 @@ void interface::initFunctionConstants()
     functionConstantsCoeffs = new QHBoxLayout();
     functionConstantsPairs = new QVBoxLayout();
 
-    QSpacerItem *spacerItem1 = new QSpacerItem(80, 30);
-    QSpacerItem *spacerItem2 = new QSpacerItem(30, 30);
-    QSpacerItem *spacerItem3 = new QSpacerItem(100, 30);
-    QSpacerItem *spacerItem4 = new QSpacerItem(30, 30);
-    QSpacerItem *spacerItem5 = new QSpacerItem(87, 30);
-    QSpacerItem *spacerItem6 = new QSpacerItem(30, 30);
-    QSpacerItem *spacerItem7 = new QSpacerItem(50, 30);
-    QSpacerItem *spacerItem8 = new QSpacerItem(50, 30);
-    QSpacerItem *spacerItem9 = new QSpacerItem(50, 30);
+    coeffPlaneEdit = new QPushButton(tr("Set on plane"), functionConstantsBox);
     
-    functionConstantsScalingTerms->addWidget(globalConsantsLabel);
-    functionConstantsScalingTerms->addItem(spacerItem1);
-    functionConstantsScalingTerms->addWidget(scaleRLabel);
-    functionConstantsScalingTerms->addItem(spacerItem9);
-    functionConstantsScalingTerms->addWidget(scaleREdit);
-    functionConstantsScalingTerms->addItem(spacerItem2);
-    functionConstantsScalingTerms->addWidget(scaleALabel);
-    functionConstantsScalingTerms->addWidget(scaleAEdit);
-    functionConstantsScalingTerms->addItem(spacerItem3);
-    functionConstantsScalingTerms->addWidget(scalePlaneEdit);
-    functionConstantsScalingTerms->addStretch();
-    functionConstantsScalingTerms->setAlignment(Qt::AlignLeft);
-    
-    functionConstantsFreqs->addWidget(freqpairLabel);
-    functionConstantsFreqs->addItem(spacerItem4);
-    functionConstantsFreqs->addWidget(nLabel);
-    functionConstantsFreqs->addWidget(nEdit);
-    functionConstantsFreqs->addItem(spacerItem5);
-    functionConstantsFreqs->addWidget(mLabel);
-    functionConstantsFreqs->addWidget(mEdit);
-    functionConstantsFreqs->addStretch();
-    functionConstantsFreqs->setAlignment(Qt::AlignLeft);
-    
-    functionConstantsCoeffs->addWidget(coeffLabel);
-    functionConstantsCoeffs->addItem(spacerItem6);
-    functionConstantsCoeffs->addWidget(rLabel);
-    functionConstantsCoeffs->addWidget(rEdit);
-    functionConstantsCoeffs->addWidget(rValueLabel);
-    functionConstantsCoeffs->addItem(spacerItem7);
-    functionConstantsCoeffs->addWidget(aLabel);
-    functionConstantsCoeffs->addWidget(aEdit);
-    functionConstantsCoeffs->addWidget(aValueLabel);
-    functionConstantsCoeffs->addItem(spacerItem8);
-    functionConstantsCoeffs->addWidget(coeffPlaneEdit);
-    functionConstantsCoeffs->addStretch();
-    functionConstantsCoeffs->setAlignment(Qt::AlignLeft);
-
-    
-    numTermsLabel = new QLabel(tr("Num Terms: "), functionConstantsBox);
+    numTermsLabel = new QLabel(tr("<b>Total Number of Terms: <\b>"), functionConstantsBox);
     numTermsEdit = new QSpinBox(functionConstantsBox);
-    numTermsEdit->setRange(1,MAX_NUM_TERMS);
+    numTermsEdit->setRange(1, MAX_NUM_TERMS);
     
     termViewButton = new QPushButton(tr("View/Edit All Terms"), functionConstantsBox);
     termViewWidget = new QWidget(this, Qt::Window);
@@ -301,9 +239,7 @@ void interface::initFunctionConstants()
     termViewWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     termViewWidget->hide();
     termViewTable = new QTableWidget(termViewWidget);
-    // termViewTable->setRowCount(numTerms);
     termViewTable->setColumnCount(6);
-    termViewLayout->addWidget(termViewTable);
     
     termViewHorizontalHeaders << tr("Term") << tr("m") << tr("n") << tr("a") << tr("r") << tr("");
     termViewTable->setHorizontalHeaderLabels(termViewHorizontalHeaders);
@@ -311,7 +247,6 @@ void interface::initFunctionConstants()
     
     addTermButton = new QPushButton(tr("Add term..."));
     addTermButton->setIcon(*(new QIcon(":/Images/Icons/add.png")));
-    termViewLayout->addWidget(addTermButton);
     
     // resize all columns to maximum stretch
     for (int c = 0; c < termViewTable->horizontalHeader()->count(); ++c)
@@ -320,47 +255,51 @@ void interface::initFunctionConstants()
             termViewTable->horizontalHeader()->resizeSection(5, 30);
         else
             termViewTable->horizontalHeader()->setSectionResizeMode(c, QHeaderView::Stretch);
-        
     }
-    
+
     // SIGNAL MAPPERS
     termViewTableMapper = new QSignalMapper(this);
     removeTermMapper = new QSignalMapper(this);
     
-    // add initial term
+    //add initial term
     addTerm();
-    // termViewTable->setRowCount(numTerms);
     
     termViewHeaderVertical= termViewTable->verticalHeader();
     termViewHeaderVertical->resizeSections(QHeaderView::Stretch);
     
     // ASSEMBLE LAYOUT
+    termViewLayout->addWidget(termViewTable);
+    termViewLayout->addWidget(addTermButton);
     termViewWidget->setLayout(termViewLayout);
+
+    functionTermsGrid->addWidget(numTermsLabel, 0, 0, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(numTermsEdit, 0, 1, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(termViewButton, 0, 2, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(currTermLabel, 1, 0, 2, 1, Qt::AlignLeft);
+    functionTermsGrid->addWidget(currTermEdit, 1, 1, 2, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(freqpairLabel, 1, 2, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(nLabel, 1, 3, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(nEdit, 1, 4, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(mLabel, 1, 6, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(mEdit, 1, 7, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(coeffLabel, 2, 2, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(rLabel, 2, 3, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(rEdit, 2, 4, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(rValueLabel, 2, 5, 1, 1, Qt::AlignLeft);
+    functionTermsGrid->addWidget(aLabel, 2, 6, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(aEdit, 2, 7, 1, 1, Qt::AlignCenter);
+    functionTermsGrid->addWidget(aValueLabel, 2, 8, 1, 1, Qt::AlignLeft);
+    functionTermsGrid->addWidget(coeffPlaneEdit, 2, 9, 1, 1, Qt::AlignCenter);
     
-    numTermsLayout->addWidget(numTermsLabel);
-    numTermsLayout->addWidget(numTermsEdit);
-    termsLayout->addLayout(numTermsLayout);
-    termsLayout->addWidget(termViewButton);
-    termEditLayout->addLayout(termsLayout);
-   
-    termEditLayout->addWidget(currTermLabel);
-    termEditLayout->addWidget(currTermEdit);
-    
-    functionConstantsPairs->addLayout(functionConstantsFreqs);
-    functionConstantsPairs->addLayout(functionConstantsCoeffs);
-    termEditLayout->addLayout(functionConstantsPairs);
-    
-    functionConstantsBoxLayout->addLayout(functionConstantsScalingTerms);
-    functionConstantsBoxLayout->addLayout(termEditLayout);
+    functionConstantsBoxLayout->addLayout(functionTermsGrid);
     functionConstantsWidgetLayout->addWidget(functionConstantsBox);
 
 }
 
-
 // INIT PATTERN TYPE BOX
 void interface::initPatternType()
 {
-    
+
     patternTypeBox = new QGroupBox(tr("Pattern Type"), patternTypeWidget);
     functionSel = new QComboBox(patternTypeBox);
     colorwheelSel = new QComboBox(patternTypeBox);
@@ -371,10 +310,25 @@ void interface::initPatternType()
     gspacer2 = new QSpacerItem(0,10);
     gspacer3 = new QSpacerItem(0,10);
     gspacer4 = new QSpacerItem(0,50);
+    gspacer5 = new QSpacerItem(0,10);
     setLoadedImage = new QPushButton(tr("Set Image..."), patternTypeBox);
     patternTypeBoxOverallLayout = new QVBoxLayout(patternTypeWidget);
+    patternTypeBoxLayout = new QVBoxLayout(patternTypeBox);
     functionLayout = new QVBoxLayout();
     colorwheelLayout = new QVBoxLayout();
+    globalConstantsLayout = new QVBoxLayout();
+    globalConstantsGrid = new QGridLayout();
+
+    globalConstantsLabel = new QLabel(tr("<b>Global Image Constants: <\b>"), patternTypeBox);
+    scaleALabel = new QLabel(tr("Scaling Angle"), patternTypeBox);
+    scaleRLabel = new QLabel(tr("Scaling Radius"), patternTypeBox); 
+    scaleAEdit = new QLineEdit(patternTypeBox);
+    scaleREdit = new QLineEdit(patternTypeBox);
+    scaleAEdit->setFixedWidth(100);
+    scaleREdit->setFixedWidth(100);
+    scaleAEdit->setAlignment(Qt::AlignCenter);
+    scaleREdit->setAlignment(Qt::AlignCenter);
+    scalePlaneEdit = new QPushButton(tr("Set on plane"), patternTypeBox);
     
     // function selector
     functionSel->addItem("Hex3");
@@ -394,7 +348,7 @@ void interface::initPatternType()
     functionSel->addItem("pm");
     functionSel->addItem("pg");
     functionSel->addItem("cm");
-    functionSel->addItem("Cx Polyn");
+    functionSel->addItem("General Function");
     
     // color wheel selector
     colorwheelSel->addItem("IcosColor");
@@ -407,22 +361,20 @@ void interface::initPatternType()
     colorwheelSel->addItem("Sect6Col");
     colorwheelSel->addItem("WinCol");
     colorwheelSel->addItem("FromImage");
-    functionLabel->setText(tr("Function"));
-    colorwheelLabel->setText(tr("Color Wheel"));
+    functionLabel->setText(tr("<b>Function<\b>"));
+    colorwheelLabel->setText(tr("<b>Color Wheel<\b>"));
     
     colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     functionSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     functionLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     
-
     // ASSEMBLE LAYOUT
-    patternTypeBoxLayout = new QVBoxLayout(patternTypeBox);
     functionLayout->addWidget(functionLabel);
     functionLayout->addWidget(functionSel);
-   
     patternTypeBoxLayout->addLayout(functionLayout);
     patternTypeBoxLayout->addItem(gspacer1);
+
     colorwheelLayout->addItem(gspacer3);
     colorwheelLayout->addWidget(colorwheelLabel);
     colorwheelLayout->addWidget(colorwheelSel);
@@ -430,6 +382,16 @@ void interface::initPatternType()
     setLoadedImage->hide();
     patternTypeBoxLayout->addLayout(colorwheelLayout);
     patternTypeBoxLayout->addItem(gspacer2);
+
+    globalConstantsLayout->addItem(gspacer5);
+    globalConstantsGrid->addWidget(scaleRLabel, 0, 0, 1, 1, Qt::AlignLeft);
+    globalConstantsGrid->addWidget(scaleREdit, 0, 1, 1, 1, Qt::AlignCenter);
+    globalConstantsGrid->addWidget(scaleALabel, 1, 0, 1, 1, Qt::AlignLeft);
+    globalConstantsGrid->addWidget(scaleAEdit, 1, 1, 1, 1, Qt::AlignCenter);
+    globalConstantsLayout->addWidget(globalConstantsLabel);
+    globalConstantsLayout->addLayout(globalConstantsGrid);
+    globalConstantsLayout->addWidget(scalePlaneEdit);
+    patternTypeBoxLayout->addLayout(globalConstantsLayout);
     
     patternTypeBoxOverallLayout->addWidget(patternTypeBox);
     patternTypeBoxOverallLayout->addStretch();
@@ -520,11 +482,11 @@ void interface::initImageExportPopUp()
     outHeightEdit = new QLineEdit(settingsPopUp);
     outWidthEdit = new QLineEdit(settingsPopUp);
     
-    outWidthLayout = new QHBoxLayout(settingsPopUp);
+    outWidthLayout = new QHBoxLayout();
     outWidthLayout->addWidget(new QLabel("Image Width"));
     outWidthLayout->addWidget(outWidthEdit);
     
-    outHeightLayout = new QHBoxLayout(settingsPopUp);
+    outHeightLayout = new QHBoxLayout();
     outHeightLayout->addWidget(new QLabel("Image Height"));
     outHeightLayout->addWidget(outHeightEdit);
     
@@ -584,7 +546,6 @@ void interface::connectAllSignals()
     connect(worldheightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeWorldHeight(QString)));
     connect(XCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeXCorner(QString)));
     connect(YCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeYCorner(QString)));
-    
     
     connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
     connect(polarPlane, SIGNAL(setPolarCoordinates(int, QString, QString)), this, SLOT(setPolarCoordinates(int, QString, QString)));
@@ -707,32 +668,29 @@ void interface::removeTerm(int row)
         return;
     }
     
-    for (int c = 0; c < termViewTable->columnCount(); ++c)
-    {
+    for (int c = 0; c < termViewTable->columnCount(); ++c) {
         delete termViewTable->cellWidget(row, c);
     }
     
     termViewTable->removeRow(row);
     
-    for (int r = row; r < termViewTable->rowCount(); ++r)
-    {
+    for (int r = row; r < termViewTable->rowCount(); ++r) {
         QLabel *term = static_cast<QLabel *>(termViewTable->cellWidget(r, 0));
         term->setText(QString::number(term->text().toInt() - 1));
     }
     
-    if (termIndex > termViewTable->rowCount())
+    if (termIndex > termViewTable->rowCount()) {
         termIndex = termViewTable->rowCount() - 1;
+    }
 
     unsigned int term = row;
     currFunction->removeTerm(term);
     numTerms = currFunction->getNumTerms();
+    
     currTermEdit->blockSignals(true);
-    // numTermsEdit->blockSignals(true);
     currTermEdit->setMaximum(currFunction->getNumTerms() + 1);
-    // numTermsEdit->setValue(currFunction->getNumTerms());
     currTermEdit->blockSignals(false);
 
-    // updatePreviewDisplay();
 }
 
 
@@ -781,8 +739,6 @@ void interface::addTerm()
     nEditTable->setValue(currFunction->getN(highestIndex));
     aEditTable->setValue(currFunction->getA(highestIndex));
     rEditTable->setValue(currFunction->getR(highestIndex));
-
-    // qDebug() << "Is null?" << (bool)(termViewTable->cellWidget(0,1) == nullptr);
     
     // connect signals
     connect(mEditTable, SIGNAL(valueChanged(int)), termViewTableMapper, SLOT(map()));
@@ -821,10 +777,6 @@ void interface::resetImageFunction()
     worldheightEdit->setText(QString::number(DEFAULT_HEIGHT));
     XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
     YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
-
-    // refreshTableTerms();
-    // refreshMainWindowTerms();
-    // updatePreviewDisplay();
 }
 
 //void interface::toggleViewMode()
@@ -915,9 +867,7 @@ void interface::setImagePushed()
 // handles changing to a new function
 void interface::changeFunction(int index)
 {
-    
-   // termViewTable->clearContents();
-    
+
     termIndex = 0;
     
     currFunction = functionVector[index];
@@ -932,11 +882,8 @@ void interface::changeFunction(int index)
     previewDisplayPort->changeFunction(currFunction);
     imageExportPort->changeFunction(currFunction);
     
-    // qDebug() << "crashed here?";
     refreshMainWindowTerms();
-    // qDebug() << "crashed here 2?";
     refreshTableTerms();
-    // qDebug() << "crashed here 3?";
     updatePreviewDisplay();
 
 }
@@ -1053,6 +1000,8 @@ QString interface::loadSettings(const QString &fileName) {
 // updates the preview to reflect changes to the settings, function, and color wheel
 void interface::updatePreviewDisplay()
 {
+    updatePreview->setEnabled(false);
+
     displayProgressBar->reset();
     
     previewDisplayPort->paintToDisplay(disp);
@@ -1067,7 +1016,7 @@ void interface::updateSavePreview()
     QString filePath = saveSettings(newFile).append("/" + newFile);
 
     historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
-    
+
     updatePreviewDisplay();
     
 }
@@ -1113,9 +1062,10 @@ void interface::changeYCorner(const QString &val)
 // SLOT FUNCTIONS TO CHANGE FREQ AND COEFF PAIRS
 void interface::changeN(int val)
 {
-    // int passedval = val.toInt();
+
+    qDebug() << "change N";
+
     currFunction->setN(termIndex, val);
-    // nValueLabel->setText(QString::number(val));
     refreshTableTerms();
     refreshMainWindowTerms();
     updatePreviewDisplay();
@@ -1123,9 +1073,9 @@ void interface::changeN(int val)
 
 void interface::changeM(int val)
 {
-    // int passedval = val.toInt();
+    qDebug() << "change M";
+    
     currFunction->setM(termIndex, val);
-    // mValueLabel->setText(QString::number(val));
     refreshTableTerms();
     refreshMainWindowTerms();
     updatePreviewDisplay();
@@ -1133,7 +1083,9 @@ void interface::changeM(int val)
 
 void interface::changeR(double val)
 {
-    // double passedval = val.toDouble();
+    
+    qDebug() << "change R";
+
     currFunction->setR(termIndex, val);
     rValueLabel->setText(QString::number(val));
     refreshTableTerms();
@@ -1143,7 +1095,9 @@ void interface::changeR(double val)
 
 void interface::changeA(double val)
 {
-    // double passedval = val.toDouble();
+
+    qDebug() << "change A";
+
     currFunction->setA(termIndex, val);
     aValueLabel->setText(QString::number(val));
     refreshTableTerms();
@@ -1153,14 +1107,26 @@ void interface::changeA(double val)
 
 void interface::changeScaleA(const QString &val)
 {
+
+    qDebug() << "change scale A";
+
     double passedval = val.toDouble();
     currFunction->setScaleA(passedval);
+    refreshTableTerms();
+    refreshMainWindowTerms();
+    updatePreviewDisplay();
 }
 
 void interface::changeScaleR(const QString &val)
 {
+
+    qDebug() << "change scale R";
+
     double passedval = val.toDouble();
     currFunction->setScaleR(passedval);
+    refreshTableTerms();
+    refreshMainWindowTerms();
+    updatePreviewDisplay();
 }
 
 // SLOT function to handle exporting an image to ppm or jpeg format
@@ -1301,15 +1267,17 @@ void interface::popUpImageExportFinished(const QString &filePath)
     delete exportProgressBar;
 }
 
-// reset the table to receive signals
+// reset the table to receive signals - prevent updating too fast
 void interface::resetTableButton() 
 {
     addTermButton->blockSignals(false);
     termViewTable->blockSignals(false);
 }
 
+// reset the main window to receive signals - prevent updating too fast
 void interface::resetMainWindowButton(const bool &status) 
 {
     numTermsEdit->setEnabled(status);
+    updatePreview->setEnabled(status);
 }
 

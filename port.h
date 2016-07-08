@@ -36,6 +36,16 @@ public:
 
     Controller *getControllerObject() { return controllerObject; }
 
+    void deleteMembers() {
+        if (!currFunction) delete currFunction;
+        if (!currColorWheel) delete currColorWheel;
+        if (!currSettings) delete currSettings;
+        if (!display) delete display;
+        if (!output) delete output;
+        if (!controller) delete controller;
+        if (!controllerObject) delete controllerObject;
+    }
+
 protected:
     
     AbstractFunction *currFunction;

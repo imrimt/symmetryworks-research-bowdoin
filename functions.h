@@ -178,7 +178,7 @@ class hex3Function : public AbstractFunction
     std::complex<double> bundle(double &x, double &y, unsigned int &i) const;
     std::complex<double> operator() (double i, double j);
     
-    virtual AbstractFunction* clone() const { qDebug() << "in hex3 to clone"; return new hex3Function(*this); };
+    virtual AbstractFunction* clone() const { return new hex3Function(*this); };
 
 
 };
