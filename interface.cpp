@@ -115,10 +115,10 @@ void interface::initInterfaceLayout()
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
     
     
-    worldwidthEdit->setText(QString::number(DEFAULT_WIDTH));
-    worldheightEdit->setText(QString::number(DEFAULT_HEIGHT));
-    XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
-    YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
+//    worldWidthEdit->setText(QString::number(DEFAULT_WIDTH));
+//    worldHeightEdit->setText(QString::number(DEFAULT_HEIGHT));
+//    XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
+//    YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
 
     
     // FINALIZE WINDOW
@@ -441,100 +441,197 @@ void interface::initPatternType()
 // TODO compress this...
 void interface::initImageProps()
 {
+     imagePropsBoxLayout = new QVBoxLayout(imagePropsBox);
+    
+    imageShiftXLayout = new QHBoxLayout(imagePropsBox);
+    imageShiftYLayout = new QHBoxLayout(imagePropsBox);
+    
+    imageStretchXLayout = new QHBoxLayout(imagePropsBox);
+    imageStretchYLayout = new QHBoxLayout(imagePropsBox);
 //    outHeightLabel = new QLabel(tr("Output Height"), imagePropsBox);
 //    outWidthLabel = new QLabel(tr("Output Width"), imagePropsBox);
-    XCornerLabel = new QLabel(tr("XCorner"), imagePropsBox);
-    YCornerLabel = new QLabel(tr("YCorner"), imagePropsBox);
-    worldwidthLabel = new QLabel(tr("World Width"), imagePropsBox);
-    worldheightLabel = new QLabel(tr("World Height"), imagePropsBox);
+   // XCornerLabel = new QLabel(tr("XCorner"), imagePropsBox);
+  //  YCornerLabel = new QLabel(tr("YCorner"), imagePropsBox);
+    
+    XShiftLabel = new QLabel(tr("Horizontal Shift"), imagePropsBox);
+    YShiftLabel = new QLabel(tr("Vertical Shift"), imagePropsBox);
+    XShiftEdit = new QDoubleSlider(imagePropsBox);
+    YShiftEdit = new QDoubleSlider(imagePropsBox);
+    XShiftValueLabel = new QLineEdit(imagePropsBox);
+    YShiftValueLabel = new QLineEdit(imagePropsBox);
+    XShiftValueLabel->setValidator(doubleValidate);
+    YShiftValueLabel->setValidator(doubleValidate);
+    XShiftValueLabel->setFixedWidth(40);
+    YShiftValueLabel->setFixedWidth(40);
+    XShiftValueLabel->setAlignment(Qt::AlignCenter);
+    YShiftValueLabel->setAlignment(Qt::AlignCenter);
+    
+    imageShiftXLayout->addWidget(XShiftLabel);
+    imageShiftXLayout->addWidget(XShiftEdit);
+    imageShiftXLayout->addWidget(XShiftValueLabel);
+    
+    imageShiftYLayout->addWidget(YShiftLabel);
+    imageShiftYLayout->addWidget(YShiftEdit);
+    imageShiftYLayout->addWidget(YShiftValueLabel);
+    
+    
+    
+    worldWidthLabel = new QLabel(tr("Horizontal Stretch"), imagePropsBox);
+    worldHeightLabel = new QLabel(tr("Vertical Stretch"), imagePropsBox);
 //    outHeightEdit = new QLineEdit(imagePropsBox);
 //    outWidthEdit = new QLineEdit(imagePropsBox);
-    XCornerEdit = new QLineEdit(imagePropsBox);
-    YCornerEdit = new QLineEdit(imagePropsBox);
-    worldwidthEdit = new QLineEdit(imagePropsBox);
-    worldheightEdit = new QLineEdit(imagePropsBox);
-    pspacer1 = new QSpacerItem(0, 12);
-    pspacer2 = new QSpacerItem(0, 14);
-    pspacer3 = new QSpacerItem(15, 30);
-    pspacer4 = new QSpacerItem(20, 40);
-    pspacer5 = new QSpacerItem(20, 15);
+  //  XCornerEdit = new QLineEdit(imagePropsBox);
+ //   YCornerEdit = new QLineEdit(imagePropsBox);
     
-    imagePropsBoxOverallLayout = new QVBoxLayout(imagePropsBox);
-    imagePropsBoxLayout = new QHBoxLayout();
-    imagePropsEditStack = new QVBoxLayout();
-    imagePropsBoxStack = new QVBoxLayout();
-    savePushLayout = new QHBoxLayout();
+//    worldWidthEdit = new QLineEdit(imagePropsBox);
+//    worldHeightEdit = new QLineEdit(imagePropsBox);
+  
+    
+    worldWidthEdit = new QDoubleSlider(imagePropsBox);
+    worldHeightEdit = new QDoubleSlider(imagePropsBox);
+    worldWidthValueLabel = new QLineEdit(imagePropsBox);
+    worldHeightValueLabel = new QLineEdit(imagePropsBox);
+    worldWidthValueLabel->setValidator(doubleValidate);
+    worldHeightValueLabel->setValidator(doubleValidate);
+    worldWidthValueLabel->setFixedWidth(40);
+    worldHeightValueLabel->setFixedWidth(40);
+    worldWidthValueLabel->setAlignment(Qt::AlignCenter);
+    worldHeightValueLabel->setAlignment(Qt::AlignCenter);
+    
+    imageStretchXLayout->addWidget(worldWidthLabel);
+    imageStretchXLayout->addWidget(worldWidthEdit);
+    imageStretchXLayout->addWidget(worldWidthValueLabel);
+    
+    imageStretchYLayout->addWidget(worldHeightLabel);
+    imageStretchYLayout->addWidget(worldHeightEdit);
+    imageStretchYLayout->addWidget(worldHeightValueLabel);
+    
+    pspacer1 = new QSpacerItem(0, 20);
+//    pspacer2 = new QSpacerItem(0, 14);
+//    pspacer3 = new QSpacerItem(15, 30);
+//    pspacer4 = new QSpacerItem(20, 40);
+//    pspacer5 = new QSpacerItem(20, 15);
+    
+    
+    //imagePropsBoxOverallLayout = new QVBoxLayout(imagePropsBox);
+   
+    //imagePropsEditStack = new QVBoxLayout();
+    //imagePropsBoxStack = new QVBoxLayout();
+   // savePushLayout = new QHBoxLayout();
     
 
-    XCornerEdit->setValidator(doubleValidate);
-    YCornerEdit->setValidator(doubleValidate);
-    worldwidthEdit->setValidator(doubleValidate);
-    worldheightEdit->setValidator(doubleValidate);
+ //   XCornerEdit->setValidator(doubleValidate);
+ //   YCornerEdit->setValidator(doubleValidate);
+//    worldWidthEdit->setValidator(doubleValidate);
+//    worldHeightEdit->setValidator(doubleValidate);
     
 //    outHeightEdit->setFixedWidth(100);
 //    outWidthEdit->setFixedWidth(100);
-    XCornerEdit->setFixedWidth(100);
-    YCornerEdit->setFixedWidth(100);
-    worldwidthEdit->setFixedWidth(100);
-    worldheightEdit->setFixedWidth(100);
+ //   XCornerEdit->setFixedWidth(100);
+ //   YCornerEdit->setFixedWidth(100);
+   
     
+    XShiftEdit->setFixedWidth(100);
+    YShiftEdit->setFixedWidth(100);
+    XShiftEdit->setRange(-200, 150);
+    XShiftEdit->setSingleStep(1);
+    YShiftEdit->setRange(-200,150);
+    YShiftEdit->setSingleStep(1);
+    XShiftEdit->setOrientation(Qt::Horizontal);
+    YShiftEdit->setOrientation(Qt::Horizontal);
+    
+    XShiftValueLabel->setText(QString::number(settings->XCorner));
+    YShiftValueLabel->setText(QString::number(settings->YCorner));
+    XShiftEdit->setValue(settings->XCorner * 100.0);
+    YShiftEdit->setValue(settings->YCorner * 100.0);
+    
+    
+    worldWidthEdit->setFixedWidth(100);
+    worldHeightEdit->setFixedWidth(100);
+    worldWidthEdit->setRange(0, 800);
+    worldWidthEdit->setSingleStep(1);
+    worldHeightEdit->setRange(0,800);
+    worldHeightEdit->setSingleStep(1);
+    worldWidthEdit->setOrientation(Qt::Horizontal);
+    worldHeightEdit->setOrientation(Qt::Horizontal);
+    
+    
+    worldWidthValueLabel->setText(QString::number(settings->Width));
+    worldHeightValueLabel->setText(QString::number(settings->Height));
+    worldWidthEdit->setValue(settings->Width * 100.0);
+    worldHeightEdit->setValue(settings->Height * 100.0);
     // ASSEMBLE LAYOUT
-    imagePropsBoxStack->addWidget(XCornerLabel);
-    imagePropsBoxStack->addWidget(YCornerLabel);
-    imagePropsBoxStack->addWidget(worldwidthLabel);
-    imagePropsBoxStack->addWidget(worldheightLabel);
-    imagePropsBoxStack->addItem(pspacer1);
+//    imagePropsBoxStack->addWidget(XCornerLabel);
+//    imagePropsBoxStack->addWidget(YCornerLabel);
+    
+    imagePropsBoxLayout->addLayout(imageShiftXLayout);
+    imagePropsBoxLayout->addLayout(imageShiftYLayout);
+    imagePropsBoxLayout->addItem(pspacer1);
+    imagePropsBoxLayout->addLayout(imageStretchXLayout);
+    imagePropsBoxLayout->addLayout(imageStretchYLayout);
+    //imagePropsBox->setLayout(imagePropsBoxLayout);
+   
 //    imagePropsBoxStack->addWidget(outWidthLabel);
 //    imagePropsBoxStack->addWidget(outHeightLabel);
     
-    imagePropsBoxStack->setAlignment(XCornerLabel, Qt::AlignLeft);
-    imagePropsBoxStack->setAlignment(YCornerLabel, Qt::AlignLeft);
-    imagePropsBoxStack->setAlignment(worldwidthLabel, Qt::AlignLeft);
-    imagePropsBoxStack->setAlignment(worldheightLabel, Qt::AlignLeft);
+//    imagePropsBoxStack->setAlignment(XCornerLabel, Qt::AlignLeft);
+//    imagePropsBoxStack->setAlignment(YCornerLabel, Qt::AlignLeft);
+//    imagePropsBoxStack->setAlignment(worldWidthLabel, Qt::AlignLeft);
+//    imagePropsBoxStack->setAlignment(worldHeightLabel, Qt::AlignLeft);
 //    imagePropsBoxStack->setAlignment(outWidthLabel, Qt::AlignLeft);
 //    imagePropsBoxStack->setAlignment(outHeightLabel, Qt::AlignLeft);
     
-    imagePropsEditStack->addWidget(XCornerEdit);
-    imagePropsEditStack->addWidget(YCornerEdit);
-    imagePropsEditStack->addWidget(worldwidthEdit);
-    imagePropsEditStack->addWidget(worldheightEdit);
-    imagePropsEditStack->addItem(pspacer2);
+//    imagePropsEditStack->addWidget(XCornerEdit);
+//    imagePropsEditStack->addWidget(YCornerEdit);
+//    imagePropsEditStack->addWidget(worldWidthEdit);
+//    imagePropsEditStack->addWidget(worldHeightEdit);
+  //  imagePropsEditStack->addItem(pspacer2);
 //    imagePropsEditStack->addWidget(outWidthEdit);
 //    imagePropsEditStack->addWidget(outHeightEdit);
     
-    imagePropsBoxLayout->addLayout(imagePropsBoxStack);
-    imagePropsBoxLayout->addLayout(imagePropsEditStack);
-    imagePropsBoxLayout->addItem(pspacer4);
+   // imagePropsBoxLayout->addLayout(imagePropsBoxStack);
+//    imageProp
+//    imagePropsBoxLayout->addLayout(imagePropsEditStack);
+//    imagePropsBoxLayout->addItem(pspacer4);
     
-    imagePropsBoxOverallLayout->addLayout(imagePropsBoxLayout);    
+    //imagePropsBoxOverallLayout->addLayout(imagePropsBoxLayout);
 }
 
 void interface::initImageExportPopUp()
 {
     // IMAGE DIMENSIONS POP UP WINDOW
     settingsPopUp = new QWidget(this, Qt::Window);
+    settingsPopUp->setWindowModality(Qt::WindowModal);
     settingsPopUp->setWindowTitle(tr("Image Settings"));
     settingsPopUpLayout = new QVBoxLayout(settingsPopUp);
     settingsPopUp->setMinimumWidth(300);
     
+
     outHeightEdit = new QLineEdit(settingsPopUp);
     outWidthEdit = new QLineEdit(settingsPopUp);
     
     outWidthLayout = new QHBoxLayout(settingsPopUp);
-    outWidthLayout->addWidget(new QLabel("Image Width"));
+    outWidthLabel = new QLabel(tr("Image Width"));
+    outWidthLayout->addWidget(outWidthLabel);
     outWidthLayout->addWidget(outWidthEdit);
+    outWidthLayout->addWidget(new QLabel(tr("pixels")));
     
     outHeightLayout = new QHBoxLayout(settingsPopUp);
-    outHeightLayout->addWidget(new QLabel("Image Height"));
+    outHeightLabel = new QLabel(tr("Image Height"));
+    outHeightLayout->addWidget(outHeightLabel);
     outHeightLayout->addWidget(outHeightEdit);
+    outHeightLayout->addWidget(new QLabel(tr("pixels")));
     
     settingsPopUpLayout->addLayout(outWidthLayout);
     settingsPopUpLayout->addLayout(outHeightLayout);
     
-    QPushButton *button = new QPushButton(tr("OK"), settingsPopUp);
-    settingsPopUpLayout->addWidget(button);
     
-    connect(button, SIGNAL(clicked()), this, SLOT(startImageExport()));
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
+                                     | QDialogButtonBox::Cancel);
+    settingsPopUpLayout->addWidget(buttonBox);
+    
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(startImageExport()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancelImageExport()));
     
     outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
     outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
@@ -580,10 +677,18 @@ void interface::connectAllSignals()
     
     connect(outWidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOWidth(QString)));
     connect(outHeightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOHeight(QString)));
-    connect(worldwidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeWorldWidth(QString)));
-    connect(worldheightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeWorldHeight(QString)));
-    connect(XCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeXCorner(QString)));
-    connect(YCornerEdit, SIGNAL(textChanged(QString)), this, SLOT(changeYCorner(QString)));
+    
+    
+    connect(worldWidthEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldWidth(double)));
+    connect(worldHeightEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldHeight(double)));
+    connect(worldWidthValueLabel, SIGNAL(editingFinished()), this, SLOT(changeWorldWidth()));
+    connect(worldHeightValueLabel, SIGNAL(editingFinished()), this, SLOT(changeWorldHeight()));
+    
+    
+    connect(XShiftEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeXCorner(double)));
+    connect(YShiftEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeYCorner(double)));
+    connect(XShiftValueLabel, SIGNAL(editingFinished()), this, SLOT(changeXCorner()));
+    connect(YShiftValueLabel, SIGNAL(editingFinished()), this, SLOT(changeYCorner()));
     
     
     connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
@@ -663,7 +768,7 @@ void interface::refreshTableTerms()
 void interface::refreshMainWindowTerms()
 {
 
-    qDebug() << "in refreshMainWindowTerms";
+   // qDebug() << "in refreshMainWindowTerms";
 
     currTermEdit->blockSignals(true);
     numTermsEdit->blockSignals(true);
@@ -817,10 +922,10 @@ void interface::resetImageFunction()
     
 //    outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
 //    outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
-    worldwidthEdit->setText(QString::number(DEFAULT_WIDTH));
-    worldheightEdit->setText(QString::number(DEFAULT_HEIGHT));
-    XCornerEdit->setText(QString::number(DEFAULT_XCORNER));
-    YCornerEdit->setText(QString::number(DEFAULT_YCORNER));
+    worldWidthEdit->setValue(DEFAULT_WIDTH * 100.0);
+    worldHeightEdit->setValue(DEFAULT_HEIGHT * 100.0);
+    XShiftEdit->setValue(DEFAULT_XCORNER * 100.0);
+    YShiftEdit->setValue(DEFAULT_YCORNER * 100.0);
 
     // refreshTableTerms();
     // refreshMainWindowTerms();
@@ -1039,10 +1144,10 @@ QString interface::loadSettings(const QString &fileName) {
     refreshTableTerms();
 //    outWidthEdit->setText(QString::number(settings->OWidth));
 //    outHeightEdit->setText(QString::number(settings->OHeight));
-    worldwidthEdit->setText(QString::number(settings->Width));
-    worldheightEdit->setText(QString::number(settings->Height));
-    XCornerEdit->setText(QString::number(settings->XCorner));
-    YCornerEdit->setText(QString::number(settings->YCorner));
+    worldWidthEdit->setValue(settings->Width * 100.0);
+    worldHeightEdit->setValue(settings->Height * 100.0);
+    XShiftEdit->setValue(settings->XCorner * 100.0);
+    YShiftEdit->setValue(settings->YCorner * 100.0);
     updatePreviewDisplay();
     
     QDir stickypath(fileName);
@@ -1076,36 +1181,73 @@ void interface::updateSavePreview()
 void interface::changeOHeight(const QString &val)
 {
     settings->OHeight = val.toInt();
-    updatePreviewDisplay();
+    //updatePreviewDisplay();
 }
 
 void interface::changeOWidth(const QString &val)
 {
     settings->OWidth = val.toInt();
+    //updatePreviewDisplay();
+}
+
+void interface::changeWorldHeight(double val)
+{
+    settings->Height = val;
+    worldHeightValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
-void interface::changeWorldHeight(const QString &val)
+void interface::changeWorldHeight()
 {
-    settings->Height = val.toDouble();
+    double val = worldHeightValueLabel->text().toDouble();
+    settings->Height = val;
+    worldHeightEdit->setValue(val * 100.0);
+    //worldHeightValueLabel->setText(val);
     updatePreviewDisplay();
 }
 
-void interface::changeWorldWidth(const QString &val)
+void interface::changeWorldWidth(double val)
 {
-    settings->Width = val.toDouble();
+    settings->Width = val;
+    worldWidthValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
-void interface::changeXCorner(const QString &val)
+void interface::changeWorldWidth()
 {
-    settings->XCorner = val.toDouble();
+    double val = worldWidthValueLabel->text().toDouble();
+    settings->Width = val;
+    worldWidthEdit->setValue(val * 100.0);
     updatePreviewDisplay();
 }
 
-void interface::changeYCorner(const QString &val)
+void interface::changeXCorner(double val)
 {
-    settings->YCorner = val.toDouble();
+    settings->XCorner = val;
+    XShiftValueLabel->setText(QString::number(val));
+    updatePreviewDisplay();
+}
+
+void interface::changeXCorner()
+{
+    double val = XShiftValueLabel->text().toDouble();
+    settings->XCorner = val;
+    XShiftEdit->setValue(val * 100.0);
+    updatePreviewDisplay();
+}
+
+void interface::changeYCorner(double val)
+{
+    settings->YCorner = val;
+    YShiftValueLabel->setText(QString::number(val));
+    updatePreviewDisplay();
+}
+
+void interface::changeYCorner()
+{
+    double val = YShiftValueLabel->text().toDouble();
+    settings->YCorner = val;
+    YShiftEdit->setValue(val * 100.0);
     updatePreviewDisplay();
 }
 
@@ -1163,11 +1305,7 @@ void interface::changeScaleR(const QString &val)
     currFunction->setScaleR(passedval);
 }
 
-// SLOT function to handle exporting an image to ppm or jpeg format
-void interface::exportImageFunction()
-{    
-    settingsPopUp->show(); 
-}
+
 
 void interface::startImageExport() 
 {
