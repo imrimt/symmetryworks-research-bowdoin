@@ -135,12 +135,17 @@ void ControllerThread::run()
 
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
+        // qDebug() << "start event loop";
+
         if (!restart) {
             QEventLoop q;
             connect(this, SIGNAL(newWork()), &q, SLOT(quit()));
             connect(controllerObject, SIGNAL(allThreadsFinished()), &q, SLOT(quit()));
+            // qDebug() << "before execting";
             q.exec();
         }
+
+        // qDebug() << "end event loop";
 
         std::chrono::steady_clock::time_point end= std::chrono::steady_clock::now();
         qDebug() << "TIME TO RENDER ALL PIXELS:" << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / pow(10, 6) << "seconds";

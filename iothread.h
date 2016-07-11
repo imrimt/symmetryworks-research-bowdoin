@@ -15,7 +15,7 @@ public:
     IOThread(QObject *parent = 0);
     ~IOThread();
     
-    void render(QImage *output, const QString &filePathToExport);
+    void prepareToWrite(QImage *output, const QString &filePathToExport);
     
 signals:
     void finishedExport(const QString &result);

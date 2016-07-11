@@ -68,7 +68,7 @@ void RenderThread::run()
            
         mutex.unlock();
 
-        // qDebug() << "drawing from" << topLeft << "to" << bottomRight;
+        // qDebug() << "drawing from" << topLeft << "to" << bottomRight
 
         // int count = 0;
 
@@ -87,14 +87,21 @@ void RenderThread::run()
                 
                 //run the point through our mathematical function
                 //...then convert that complex output to a color according to our color wheel
+
+                // qDebug() << "I crashed first";
                 
                 fout = (*currFunction)(worldX,worldY);
                 QRgb color = (*currColorWheel)(fout);
+
+                // qDebug() << "I think I'm crashed here";
                 
                 //finally push the determined color to the corresponding point on the display
                 colorMap[x][y] = color;
             }
-            if (x % 100 == 0) emit newProgress((x/outputWidth) * 100);
+            if (x % 100 == 0) {
+                // qDebug() << "new progress emitted";
+                emit newProgress((x/outputWidth) * 100);
+            }
         }  
         
         mutex.lock();

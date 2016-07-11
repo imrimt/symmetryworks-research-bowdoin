@@ -24,6 +24,7 @@
 #include <QAction>
 #include <QMessageBox>
 #include <QDialogButtonBox>
+#include <QTimer>
 
 #include <QProgressBar>
 #include <QTableWidget>
@@ -91,7 +92,7 @@ public:
         layout->addWidget(label);
         layout->addWidget(progBar);
         layout->addWidget(percentLabel);
-        
+
         this->port = port;
         this->visible = visible;
         
@@ -103,6 +104,26 @@ public:
         delete label;
         delete percentLabel;
         delete progBar;
+    }
+
+    void resetBar(const QString &title, bool visible, Port *port) {
+        label = new QLabel(title);
+        percentLabel = new QLabel();
+        progBar = new QProgressBar();
+        progBar->setRange(0, 100);
+        progBar->setAlignment(Qt::AlignCenter);
+        progBar->setValue(0);
+        progBar->setVisible(visible);
+        progBar->setPalette(QColor(Qt::gray));
+        label->setVisible(visible);
+        
+        layout = new QHBoxLayout();
+        layout->addWidget(label);
+        layout->addWidget(progBar);
+        layout->addWidget(percentLabel);
+
+        this->port = port;
+        this->visible = visible;
     }
     
     QProgressBar *progBar;
@@ -116,8 +137,10 @@ private:
     
 protected:
     
-    void setValue(int val) {
+    void setNewValue(int val) {
+        // qDebug() << "progBar exists?:" << (bool)(progBar != NULL);
         progBar->setValue(val);
+        // qDebug() << "why am I crashing here?";
         percentLabel->setText(progBar->text());
     }
     
@@ -131,9 +154,22 @@ public slots:
     void partialUpdate(const double &progress)
     {
         if (!visible) { progBar->setVisible(true); label->setVisible(true); }
-        this->setValue(progress);
+        //qDebug() << "progress" << progress;
+        this->setNewValue(progress);
+
+        //emit signals to reset table buttons
+        if (progress == 100) {
+            emit renderFinished();
+            QTimer::singleShot(2000, this, SLOT(updateColor()));
+        }
     }
-    
+
+    void updateColor() {
+        // qDebug() << "updating color";
+        // QString value1 = "QProgressBar::chunk {background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #F10350,stop: 0.4999 #FF3320,stop: 0.5 #FF0019,stop: 1 #FF0000 );}";
+        // this->setStyleSheet(value1);
+    }
+
 };
 
 
@@ -353,7 +389,7 @@ private slots:
     void previewDisplayEnlarge() {disp->enlarge();}
     void previewDisplayShrink() {disp->shrink();}
     void previewDisplayResetSize() {disp->resetSize();}
-    void updateSavePreview();
+    void snapshotFunction();
     void termViewPopUp();
     void addTerm();
     void updateTermTable(QObject *cell);

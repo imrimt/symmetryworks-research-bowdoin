@@ -7,11 +7,11 @@ IOThread::IOThread(QObject *parent) : QThread(parent)
 
 IOThread::~IOThread()
 {    
-    wait();
+    // wait();
 }
 
 
-void IOThread::render(QImage *output, const QString &filePathToExport)
+void IOThread::prepareToWrite(QImage *output, const QString &filePathToExport)
 {
     
     QMutexLocker locked(&mutex);

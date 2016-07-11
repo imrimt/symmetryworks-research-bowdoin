@@ -54,7 +54,7 @@ void Port::handleRenderedImage(const int &actionFlag)
     case IMAGE_EXPORT_FLAG:
         IOThread *ioThread = new IOThread();
         connect(ioThread, SIGNAL(finishedExport(QString)), this, SLOT(handleFinishedExport(QString)));
-        ioThread->render(output, filePathToExport);
+        ioThread->prepareToWrite(output, filePathToExport);
         
 //        output->save(filePathToExport);
 //        QDir stickypath(filePathToExport);

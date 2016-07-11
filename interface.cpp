@@ -119,13 +119,13 @@ void interface::initInterfaceLayout()
     refreshTableTerms();
     updatePreviewDisplay();
 
-    // FINALIZE WINDOW
-    setFixedSize(sizeHint());
-    setWindowTitle(tr("COOL WALLPAPER SOFTWARE"));
-
     //will reload
     //setFixedSize(1200,1000);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+
+    // FINALIZE WINDOW
+    setFixedSize(sizeHint());
+    setWindowTitle(tr("COOL WALLPAPER SOFTWARE"));
 
 }
 
@@ -153,11 +153,14 @@ void interface::initPreviewDisplay()
     previewDisplayPort = new Port(currFunction, currColorWheel, disp->width(), disp->height(), settings);
     
     displayProgressBar = new ProgressBar(tr("Preview"), true, previewDisplayPort);
+    exportProgressBar = new ProgressBar(tr("Exporting"), true, imageExportPort);
     // connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), displayProgressBar, SLOT(update(int)));
     connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
     connect(previewDisplayPort, SIGNAL(paintingFinished(bool)), this, SLOT(resetMainWindowButton(bool)));
     connect(displayProgressBar, SIGNAL(renderFinished()), this, SLOT(resetTableButton()));
-    
+    connect(imageExportPort, SIGNAL(finishedExport(QString)), this, SLOT(popUpImageExportFinished(QString)));
+    connect(imageExportPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), exportProgressBar, SLOT(partialUpdate(double)));
+
     dispLayout->setAlignment(disp, Qt::AlignCenter);
     dispLayout->addWidget(disp);
     dispLayout->addLayout(displayProgressBar->layout);
@@ -523,7 +526,6 @@ void interface::initImageExportPopUp()
     settingsPopUpLayout->addLayout(outWidthLayout);
     settingsPopUpLayout->addLayout(outHeightLayout);
     
-    
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                      | QDialogButtonBox::Cancel);
     settingsPopUpLayout->addWidget(buttonBox);
@@ -553,7 +555,7 @@ void interface::connectAllSignals()
     connect(polarPlaneMapper,SIGNAL(mapped(int)), polarPlane, SLOT(showPlanePopUp(int)));
 
    // connect(toggleViewButton, SIGNAL(clicked()), this, SLOT(toggleViewMode()));
-    connect(updatePreview, SIGNAL(clicked()), this, SLOT(updateSavePreview()));
+    connect(updatePreview, SIGNAL(clicked()), this, SLOT(snapshotFunction()));
     connect(exportImage, SIGNAL(clicked()), this, SLOT(exportImageFunction()));
     connect(resetImage, SIGNAL(clicked()), this, SLOT(resetImageFunction()));
     
@@ -591,7 +593,7 @@ void interface::connectAllSignals()
     connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
     connect(polarPlane, SIGNAL(setPolarCoordinates(int, QString, QString)), this, SLOT(setPolarCoordinates(int, QString, QString)));
     
-    connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(updateSavePreview()));
+    connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(snapshotFunction()));
     
 }
 
@@ -916,7 +918,6 @@ void interface::changeFunction(int index)
     termViewTable->setRowCount(0);
 
     currTermEdit->setMaximum(numTerms);
-
     
     previewDisplayPort->changeFunction(currFunction);
     imageExportPort->changeFunction(currFunction);
@@ -1047,7 +1048,7 @@ void interface::updatePreviewDisplay()
 }
 
 // slot function called when clicked "update preview" button to add to history and update the preview display to reflect current settings
-void interface::updateSavePreview()
+void interface::snapshotFunction()
 {
     historyDisplay->show();
     
@@ -1057,7 +1058,7 @@ void interface::updateSavePreview()
 
     historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
 
-    updatePreviewDisplay();
+    //updatePreviewDisplay();
     
 }
 
@@ -1217,18 +1218,17 @@ void interface::startImageExport()
     
     if (fileName == "") return;
 
+    settingsPopUp->hide();
+
     QFile inFile(fileName);
     if (!inFile.open(QIODevice::WriteOnly))
         return;
-    
-    exportProgressBar = new ProgressBar(tr("Exporting"), true, imageExportPort);
-    dispLayout->insertLayout(2, exportProgressBar->layout);
+
+    exportProgressBar->resetBar(tr("Exporting"), true, imageExportPort);
     exportProgressBar->reset();
-    
-    // connect(imageExportPort->getControllerObject(), SIGNAL(progressChanged(int)), exportProgressBar, SLOT(update(int)));
-    connect(imageExportPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), exportProgressBar, SLOT(partialUpdate(double)));
-    connect(imageExportPort, SIGNAL(finishedExport(QString)), this, SLOT(popUpImageExportFinished(QString)));
-    
+
+    dispLayout->insertLayout(2, exportProgressBar->layout);
+
     QImage *output = new QImage(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
 
     imageExportPort->exportImage(output, fileName);    
@@ -1337,9 +1337,11 @@ void interface::popUpImageExportFinished(const QString &filePath)
     QMessageBox msgBox;
     msgBox.setText(tr("The file has been successfully saved to: ").append(filePath));
     msgBox.exec();
+
+    saveloadPath = filePath;
     
     exportProgressBar->remove();
-    delete exportProgressBar;
+    if (!exportProgressBar) delete exportProgressBar;
 }
 
 // reset the table to receive signals - prevent updating too fast

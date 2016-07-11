@@ -67,7 +67,6 @@ private:
 private slots: 
     void handleRenderedImageParts(const QPoint &startPoint, const Q2DArray &result) {
         if (restart) {
-            // qDebug() << "abort combining because of restart"; 
             return;
         }
 
@@ -107,6 +106,8 @@ private slots:
         if (restart) {
             return;
         }
+
+        //qDebug() << "new progress" << progress;
 
         emit partialProgressChanged(progress * numThreadsRunning / numThreadsActive);
     }
@@ -178,9 +179,7 @@ private:
     Settings *currSettings;
     Controller *controllerObject;
     Display *display;
-
     QImage *output;
-
 	QVector<RenderThread *> threads;
 
 };
