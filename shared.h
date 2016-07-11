@@ -33,6 +33,7 @@ struct Settings
     int OHeight = DEFAULT_OUTPUT_HEIGHT;
 
     Settings* clone() {
+      
         Settings* newSettings = new Settings;
         newSettings->Width = this->Width;
         newSettings->Height = this->Height;
@@ -40,6 +41,7 @@ struct Settings
         newSettings->YCorner = this->YCorner;
         newSettings->OWidth = this->OWidth;
         newSettings->OHeight = this->OHeight;
+        
         return newSettings;
     }
 };

@@ -31,6 +31,7 @@ public:
     }
     void changeSettings(Settings *newSettings) {
         currSettings = newSettings;
+        
         controller->changeSettings(newSettings);
     }
 

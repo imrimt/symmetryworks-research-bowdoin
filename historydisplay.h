@@ -12,7 +12,7 @@
 #include <QDockWidget>
 
 
-const int MAX_HISTORY_ITEMS = 5;
+const int MAX_HISTORY_ITEMS = 8;
 const int HISTORY_ITEM_SIZE = 60;
 
 
@@ -26,6 +26,7 @@ public:
     
     // LAYOUT ELEMENTS
     QWidget *viewHistoryWidget;
+    //QDockWidget *dock;
     QGroupBox *viewHistoryBox;
     QVBoxLayout *viewHistoryBoxLayout;
     QVBoxLayout *viewHistoryBoxOverallLayout;
@@ -37,6 +38,7 @@ public:
     void hide();
     void show();
     void triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings);
+    void setPosition(QPoint point);
 
     private slots:
         void removePreview(QObject *item);

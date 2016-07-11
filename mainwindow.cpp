@@ -54,8 +54,9 @@
 
 MainWindow::MainWindow()
 {
+    
     currInterface = new interface();
-
+  
     // qDebug() << "setting " << this->currInterface << " to " << currInterface;
 
     QHBoxLayout *centerLayout = new QHBoxLayout();
@@ -64,7 +65,6 @@ MainWindow::MainWindow()
     centerWidget->setLayout(centerLayout);
 
     setCentralWidget(centerWidget);
-    
     
     
     // QWidget *topFiller = new QWidget;
@@ -83,7 +83,13 @@ MainWindow::MainWindow()
 
     QString message = tr("A context menu is available by right-clicking");
     statusBar()->showMessage(message);
-
+    
+    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    int x = (screenGeometry.width()-this->width()) / 4;
+    int y = (screenGeometry.height()-this->height()) / 6;
+    this->move(x, y);
+    
+                               
     setWindowTitle(tr("Wallpaper Generation"));
     resize(this->currInterface->width() * 1.05, this->currInterface->height() * 1.05);
 }
@@ -276,3 +282,10 @@ void MainWindow::createMenus()
     viewMenu->addAction(shrinkPreviewAct);
     viewMenu->addAction(resetPreviewAct);
 }
+
+
+//void MainWindow::moveEvent(QMoveEvent* event)
+//{
+//    const QPoint global = this->mapToGlobal(rect().center());
+//    waitDialog->move(global.x() - waitDialog->width() / 2, global.y() - waitDialog->height() / 2);
+//}
