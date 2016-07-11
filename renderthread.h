@@ -38,6 +38,8 @@ public:
         worldYStart1 = currSettings->Height + currSettings->YCorner;
         worldYStart2 = currSettings->Height/overallHeight;
         worldXStart = currSettings->Width/overallWidth;
+        overallWidth = currSettings->OWidth;
+        overallHeight = currSettings->OHeight;
     }
 
 protected:

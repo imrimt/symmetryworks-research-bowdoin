@@ -37,6 +37,10 @@
 #define MAX_NUM_TERMS 99
 
 const unsigned int INVALID_FILE_ERROR = 0;
+const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
+
+const int MIN_IMAGE_DIM = 20;
+const int MAX_IMAGE_DIM = 10000;
 
 // QSpinBox subclass that disallows user input
 class CustomSpinBox : public QSpinBox
@@ -182,6 +186,7 @@ public:
     
     // ORGANIZATIONAL ELEMENTS
     QWidget *functionConstantsWidget;
+    QHBoxLayout *overallLayout;
     QVBoxLayout *interfaceLayout;
     QWidget *displayWidget;
     QHBoxLayout *topbarLayout;
@@ -369,8 +374,8 @@ private slots:
     void changeXCorner();
     void changeYCorner(double val);
     void changeYCorner();
-    void changeOWidth(const QString &val);
-    void changeOHeight(const QString &val);
+    void changeOWidth();
+    void changeOHeight();
     void changeN(int val);
     void changeM(int val);
     void changeR(double val);
@@ -435,10 +440,12 @@ private:
     Port *previewDisplayPort, *imageExportPort;
     //bool advancedMode;
     int coeffFlag;
-
+    
     QVector<AbstractFunction *> functionVector;
     
     Settings *settings;
+    
+    
 
     
 };

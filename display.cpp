@@ -8,7 +8,6 @@ Display::Display(int inputDim, int imageDim, QWidget *parent) :
     //setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     
     
-    
     dimension = inputDim;
     imageSize = imageDim;
     disp = QImage(imageSize, imageSize, QImage::Format_RGB32);

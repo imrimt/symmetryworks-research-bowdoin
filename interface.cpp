@@ -55,7 +55,8 @@ void interface::initInterfaceLayout()
 {
     
     // ORGANIZATIONAL ELEMENTS
-    interfaceLayout = new QVBoxLayout(this);
+    overallLayout = new QHBoxLayout();
+    interfaceLayout = new QVBoxLayout();
     topbarLayout = new QHBoxLayout();
     leftbarLayout = new QVBoxLayout();
     
@@ -76,12 +77,21 @@ void interface::initInterfaceLayout()
     
     historyDisplay = new HistoryDisplay(this);
     historyDisplay->hide();
-    topbarLayout->addWidget(historyDisplay->viewHistoryWidget);
     
+    //historyDisplay->viewHistoryWidget->setGeometery(this->parent()->rect().topLeft().x()
     
     interfaceLayout->addLayout(topbarLayout);
     interfaceLayout->addWidget(functionConstantsWidget);
-    setLayout(interfaceLayout);
+    
+    
+    overallLayout->addLayout(interfaceLayout);
+    overallLayout->addWidget(historyDisplay->viewHistoryWidget);
+    //overallLayout->setSizeConstraint(QLayout::SetFixedSize);
+    overallLayout->activate();
+    //overallLayout->addWidget(historyDisplay->dock);
+   
+    
+    this->setLayout(overallLayout);
     
     errorMessageBox = new QMessageBox(this);
     errorMessageBox->setIcon(QMessageBox::Critical);
@@ -121,7 +131,7 @@ void interface::initInterfaceLayout()
 
     //will reload
     //setFixedSize(1200,1000);
-    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     // FINALIZE WINDOW
     setFixedSize(sizeHint());
@@ -505,7 +515,7 @@ void interface::initImageExportPopUp()
     settingsPopUp->setWindowModality(Qt::WindowModal);
     settingsPopUp->setWindowTitle(tr("Image Settings"));
     settingsPopUpLayout = new QVBoxLayout(settingsPopUp);
-    settingsPopUp->setMinimumWidth(300);
+   // settingsPopUp->setMinimumWidth(300);
     
 
     outHeightEdit = new QLineEdit(settingsPopUp);
@@ -517,11 +527,13 @@ void interface::initImageExportPopUp()
     outWidthLayout->addWidget(outWidthEdit);
     outWidthLayout->addWidget(new QLabel(tr("pixels")));
     
+    
     outHeightLayout = new QHBoxLayout();
     outHeightLabel = new QLabel(tr("Image Height"));
     outHeightLayout->addWidget(outHeightLabel);
     outHeightLayout->addWidget(outHeightEdit);
     outHeightLayout->addWidget(new QLabel(tr("pixels")));
+    
     
     settingsPopUpLayout->addLayout(outWidthLayout);
     settingsPopUpLayout->addLayout(outHeightLayout);
@@ -535,9 +547,7 @@ void interface::initImageExportPopUp()
     
     outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
     outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
-    outHeightEdit->setValidator(dimValidate);
-    outWidthEdit->setValidator(dimValidate);
-    
+   
     settingsPopUp->hide();
 
 }
@@ -575,8 +585,10 @@ void interface::connectAllSignals()
     connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
     connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
     
-    connect(outWidthEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOWidth(QString)));
-    connect(outHeightEdit, SIGNAL(textChanged(QString)), this, SLOT(changeOHeight(QString)));
+//    connect(outWidthEdit, SIGNAL(selectionChanged()), this, SLOT(changeOWidth(QString)));
+//    connect(outHeightEdit, SIGNAL(selectionChanged()), this, SLOT(changeOHeight(QString)));
+    connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
+    connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
     
     
     connect(worldWidthEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldWidth(double)));
@@ -1063,15 +1075,27 @@ void interface::snapshotFunction()
 }
 
 // SLOT FUNCTIONS TO CHANGE OUTPUT IMAGE PROPERTIES
-void interface::changeOHeight(const QString &val)
+void interface::changeOHeight()
 {
-    settings->OHeight = val.toInt();
+    
+    int val = outHeightEdit->text().toInt();
+    if (val < MIN_IMAGE_DIM || val > MAX_IMAGE_DIM) {
+        errorHandler(INVALID_OUTPUT_IMAGE_DIM);
+    }
+    settings->OHeight = val;
+    imageExportPort->changeSettings(settings);
     //updatePreviewDisplay();
 }
 
-void interface::changeOWidth(const QString &val)
+void interface::changeOWidth()
 {
-    settings->OWidth = val.toInt();
+    
+    int val = outWidthEdit->text().toInt();
+    if (val < MIN_IMAGE_DIM || val > MAX_IMAGE_DIM) {
+        errorHandler(INVALID_OUTPUT_IMAGE_DIM);
+    }
+    settings->OWidth = val;
+    imageExportPort->changeSettings(settings);
     //updatePreviewDisplay();
 }
 
@@ -1212,6 +1236,8 @@ void interface::changeScaleR(const QString &val)
 void interface::startImageExport() 
 {
     
+    settingsPopUp->hide();
+    
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,
                                                     tr("JPEG (*.jpg *.jpeg);;TIFF (*.tiff);; PNG (*.png);;PPM (*.ppm)"));
@@ -1241,6 +1267,10 @@ void interface::errorHandler(const int &flag)
     {
         case INVALID_FILE_ERROR:
             errorMessageBox->setText("Invalid file name/path");
+            errorMessageBox->exec();
+            break;
+        case INVALID_OUTPUT_IMAGE_DIM:
+            errorMessageBox->setText("Error: image dimensions must be between 20 and 10000");
             errorMessageBox->exec();
             break;
     }

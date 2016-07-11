@@ -8,24 +8,31 @@
 
 #include "historydisplay.h"
 
+
 // CONSTRUCTOR
 HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
 {
-  
-    // create layout elements
-    viewHistoryWidget = new QWidget(static_cast<QWidget *>(parent));
     
-    viewHistoryBox = new QGroupBox(tr("Snapshots"), viewHistoryWidget);
+    // create layout elements
+  
+    
+    viewHistoryWidget = new QWidget(static_cast<QWidget *>(parent), Qt::Drawer);
+    viewHistoryWidget->setWindowTitle(tr("Snapshots"));
+    
+    viewHistoryWidget->move(1500, 160); //TODO get rid of this hardcoding...
+   
+    viewHistoryBox = new QGroupBox(viewHistoryWidget);
     viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
     
     clearHistoryButton = new QPushButton(tr("Clear All"), viewHistoryBox);
     viewHistoryBoxLayout = new QVBoxLayout(viewHistoryBox);
     
+     viewHistoryBoxOverallLayout->addWidget(clearHistoryButton);
     viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);
-    viewHistoryBoxLayout->addWidget(clearHistoryButton);
+   
     viewHistoryBoxOverallLayout->addStretch();
     
-    
+
     // connect signals
     viewMapper = new QSignalMapper(this);
     removeMapper = new QSignalMapper(this);
@@ -35,10 +42,13 @@ HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
     
 }
 
+
 // add an instance of the function to the running history
 void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings)
 {
 
+    if (viewHistoryWidget->isHidden()) viewHistoryWidget->show();
+    
     HistoryItem *item = new HistoryItem();
     
     QVBoxLayout *historyItemsWithLabelLayout = new QVBoxLayout();
@@ -60,9 +70,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     historyItemsWithLabelLayout->addLayout(historyItemsLayout);
     historyItemsWithLabelLayout->addWidget(timeStampLabel);
 
-    viewHistoryBoxLayout->insertLayout(1, historyItemsWithLabelLayout);
-
-    //need to remove layout when exceeding the max num of history items
+    viewHistoryBoxLayout->insertLayout(0, historyItemsWithLabelLayout);
     
     // saving all values to history item object
     item->preview = d;
@@ -92,6 +100,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     // map the timestamp to the history item and port
     historyItemsMap.insert(savedTime, item);
     historyPortsMap.insert(savedTime, historyDisplayPort);
+
 
 }
 
@@ -130,7 +139,13 @@ void HistoryDisplay::removePreview(QObject *item)
     
     QFile::remove(historyItemToRemove->filePathName); 
 
+    
     delete historyItemToRemove;
+    
+    if (historyItemsMap.empty()) {
+        this->hide();
+    }
+    
 }
 
 
@@ -140,6 +155,7 @@ void HistoryDisplay::clearAllHistory()
     while (!historyItemsMap.empty()) {
         removePreview(historyItemsMap.begin().value());
     }
+    
 }
 
 
@@ -147,10 +163,12 @@ void HistoryDisplay::clearAllHistory()
 void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings)
 {
     if (historyItemsMap.size() < MAX_HISTORY_ITEMS) {
-        addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
+        //addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
+        addToHistory(savedTime, filePathName, function, colorwheel, settings);
     } else {
         removePreview(*(historyItemsMap.begin()));
-        addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
+       // addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
+        addToHistory(savedTime, filePathName, function, colorwheel, settings);
     }    
 }
 
@@ -164,7 +182,7 @@ void HistoryDisplay::show()
 
 void HistoryDisplay::hide()
 {
-    
+   
     viewHistoryWidget->hide();
     viewHistoryBox->hide();
     

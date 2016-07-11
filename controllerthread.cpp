@@ -46,8 +46,6 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 
 	QMutexLocker locker(&mutex);
 
-    qDebug() << "in to clone";
-
     currFunction = currFunction->clone();
     currColorWheel = currColorWheel->clone();
     currSettings = currSettings->clone();
@@ -117,6 +115,7 @@ void ControllerThread::run()
 
         int width = overallWidth;
         int height = overallHeight;
+        //qDebug() << "width" << width << "height" << height;
     
         int counter = overallWidth/numThreadsActive;
 
@@ -129,6 +128,8 @@ void ControllerThread::run()
             else {
                 threads[i]->render(QPoint(i * counter, 0), QPoint((i + 1) * counter, height), &allWorkersFinishedCondition);
             }
+            
+            
     	}
 
         mutex.unlock();
