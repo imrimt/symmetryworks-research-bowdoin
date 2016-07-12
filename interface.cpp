@@ -163,7 +163,7 @@ void interface::initPreviewDisplay()
     previewDisplayPort = new Port(currFunction, currColorWheel, disp->width(), disp->height(), settings);
     
     displayProgressBar = new ProgressBar(tr("Preview"), true, previewDisplayPort);
-    exportProgressBar = new ProgressBar(tr("Exporting"), true, imageExportPort);
+    exportProgressBar = new ProgressBar(tr("Exporting"), false, imageExportPort);
     // connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), displayProgressBar, SLOT(update(int)));
     connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
     connect(previewDisplayPort, SIGNAL(paintingFinished(bool)), this, SLOT(resetMainWindowButton(bool)));
@@ -376,7 +376,49 @@ void interface::initPatternType()
     functionSel->addItem("pm");
     functionSel->addItem("pg");
     functionSel->addItem("cm");
-    functionSel->addItem("General Function");
+    functionSel->addItem("Original");
+    
+    
+    functionIconsWindow = new QWidget(this, Qt::Window);
+    functionIconsWindow->move(70,160); // TODO this shouldn't be hardcoded!
+    functionIconsWindowLayout = new QGridLayout(functionIconsWindow);
+    
+    int row = 0;
+    int col = 0;
+    
+    for (int i = 0; i < functionSel->count(); ++i) {
+        
+        QVBoxLayout *layout = new QVBoxLayout();
+        
+        QPixmap pixmap;
+        pixmap.convertFromImage(*(new QImage(":/Images/function-previews/" + functionSel->itemText(i)+ ".png")));
+        ClickableLabel *preview = new ClickableLabel(i, functionIconsWindow);
+        
+        connect(preview, SIGNAL(doubleClickFunctionIcon(int)), functionSel, SLOT(setCurrentIndex(int)));
+        
+        preview->setFixedWidth(100);
+        
+        preview->setPixmap(pixmap);
+        
+        QLabel *label = new QLabel(functionSel->itemText(i), functionIconsWindow);
+        
+        layout->addWidget(preview);
+        layout->addWidget(label);
+        
+       
+        functionIconsWindowLayout->addLayout(layout, row, col);
+        
+        col++;
+        if (col % 5 == 0) {
+            row++;
+            col = 0;
+        }
+    
+
+    }
+ 
+    viewFunctionIconsButton = new QPushButton(tr("Previews..."), patternTypeBox);
+    connect(viewFunctionIconsButton, SIGNAL(clicked()), this, SLOT(showFunctionIcons()));
     
     // color wheel selector
     colorwheelSel->addItem("IcosColor");
@@ -399,6 +441,7 @@ void interface::initPatternType()
     // ASSEMBLE LAYOUT
     functionLayout->addWidget(functionLabel);
     functionLayout->addWidget(functionSel);
+    functionLayout->addWidget(viewFunctionIconsButton);
     patternTypeBoxLayout->addLayout(functionLayout);
     patternTypeBoxLayout->addItem(gspacer1);
 
@@ -906,7 +949,7 @@ void interface::changeNumTerms(int i)
 }
 
 // handles changing to a new color wheel
-void interface::colorWheelChanged(int index)
+void interface::colorWheelChanged(int /* unused */ )
 {
     // if(index == 9)
     //     setLoadedImage->show();
@@ -989,7 +1032,7 @@ void interface::setImagePushed()
 // handles changing to a new function
 void interface::changeFunction(int index)
 {
-
+    
     termIndex = 0;
     
     currFunction = functionVector[index];
@@ -1319,6 +1362,10 @@ void interface::startImageExport()
     if (!inFile.open(QIODevice::WriteOnly))
         return;
 
+    // if (!exportProgressBar->isVisible()) {
+    //     exportProgressBar->setVisible(true);
+    // }
+
     exportProgressBar->resetBar(tr("Exporting"), true, imageExportPort);
     exportProgressBar->reset();
 
@@ -1456,4 +1503,5 @@ void interface::resetMainWindowButton(const bool &status)
     numTermsEdit->setEnabled(status);
     updatePreview->setEnabled(status);
 }
+
 

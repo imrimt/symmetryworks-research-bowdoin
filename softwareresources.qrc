@@ -7,5 +7,21 @@
         <file>Icons/remove.png</file>
         <file>Icons/zoomin.png</file>
         <file>Icons/zoomout.png</file>
+        <file>function-previews/cm.png</file>
+        <file>function-previews/cmm.png</file>
+        <file>function-previews/Hex3.png</file>
+        <file>function-previews/Hex6.png</file>
+        <file>function-previews/p1.png</file>
+        <file>function-previews/p2.png</file>
+        <file>function-previews/p3m1.png</file>
+        <file>function-previews/p4.png</file>
+        <file>function-previews/p4m.png</file>
+        <file>function-previews/p6m.png</file>
+        <file>function-previews/p31m.png</file>
+        <file>function-previews/pg.png</file>
+        <file>function-previews/pm.png</file>
+        <file>function-previews/pmg.png</file>
+        <file>function-previews/pmm.png</file>
+        <file>function-previews/Original.png</file>
     </qresource>
 </RCC>
