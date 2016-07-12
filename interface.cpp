@@ -380,6 +380,7 @@ void interface::initPatternType()
     
     
     functionIconsWindow = new QWidget(this, Qt::Window);
+    functionIconsWindow->setWindowTitle(tr("Pattern Previews"));
     functionIconsWindow->move(70,160); // TODO this shouldn't be hardcoded!
     functionIconsWindowLayout = new QGridLayout(functionIconsWindow);
     
