@@ -382,6 +382,8 @@ void interface::initPatternType()
     functionIconsWindow = new QWidget(this, Qt::Window);
     functionIconsWindow->move(70,160); // TODO this shouldn't be hardcoded!
     functionIconsWindowLayout = new QGridLayout(functionIconsWindow);
+
+    functionIconsWindow->setWindowFlags(functionIconsWindow->windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
     
     int row = 0;
     int col = 0;
@@ -1356,15 +1358,9 @@ void interface::startImageExport()
     
     if (fileName == "") return;
 
-    settingsPopUp->hide();
-
     QFile inFile(fileName);
     if (!inFile.open(QIODevice::WriteOnly))
         return;
-
-    // if (!exportProgressBar->isVisible()) {
-    //     exportProgressBar->setVisible(true);
-    // }
 
     exportProgressBar->resetBar(tr("Exporting"), true, imageExportPort);
     exportProgressBar->reset();
