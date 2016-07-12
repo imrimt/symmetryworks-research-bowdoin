@@ -319,22 +319,27 @@ void interface::initPatternType()
     patternTypeBox = new QGroupBox(tr("Pattern Type"), patternTypeWidget);
     functionSel = new QComboBox(patternTypeBox);
     colorwheelSel = new QComboBox(patternTypeBox);
-    functionLabel = new QLabel(patternTypeBox);
-    colorwheelLabel = new QLabel(patternTypeBox);
 
     gspacer1 = new QSpacerItem(0,20);
     gspacer2 = new QSpacerItem(0,10);
     gspacer3 = new QSpacerItem(0,10);
     gspacer4 = new QSpacerItem(0,50);
     gspacer5 = new QSpacerItem(0,10);
-    setLoadedImage = new QPushButton(tr("Set Image..."), patternTypeBox);
+
     patternTypeBoxOverallLayout = new QVBoxLayout(patternTypeWidget);
     patternTypeBoxLayout = new QVBoxLayout(patternTypeBox);
     functionLayout = new QVBoxLayout();
     colorwheelLayout = new QVBoxLayout();
+    colorButtonLayout = new QHBoxLayout();
     globalConstantsLayout = new QVBoxLayout();
     globalConstantsGrid = new QGridLayout();
 
+    setLoadedImage = new QPushButton(tr("Set/Change Image..."), patternTypeBox);
+    fromImageButton = new QRadioButton(tr("Image"), patternTypeBox);
+    fromColorWheelButton = new QRadioButton(tr("Color Wheel"), patternTypeBox);
+    functionLabel = new QLabel(patternTypeBox);
+    colorwheelLabel = new QLabel(patternTypeBox);
+    imagePathLabel = new QLabel(patternTypeBox);
     globalConstantsLabel = new QLabel(tr("<b>Global Image Constants: <\b>"), patternTypeBox);
     scaleALabel = new QLabel(tr("Scaling Angle"), patternTypeBox);
     scaleRLabel = new QLabel(tr("Scaling Radius"), patternTypeBox); 
@@ -345,6 +350,13 @@ void interface::initPatternType()
     scaleAEdit->setAlignment(Qt::AlignCenter);
     scaleREdit->setAlignment(Qt::AlignCenter);
     scalePlaneEdit = new QPushButton(tr("Set on plane"), patternTypeBox);
+
+    fromColorWheelButton->setChecked(true);
+    setLoadedImage->setEnabled(false);
+
+    if (imageSetPath == "") {
+        imagePathLabel->setText("<i>(no image has been set)</i>");
+    }
     
     // function selector
     functionSel->addItem("Hex3");
@@ -376,9 +388,8 @@ void interface::initPatternType()
     colorwheelSel->addItem("SectCol");
     colorwheelSel->addItem("Sect6Col");
     colorwheelSel->addItem("WinCol");
-    colorwheelSel->addItem("FromImage");
-    functionLabel->setText(tr("<b>Function<\b>"));
-    colorwheelLabel->setText(tr("<b>Color Wheel<\b>"));
+    functionLabel->setText(tr("<b>Pattern<\b>"));
+    colorwheelLabel->setText(tr("<b>Color<\b>"));
     
     colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -393,9 +404,11 @@ void interface::initPatternType()
 
     colorwheelLayout->addItem(gspacer3);
     colorwheelLayout->addWidget(colorwheelLabel);
+    colorwheelLayout->addWidget(fromColorWheelButton);
     colorwheelLayout->addWidget(colorwheelSel);
+    colorwheelLayout->addWidget(fromImageButton);
     colorwheelLayout->addWidget(setLoadedImage);
-    setLoadedImage->hide();
+    colorwheelLayout->addWidget(imagePathLabel);
     patternTypeBoxLayout->addLayout(colorwheelLayout);
     patternTypeBoxLayout->addItem(gspacer2);
 
@@ -569,6 +582,9 @@ void interface::connectAllSignals()
     connect(exportImage, SIGNAL(clicked()), this, SLOT(exportImageFunction()));
     connect(resetImage, SIGNAL(clicked()), this, SLOT(resetImageFunction()));
     
+    connect(fromColorWheelButton, SIGNAL(clicked()), this, SLOT(selectColorWheel()));
+    connect(fromImageButton, SIGNAL(clicked()), this, SLOT(selectImage()));
+
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), currColorWheel, SLOT(setCurrent(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
@@ -892,29 +908,82 @@ void interface::changeNumTerms(int i)
 // handles changing to a new color wheel
 void interface::colorWheelChanged(int index)
 {
-    if(index == 9)
-        setLoadedImage->show();
-    else
-        setLoadedImage->hide();
+    // if(index == 9)
+    //     setLoadedImage->show();
+    // else
+    //     setLoadedImage->hide();
     updatePreviewDisplay();
+}
+
+void interface::selectColorWheel() 
+{
+    colorwheelSel->setEnabled(true);
+    setLoadedImage->setEnabled(false);
+    imagePathLabel->setEnabled(false);
+
+    currColorWheel->setCurrent(colorwheelSel->currentIndex());
+
+    updatePreviewDisplay();
+}
+
+void interface::selectImage()
+{
+    colorwheelSel->setEnabled(false);
+    setLoadedImage->setEnabled(true);
+    imagePathLabel->setEnabled(true);
+
+    if (imageSetPath == "") {
+        setImagePushed();
+    }
+    else {
+        QDir checkDir(imageSetPath);
+        if (!checkDir.exists(openImageName)) {
+            errorHandler(INVALID_FILE_ERROR);
+        }
+        else {
+            currColorWheel->setCurrent(9);
+            currColorWheel->loadImage(imageSetPath + "/" + openImageName);
+            updatePreviewDisplay();
+        }
+    }
 }
 
 // handles loading an image to use as a color wheel
 void interface::setImagePushed()
 {
+
+    QString startingPath = imageSetPath == "" ? "/Documents" : imageSetPath;
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
-                                                    saveloadPath,
+                                                    startingPath,
                                                     tr("Images (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.tiff *.xbm *.xpm)"));
-    
+
     QFile inFile(fileName);
-    if (!inFile.open(QIODevice::ReadOnly))
+    if (fileName == "") {
         return;
+    }
+
+    if (!inFile.exists()){
+        errorHandler(INVALID_FILE_ERROR);
+        return;
+    }
+
+    qDebug() << "opening file:" << fileName;
+    if (!inFile.open(QIODevice::ReadOnly)) {
+        return;
+    }
     
+    currColorWheel->setCurrent(9);
     currColorWheel->loadImage(fileName);
     
     QDir stickypath(fileName);
     stickypath.cdUp();
-    saveloadPath = stickypath.path();
+    imageSetPath = stickypath.path();
+
+    openImageName = fileName.right(fileName.length() - fileName.lastIndexOf("/") - 1);
+
+    imagePathLabel->setText(openImageName);
+
+    updatePreviewDisplay();
 }
 
 // handles changing to a new function

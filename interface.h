@@ -25,6 +25,7 @@
 #include <QMessageBox>
 #include <QDialogButtonBox>
 #include <QTimer>
+#include <QRadioButton>
 
 #include <QProgressBar>
 #include <QTableWidget>
@@ -269,10 +270,12 @@ public:
     QVBoxLayout *functionLayout;
     QVBoxLayout *colorwheelLayout;
     QHBoxLayout *numtermsLayout;
+    QHBoxLayout *colorButtonLayout;
     QVBoxLayout *globalConstantsLayout;
     QGridLayout *globalConstantsGrid;
     QLabel *colorwheelLabel;
     QLabel *functionLabel;
+    QLabel *imagePathLabel;
     QLabel *numTermsLabel;
     QLabel *freqpairLabel;
     QLabel *coeffLabel;
@@ -285,6 +288,8 @@ public:
     QComboBox *colorwheelSel;
     QComboBox *functionSel;
     QPushButton *setLoadedImage;
+    QRadioButton *fromImageButton;
+    QRadioButton *fromColorWheelButton;
 
     HistoryDisplay *historyDisplay;
     PolarPlane *polarPlane;
@@ -296,12 +301,10 @@ public:
     //QHBoxLayout *savePushLayout;
     //QVBoxLayout *imagePropsBoxOverallLayout;
     
-    
     QHBoxLayout *imageShiftXLayout;
     QHBoxLayout *imageShiftYLayout;
     QHBoxLayout *imageStretchXLayout;
     QHBoxLayout *imageStretchYLayout;
-    
     
     QLabel *XShiftLabel;
     QLabel *YShiftLabel;
@@ -309,7 +312,6 @@ public:
     QDoubleSlider *YShiftEdit;
     QLineEdit *XShiftValueLabel;
     QLineEdit *YShiftValueLabel;
-    
     
 //    QLabel *outHeightLabel;
 //    QLabel *outWidthLabel;
@@ -365,6 +367,8 @@ private slots:
     void changeNumTerms(int i);
     void colorWheelChanged(int index);
     void setImagePushed();
+    void selectColorWheel();
+    void selectImage();
     void changeFunction(int index);
     void changeWorldWidth(double val);
     void changeWorldWidth();
@@ -387,7 +391,6 @@ private slots:
     void cancelImageExport() { settingsPopUp->hide(); }
     void startImageExport();
     
-
     void resetImageFunction();
     void loadFromSettings();
     void saveCurrSettings();
@@ -431,6 +434,8 @@ private:
     unsigned int termIndex; 
     
     QString saveloadPath;
+    QString imageSetPath;
+    QString openImageName;
     
     AbstractFunction * currFunction;
     ColorWheel * currColorWheel;

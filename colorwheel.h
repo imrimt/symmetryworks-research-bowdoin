@@ -94,7 +94,7 @@ class ColorWheel : public QObject
     
     QVector3D zoneVect[ZONE_VECT_SIZE];
 
-private slots:
+public slots:
     void setCurrent(int index);
 
 
