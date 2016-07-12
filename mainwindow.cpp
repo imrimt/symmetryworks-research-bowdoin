@@ -85,7 +85,7 @@ MainWindow::MainWindow()
     statusBar()->showMessage(message);
     
     QRect screenGeometry = QApplication::desktop()->screenGeometry();
-    int x = (screenGeometry.width()-this->width()) / 4;
+    int x = (screenGeometry.width()-this->width()) / 3;
     int y = (screenGeometry.height()-this->height()) / 6;
     this->move(x, y);
     

@@ -45,6 +45,7 @@ const int MAX_IMAGE_DIM = 10000;
 // QSpinBox subclass that disallows user input
 class CustomSpinBox : public QSpinBox
 {
+    Q_OBJECT
   public:
     CustomSpinBox(QWidget *parent = 0) : QSpinBox(parent) { }
 
@@ -52,6 +53,28 @@ class CustomSpinBox : public QSpinBox
     void keyPressEvent(QKeyEvent *event) {event->ignore();}
 
 };
+
+class ClickableLabel : public QLabel
+{
+    Q_OBJECT
+public:
+    ClickableLabel(QWidget *parent = 0) : QLabel(parent) { }
+    explicit ClickableLabel(int index, QWidget *parent = 0) { this->index = index; }
+    
+signals:
+    void doubleClickFunctionIcon(int index) ;
+    
+protected:
+    void mouseDoubleClickEvent(QMouseEvent *event) {
+        emit doubleClickFunctionIcon(index);
+    }
+    
+private:
+    int index;
+    
+};
+
+
 
 // QSlider subclass that takes doubles
 class QDoubleSlider : public QSlider
@@ -358,6 +381,10 @@ public:
     QLineEdit*outHeightEdit;
     QLineEdit *outWidthEdit;
     
+    QWidget *functionIconsWindow;
+    QGridLayout *functionIconsWindowLayout;
+    QPushButton *viewFunctionIconsButton;
+    
     
 private slots:
     //void toggleViewMode();
@@ -405,6 +432,10 @@ private slots:
     QString loadSettings(const QString &fileName);
     void popUpImageExportFinished(const QString &filePath);
     void resetMainWindowButton(const bool &status);
+    
+    
+    void showFunctionIcons() { functionIconsWindow->show(); }
+    //void hideFunctionicon(int index) { functionIconsWindow->hide(); }
     
 private:    
     QString genLabel(const char * in);    
