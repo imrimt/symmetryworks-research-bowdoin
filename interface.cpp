@@ -809,7 +809,7 @@ void interface::removeTerm(int row)
     
     qDebug() << "removing term" << row + 1;
 
-    if (row <= 0 && termViewTable->rowCount() == 1) {
+    if (row <= 0 || termViewTable->rowCount() == 1) {
         return;
     }
     

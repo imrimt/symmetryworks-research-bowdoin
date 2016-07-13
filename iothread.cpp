@@ -26,6 +26,7 @@ void IOThread::prepareToWrite(QImage *output, const QString &filePathToExport)
 
 void IOThread::run()
 {
+    qDebug() << "output" << output;
     
     output->save(filePathToExport);
     QDir stickypath(filePathToExport);
