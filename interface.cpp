@@ -370,7 +370,7 @@ void interface::initPatternType()
     functionLabel = new QLabel(patternTypeBox);
     colorwheelLabel = new QLabel(patternTypeBox);
     imagePathLabel = new QLabel(patternTypeBox);
-    globalConstantsLabel = new QLabel(tr("<b>Global Image Constants: <\b>"), patternTypeBox);
+    globalConstantsLabel = new QLabel(tr("<b>Global Scaling Factors: <\b>"), patternTypeBox);
     scaleALabel = new QLabel(tr("Scaling Angle"), patternTypeBox);
     scaleRLabel = new QLabel(tr("Scaling Radius"), patternTypeBox); 
     scaleAEdit = new QLineEdit(patternTypeBox);
