@@ -14,7 +14,6 @@ HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
 {
     
     // create layout elements
-  
     
     viewHistoryWidget = new QWidget(static_cast<QWidget *>(parent), Qt::Drawer);
     viewHistoryWidget->setWindowTitle(tr("Snapshots"));

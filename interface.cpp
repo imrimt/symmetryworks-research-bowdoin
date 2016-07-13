@@ -809,7 +809,7 @@ void interface::removeTerm(int row)
     
     qDebug() << "removing term" << row + 1;
 
-    if (row <= 0 || termViewTable->rowCount() == 1) {
+    if (row <= 0 && termViewTable->rowCount() == 1) {
         return;
     }
     
@@ -1015,6 +1015,7 @@ void interface::selectImage()
         else {
             currColorWheel->setCurrent(9);
             currColorWheel->loadImage(imageSetPath + "/" + openImageName);
+            imagePathLabel->setText(openImageName);
             updatePreviewDisplay();
         }
     }
@@ -1061,6 +1062,8 @@ void interface::setImagePushed()
 // handles changing to a new function
 void interface::changeFunction(int index)
 {
+
+    qDebug() << "change Function";
     
     termIndex = 0;
     
@@ -1108,7 +1111,12 @@ QString interface::saveSettings(const QString &fileName) {
     out << settings->XCorner << settings->YCorner;
     out << settings->OWidth << settings->OHeight;
     out << functionSel->currentIndex();
-    out << colorwheelSel->currentIndex();
+    if (fromColorWheelButton->isChecked()) {
+        out << colorwheelSel->currentIndex();
+    }
+    else {
+        out << 9;
+    }
     out << currFunction->getScaleR() << currFunction->getScaleA();
     out << currFunction->getNumTerms();
     
@@ -1119,6 +1127,10 @@ QString interface::saveSettings(const QString &fileName) {
         i = index;
         out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
     }
+
+    out << imageSetPath;
+    out << openImageName;
+
     outFile.close();
     
     QDir stickypath(fileName);
@@ -1135,7 +1147,7 @@ void interface::loadFromSettings()
                                                     saveloadPath,
                                                     tr("Wallpapers (*.wpr)"));
     
-    saveloadPath = loadSettings(fileName) != nullptr ? saveSettings(fileName) : nullptr;
+    saveloadPath = loadSettings(fileName);
 }
 
 // internal function that handles loading settings from a specified file
@@ -1146,44 +1158,83 @@ QString interface::loadSettings(const QString &fileName) {
         return nullptr;
     
     QDataStream in(&inFile);
-    int tempint;
+    QString imageLoadPath;
+    QString loadImageName;
+    int tempint, newFunctionIndex, newColorIndex;
     unsigned int count;
     double tempdouble;
+
+    // functionSel->blockSignals(true);
+    // colorwheelSel->blockSignals(true);
     
     in >> settings->Width >> settings->Height;
     in >> settings->XCorner >> settings->YCorner;
     in >> settings->OWidth >> settings->OHeight;
-    in >> tempint;
-    functionSel->setCurrentIndex(tempint);
-    in >> tempint;
-    colorwheelSel->setCurrentIndex(tempint);
+    in >> newFunctionIndex;
+    // functionSel->setCurrentIndex(newFunctionIndex);
+    currFunction = functionVector[newFunctionIndex];
+    in >> newColorIndex;
+    // currColorWheel->setCurrent(newColorIndex);
+    // colorwheelSel->setCurrentIndex(newColorIndex);
     
+    // functionSel->blockSignals(false);
+    // colorwheelSel->blockSignals(false);
+
+    qDebug() << "new color index is:" << newColorIndex;
+
     in >> tempdouble;
     currFunction->setScaleR(tempdouble);
+    scaleREdit->blockSignals(true);
     scaleREdit->setText(QString::number(tempdouble));
+    scaleREdit->blockSignals(false);
     in >> tempdouble;
+    scaleAEdit->blockSignals(true);
     currFunction->setScaleA(tempdouble);
     scaleAEdit->setText(QString::number(tempdouble));
+    scaleAEdit->blockSignals(false);
     in >> count;
+
+    numTermsEdit->blockSignals(true);
     numTermsEdit->setValue(count);
-    for(unsigned int i=0; i<count; i++)
+    numTermsEdit->blockSignals(false);
+
+    int newNumTerms = count;
+    currFunction->setNumTerms(newNumTerms);
+    // currFunction->refresh();
+
+    for(unsigned int i = 0; i < count; i++)
     {
         in >> tempint; currFunction->setN(i, tempint);
         in >> tempint; currFunction->setM(i, tempint);
         in >> tempdouble; currFunction->setR(i, tempdouble);
         in >> tempdouble; currFunction->setA(i, tempdouble);
     }
-    
-    inFile.close();
-    
-    refreshTableTerms();
+
+    in >> imageLoadPath;
+    in >> loadImageName;
+
+    inFile.close();    
 
     worldWidthEdit->setValue(settings->Width * 100.0);
     worldHeightEdit->setValue(settings->Height * 100.0);
     XShiftEdit->setValue(settings->XCorner * 100.0);
     YShiftEdit->setValue(settings->YCorner * 100.0);
 
-    updatePreviewDisplay();
+    functionSel->setCurrentIndex(newFunctionIndex);
+    if (newColorIndex == 9) {
+        imageSetPath = imageLoadPath;
+        openImageName = loadImageName;
+        fromImageButton->setChecked(true);
+        fromImageButton->clicked();
+    }
+    else {
+        fromColorWheelButton->setChecked(true);
+        colorwheelSel->setCurrentIndex(newColorIndex);
+        fromColorWheelButton->clicked();
+    }
+
+    //refreshTableTerms();
+    //updatePreviewDisplay();
     
     QDir stickypath(fileName);
     stickypath.cdUp();
