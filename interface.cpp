@@ -436,6 +436,7 @@ void interface::initPatternType()
     
     setOverflowColorPopUp = new QColorDialog();
     setOverflowColorButton = new QPushButton(tr("Set Overflow Color..."), patternTypeBox);
+    setOverflowColorButton->setEnabled(false);
     
     colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -830,13 +831,8 @@ void interface::refreshMainWindowTerms()
 // removes a term
 void interface::removeTerm(int row)
 {
-    qDebug() << termViewTable->rowCount() << "terms before removing.";
-    qDebug() << "numterms" << numTerms;
-    
-    //qDebug() << "removing term" << row + 1;
 
-    if (row <= 0 && termViewTable->rowCount() == 1) {
-        
+    if (termViewTable->rowCount() == 1) {
         return;
     }
     
@@ -856,10 +852,10 @@ void interface::removeTerm(int row)
     }
 
     unsigned int term = row;
-    qDebug() << "removing term " << row << "from function";
+    //qDebug() << "removing term " << row << "from function";
     currFunction->removeTerm(term);
     numTerms = currFunction->getNumTerms();
-    qDebug() << "num terms is now" << currFunction->getNumTerms() << "num terms" << numTerms;
+   // qDebug() << "num terms is now" << currFunction->getNumTerms() << "num terms" << numTerms;
     
     currTermEdit->blockSignals(true);
     currTermEdit->setMaximum(currFunction->getNumTerms() + 1);
@@ -871,6 +867,7 @@ void interface::removeTerm(int row)
 // adds a new term
 void interface::addTerm()
 {
+    
     unsigned int highestIndex = termViewTable->rowCount();
     termViewTable->setRowCount(highestIndex + 1);
     
@@ -1020,6 +1017,7 @@ void interface::selectColorWheel()
 {
     colorwheelSel->setEnabled(true);
     setLoadedImage->setEnabled(false);
+    setOverflowColorButton->setEnabled(false);
     imagePathLabel->setEnabled(false);
 
     currColorWheel->setCurrent(colorwheelSel->currentIndex());
@@ -1031,6 +1029,7 @@ void interface::selectImage()
 {
     colorwheelSel->setEnabled(false);
     setLoadedImage->setEnabled(true);
+    setOverflowColorButton->setEnabled(true);
     imagePathLabel->setEnabled(true);
 
     if (imageSetPath == "") {
