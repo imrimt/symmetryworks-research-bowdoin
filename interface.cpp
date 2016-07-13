@@ -701,8 +701,7 @@ void interface::connectAllSignals()
     connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
     connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
     
-//    connect(outWidthEdit, SIGNAL(selectionChanged()), this, SLOT(changeOWidth(QString)));
-//    connect(outHeightEdit, SIGNAL(selectionChanged()), this, SLOT(changeOHeight(QString)));
+
     connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
     connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
     
@@ -1330,8 +1329,10 @@ void interface::changeWorldHeight()
 {
     double val = worldHeightValueLabel->text().toDouble();
     settings->Height = val;
+    worldHeightEdit->blockSignals(true);
     worldHeightEdit->setValue(val * 100.0);
-    //worldHeightValueLabel->setText(val);
+    worldHeightEdit->blockSignals(false);
+    
     updatePreviewDisplay();
 }
 
@@ -1346,7 +1347,9 @@ void interface::changeWorldWidth()
 {
     double val = worldWidthValueLabel->text().toDouble();
     settings->Width = val;
+    worldWidthEdit->blockSignals(true);
     worldWidthEdit->setValue(val * 100.0);
+    worldWidthEdit->blockSignals(false);
     updatePreviewDisplay();
 }
 
