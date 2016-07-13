@@ -381,6 +381,19 @@ void interface::initPatternType()
     scaleREdit->setAlignment(Qt::AlignCenter);
     scalePlaneEdit = new QPushButton(tr("Set on plane"), patternTypeBox);
 
+    
+    QFrame* endPattern = new QFrame(patternTypeBox);
+    endPattern->setLineWidth(2);
+    endPattern->setMidLineWidth(1);
+    endPattern->setFrameShape(QFrame::HLine);
+    endPattern->setFrameShadow(QFrame::Raised);
+    
+    QFrame* endColor = new QFrame(patternTypeBox);
+    endColor->setLineWidth(2);
+    endColor->setMidLineWidth(1);
+    endColor->setFrameShape(QFrame::HLine);
+    endColor->setFrameShadow(QFrame::Raised);
+    
     fromColorWheelButton->setChecked(true);
     setLoadedImage->setEnabled(false);
 
@@ -420,6 +433,10 @@ void interface::initPatternType()
     colorwheelSel->addItem("WinCol");
     functionLabel->setText(tr("<b>Pattern<\b>"));
     colorwheelLabel->setText(tr("<b>Color<\b>"));
+    
+    setOverflowColorPopUp = new QColorDialog();
+    setOverflowColorButton = new QPushButton(tr("Set Overflow Color..."), patternTypeBox);
+    setOverflowColorButton->setEnabled(false);
     
     colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -475,16 +492,21 @@ void interface::initPatternType()
     functionLayout->addWidget(functionSel);
     functionLayout->addWidget(viewFunctionIconsButton);
     patternTypeBoxLayout->addLayout(functionLayout);
-    patternTypeBoxLayout->addItem(gspacer1);
-
-    colorwheelLayout->addItem(gspacer3);
+    patternTypeBoxLayout->addWidget(endPattern);
+    //patternTypeBoxLayout->addItem(gspacer1);
+    
+    
+    //colorwheelLayout->addItem(gspacer3);
     colorwheelLayout->addWidget(colorwheelLabel);
     colorwheelLayout->addWidget(fromColorWheelButton);
     colorwheelLayout->addWidget(colorwheelSel);
     colorwheelLayout->addWidget(fromImageButton);
     colorwheelLayout->addWidget(setLoadedImage);
     colorwheelLayout->addWidget(imagePathLabel);
+    
     patternTypeBoxLayout->addLayout(colorwheelLayout);
+    patternTypeBoxLayout->addWidget(setOverflowColorButton);
+    patternTypeBoxLayout->addWidget(endColor);
     patternTypeBoxLayout->addItem(gspacer2);
 
     globalConstantsLayout->addItem(gspacer5);
@@ -659,6 +681,9 @@ void interface::connectAllSignals()
     
     connect(fromColorWheelButton, SIGNAL(clicked()), this, SLOT(selectColorWheel()));
     connect(fromImageButton, SIGNAL(clicked()), this, SLOT(selectImage()));
+    
+    connect(setOverflowColorButton, SIGNAL(clicked()), this, SLOT(showOverflowColorPopUp()));
+    connect(setOverflowColorPopUp, SIGNAL(colorSelected(QColor)), currColorWheel, SLOT(changeOverflowColor(QColor)));
 
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), currColorWheel, SLOT(setCurrent(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
@@ -806,10 +831,8 @@ void interface::refreshMainWindowTerms()
 // removes a term
 void interface::removeTerm(int row)
 {
-    
-    qDebug() << "removing term" << row + 1;
 
-    if (row <= 0 && termViewTable->rowCount() == 1) {
+    if (termViewTable->rowCount() == 1) {
         return;
     }
     
@@ -829,8 +852,10 @@ void interface::removeTerm(int row)
     }
 
     unsigned int term = row;
+    //qDebug() << "removing term " << row << "from function";
     currFunction->removeTerm(term);
     numTerms = currFunction->getNumTerms();
+   // qDebug() << "num terms is now" << currFunction->getNumTerms() << "num terms" << numTerms;
     
     currTermEdit->blockSignals(true);
     currTermEdit->setMaximum(currFunction->getNumTerms() + 1);
@@ -842,6 +867,7 @@ void interface::removeTerm(int row)
 // adds a new term
 void interface::addTerm()
 {
+    
     unsigned int highestIndex = termViewTable->rowCount();
     termViewTable->setRowCount(highestIndex + 1);
     
@@ -991,6 +1017,7 @@ void interface::selectColorWheel()
 {
     colorwheelSel->setEnabled(true);
     setLoadedImage->setEnabled(false);
+    setOverflowColorButton->setEnabled(false);
     imagePathLabel->setEnabled(false);
 
     currColorWheel->setCurrent(colorwheelSel->currentIndex());
@@ -1002,6 +1029,7 @@ void interface::selectImage()
 {
     colorwheelSel->setEnabled(false);
     setLoadedImage->setEnabled(true);
+    setOverflowColorButton->setEnabled(true);
     imagePathLabel->setEnabled(true);
 
     if (imageSetPath == "") {
@@ -1492,12 +1520,14 @@ void interface::termViewCellClicked(int row, int col)
     termViewTable->blockSignals(true);
     if (col == 5) {
         removeTerm(row);
+        
     } else {
         termIndex = row;
         refreshMainWindowTerms();
     }
 
     updatePreviewDisplay();
+
 }
 
 
@@ -1584,6 +1614,7 @@ void interface::setSnapShotWindow(HistoryDisplay* window)
     connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
 
 }
+
 
 // void interface::setFunctionIconsWindow(QWidget *window) 
 // {

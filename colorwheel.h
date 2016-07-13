@@ -38,6 +38,7 @@ class ColorWheel : public QObject
     // FUNCTIONAL VARIABLES
     int currentSel;
     QImage image;
+    QColor overflowColor;
 
     // COLOR WHEEL FUNCTIONS
     QRgb IcosColor(std::complex<double> zin);
@@ -96,6 +97,7 @@ class ColorWheel : public QObject
 
 public slots:
     void setCurrent(int index);
+    void changeOverflowColor(const QColor &color) { overflowColor = color; }
 
 
 };
