@@ -26,6 +26,7 @@
 #include <QDialogButtonBox>
 #include <QTimer>
 #include <QRadioButton>
+#include <QColorDialog>
 
 #include <QProgressBar>
 #include <QTableWidget>
@@ -318,6 +319,8 @@ public:
     QPushButton *setLoadedImage;
     QRadioButton *fromImageButton;
     QRadioButton *fromColorWheelButton;
+    QPushButton *setOverflowColorButton;
+    QColorDialog *setOverflowColorPopUp;
 
     HistoryDisplay *historyDisplay;
     PolarPlane *polarPlane;
@@ -444,6 +447,7 @@ private slots:
     void resetMainWindowButton(const bool &status);
     
     void showFunctionIcons() { functionIconsWindow->hide(), functionIconsWindow->show(); }
+    void showOverflowColorPopUp() { setOverflowColorPopUp->show(); }
     //void hideFunctionicon(int index) { functionIconsWindow->hide(); }
     
 private:    
