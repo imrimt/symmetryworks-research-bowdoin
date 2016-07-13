@@ -46,15 +46,15 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 
 	QMutexLocker locker(&mutex);
 
-    currFunction = currFunction->clone();
-    currColorWheel = currColorWheel->clone();
-    currSettings = currSettings->clone();
-
+    AbstractFunction *imageFunction = currFunction->clone();
+    ColorWheel *imageColorWheel = currColorWheel->clone();
+    Settings *imageSettings = currSettings->clone();
+    
     //clone when dealing with image (usually I/O)
     for (int i = 0; i < threads.size(); i++) {
-        threads[i]->changeFunction(currFunction);
-        threads[i]->changeColorWheel(currColorWheel);
-        threads[i]->changeSettings(currSettings);
+        threads[i]->changeFunction(imageFunction);
+        threads[i]->changeColorWheel(imageColorWheel);
+        threads[i]->changeSettings(imageSettings);
     }
 
     this->output = output;

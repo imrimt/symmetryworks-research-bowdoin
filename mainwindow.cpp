@@ -287,5 +287,18 @@ void MainWindow::createMenus()
 //void MainWindow::moveEvent(QMoveEvent* event)
 //{
 //    const QPoint global = this->mapToGlobal(rect().center());
-//    waitDialog->move(global.x() - waitDialog->width() / 2, global.y() - waitDialog->height() / 2);
+//    
+//    QList<QWidget *> children = this->findChildren<QWidget *>();
+//    
+//    QList<QWidget *>::iterator i = children.begin();
+//    
+//    while (i != children.end()) {
+//        if((*i)->isWindow()) {
+//            (*i)->move(global.x() - (*i)->width() / 2, global.y() - (*i)->height() / 2);
+//        }
+//        ++i;
+//       
+//        
+//    }
+//    
 //}

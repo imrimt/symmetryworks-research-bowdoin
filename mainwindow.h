@@ -67,6 +67,8 @@ public:
     MainWindow();
     ~MainWindow();
     
+    //void moveEvent(QMoveEvent *event);
+    
 
 protected:
 // #ifndef QT_NO_CONTEXTMENU

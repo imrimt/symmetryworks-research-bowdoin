@@ -19,7 +19,7 @@ HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
     viewHistoryWidget = new QWidget(static_cast<QWidget *>(parent), Qt::Drawer);
     viewHistoryWidget->setWindowTitle(tr("Snapshots"));
     
-    viewHistoryWidget->move(1650, 160); //TODO get rid of this hardcoding...
+    viewHistoryWidget->move(1670, 160); //TODO get rid of this hardcoding...
    
     viewHistoryBox = new QGroupBox(viewHistoryWidget);
     viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
