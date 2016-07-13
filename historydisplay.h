@@ -8,8 +8,7 @@
 
 #include <QGroupBox>
 #include <QSignalMapper>
-#include <QWidget>
-#include <QDockWidget>
+#include <QLabel>
 
 
 const int MAX_HISTORY_ITEMS = 8;
@@ -33,6 +32,7 @@ public:
     QPushButton *clearHistoryButton;
     QSignalMapper *viewMapper;
     QSignalMapper *removeMapper;
+    QLabel *noItemLabel;
     
     // used to call private addToHistory() function
     void hide();

@@ -18,21 +18,27 @@ HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
     
     viewHistoryWidget = new QWidget(static_cast<QWidget *>(parent), Qt::Drawer);
     viewHistoryWidget->setWindowTitle(tr("Snapshots"));
-    
-    viewHistoryWidget->move(1650, 160); //TODO get rid of this hardcoding...
    
     viewHistoryBox = new QGroupBox(viewHistoryWidget);
     viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
     
-    clearHistoryButton = new QPushButton(tr("Clear All"), viewHistoryBox);
+    clearHistoryButton = new QPushButton(tr("Remove All"), viewHistoryBox);
     viewHistoryBoxLayout = new QVBoxLayout(viewHistoryBox);
-    
-     viewHistoryBoxOverallLayout->addWidget(clearHistoryButton);
-    viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);
-   
-    viewHistoryBoxOverallLayout->addStretch();
-    
 
+    noItemLabel = new QLabel(tr("<i> (no snapshots to show) </i>"), viewHistoryWidget);
+    noItemLabel->setFixedWidth(210);
+    noItemLabel->setAlignment(Qt::AlignCenter);
+        
+    //initial layout 
+    viewHistoryBoxOverallLayout->addWidget(clearHistoryButton);
+    viewHistoryBoxOverallLayout->addWidget(noItemLabel);
+    viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);
+    viewHistoryBoxOverallLayout->addStretch();
+
+    //initial set up
+    clearHistoryButton->setEnabled(false);
+    viewHistoryBox->hide();
+   
     // connect signals
     viewMapper = new QSignalMapper(this);
     removeMapper = new QSignalMapper(this);
@@ -143,7 +149,10 @@ void HistoryDisplay::removePreview(QObject *item)
     delete historyItemToRemove;
     
     if (historyItemsMap.empty()) {
-        this->hide();
+        // this->hide();
+        clearHistoryButton->setEnabled(false);
+        noItemLabel->show();
+        viewHistoryBox->hide();
     }
     
 }
@@ -162,6 +171,13 @@ void HistoryDisplay::clearAllHistory()
 // called from interface to add to history if we haven't reached the maximum number of history items
 void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings)
 {
+
+    if (noItemLabel->isVisible()) {
+        clearHistoryButton->setEnabled(true);
+        viewHistoryBox->show();
+        noItemLabel->hide();
+    }
+
     if (historyItemsMap.size() < MAX_HISTORY_ITEMS) {
         //addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
         addToHistory(savedTime, filePathName, function, colorwheel, settings);
@@ -170,13 +186,13 @@ void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QStri
        // addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
         addToHistory(savedTime, filePathName, function, colorwheel, settings);
     }    
+
 }
 
 void HistoryDisplay::show()
 {
     viewHistoryWidget->show();
     viewHistoryBox->show();
-
 }
 
 

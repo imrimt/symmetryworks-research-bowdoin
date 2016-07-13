@@ -75,8 +75,8 @@ void interface::initInterfaceLayout()
     topbarLayout->addLayout(leftbarLayout);
     topbarLayout->addWidget(displayWidget);
     
-    historyDisplay = new HistoryDisplay(this);
-    historyDisplay->hide();
+    // historyDisplay = new HistoryDisplay(this);
+    // historyDisplay->hide();
     
     //historyDisplay->viewHistoryWidget->setGeometery(this->parent()->rect().topLeft().x()
     
@@ -85,12 +85,11 @@ void interface::initInterfaceLayout()
     
     
     overallLayout->addLayout(interfaceLayout);
-    overallLayout->addWidget(historyDisplay->viewHistoryWidget);
+    // overallLayout->addWidget(historyDisplay->viewHistoryWidget);
     //overallLayout->setSizeConstraint(QLayout::SetFixedSize);
     overallLayout->activate();
     //overallLayout->addWidget(historyDisplay->dock);
    
-    
     this->setLayout(overallLayout);
     
     errorMessageBox = new QMessageBox(this);
@@ -181,7 +180,7 @@ void interface::initPreviewDisplay()
 void interface::initFunctionConstants()
 {
 
-    functionConstantsBox = new QGroupBox(tr("Function Constants"), functionConstantsWidget);
+    functionConstantsBox = new QGroupBox(tr("Function Parameters"), functionConstantsWidget);
     functionConstantsBoxLayout = new QVBoxLayout(functionConstantsBox);
     functionTermsGrid = new QGridLayout();
     
@@ -245,6 +244,18 @@ void interface::initFunctionConstants()
     numTermsLabel = new QLabel(tr("<b>Total Number of Terms: <\b>"), functionConstantsBox);
     numTermsEdit = new QSpinBox(functionConstantsBox);
     numTermsEdit->setRange(1, MAX_NUM_TERMS);
+
+    QFrame* line1 = new QFrame(functionConstantsBox);
+    line1->setLineWidth(2);
+    line1->setMidLineWidth(1);
+    line1->setFrameShape(QFrame::HLine);
+    line1->setFrameShadow(QFrame::Raised);
+
+    QFrame* line2 = new QFrame(functionConstantsBox);
+    line2->setLineWidth(2);
+    line2->setMidLineWidth(1);
+    line2->setFrameShape(QFrame::HLine);
+    line2->setFrameShadow(QFrame::Raised);
     
     termViewButton = new QPushButton(tr("View/Edit All Terms"), functionConstantsBox);
     termViewWidget = new QWidget(this, Qt::Window);
@@ -288,25 +299,44 @@ void interface::initFunctionConstants()
     termViewLayout->addWidget(addTermButton);
     termViewWidget->setLayout(termViewLayout);
 
-    functionTermsGrid->addWidget(numTermsLabel, 0, 0, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(numTermsEdit, 0, 1, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(termViewButton, 0, 2, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(currTermLabel, 1, 0, 2, 1, Qt::AlignLeft);
-    functionTermsGrid->addWidget(currTermEdit, 1, 1, 2, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(freqpairLabel, 1, 2, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(nLabel, 1, 3, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(nEdit, 1, 4, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(mLabel, 1, 6, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(mEdit, 1, 7, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(coeffLabel, 2, 2, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(rLabel, 2, 3, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(rEdit, 2, 4, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(rValueLabel, 2, 5, 1, 1, Qt::AlignLeft);
-    functionTermsGrid->addWidget(aLabel, 2, 6, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(aEdit, 2, 7, 1, 1, Qt::AlignCenter);
-    functionTermsGrid->addWidget(aValueLabel, 2, 8, 1, 1, Qt::AlignLeft);
-    functionTermsGrid->addWidget(coeffPlaneEdit, 2, 9, 1, 1, Qt::AlignCenter);
-    
+    for (int r = 0; r < 5; r++) {
+        switch(r) {
+        case 0: 
+            functionTermsGrid->addWidget(numTermsLabel, r, 0, 1, 1, Qt::AlignRight);
+            functionTermsGrid->addWidget(numTermsEdit, r, 1, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(termViewButton, r, 2, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(numTermsLabel, r, 0, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(numTermsEdit, r, 1, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(termViewButton, 0, 2, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->setVerticalSpacing(20);
+            break;
+        case 1:
+            functionTermsGrid->addWidget(line1, r, 0, 1, 10);
+            break;
+        case 2:
+            functionTermsGrid->addWidget(currTermLabel, r, 0, 2, 1, Qt::AlignRight);
+            functionTermsGrid->addWidget(currTermEdit, r, 1, 2, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(freqpairLabel, r, 2, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(nLabel, r, 3, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(nEdit, r, 4, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(mLabel, r, 6, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(mEdit, r, 7, 1, 1, Qt::AlignCenter);
+            break;
+        case 3:
+            functionTermsGrid->addWidget(coeffLabel, r, 2, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(rLabel, r, 3, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(rEdit, r, 4, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(rValueLabel, r, 5, 1, 1, Qt::AlignLeft);
+            functionTermsGrid->addWidget(aLabel, r, 6, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(aEdit, r, 7, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(aValueLabel, r, 8, 1, 1, Qt::AlignLeft);
+            functionTermsGrid->addWidget(coeffPlaneEdit, r, 9, 1, 1, Qt::AlignCenter);
+            break;
+        case 4: 
+            functionTermsGrid->addWidget(line2, r, 0, 1, 10);
+        }
+    }
+
     functionConstantsBoxLayout->addLayout(functionTermsGrid);
     functionConstantsWidgetLayout->addWidget(functionConstantsBox);
 
@@ -316,7 +346,7 @@ void interface::initFunctionConstants()
 void interface::initPatternType()
 {
 
-    patternTypeBox = new QGroupBox(tr("Pattern Type"), patternTypeWidget);
+    patternTypeBox = new QGroupBox(tr("Pattern Properties"), patternTypeWidget);
     functionSel = new QComboBox(patternTypeBox);
     colorwheelSel = new QComboBox(patternTypeBox);
 
@@ -378,13 +408,32 @@ void interface::initPatternType()
     functionSel->addItem("cm");
     functionSel->addItem("Original");
     
+    // color wheel selector
+    colorwheelSel->addItem("IcosColor");
+    colorwheelSel->addItem("IcosColorC");
+    colorwheelSel->addItem("StCol");
+    colorwheelSel->addItem("StColC");
+    colorwheelSel->addItem("StCol35");
+    colorwheelSel->addItem("ZoneCol");
+    colorwheelSel->addItem("SectCol");
+    colorwheelSel->addItem("Sect6Col");
+    colorwheelSel->addItem("WinCol");
+    functionLabel->setText(tr("<b>Pattern<\b>"));
+    colorwheelLabel->setText(tr("<b>Color<\b>"));
     
+    colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    functionSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    functionLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
     functionIconsWindow = new QWidget(this, Qt::Window);
     functionIconsWindow->setWindowTitle(tr("Pattern Previews"));
-    functionIconsWindow->move(70,160); // TODO this shouldn't be hardcoded!
     functionIconsWindowLayout = new QGridLayout(functionIconsWindow);
 
-    functionIconsWindow->setWindowFlags(functionIconsWindow->windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
+    // functionIconsWindow->setWindowFlags(functionIconsWindow->windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
+
+    // functionIconsWindowLayout->setSpacing(0);
+    // functionIconsWindow
     
     int row = 0;
     int col = 0;
@@ -408,7 +457,6 @@ void interface::initPatternType()
         layout->addWidget(preview);
         layout->addWidget(label);
         
-       
         functionIconsWindowLayout->addLayout(layout, row, col);
         
         col++;
@@ -416,30 +464,11 @@ void interface::initPatternType()
             row++;
             col = 0;
         }
-    
 
     }
- 
+
     viewFunctionIconsButton = new QPushButton(tr("Previews..."), patternTypeBox);
     connect(viewFunctionIconsButton, SIGNAL(clicked()), this, SLOT(showFunctionIcons()));
-    
-    // color wheel selector
-    colorwheelSel->addItem("IcosColor");
-    colorwheelSel->addItem("IcosColorC");
-    colorwheelSel->addItem("StCol");
-    colorwheelSel->addItem("StColC");
-    colorwheelSel->addItem("StCol35");
-    colorwheelSel->addItem("ZoneCol");
-    colorwheelSel->addItem("SectCol");
-    colorwheelSel->addItem("Sect6Col");
-    colorwheelSel->addItem("WinCol");
-    functionLabel->setText(tr("<b>Pattern<\b>"));
-    colorwheelLabel->setText(tr("<b>Color<\b>"));
-    
-    colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    functionSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    functionLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     
     // ASSEMBLE LAYOUT
     functionLayout->addWidget(functionLabel);
@@ -664,7 +693,6 @@ void interface::connectAllSignals()
     connect(XShiftValueLabel, SIGNAL(editingFinished()), this, SLOT(changeXCorner()));
     connect(YShiftValueLabel, SIGNAL(editingFinished()), this, SLOT(changeYCorner()));
     
-    connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
     connect(polarPlane, SIGNAL(setPolarCoordinates(int, QString, QString)), this, SLOT(setPolarCoordinates(int, QString, QString)));
     
     connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(snapshotFunction()));
@@ -908,10 +936,8 @@ void interface::resetImageFunction()
 
 void interface::termViewPopUp()
 {
-    if (!termViewWidget->isVisible()) {
-        termViewWidget->show();
-    }
-    
+    termViewWidget->hide();
+    termViewWidget->show();
 }
 
 // updates the term that is currently being edited
@@ -1501,4 +1527,16 @@ void interface::resetMainWindowButton(const bool &status)
     updatePreview->setEnabled(status);
 }
 
+void interface::setSnapShotWindow(HistoryDisplay* window)
+{
+    historyDisplay = window;
+    connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
+
+}
+
+// void interface::setFunctionIconsWindow(QWidget *window) 
+// {
+    
+
+// }
 

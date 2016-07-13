@@ -55,7 +55,7 @@
 MainWindow::MainWindow()
 {
     
-    currInterface = new interface();
+    currInterface = new interface(this);
   
     // qDebug() << "setting " << this->currInterface << " to " << currInterface;
 
@@ -80,14 +80,17 @@ MainWindow::MainWindow()
 
     createActions();
     createMenus();
+    createDockWindows();
 
-    QString message = tr("A context menu is available by right-clicking");
-    statusBar()->showMessage(message);
+    // QString message = tr("A context menu is available by right-clicking");
+    // statusBar()->showMessage(message);
     
     QRect screenGeometry = QApplication::desktop()->screenGeometry();
     int x = (screenGeometry.width()-this->width()) / 3;
     int y = (screenGeometry.height()-this->height()) / 6;
     this->move(x, y);
+
+
     
                                
     setWindowTitle(tr("Wallpaper Generation"));
@@ -281,6 +284,32 @@ void MainWindow::createMenus()
     viewMenu->addAction(enlargePreviewAct);
     viewMenu->addAction(shrinkPreviewAct);
     viewMenu->addAction(resetPreviewAct);
+}
+
+void MainWindow::createDockWindows() 
+{
+    rightDock = new QDockWidget(tr("Snapshots"), this);
+    rightDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    // rightDock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    // leftDock = new QDockWidget(tr("Pattern Previews"), this);
+    // leftDock->setFeatures(QDockWidget::DockWidgetClosable);
+
+    snapShotWindow = new HistoryDisplay(this);
+    // functionIconsWindow = new QWidget(this, Qt::Window);
+
+    currInterface->setSnapShotWindow(snapShotWindow);
+    // currInterface->setFunctionIconsWindow(functionIconsWindow);
+
+    rightDock->setWidget(snapShotWindow->viewHistoryWidget);
+    // leftDock->setWidget(functionIconsWindow);
+
+    // leftDock->setFixedSize(500, 600);
+
+    // leftDock->hide();
+
+    addDockWidget(Qt::RightDockWidgetArea, rightDock);
+    // addDockWidget(Qt::LeftDockWidgetArea, leftDock);
 }
 
 

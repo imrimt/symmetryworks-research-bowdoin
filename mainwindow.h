@@ -52,6 +52,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDockWidget>
 #include "interface.h"
 
 class QAction;
@@ -67,18 +68,18 @@ public:
     MainWindow();
     ~MainWindow();
     
-
 protected:
 // #ifndef QT_NO_CONTEXTMENU
 //     void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
 // #endif // QT_NO_CONTEXTMENU
 
-private slots:
-    
-
 private:
     void createActions();
     void createMenus();
+    void createDockWindows();
+
+    QDockWidget *rightDock;
+    // QDockWidget *leftDock;
 
     QMenu *fileMenu;
     // QMenu *editMenu;
@@ -111,6 +112,11 @@ private:
     // QAction *aboutQtAct;
     // QLabel *infoLabel;
     interface *currInterface;
+    HistoryDisplay *snapShotWindow;
+    // QWidget *functionIconsWindow;
+
+// private slots:
+//     void showFunctionIcons() { leftDock->show(); } 
 };
 
 #endif

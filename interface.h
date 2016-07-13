@@ -392,7 +392,9 @@ public:
     QGridLayout *functionIconsWindowLayout;
     QPushButton *viewFunctionIconsButton;
     
-    
+    void setSnapShotWindow(HistoryDisplay* window);
+    // void setFunctionIconsWindow(QWidget* window);   
+
 private slots:
     //void toggleViewMode();
     void updateCurrTerm(int i);
@@ -441,8 +443,7 @@ private slots:
     void popUpImageExportFinished(const QString &filePath);
     void resetMainWindowButton(const bool &status);
     
-    
-    void showFunctionIcons() { functionIconsWindow->show(); }
+    void showFunctionIcons() { functionIconsWindow->hide(), functionIconsWindow->show(); }
     //void hideFunctionicon(int index) { functionIconsWindow->hide(); }
     
 private:    
