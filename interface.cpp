@@ -1309,7 +1309,7 @@ void interface::changeOHeight()
     }
     settings->OHeight = val;
     imageExportPort->changeSettings(settings);
-    //updatePreviewDisplay();
+    // updatePreviewDisplay();
 }
 
 void interface::changeOWidth()
@@ -1321,7 +1321,7 @@ void interface::changeOWidth()
     }
     settings->OWidth = val;
     imageExportPort->changeSettings(settings);
-    //updatePreviewDisplay();
+    // updatePreviewDisplay();
 }
 
 void interface::changeWorldHeight(double val)
