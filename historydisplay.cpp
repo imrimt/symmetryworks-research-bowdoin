@@ -25,7 +25,7 @@ HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
     viewHistoryBoxLayout = new QVBoxLayout(viewHistoryBox);
 
     noItemLabel = new QLabel(tr("<i> (no snapshots to show) </i>"), viewHistoryWidget);
-    noItemLabel->setFixedWidth(210);
+    noItemLabel->setFixedWidth(200);
     noItemLabel->setAlignment(Qt::AlignCenter);
         
     //initial layout 

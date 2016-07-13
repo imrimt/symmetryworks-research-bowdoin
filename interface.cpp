@@ -370,7 +370,7 @@ void interface::initPatternType()
     functionLabel = new QLabel(patternTypeBox);
     colorwheelLabel = new QLabel(patternTypeBox);
     imagePathLabel = new QLabel(patternTypeBox);
-    globalConstantsLabel = new QLabel(tr("<b>Global Image Constants: <\b>"), patternTypeBox);
+    globalConstantsLabel = new QLabel(tr("<b>Global Scaling Factors: <\b>"), patternTypeBox);
     scaleALabel = new QLabel(tr("Scaling Angle"), patternTypeBox);
     scaleRLabel = new QLabel(tr("Scaling Radius"), patternTypeBox); 
     scaleAEdit = new QLineEdit(patternTypeBox);
@@ -701,8 +701,7 @@ void interface::connectAllSignals()
     connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
     connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
     
-//    connect(outWidthEdit, SIGNAL(selectionChanged()), this, SLOT(changeOWidth(QString)));
-//    connect(outHeightEdit, SIGNAL(selectionChanged()), this, SLOT(changeOHeight(QString)));
+
     connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
     connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
     
@@ -1336,8 +1335,10 @@ void interface::changeWorldHeight()
 {
     double val = worldHeightValueLabel->text().toDouble();
     settings->Height = val;
+    worldHeightEdit->blockSignals(true);
     worldHeightEdit->setValue(val * 100.0);
-    //worldHeightValueLabel->setText(val);
+    worldHeightEdit->blockSignals(false);
+    
     updatePreviewDisplay();
 }
 
@@ -1352,7 +1353,9 @@ void interface::changeWorldWidth()
 {
     double val = worldWidthValueLabel->text().toDouble();
     settings->Width = val;
+    worldWidthEdit->blockSignals(true);
     worldWidthEdit->setValue(val * 100.0);
+    worldWidthEdit->blockSignals(false);
     updatePreviewDisplay();
 }
 
