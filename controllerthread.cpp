@@ -50,6 +50,7 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
     ColorWheel *imageColorWheel = currColorWheel->clone();
     Settings *imageSettings = currSettings->clone();
     
+    
     //clone when dealing with image (usually I/O)
     for (int i = 0; i < threads.size(); i++) {
         threads[i]->changeFunction(imageFunction);
