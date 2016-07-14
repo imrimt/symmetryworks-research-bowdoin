@@ -1099,6 +1099,8 @@ void interface::changeFunction(int index)
     
     numTerms = currFunction->getNumTerms();
 
+    qDebug() << "numTerms:" << numTerms;
+
     termViewTable->setRowCount(0);
 
     currTermEdit->setMaximum(numTerms);
@@ -1216,15 +1218,16 @@ QString interface::loadSettings(const QString &fileName) {
     scaleREdit->setText(QString::number(tempdouble));
     scaleREdit->blockSignals(false);
     in >> tempdouble;
+
     scaleAEdit->blockSignals(true);
     currFunction->setScaleA(tempdouble);
     scaleAEdit->setText(QString::number(tempdouble));
     scaleAEdit->blockSignals(false);
-    in >> count;
 
-    numTermsEdit->blockSignals(true);
-    numTermsEdit->setValue(count);
-    numTermsEdit->blockSignals(false);
+    in >> count;
+    // numTermsEdit->blockSignals(true);
+    // numTermsEdit->setValue(count);
+    // numTermsEdit->blockSignals(false);
 
     int newNumTerms = count;
     currFunction->setNumTerms(newNumTerms);
@@ -1248,7 +1251,10 @@ QString interface::loadSettings(const QString &fileName) {
     XShiftEdit->setValue(settings->XCorner * 100.0);
     YShiftEdit->setValue(settings->YCorner * 100.0);
 
+    numTermsEdit->setValue(currFunction->getNumTerms());
+
     functionSel->setCurrentIndex(newFunctionIndex);
+
     if (newColorIndex == 9) {
         imageSetPath = imageLoadPath;
         openImageName = loadImageName;
@@ -1304,7 +1310,7 @@ void interface::changeOHeight()
     }
     settings->OHeight = val;
     imageExportPort->changeSettings(settings);
-    //updatePreviewDisplay();
+    // updatePreviewDisplay();
 }
 
 void interface::changeOWidth()
@@ -1316,7 +1322,7 @@ void interface::changeOWidth()
     }
     settings->OWidth = val;
     imageExportPort->changeSettings(settings);
-    //updatePreviewDisplay();
+    // updatePreviewDisplay();
 }
 
 void interface::changeWorldHeight(double val)
