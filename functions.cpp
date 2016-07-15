@@ -301,6 +301,7 @@ std::complex<double> hex3Function::bundle(double &x, double &y, unsigned int &i)
 std::complex<double> hex3Function::operator ()(double i, double j)
 {
     std::complex<double> ans(0,0);
+    
     for(unsigned int k = 0; k < terms; k++)
     {
         std::complex<double> thisterm = bundle(i, j, k);

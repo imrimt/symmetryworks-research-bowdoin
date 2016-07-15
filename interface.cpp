@@ -574,9 +574,6 @@ void interface::initImageProps()
     
     imageShiftXLayout = new QHBoxLayout();
     imageShiftYLayout = new QHBoxLayout();
-
-    imageStretchXLayout = new QHBoxLayout();
-    imageStretchYLayout = new QHBoxLayout();
     
     XShiftLabel = new QLabel(tr("Horizontal Shift"), imagePropsBox);
     YShiftLabel = new QLabel(tr("Vertical Shift"), imagePropsBox);
@@ -597,7 +594,11 @@ void interface::initImageProps()
     
     imageShiftYLayout->addWidget(YShiftLabel);
     imageShiftYLayout->addWidget(YShiftEdit);
-    imageShiftYLayout->addWidget(YShiftValueLabel);    
+    imageShiftYLayout->addWidget(YShiftValueLabel);
+    
+    
+    imageStretchXLayout = new QHBoxLayout();
+    imageStretchYLayout = new QHBoxLayout();
     
     worldWidthLabel = new QLabel(tr("Horizontal Stretch"), imagePropsBox);
     worldHeightLabel = new QLabel(tr("Vertical Stretch"), imagePropsBox);
@@ -750,13 +751,13 @@ void interface::connectAllSignals()
     
     connect(worldWidthEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldWidth(double)));
     connect(worldHeightEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldHeight(double)));
-    connect(worldWidthValueLabel, SIGNAL(editingFinished()), this, SLOT(changeWorldWidth()));
-    connect(worldHeightValueLabel, SIGNAL(editingFinished()), this, SLOT(changeWorldHeight()));
+    connect(worldWidthValueLabel, SIGNAL(returnPressed()), this, SLOT(changeWorldWidth()));
+    connect(worldHeightValueLabel, SIGNAL(returnPressed()), this, SLOT(changeWorldHeight()));
     
     connect(XShiftEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeXCorner(double)));
     connect(YShiftEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeYCorner(double)));
-    connect(XShiftValueLabel, SIGNAL(editingFinished()), this, SLOT(changeXCorner()));
-    connect(YShiftValueLabel, SIGNAL(editingFinished()), this, SLOT(changeYCorner()));
+    connect(XShiftValueLabel, SIGNAL(returnPressed()), this, SLOT(changeXCorner()));
+    connect(YShiftValueLabel, SIGNAL(returnPressed()), this, SLOT(changeYCorner()));
     
     connect(polarPlane, SIGNAL(setPolarCoordinates(int, QString, QString)), this, SLOT(setPolarCoordinates(int, QString, QString)));
     
@@ -1410,6 +1411,7 @@ void interface::changeWorldWidth()
 
 void interface::changeXCorner(double val)
 {
+  
     settings->XCorner = val;
     XShiftValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
@@ -1417,9 +1419,13 @@ void interface::changeXCorner(double val)
 
 void interface::changeXCorner()
 {
+  
     double val = XShiftValueLabel->text().toDouble();
     settings->XCorner = val;
+    
+    XShiftEdit->blockSignals(true);
     XShiftEdit->setValue(val * 100.0);
+    XShiftEdit->blockSignals(false);
     updatePreviewDisplay();
 }
 
@@ -1434,7 +1440,9 @@ void interface::changeYCorner()
 {
     double val = YShiftValueLabel->text().toDouble();
     settings->YCorner = val;
+    YShiftEdit->blockSignals(true);
     YShiftEdit->setValue(val * 100.0);
+    YShiftEdit->blockSignals(false);
     updatePreviewDisplay();
 }
 

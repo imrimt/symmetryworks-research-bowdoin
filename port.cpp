@@ -2,12 +2,13 @@
 
 Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height, Settings *currSettings)
 {
-    
+
     overallWidth = width;
     overallHeight = height;    
     this->currFunction = currFunction;
     this->currColorWheel = currColorWheel;
     this->currSettings = currSettings;
+    
 
     // display = new Display(DEFAULT_PREVIEW_SIZE, DEFAULT_IMAGE_SIZE);
     output = new QImage();
