@@ -19,12 +19,14 @@ ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *color
     this->controllerObject->setNumThreadsActive(NUM_THREADS);
 
     qRegisterMetaType<Q2DArray>("Q2DArray");
+    qRegisterMetaType<ComplexValue>("ComplexValue");
 
     for (int i = 0; i < NUM_THREADS; i++) {
         RenderThread *nextThread = new RenderThread(currFunction, currColorWheel, currSettings, outputSize);
         threads.push_back(nextThread);
         connect(nextThread, SIGNAL(renderingFinished(QPoint, Q2DArray)), controllerObject, SLOT(handleRenderedImageParts(QPoint, Q2DArray)));
         connect(nextThread, SIGNAL(newProgress(double)), controllerObject, SLOT(handleNewProgress(double)));
+        connect(nextThread, SIGNAL(newImageDataPoint(ComplexValue)), controllerObject, SLOT(addNewImageDataPoint(ComplexValue)));
     }
 
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));

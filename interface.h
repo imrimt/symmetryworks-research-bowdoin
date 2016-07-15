@@ -235,6 +235,10 @@ public:
     QIntValidator *numtermsValidate;
     QIntValidator *dimValidate;
 
+    // SUPPLEMENTAL WINDOWS
+    HistoryDisplay *historyDisplay;
+    PolarPlane *polarPlane;
+
     //modeToggle SUBELEMENTS
 //    QPushButton *toggleViewButton;
 //    QVBoxLayout *toggleViewLayout;
@@ -322,8 +326,17 @@ public:
     QPushButton *setOverflowColorButton;
     QColorDialog *setOverflowColorPopUp;
 
-    HistoryDisplay *historyDisplay;
-    PolarPlane *polarPlane;
+    // IMAGE DATA POINTS
+    QPushButton *showImageDataGraphButton;
+    QPushButton *updateImageDataGraphButton;
+    QScatterSeries *imageDataSeries;
+    QScatterSeries *prevDataSeries;
+    QChart *imageDataGraph;
+    QValueAxis *imageDataGraphAxisX;
+    QValueAxis *imageDataGraphAxisY;
+    QChartView *imageDataGraphView;
+    QWidget *imageDataWindow;
+    QVBoxLayout *imageDataWindowLayout;
     
     // imagePropsBox SUBELEMENTS
     //QVBoxLayout *imagePropsBoxStack;
@@ -449,6 +462,10 @@ private slots:
     void showFunctionIcons() { functionIconsWindow->hide(), functionIconsWindow->show(); }
     void showOverflowColorPopUp() { setOverflowColorPopUp->show(); }
     //void hideFunctionicon(int index) { functionIconsWindow->hide(); }
+
+    void addNewImageDataPoint(const ComplexValue &data) { *imageDataSeries << QPointF(data.real(), data.imag()); }
+    void showImageDataGraph() { updateImageDataGraph(); imageDataWindow->hide(); imageDataWindow->show(); }
+    void updateImageDataGraph();
     
 private:    
     QString genLabel(const char * in);    
@@ -484,15 +501,13 @@ private:
     QSharedPointer<ColorWheel> currColorWheelPtr;
     
     Port *previewDisplayPort, *imageExportPort;
+
     //bool advancedMode;
     int coeffFlag;
     
     QVector<AbstractFunction *> functionVector;
     
     Settings *settings;
-    
-    
-
     
 };
 

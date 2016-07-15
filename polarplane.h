@@ -24,7 +24,6 @@
 #include "geomath.h"
 #include "functions.h"
 
-
 using namespace QtCharts;
 
 const int LOCAL_FLAG = 0;

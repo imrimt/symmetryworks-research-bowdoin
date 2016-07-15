@@ -71,6 +71,4 @@ public:
     
 };
 
-
-
 #endif /* shared_h */

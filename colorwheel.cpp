@@ -520,8 +520,9 @@ QRgb ColorWheel::FromImage(std::complex<double> zin)
 
         color = image.pixel(translated_x, translated_y);
     }
-    else
+    else {
         color = overflowColor;
+    }
 
     return color.rgb();
 }

@@ -98,6 +98,10 @@ void RenderThread::run()
                 fout = (*currFunction)(worldX,worldY);
                 QRgb color = (*currColorWheel)(fout);
 
+                if (y % 10 == 0 && x % 10 == 0) {
+                	emit newImageDataPoint(fout);
+                }
+
                 // qDebug() << "I think I'm crashed here";
                 
                 //finally push the determined color to the corresponding point on the display

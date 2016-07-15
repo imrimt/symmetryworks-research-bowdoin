@@ -11,7 +11,6 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     doubleValidate = new QDoubleValidator(-9999999.0, 9999999.0, 5, this);
     angleValidate = new QDoubleValidator(-pi, pi, 5, this);
     
-    
     //SET UP COEFFICIENT PLANE
     polarPlanePopUp = new QWidget(parent, Qt::Window);
     polarPlanePopUpLayout = new QHBoxLayout();
@@ -187,7 +186,7 @@ void PolarPlane::showPlanePopUp(int flag)
     QPointF point(tempR * cos(tempA), tempR * sin(tempA));
     
     coordinateSeries->replace(0, point);
-    // updatePolarCoordinates(QPointF(tempR * cos(tempA), tempR * sin(tempA)));
+    updatePolarCoordinates(QPointF(tempR * cos(tempA), tempR * sin(tempA)));
     polarPlanePopUp->show();
     
 }
@@ -196,7 +195,6 @@ void PolarPlane::showPlanePopUp(int flag)
 void PolarPlane::updatePolarCoordinatesWithIndex(const int &index)
 {
     QPointF point = coordinateSeries->at(index);
-    // qDebug() << "update info " << point;
     updatePolarCoordinates(point);
 }
 

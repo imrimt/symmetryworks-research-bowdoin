@@ -29,6 +29,7 @@ signals:
     void allThreadsFinished();
     void progressChanged(const int &progress);
     void partialProgressChanged(const double &progress);
+    void newImageDataPoint(const ComplexValue &data);
 
 private:
     int numThreadsRunning;
@@ -110,6 +111,10 @@ private slots:
         //qDebug() << "new progress" << progress;
 
         emit partialProgressChanged(progress * numThreadsRunning / numThreadsActive);
+    }
+
+    void addNewImageDataPoint(const ComplexValue &data) {
+        emit newImageDataPoint(data);
     }
 };
 

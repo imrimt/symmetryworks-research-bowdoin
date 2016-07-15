@@ -14,7 +14,7 @@ Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width
     display = new Display();
 
     controllerObject = new Controller(display, output);    
-    controller = new ControllerThread(this->currFunction, this->currColorWheel, this->currSettings, controllerObject, QSize(overallWidth, overallHeight));
+    controller = new ControllerThread(this->currFunction, this->currColorWheel, this->currSettings, controllerObject, QSize(overallWidth, overallHeight), this);
     
     controllerObject->moveToThread(controller);
     connect(controllerObject, SIGNAL(workFinished(int)), this, SLOT(handleRenderedImage(int)));

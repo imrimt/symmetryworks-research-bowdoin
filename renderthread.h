@@ -17,6 +17,7 @@ const int HISTORY_ICON_REPAINT_FLAG = 2;
 const int IMAGE_EXPORT_FLAG = 3;
 
 typedef QVector<QVector<QRgb> > Q2DArray;
+typedef std::complex<double> ComplexValue;
 
 class RenderThread : public QThread
 {
@@ -48,6 +49,7 @@ protected:
 signals:
     void renderingFinished(const QPoint &startPoint, const Q2DArray &result);
     void newProgress(const double &progress);
+    void newImageDataPoint(const ComplexValue &data);
     
 private:
     QMutex mutex;

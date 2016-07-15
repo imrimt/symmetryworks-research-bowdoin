@@ -170,6 +170,9 @@ void interface::initPreviewDisplay()
     connect(imageExportPort, SIGNAL(finishedExport(QString)), this, SLOT(popUpImageExportFinished(QString)));
     connect(imageExportPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), exportProgressBar, SLOT(partialUpdate(double)));
 
+    qRegisterMetaType<ComplexValue>("ComplexValue");
+    connect(previewDisplayPort->getControllerObject(), SIGNAL(newImageDataPoint(ComplexValue)), this, SLOT(addNewImageDataPoint(ComplexValue)));
+
     dispLayout->setAlignment(disp, Qt::AlignCenter);
     dispLayout->addWidget(disp);
     dispLayout->addLayout(displayProgressBar->layout);
@@ -367,6 +370,7 @@ void interface::initPatternType()
     setLoadedImage = new QPushButton(tr("Set/Change Image..."), patternTypeBox);
     fromImageButton = new QRadioButton(tr("Image"), patternTypeBox);
     fromColorWheelButton = new QRadioButton(tr("Color Wheel"), patternTypeBox);
+    showImageDataGraphButton = new QPushButton(tr("Show Graph"), patternTypeBox);
     functionLabel = new QLabel(patternTypeBox);
     colorwheelLabel = new QLabel(patternTypeBox);
     imagePathLabel = new QLabel(patternTypeBox);
@@ -380,7 +384,6 @@ void interface::initPatternType()
     scaleAEdit->setAlignment(Qt::AlignCenter);
     scaleREdit->setAlignment(Qt::AlignCenter);
     scalePlaneEdit = new QPushButton(tr("Set on plane"), patternTypeBox);
-
     
     QFrame* endPattern = new QFrame(patternTypeBox);
     endPattern->setLineWidth(2);
@@ -434,15 +437,12 @@ void interface::initPatternType()
     functionLabel->setText(tr("<b>Pattern<\b>"));
     colorwheelLabel->setText(tr("<b>Color<\b>"));
     
-    setOverflowColorPopUp = new QColorDialog();
-    setOverflowColorButton = new QPushButton(tr("Set Overflow Color..."), patternTypeBox);
-    setOverflowColorButton->setEnabled(false);
-    
     colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     functionSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     functionLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
+    //initialize function previews window
     functionIconsWindow = new QWidget(this, Qt::Window);
     functionIconsWindow->setWindowTitle(tr("Pattern Previews"));
     functionIconsWindowLayout = new QGridLayout(functionIconsWindow);
@@ -486,6 +486,48 @@ void interface::initPatternType()
 
     viewFunctionIconsButton = new QPushButton(tr("Previews..."), patternTypeBox);
     connect(viewFunctionIconsButton, SIGNAL(clicked()), this, SLOT(showFunctionIcons()));
+
+    //initialize overflow color window
+    setOverflowColorPopUp = new QColorDialog();
+    setOverflowColorButton = new QPushButton(tr("Set Overflow Color..."), patternTypeBox);
+
+    //initialize image data window
+    imageDataSeries = new QScatterSeries(this);
+    prevDataSeries = new QScatterSeries(this);
+    imageDataGraphAxisX = new QValueAxis();
+    imageDataGraphAxisY = new QValueAxis();
+    imageDataGraph = new QChart();
+    imageDataGraphView = new QChartView(imageDataGraph);
+    imageDataWindow = new QWidget(this, Qt::Window);
+    imageDataWindowLayout = new QVBoxLayout(imageDataWindow);
+    updateImageDataGraphButton = new QPushButton(tr("Update Graph"), imageDataGraphView);
+
+    imageDataGraph->legend()->hide();
+    imageDataGraph->setTitle("SAMPLE POINTS ON IMAGE");
+
+    imageDataGraphAxisX->setRange(-2, 2);
+    imageDataGraphAxisY->setRange(-2, 2);
+    imageDataGraphAxisX->setTickCount(11);
+    imageDataGraphAxisY->setTickCount(11);
+    
+    imageDataGraph->addSeries(prevDataSeries);
+    
+    imageDataGraph->addAxis(imageDataGraphAxisX, Qt::AlignBottom);
+    imageDataGraph->addAxis(imageDataGraphAxisY, Qt::AlignLeft);
+    
+    prevDataSeries->attachAxis(imageDataGraphAxisX);
+    prevDataSeries->attachAxis(imageDataGraphAxisY);
+
+    imageDataWindowLayout->addWidget(imageDataGraphView);
+    imageDataWindowLayout->addWidget(updateImageDataGraphButton);
+    imageDataWindow->setLayout(imageDataWindowLayout);
+    imageDataWindow->setFixedSize(600, 600);
+
+    // imageDataWindow->show();
+
+    // set image buttons false
+    setOverflowColorButton->setEnabled(false);
+    showImageDataGraphButton->setEnabled(false);
     
     // ASSEMBLE LAYOUT
     functionLayout->addWidget(functionLabel);
@@ -494,7 +536,6 @@ void interface::initPatternType()
     patternTypeBoxLayout->addLayout(functionLayout);
     patternTypeBoxLayout->addWidget(endPattern);
     //patternTypeBoxLayout->addItem(gspacer1);
-    
     
     //colorwheelLayout->addItem(gspacer3);
     colorwheelLayout->addWidget(colorwheelLabel);
@@ -506,6 +547,7 @@ void interface::initPatternType()
     
     patternTypeBoxLayout->addLayout(colorwheelLayout);
     patternTypeBoxLayout->addWidget(setOverflowColorButton);
+    patternTypeBoxLayout->addWidget(showImageDataGraphButton);
     patternTypeBoxLayout->addWidget(endColor);
     patternTypeBoxLayout->addItem(gspacer2);
 
@@ -685,10 +727,12 @@ void interface::connectAllSignals()
     connect(setOverflowColorButton, SIGNAL(clicked()), this, SLOT(showOverflowColorPopUp()));
     connect(setOverflowColorPopUp, SIGNAL(colorSelected(QColor)), currColorWheel, SLOT(changeOverflowColor(QColor)));
 
+    connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), currColorWheel, SLOT(setCurrent(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
-    connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
+    connect(showImageDataGraphButton, SIGNAL(clicked()), this, SLOT(showImageDataGraph()));
+    connect(updateImageDataGraphButton, SIGNAL(clicked()), this, SLOT(updateImageDataGraph()));
     connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeNumTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateCurrTerm(int)));
     connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
@@ -701,16 +745,13 @@ void interface::connectAllSignals()
     connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
     connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
     
-
     connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
     connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
-    
     
     connect(worldWidthEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldWidth(double)));
     connect(worldHeightEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldHeight(double)));
     connect(worldWidthValueLabel, SIGNAL(editingFinished()), this, SLOT(changeWorldWidth()));
     connect(worldHeightValueLabel, SIGNAL(editingFinished()), this, SLOT(changeWorldHeight()));
-    
     
     connect(XShiftEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeXCorner(double)));
     connect(YShiftEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeYCorner(double)));
@@ -1017,7 +1058,10 @@ void interface::selectColorWheel()
     colorwheelSel->setEnabled(true);
     setLoadedImage->setEnabled(false);
     setOverflowColorButton->setEnabled(false);
+    showImageDataGraphButton->setEnabled(false);
     imagePathLabel->setEnabled(false);
+
+    imageDataWindow->hide();
 
     currColorWheel->setCurrent(colorwheelSel->currentIndex());
 
@@ -1029,6 +1073,7 @@ void interface::selectImage()
     colorwheelSel->setEnabled(false);
     setLoadedImage->setEnabled(true);
     setOverflowColorButton->setEnabled(true);
+    showImageDataGraphButton->setEnabled(true);
     imagePathLabel->setEnabled(true);
 
     if (imageSetPath == "") {
@@ -1277,6 +1322,10 @@ QString interface::loadSettings(const QString &fileName) {
 // updates the preview to reflect changes to the settings, function, and color wheel
 void interface::updatePreviewDisplay()
 {
+
+    // if (!imageDataGraph->series().empty()) imageDataGraph->removeSeries(imageDataSeries);
+	imageDataSeries->clear();
+
     updatePreview->setEnabled(false);
 
     displayProgressBar->reset();
@@ -1608,6 +1657,8 @@ void interface::resetTableButton()
 {
     addTermButton->blockSignals(false);
     termViewTable->blockSignals(false);
+
+ 	// imageDataWindow->show();   
 }
 
 // reset the main window to receive signals - prevent updating too fast
@@ -1624,10 +1675,22 @@ void interface::setSnapShotWindow(HistoryDisplay* window)
 
 }
 
-
-// void interface::setFunctionIconsWindow(QWidget *window) 
+// void interface::addNewImageDataPoint(const std::complex<double> &data)
 // {
-    
+// 	// qDebug() << "got here" << data.real() << data.imag();
 
+// 	*imageDataSeries << QPointF(data.real(), data.imag());
 // }
+
+// void interface::showImageDataGraph() 
+// {
+//     updateImageDataGraph();
+//     imageDataWindow->show();
+// }
+
+void interface::updateImageDataGraph() 
+{ 
+    prevDataSeries->clear(); 
+    *prevDataSeries << imageDataSeries->points(); 
+}
 
