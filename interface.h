@@ -249,7 +249,7 @@ public:
 //    QVBoxLayout *toggleViewLayout;
     
     // functionConstants SUBELEMENTS
-    QPushButton *termViewButton;
+    // QPushButton *termViewButton;
     QWidget *termViewWidget;
     QVBoxLayout *termViewLayout;
     QTableWidget *termViewTable;

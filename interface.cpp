@@ -129,8 +129,6 @@ void Interface::initInterfaceLayout()
     refreshTableTerms();
     updatePreviewDisplay();
 
-
-
 }
 
 
@@ -267,7 +265,7 @@ void Interface::initFunctionConstants()
     line2->setFrameShape(QFrame::HLine);
     line2->setFrameShadow(QFrame::Raised);
     
-    termViewButton = new QPushButton(tr("View/Edit All Terms"), functionConstantsBox);
+    // termViewButton = new QPushButton(tr("View/Edit All Terms"), functionConstantsBox);
     termViewWidget = new QWidget(this, Qt::Window);
     termViewWidget->setWindowTitle(tr("Edit Function Terms"));
     termViewWidget->setMinimumWidth(340);
@@ -312,13 +310,10 @@ void Interface::initFunctionConstants()
     for (int r = 0; r < 5; r++) {
         switch(r) {
         case 0: 
-            functionTermsGrid->addWidget(numTermsLabel, r, 0, 1, 1, Qt::AlignRight);
-            functionTermsGrid->addWidget(numTermsEdit, r, 1, 1, 1, Qt::AlignCenter);
-            functionTermsGrid->addWidget(termViewButton, r, 2, 1, 1, Qt::AlignCenter);
             functionTermsGrid->addWidget(numTermsLabel, r, 0, 1, 1, Qt::AlignCenter);
             functionTermsGrid->addWidget(numTermsEdit, r, 1, 1, 1, Qt::AlignCenter);
-            functionTermsGrid->addWidget(termViewButton, 0, 2, 1, 1, Qt::AlignCenter);
-            functionTermsGrid->setVerticalSpacing(20);
+            // functionTermsGrid->addWidget(termViewButton, 0, 2, 1, 1, Qt::AlignCenter);
+            // functionTermsGrid->setVerticalSpacing(20);
             break;
         case 1:
             functionTermsGrid->addWidget(line1, r, 0, 1, 10);
@@ -554,8 +549,8 @@ void Interface::initPatternType()
     
     // ASSEMBLE LAYOUT
 
-    functionLayout->addWidget(functionSel);
     functionLayout->addWidget(functionLabel);
+    functionLayout->addWidget(functionSel);    
     functionLayout->addWidget(viewFunctionIconsButton);
     // functionLayout->addLayout(patternTitleLayout);
     // functionLayout->addWidget(viewFunctionIconsButton);
@@ -683,7 +678,7 @@ void Interface::initImageProps()
     imagePropsBoxLayout->addItem(pspacer1);
     imagePropsBoxLayout->addLayout(imageStretchXLayout);
     imagePropsBoxLayout->addLayout(imageStretchYLayout);
-        imagePropsBoxLayout->setSizeConstraint(QBoxLayout::SetFixedSize);
+    imagePropsBoxLayout->setSizeConstraint(QBoxLayout::SetFixedSize);
 
 }
 
@@ -764,7 +759,7 @@ void Interface::connectAllSignals()
     connect(updateImageDataGraphButton, SIGNAL(clicked()), this, SLOT(updateImageDataGraph()));
     connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeNumTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateCurrTerm(int)));
-    connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
+    // connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
     connect(addTermButton, SIGNAL(clicked()), this, SLOT(addTermTable()));
     
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));

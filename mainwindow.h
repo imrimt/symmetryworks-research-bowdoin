@@ -44,6 +44,7 @@ private:
     QAction *setOverflowColorAct;
     QAction *showImageDataGraphAct;
     QAction *resetPreviewAct;
+    QAction *viewTermsTableAct;
     // QAction *printAct;
     // QAction *exitAct;
     // QAction *undoAct;
