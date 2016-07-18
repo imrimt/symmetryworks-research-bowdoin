@@ -167,7 +167,7 @@ void HistoryDisplay::clearAllHistory()
 }
 
 
-// called from interface to add to history if we haven't reached the maximum number of history items
+// called from Interface to add to history if we haven't reached the maximum number of history items
 void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings)
 {
 

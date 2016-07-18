@@ -1,5 +1,5 @@
-#ifndef INTERFACE_H
-#define INTERFACE_H
+#ifndef Interface_H
+#define Interface_H
 
 #include <QWidget>
 #include <QLabel>
@@ -27,6 +27,9 @@
 #include <QTimer>
 #include <QRadioButton>
 #include <QColorDialog>
+#include <QObject>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include <QProgressBar>
 #include <QTableWidget>
@@ -207,17 +210,19 @@ public slots:
 };
 
 
-// interface class
-class interface : public QWidget
+// Interface class
+class Interface : public QWidget
 {
     Q_OBJECT
 public:
-    explicit interface(QWidget *parent = 0);
-    
+    // Interface(QWidget *parent = 0) : QWidget(parent) { }
+    // explicit Interface(QWidget *parent = 0);
+    Interface(QWidget *parent = 0); 
+
     // ORGANIZATIONAL ELEMENTS
     QWidget *functionConstantsWidget;
     QHBoxLayout *overallLayout;
-    QVBoxLayout *interfaceLayout;
+    QVBoxLayout *InterfaceLayout;
     QWidget *displayWidget;
     QHBoxLayout *topbarLayout;
     QVBoxLayout *leftbarLayout;
@@ -472,7 +477,7 @@ private:
     QString getCurrSettings(const HistoryItem &item);
     QString saveSettings(const QString &fileName);
 
-    // interface display and formatting functions
+    // Interface display and formatting functions
     void initInterfaceLayout();
     void initPreviewDisplay();
     void initFunctionConstants();
@@ -511,4 +516,4 @@ private:
     
 };
 
-#endif // INTERFACE_H
+#endif // Interface_H
