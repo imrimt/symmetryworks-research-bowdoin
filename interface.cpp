@@ -492,34 +492,47 @@ void Interface::initPatternType()
     setOverflowColorButton = new QPushButton(tr("Set Overflow Color..."), patternTypeBox);
 
     //initialize image data window
+    imageDataWindow = new QWidget(this, Qt::Window);
+    imageDataWindowGraphLayout = new QVBoxLayout();
+    imageDataWindowLayout = new QHBoxLayout(imageDataWindow);    
     imageDataSeries = new QScatterSeries(this);
     prevDataSeries = new QScatterSeries(this);
     imageDataGraphAxisX = new QValueAxis();
     imageDataGraphAxisY = new QValueAxis();
     imageDataGraph = new QChart();
     imageDataGraphView = new QChartView(imageDataGraph);
-    imageDataWindow = new QWidget(this, Qt::Window);
-    imageDataWindowLayout = new QVBoxLayout(imageDataWindow);
     updateImageDataGraphButton = new QPushButton(tr("Update Graph"), imageDataGraphView);
+    imageLabel = new QLabel(imageDataWindow);
+    imagePixmap.convertFromImage(*(new QImage(imageSetPath + openImageName)));
 
     imageDataGraph->legend()->hide();
     imageDataGraph->setTitle("SAMPLE POINTS ON IMAGE");
 
+    //adjust data points size & color
+    QPen pointPen(Qt::red);
+    QBrush pointBrush(Qt::red);
+    prevDataSeries->setPen(pointPen);
+    prevDataSeries->setBrush(pointBrush);
+    prevDataSeries->setMarkerSize(5.0);
+
+    //adjust axis settings
     imageDataGraphAxisX->setRange(-2, 2);
     imageDataGraphAxisY->setRange(-2, 2);
     imageDataGraphAxisX->setTickCount(11);
     imageDataGraphAxisY->setTickCount(11);
-    
+
     imageDataGraph->addSeries(prevDataSeries);
-    
     imageDataGraph->addAxis(imageDataGraphAxisX, Qt::AlignBottom);
     imageDataGraph->addAxis(imageDataGraphAxisY, Qt::AlignLeft);
-    
     prevDataSeries->attachAxis(imageDataGraphAxisX);
     prevDataSeries->attachAxis(imageDataGraphAxisY);
 
-    imageDataWindowLayout->addWidget(imageDataGraphView);
-    imageDataWindowLayout->addWidget(updateImageDataGraphButton);
+    imageLabel->setPixmap(imagePixmap);
+
+    imageDataWindowGraphLayout->addWidget(imageDataGraphView);
+    imageDataWindowGraphLayout->addWidget(updateImageDataGraphButton);
+    imageDataWindowLayout->addLayout(imageDataWindowGraphLayout);
+    imageDataWindowLayout->addWidget(imageLabel);
     imageDataWindow->setLayout(imageDataWindowLayout);
     imageDataWindow->setFixedSize(600, 600);
 
@@ -1698,7 +1711,8 @@ void Interface::setSnapShotWindow(HistoryDisplay* window)
 
 void Interface::updateImageDataGraph() 
 { 
-    prevDataSeries->clear(); 
-    *prevDataSeries << imageDataSeries->points(); 
+    // prevDataSeries->clear(); 
+    // *prevDataSeries << imageDataSeries->points(); 
+    prevDataSeries->replace(imageDataSeries->pointsVector());
 }
 
