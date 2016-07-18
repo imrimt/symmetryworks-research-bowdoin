@@ -128,13 +128,7 @@ void Interface::initInterfaceLayout()
     refreshTableTerms();
     updatePreviewDisplay();
 
-    //will reload
-    //setFixedSize(1200,1000);
-    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    // FINALIZE WINDOW
-    setFixedSize(sizeHint());
-    setWindowTitle(tr("COOL WALLPAPER SOFTWARE"));
 
 }
 
@@ -143,7 +137,13 @@ void Interface::initInterfaceLayout()
 // INIT PREVIEW DISPLAY ELEMENTS
 void Interface::initPreviewDisplay()
 {
-    disp = new Display(DEFAULT_PREVIEW_SIZE, DEFAULT_IMAGE_SIZE, displayWidget);
+    
+    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    int previewWidth = screenGeometry.width() * PREVIEW_SCALING;
+    int previewHeight = screenGeometry.height() * PREVIEW_SCALING;
+    int previewSize = previewWidth > previewHeight ? previewWidth : previewHeight;
+
+    disp = new Display(previewSize, previewSize, displayWidget);
     updatePreview = new QPushButton(tr("Snapshot"), this);
     exportImage = new QPushButton(tr("Export..."), this);
     resetImage = new QPushButton(tr("Reset"), this);
@@ -177,6 +177,7 @@ void Interface::initPreviewDisplay()
     dispLayout->addWidget(disp);
     dispLayout->addLayout(displayProgressBar->layout);
     dispLayout->addLayout(buttonLayout);
+    dispLayout->addStretch();
 }
 
 // INIT FUNCTION CONSTANTS EDIT BOX
@@ -740,10 +741,12 @@ void Interface::connectAllSignals()
     
     connect(setOverflowColorButton, SIGNAL(clicked()), this, SLOT(showOverflowColorPopUp()));
     connect(setOverflowColorPopUp, SIGNAL(colorSelected(QColor)), currColorWheel, SLOT(changeOverflowColor(QColor)));
+    connect(setOverflowColorPopUp, SIGNAL(accepted()), this, SLOT(selectImage()));
 
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), currColorWheel, SLOT(setCurrent(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
+    
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
     connect(showImageDataGraphButton, SIGNAL(clicked()), this, SLOT(showImageDataGraph()));
     connect(updateImageDataGraphButton, SIGNAL(clicked()), this, SLOT(updateImageDataGraph()));

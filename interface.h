@@ -28,6 +28,8 @@
 #include <QRadioButton>
 #include <QColorDialog>
 #include <QObject>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include <QProgressBar>
 #include <QTableWidget>

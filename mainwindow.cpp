@@ -38,12 +38,9 @@ MainWindow::MainWindow()
     // statusBar()->showMessage(message);
     
     QRect screenGeometry = QApplication::desktop()->screenGeometry();
-    int x = (screenGeometry.width()-this->width()) / 3;
-    int y = (screenGeometry.height()-this->height()) / 6;
+    int x = (screenGeometry.width()-this->width()) * 0.3;
+    int y = (screenGeometry.height()-this->height()) * 0.15;
     this->move(x, y);
-
-
-    
                                
     setWindowTitle(tr("Wallpaper Generation"));
     resize(this->currInterface->width() * 1.05, this->currInterface->height() * 1.05);
