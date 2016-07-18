@@ -36,6 +36,7 @@ ControllerThread::~ControllerThread()
 {
     mutex.lock();
     abort = true;
+    
     delete controllerObject;
     restartCondition.wakeOne();
     mutex.unlock();
@@ -112,6 +113,8 @@ void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
 void ControllerThread::run() 
 {
     forever {
+        if (abort) return;
+        
     	mutex.lock();
         
         // qDebug() << currentThread() << "starts running";
@@ -125,6 +128,7 @@ void ControllerThread::run()
     	for (int i = 0; i < numThreadsActive; i++)
     	{
             if (restart) break;
+            if (abort) return;
             if (i == numThreadsActive - 1) {
                 threads[i]->render(QPoint(i * counter, 0), QPoint(width, height), &allWorkersFinishedCondition);
             }

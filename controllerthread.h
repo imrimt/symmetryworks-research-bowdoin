@@ -9,7 +9,8 @@ class Controller : public QObject
 {
     Q_OBJECT
 public:
-    Controller(QObject *parent = 0) : QObject(parent) { } 
+    Controller(QObject *parent = 0) : QObject(parent) { }
+    ~Controller() { }
     explicit Controller(Display *display, QImage *output, QObject *parent = 0) : QObject(parent) { 
         this->display = display;
         this->output = output;
