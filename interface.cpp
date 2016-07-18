@@ -188,6 +188,12 @@ void Interface::initFunctionConstants()
     functionConstantsBoxLayout = new QVBoxLayout(functionConstantsBox);
     functionTermsGrid = new QGridLayout();
     
+    QFrame* currTermLine = new QFrame(functionConstantsBox);
+    currTermLine->setLineWidth(2);
+    currTermLine->setMidLineWidth(1);
+    currTermLine->setFrameShape(QFrame::VLine);
+    currTermLine->setFrameShadow(QFrame::Raised);
+    
     currTermLabel = new QLabel(functionConstantsBox);
     currTermLabel->setText(tr("<b>Current Term: <\b>"));
     currTermEdit = new CustomSpinBox(functionConstantsBox);
@@ -320,6 +326,7 @@ void Interface::initFunctionConstants()
         case 2:
             functionTermsGrid->addWidget(currTermLabel, r, 0, 2, 1, Qt::AlignRight);
             functionTermsGrid->addWidget(currTermEdit, r, 1, 2, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(currTermLine, r, 2, 2, 1);
             functionTermsGrid->addWidget(freqpairLabel, r, 2, 1, 1, Qt::AlignCenter);
             functionTermsGrid->addWidget(nLabel, r, 3, 1, 1, Qt::AlignCenter);
             functionTermsGrid->addWidget(nEdit, r, 4, 1, 1, Qt::AlignCenter);

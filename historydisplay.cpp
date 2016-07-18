@@ -144,7 +144,6 @@ void HistoryDisplay::removePreview(QObject *item)
     
     QFile::remove(historyItemToRemove->filePathName); 
 
-    
     delete historyItemToRemove;
     
     if (historyItemsMap.empty()) {
