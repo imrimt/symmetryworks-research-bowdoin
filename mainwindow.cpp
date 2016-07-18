@@ -43,7 +43,9 @@ MainWindow::MainWindow()
     this->move(x, y);
                                
     setWindowTitle(tr("Wallpaper Generation"));
-    //resize(this->currInterface->width() * 1.05, this->currInterface->height() * 1.05);
+    setFixedSize(sizeHint());
+    //setFixedSize(screenGeometry.width() * 0.6, screenGeometry.height() * 0.7);
+    //resize(this->currInterface->width() * 0.85, this->currInterface->height() * 0.85);
 }
 
 MainWindow::~MainWindow()
