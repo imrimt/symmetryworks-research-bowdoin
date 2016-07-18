@@ -265,7 +265,7 @@ void Interface::initFunctionConstants()
     line2->setFrameShape(QFrame::HLine);
     line2->setFrameShadow(QFrame::Raised);
     
-    // termViewButton = new QPushButton(tr("View/Edit All Terms"), functionConstantsBox);
+    termViewButton = new QPushButton(tr("View/Edit All Terms"), functionConstantsBox);
     termViewWidget = new QWidget(this, Qt::Window);
     termViewWidget->setWindowTitle(tr("Edit Function Terms"));
     termViewWidget->setMinimumWidth(340);
@@ -312,7 +312,7 @@ void Interface::initFunctionConstants()
         case 0: 
             functionTermsGrid->addWidget(numTermsLabel, r, 0, 1, 1, Qt::AlignCenter);
             functionTermsGrid->addWidget(numTermsEdit, r, 1, 1, 1, Qt::AlignCenter);
-            // functionTermsGrid->addWidget(termViewButton, 0, 2, 1, 1, Qt::AlignCenter);
+            functionTermsGrid->addWidget(termViewButton, 0, 2, 1, 1, Qt::AlignCenter);
             // functionTermsGrid->setVerticalSpacing(20);
             break;
         case 1:
@@ -759,7 +759,7 @@ void Interface::connectAllSignals()
     connect(updateImageDataGraphButton, SIGNAL(clicked()), this, SLOT(updateImageDataGraph()));
     connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeNumTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateCurrTerm(int)));
-    // connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
+    connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
     connect(addTermButton, SIGNAL(clicked()), this, SLOT(addTermTable()));
     
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
