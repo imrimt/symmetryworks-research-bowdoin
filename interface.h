@@ -340,9 +340,12 @@ public:
     QValueAxis *imageDataGraphAxisX;
     QValueAxis *imageDataGraphAxisY;
     QChartView *imageDataGraphView;
+    QLabel *imageLabel;
+    QPixmap imagePixmap;
     QWidget *imageDataWindow;
-    QVBoxLayout *imageDataWindowLayout;
-    
+    QVBoxLayout *imageDataWindowGraphLayout;
+    QHBoxLayout *imageDataWindowLayout;
+
     // imagePropsBox SUBELEMENTS
     //QVBoxLayout *imagePropsBoxStack;
     //QVBoxLayout *imagePropsEditStack;
@@ -493,6 +496,7 @@ private:
     void refreshTableTerms();
     void refreshMainWindowTerms();
 
+    int previewWidth, previewHeight, previewSize;
     int numTerms;
     unsigned int termIndex; 
     

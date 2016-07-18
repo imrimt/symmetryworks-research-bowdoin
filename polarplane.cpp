@@ -64,16 +64,19 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     angleEdit->setValidator(angleValidate);
     angleEdit->setText("0.00");
     
+    //adjust axis size
     QPen axisPen(Qt::black);
     axisPen.setWidth(2);
     series->setPen(axisPen);
     series2->setPen(axisPen);
     
+    //adjust line series size & color
     QPen linePen(Qt::green);
     linePen.setWidth(2);
     xSeries->setPen(linePen);
     ySeries->setPen(linePen);
-    
+
+    //adjust data points size & color
     QPen pointPen(Qt::red);
     QBrush pointBrush(Qt::red);
     coordinateSeries->setPen(pointPen);
@@ -155,7 +158,6 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetPolarCoordinates()));
     connect(zoomInButton, SIGNAL(clicked()), this, SLOT(polarPlaneZoomIn()));
     connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(polarPlaneZoomOut()));
-    
     
 }
 
