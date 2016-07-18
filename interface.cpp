@@ -728,10 +728,12 @@ void Interface::connectAllSignals()
     
     connect(setOverflowColorButton, SIGNAL(clicked()), this, SLOT(showOverflowColorPopUp()));
     connect(setOverflowColorPopUp, SIGNAL(colorSelected(QColor)), currColorWheel, SLOT(changeOverflowColor(QColor)));
+    connect(setOverflowColorPopUp, SIGNAL(accepted()), this, SLOT(selectImage()));
 
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), currColorWheel, SLOT(setCurrent(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
+    
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
     connect(showImageDataGraphButton, SIGNAL(clicked()), this, SLOT(showImageDataGraph()));
     connect(updateImageDataGraphButton, SIGNAL(clicked()), this, SLOT(updateImageDataGraph()));
