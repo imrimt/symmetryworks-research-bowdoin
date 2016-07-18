@@ -6,6 +6,7 @@
 #include "shared.h"
 #include <QThread>
 #include <QWaitCondition>
+#include <QMutex>
 
 class IOThread : public QThread
 {

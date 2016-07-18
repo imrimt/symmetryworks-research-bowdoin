@@ -4,6 +4,7 @@
 #include <QVector>
 #include <QDebug>
 #include <QDateTime>
+// #include <QMetaType>
 
 #include <complex>
 #include <QLayout>

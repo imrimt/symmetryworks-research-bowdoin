@@ -1,6 +1,6 @@
-#include "interface.h"
+#include "Interface.h"
 
-interface::interface(QWidget *parent) : QWidget(parent)
+Interface::Interface(QWidget *parent) : QWidget(parent)
 {
     
     // FUNCTIONAL VARIABLES
@@ -51,12 +51,12 @@ interface::interface(QWidget *parent) : QWidget(parent)
 }
 
 
-void interface::initInterfaceLayout()
+void Interface::initInterfaceLayout()
 {
     
     // ORGANIZATIONAL ELEMENTS
     overallLayout = new QHBoxLayout();
-    interfaceLayout = new QVBoxLayout();
+    InterfaceLayout = new QVBoxLayout();
     topbarLayout = new QHBoxLayout();
     leftbarLayout = new QVBoxLayout();
     
@@ -80,11 +80,11 @@ void interface::initInterfaceLayout()
     
     //historyDisplay->viewHistoryWidget->setGeometery(this->parent()->rect().topLeft().x()
     
-    interfaceLayout->addLayout(topbarLayout);
-    interfaceLayout->addWidget(functionConstantsWidget);
+    InterfaceLayout->addLayout(topbarLayout);
+    InterfaceLayout->addWidget(functionConstantsWidget);
     
     
-    overallLayout->addLayout(interfaceLayout);
+    overallLayout->addLayout(InterfaceLayout);
     // overallLayout->addWidget(historyDisplay->viewHistoryWidget);
     //overallLayout->setSizeConstraint(QLayout::SetFixedSize);
     overallLayout->activate();
@@ -141,7 +141,7 @@ void interface::initInterfaceLayout()
 
 
 // INIT PREVIEW DISPLAY ELEMENTS
-void interface::initPreviewDisplay()
+void Interface::initPreviewDisplay()
 {
     disp = new Display(DEFAULT_PREVIEW_SIZE, DEFAULT_IMAGE_SIZE, displayWidget);
     updatePreview = new QPushButton(tr("Snapshot"), this);
@@ -180,7 +180,7 @@ void interface::initPreviewDisplay()
 }
 
 // INIT FUNCTION CONSTANTS EDIT BOX
-void interface::initFunctionConstants()
+void Interface::initFunctionConstants()
 {
 
     functionConstantsBox = new QGroupBox(tr("Function Parameters"), functionConstantsWidget);
@@ -346,7 +346,7 @@ void interface::initFunctionConstants()
 }
 
 // INIT PATTERN TYPE BOX
-void interface::initPatternType()
+void Interface::initPatternType()
 {
 
     patternTypeBox = new QGroupBox(tr("Pattern Properties"), patternTypeWidget);
@@ -568,7 +568,7 @@ void interface::initPatternType()
 
 
 // INIT IMAGE PROPERTIES BOX
-void interface::initImageProps()
+void Interface::initImageProps()
 {
     imagePropsBoxLayout = new QVBoxLayout(imagePropsBox);
     
@@ -661,7 +661,7 @@ void interface::initImageProps()
 
 }
 
-void interface::initImageExportPopUp()
+void Interface::initImageExportPopUp()
 {
     // IMAGE DIMENSIONS POP UP WINDOW
     settingsPopUp = new QWidget(this, Qt::Window);
@@ -706,7 +706,7 @@ void interface::initImageExportPopUp()
 }
 
 // CONNECT SIGNALS TO SLOTS
-void interface::connectAllSignals()
+void Interface::connectAllSignals()
 {
     
     connect(termViewTable, SIGNAL(cellClicked(int, int)), this, SLOT(termViewCellClicked(int, int)));
@@ -767,7 +767,7 @@ void interface::connectAllSignals()
 
 
 // concatenate constant name with current index number
-QString interface::genLabel(const char *in)
+QString Interface::genLabel(const char *in)
 {
     QString out;
     out.setNum(termIndex + 1);
@@ -777,7 +777,7 @@ QString interface::genLabel(const char *in)
 }
 
 // update main window label names with appropriate text
-void interface::refreshLabels()
+void Interface::refreshLabels()
 {
     nLabel->setText(genLabel("n"));
     mLabel->setText(genLabel("m"));
@@ -786,7 +786,7 @@ void interface::refreshLabels()
 }
 
 // update term view table with appropriate values
-void interface::refreshTableTerms()
+void Interface::refreshTableTerms()
 {
 
     numTerms = currFunction->getNumTerms();
@@ -832,7 +832,7 @@ void interface::refreshTableTerms()
 }
 
 // update main window term editor with appropriate values
-void interface::refreshMainWindowTerms()
+void Interface::refreshMainWindowTerms()
 {
 
    // qDebug() << "in refreshMainWindowTerms";
@@ -870,7 +870,7 @@ void interface::refreshMainWindowTerms()
 }
 
 // removes a term
-void interface::removeTerm(int row)
+void Interface::removeTerm(int row)
 {
 
     if (termViewTable->rowCount() == 1) {
@@ -906,7 +906,7 @@ void interface::removeTerm(int row)
 
 
 // adds a new term
-void interface::addTerm()
+void Interface::addTerm()
 {
     
     unsigned int highestIndex = termViewTable->rowCount();
@@ -972,7 +972,7 @@ void interface::addTerm()
 
 
 // reset the image to its default settings with the current function and colorwheel
-void interface::resetImageFunction()
+void Interface::resetImageFunction()
 {
 
     termIndex = 0;
@@ -989,7 +989,7 @@ void interface::resetImageFunction()
     YShiftEdit->setValue(DEFAULT_YCORNER * 100.0);
 }
 
-//void interface::toggleViewMode()
+//void Interface::toggleViewMode()
 //{
 //    if (advancedMode) {
 //        advancedMode = false;
@@ -1001,14 +1001,14 @@ void interface::resetImageFunction()
 //}
 
 
-void interface::termViewPopUp()
+void Interface::termViewPopUp()
 {
     termViewWidget->hide();
     termViewWidget->show();
 }
 
 // updates the term that is currently being edited
-void interface::updateCurrTerm(int i)
+void Interface::updateCurrTerm(int i)
 {
     
     if (i > 0) termIndex = i - 1;
@@ -1019,7 +1019,7 @@ void interface::updateCurrTerm(int i)
 }
 
 // updates the number of terms of the current function
-void interface::changeNumTerms(int i)
+void Interface::changeNumTerms(int i)
 {
 
     numTermsEdit->setEnabled(false);
@@ -1045,7 +1045,7 @@ void interface::changeNumTerms(int i)
 }
 
 // handles changing to a new color wheel
-void interface::colorWheelChanged(int /* unused */ )
+void Interface::colorWheelChanged(int /* unused */ )
 {
     // if(index == 9)
     //     setLoadedImage->show();
@@ -1054,7 +1054,7 @@ void interface::colorWheelChanged(int /* unused */ )
     updatePreviewDisplay();
 }
 
-void interface::selectColorWheel() 
+void Interface::selectColorWheel() 
 {
     colorwheelSel->setEnabled(true);
     setLoadedImage->setEnabled(false);
@@ -1069,7 +1069,7 @@ void interface::selectColorWheel()
     updatePreviewDisplay();
 }
 
-void interface::selectImage()
+void Interface::selectImage()
 {
     colorwheelSel->setEnabled(false);
     setLoadedImage->setEnabled(true);
@@ -1095,7 +1095,7 @@ void interface::selectImage()
 }
 
 // handles loading an image to use as a color wheel
-void interface::setImagePushed()
+void Interface::setImagePushed()
 {
 
     QString startingPath = imageSetPath == "" ? "/Documents" : imageSetPath;
@@ -1133,7 +1133,7 @@ void interface::setImagePushed()
 }
 
 // handles changing to a new function
-void interface::changeFunction(int index)
+void Interface::changeFunction(int index)
 {
 
     qDebug() << "change Function";
@@ -1161,7 +1161,7 @@ void interface::changeFunction(int index)
 
 
 // SLOT function called when user attempts to save current settings into a wpr file
-void interface::saveCurrSettings()
+void Interface::saveCurrSettings()
 {
     
     qDebug() << "saving setting";
@@ -1175,7 +1175,7 @@ void interface::saveCurrSettings()
 }
 
 // internal function that handles saving settings
-QString interface::saveSettings(const QString &fileName) {
+QString Interface::saveSettings(const QString &fileName) {
     
     QFile outFile(fileName);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -1216,7 +1216,7 @@ QString interface::saveSettings(const QString &fileName) {
 }
 
 // SLOT function called only when user attempts to load from saved settings stored in a wpr file
-void interface::loadFromSettings()
+void Interface::loadFromSettings()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     saveloadPath,
@@ -1226,7 +1226,7 @@ void interface::loadFromSettings()
 }
 
 // internal function that handles loading settings from a specified file
-QString interface::loadSettings(const QString &fileName) {
+QString Interface::loadSettings(const QString &fileName) {
     
     QFile inFile(fileName);
     if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -1321,7 +1321,7 @@ QString interface::loadSettings(const QString &fileName) {
 }
 
 // updates the preview to reflect changes to the settings, function, and color wheel
-void interface::updatePreviewDisplay()
+void Interface::updatePreviewDisplay()
 {
 
     // if (!imageDataGraph->series().empty()) imageDataGraph->removeSeries(imageDataSeries);
@@ -1335,7 +1335,7 @@ void interface::updatePreviewDisplay()
 }
 
 // slot function called when clicked "update preview" button to add to history and update the preview display to reflect current settings
-void interface::snapshotFunction()
+void Interface::snapshotFunction()
 {
     historyDisplay->show();
     
@@ -1350,7 +1350,7 @@ void interface::snapshotFunction()
 }
 
 // SLOT FUNCTIONS TO CHANGE OUTPUT IMAGE PROPERTIES
-void interface::changeOHeight()
+void Interface::changeOHeight()
 {
     
     int val = outHeightEdit->text().toInt();
@@ -1362,7 +1362,7 @@ void interface::changeOHeight()
     // updatePreviewDisplay();
 }
 
-void interface::changeOWidth()
+void Interface::changeOWidth()
 {
     
     int val = outWidthEdit->text().toInt();
@@ -1374,14 +1374,14 @@ void interface::changeOWidth()
     // updatePreviewDisplay();
 }
 
-void interface::changeWorldHeight(double val)
+void Interface::changeWorldHeight(double val)
 {
     settings->Height = val;
     worldHeightValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
-void interface::changeWorldHeight()
+void Interface::changeWorldHeight()
 {
     double val = worldHeightValueLabel->text().toDouble();
     settings->Height = val;
@@ -1392,14 +1392,14 @@ void interface::changeWorldHeight()
     updatePreviewDisplay();
 }
 
-void interface::changeWorldWidth(double val)
+void Interface::changeWorldWidth(double val)
 {
     settings->Width = val;
     worldWidthValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
-void interface::changeWorldWidth()
+void Interface::changeWorldWidth()
 {
     double val = worldWidthValueLabel->text().toDouble();
     settings->Width = val;
@@ -1409,7 +1409,7 @@ void interface::changeWorldWidth()
     updatePreviewDisplay();
 }
 
-void interface::changeXCorner(double val)
+void Interface::changeXCorner(double val)
 {
   
     settings->XCorner = val;
@@ -1417,7 +1417,7 @@ void interface::changeXCorner(double val)
     updatePreviewDisplay();
 }
 
-void interface::changeXCorner()
+void Interface::changeXCorner()
 {
   
     double val = XShiftValueLabel->text().toDouble();
@@ -1429,14 +1429,14 @@ void interface::changeXCorner()
     updatePreviewDisplay();
 }
 
-void interface::changeYCorner(double val)
+void Interface::changeYCorner(double val)
 {
     settings->YCorner = val;
     YShiftValueLabel->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
-void interface::changeYCorner()
+void Interface::changeYCorner()
 {
     double val = YShiftValueLabel->text().toDouble();
     settings->YCorner = val;
@@ -1448,7 +1448,7 @@ void interface::changeYCorner()
 
 
 // SLOT FUNCTIONS TO CHANGE FREQ AND COEFF PAIRS
-void interface::changeN(int val)
+void Interface::changeN(int val)
 {
 
     qDebug() << "change N";
@@ -1459,7 +1459,7 @@ void interface::changeN(int val)
     updatePreviewDisplay();
 }
 
-void interface::changeM(int val)
+void Interface::changeM(int val)
 {
     qDebug() << "change M";
     
@@ -1469,7 +1469,7 @@ void interface::changeM(int val)
     updatePreviewDisplay();
 }
 
-void interface::changeR(double val)
+void Interface::changeR(double val)
 {
     
     qDebug() << "change R";
@@ -1481,7 +1481,7 @@ void interface::changeR(double val)
     updatePreviewDisplay();
 }
 
-void interface::changeA(double val)
+void Interface::changeA(double val)
 {
 
     qDebug() << "change A";
@@ -1493,7 +1493,7 @@ void interface::changeA(double val)
     updatePreviewDisplay();
 }
 
-void interface::changeScaleA(const QString &val)
+void Interface::changeScaleA(const QString &val)
 {
 
     qDebug() << "change scale A";
@@ -1505,7 +1505,7 @@ void interface::changeScaleA(const QString &val)
     updatePreviewDisplay();
 }
 
-void interface::changeScaleR(const QString &val)
+void Interface::changeScaleR(const QString &val)
 {
 
     qDebug() << "change scale R";
@@ -1519,7 +1519,7 @@ void interface::changeScaleR(const QString &val)
 
 
 
-void interface::startImageExport() 
+void Interface::startImageExport() 
 {
     
     settingsPopUp->hide();
@@ -1545,7 +1545,7 @@ void interface::startImageExport()
 }
 
 // function for error handling
-void interface::errorHandler(const int &flag)
+void Interface::errorHandler(const int &flag)
 {
     switch(flag)
     {
@@ -1562,7 +1562,7 @@ void interface::errorHandler(const int &flag)
 }
 
 // sets coefficient pair using data from polarPlane
-void interface::setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle)
+void Interface::setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle)
 {
     if (coeffFlag == LOCAL_FLAG)
     {
@@ -1581,7 +1581,7 @@ void interface::setPolarCoordinates(int coeffFlag, const QString &radius, const 
 
 
 // SLOT function to handle when a cell is clicked in the term table
-void interface::termViewCellClicked(int row, int col)
+void Interface::termViewCellClicked(int row, int col)
 {
     termViewTable->blockSignals(true);
     if (col == 5) {
@@ -1598,7 +1598,7 @@ void interface::termViewCellClicked(int row, int col)
 
 
 // updates the tem table to changed values
-void interface::updateTermTable(QObject *cell)
+void Interface::updateTermTable(QObject *cell)
 {
     
     int row = ((QPoint *)cell)->x();
@@ -1638,7 +1638,7 @@ void interface::updateTermTable(QObject *cell)
     updatePreviewDisplay();
 }
 
-void interface::addTermTable() 
+void Interface::addTermTable() 
 {
     addTermButton->blockSignals(true);
     int newNumTerms = currFunction->getNumTerms() + 1;
@@ -1647,7 +1647,7 @@ void interface::addTermTable()
 } 
 
 // pop up window to appear when image file has finished exporting
-void interface::popUpImageExportFinished(const QString &filePath)
+void Interface::popUpImageExportFinished(const QString &filePath)
 {
     
     QMessageBox msgBox;
@@ -1661,7 +1661,7 @@ void interface::popUpImageExportFinished(const QString &filePath)
 }
 
 // reset the table to receive signals - prevent updating too fast
-void interface::resetTableButton() 
+void Interface::resetTableButton() 
 {
     addTermButton->blockSignals(false);
     termViewTable->blockSignals(false);
@@ -1670,33 +1670,33 @@ void interface::resetTableButton()
 }
 
 // reset the main window to receive signals - prevent updating too fast
-void interface::resetMainWindowButton(const bool &status) 
+void Interface::resetMainWindowButton(const bool &status) 
 {
     numTermsEdit->setEnabled(status);
     updatePreview->setEnabled(status);
 }
 
-void interface::setSnapShotWindow(HistoryDisplay* window)
+void Interface::setSnapShotWindow(HistoryDisplay* window)
 {
     historyDisplay = window;
     connect(historyDisplay->viewMapper, SIGNAL(mapped(QString)), this, SLOT(loadSettings(QString)));
 
 }
 
-// void interface::addNewImageDataPoint(const std::complex<double> &data)
+// void Interface::addNewImageDataPoint(const std::complex<double> &data)
 // {
 // 	// qDebug() << "got here" << data.real() << data.imag();
 
 // 	*imageDataSeries << QPointF(data.real(), data.imag());
 // }
 
-// void interface::showImageDataGraph() 
+// void Interface::showImageDataGraph() 
 // {
 //     updateImageDataGraph();
 //     imageDataWindow->show();
 // }
 
-void interface::updateImageDataGraph() 
+void Interface::updateImageDataGraph() 
 { 
     prevDataSeries->clear(); 
     *prevDataSeries << imageDataSeries->points(); 

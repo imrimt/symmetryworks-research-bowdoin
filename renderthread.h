@@ -5,6 +5,7 @@
 #include <QWaitCondition>
 #include <QMetaType>
 #include <QEventLoop>
+#include <QMutex>
 
 #include "functions.h"
 #include "colorwheel.h"
