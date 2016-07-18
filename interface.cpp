@@ -62,14 +62,14 @@ void Interface::initInterfaceLayout()
     
     imagePropsBox = new QGroupBox(tr("Image Properties"), this);
     displayWidget = new QWidget(this);
-    patternTypeWidget = new QWidget(this);
+    patternTypeBox = new QGroupBox(tr("Pattern Properties"),this);
     functionConstantsWidget = new QWidget(this);
     
     //toggleViewWidget = new QWidget(this);
     
     //leftbarLayout->addWidget(toggleViewWidget);
     leftbarLayout->addWidget(imagePropsBox);
-    leftbarLayout->addWidget(patternTypeWidget);
+    leftbarLayout->addWidget(patternTypeBox);
     //leftbarLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     topbarLayout->addLayout(leftbarLayout);
@@ -357,7 +357,6 @@ void Interface::initFunctionConstants()
 void Interface::initPatternType()
 {
 
-    patternTypeBox = new QGroupBox(tr("Pattern Properties"), patternTypeWidget);
     functionSel = new QComboBox(patternTypeBox);
     colorwheelSel = new QComboBox(patternTypeBox);
 
@@ -367,13 +366,12 @@ void Interface::initPatternType()
     gspacer4 = new QSpacerItem(0,50);
     gspacer5 = new QSpacerItem(0,10);
 
-    patternTypeBoxOverallLayout = new QVBoxLayout(patternTypeWidget);
+//    patternTypeBoxOverallLayout = new QVBoxLayout(patternTypeWidget);
     patternTypeBoxLayout = new QVBoxLayout(patternTypeBox);
-    functionLayout = new QVBoxLayout();
-    colorwheelLayout = new QVBoxLayout();
-    patternTitleLayout = new QHBoxLayout();
-    colorTitleLayout = new QHBoxLayout();
-    imageTitleLayout = new QHBoxLayout();
+    functionLayout = new QHBoxLayout();
+    colorwheelLayout = new QHBoxLayout();
+    fromImageLayout = new QHBoxLayout();
+    colorButtonLayout = new QHBoxLayout();
     globalConstantsLayout = new QVBoxLayout();
     globalConstantsGrid = new QGridLayout();
 
@@ -447,10 +445,10 @@ void Interface::initPatternType()
     functionLabel->setText(tr("<b>Pattern<\b>"));
     colorwheelLabel->setText(tr("<b>Color<\b>"));
     
-    colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    functionSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    functionLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+//    colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+//    colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+//    functionSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+//    functionLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     //initialize function previews window
     functionIconsWindow = new QWidget(this, Qt::Window);
@@ -556,29 +554,24 @@ void Interface::initPatternType()
     
     // ASSEMBLE LAYOUT
 
-    patternTitleLayout->addWidget(functionLabel);
-    patternTitleLayout->addWidget(functionSel);;
-    // functionLayout->addWidget(functionSel);
-    // functionLayout->addWidget(functionLabel)
-    functionLayout->addLayout(patternTitleLayout);
+    functionLayout->addWidget(functionSel);
+    functionLayout->addWidget(functionLabel);
     functionLayout->addWidget(viewFunctionIconsButton);
+    // functionLayout->addLayout(patternTitleLayout);
+    // functionLayout->addWidget(viewFunctionIconsButton);
     patternTypeBoxLayout->addLayout(functionLayout);
     patternTypeBoxLayout->addWidget(endPattern);
+    patternTypeBoxLayout->addWidget(colorwheelLabel);
     
-    colorwheelLayout->addWidget(colorwheelLabel);
-    colorTitleLayout->addWidget(fromColorWheelButton);
-    colorTitleLayout->addWidget(colorwheelSel);
-    // colorwheelLayout->addWidget(fromColorWheelButton);
-    // colorwheelLayout->addWidget(colorwheelSel);
-    colorwheelLayout->addLayout(colorTitleLayout);
-    imageTitleLayout->addWidget(fromImageButton);
-    imageTitleLayout->addWidget(setLoadedImage);
-    colorwheelLayout->addLayout(imageTitleLayout);
-    // colorwheelLayout->addWidget(fromImageButton);
-    // colorwheelLayout->addWidget(setLoadedImage);
-    colorwheelLayout->addWidget(imagePathLabel);
+    colorwheelLayout->addWidget(fromColorWheelButton);
+    colorwheelLayout->addWidget(colorwheelSel);
+    fromImageLayout->addWidget(fromImageButton);
+    fromImageLayout->addWidget(setLoadedImage);
     
     patternTypeBoxLayout->addLayout(colorwheelLayout);
+    patternTypeBoxLayout->addLayout(fromImageLayout);
+    patternTypeBoxLayout->addWidget(imagePathLabel);
+    
     // patternTypeBoxLayout->addWidget(setOverflowColorButton);
     // patternTypeBoxLayout->addWidget(showImageDataGraphButton);
     patternTypeBoxLayout->addWidget(endColor);
@@ -592,8 +585,9 @@ void Interface::initPatternType()
     globalConstantsLayout->addWidget(scalePlaneEdit);
     patternTypeBoxLayout->addLayout(globalConstantsLayout);
     
-    patternTypeBoxOverallLayout->addWidget(patternTypeBox);
-    patternTypeBoxOverallLayout->addStretch();
+    patternTypeBoxLayout->addWidget(patternTypeBox);
+    patternTypeBoxLayout->setSizeConstraint(QBoxLayout::SetFixedSize);
+    //patternTypeBoxOverallLayout->addStretch();
     
 }
 
@@ -689,6 +683,7 @@ void Interface::initImageProps()
     imagePropsBoxLayout->addItem(pspacer1);
     imagePropsBoxLayout->addLayout(imageStretchXLayout);
     imagePropsBoxLayout->addLayout(imageStretchYLayout);
+        imagePropsBoxLayout->setSizeConstraint(QBoxLayout::SetFixedSize);
 
 }
 

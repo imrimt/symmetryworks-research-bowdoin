@@ -228,7 +228,7 @@ public:
     QVBoxLayout *leftbarLayout;
     QGroupBox *imagePropsBox;
     //QWidget *toggleViewWidget;
-    QWidget *patternTypeWidget;
+    //QWidget *patternTypeWidget;
     QMessageBox *errorMessageBox;
 
     // INPUT VALIDATORS
@@ -305,11 +305,11 @@ public:
     QGroupBox *patternTypeBox;
     QVBoxLayout *patternTypeBoxOverallLayout;
     QVBoxLayout *patternTypeBoxLayout;
-    QVBoxLayout *functionLayout;
-    QVBoxLayout *colorwheelLayout;
-    QHBoxLayout *patternTitleLayout;
-    QHBoxLayout *colorTitleLayout;
-    QHBoxLayout *imageTitleLayout;
+    QHBoxLayout *functionLayout;
+    QHBoxLayout *colorwheelLayout;
+    QHBoxLayout *fromImageLayout;
+    QHBoxLayout *numtermsLayout;
+    QHBoxLayout *colorButtonLayout;
     QVBoxLayout *globalConstantsLayout;
     QGridLayout *globalConstantsGrid;
     QLabel *colorwheelLabel;
