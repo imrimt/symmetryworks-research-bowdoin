@@ -41,8 +41,8 @@ private:
     QAction *loadAct;
     QAction *saveAct;
     QAction *exportImageAct;
-    QAction *enlargePreviewAct;
-    QAction *shrinkPreviewAct;
+    QAction *setOverflowColorAct;
+    QAction *showImageDataGraphAct;
     QAction *resetPreviewAct;
     // QAction *printAct;
     // QAction *exitAct;
@@ -66,8 +66,11 @@ private:
     HistoryDisplay *snapShotWindow;
     // QWidget *functionIconsWindow;
 
-// private slots:
-//     void showFunctionIcons() { leftDock->show(); } 
+private slots:
+    void updateImageActionStatus(bool status) {
+        setOverflowColorAct->setEnabled(status); 
+        showImageDataGraphAct->setEnabled(status); 
+    } 
 };
 
 #endif

@@ -307,8 +307,9 @@ public:
     QVBoxLayout *patternTypeBoxLayout;
     QVBoxLayout *functionLayout;
     QVBoxLayout *colorwheelLayout;
-    QHBoxLayout *numtermsLayout;
-    QHBoxLayout *colorButtonLayout;
+    QHBoxLayout *patternTitleLayout;
+    QHBoxLayout *colorTitleLayout;
+    QHBoxLayout *imageTitleLayout;
     QVBoxLayout *globalConstantsLayout;
     QGridLayout *globalConstantsGrid;
     QLabel *colorwheelLabel;
@@ -328,11 +329,11 @@ public:
     QPushButton *setLoadedImage;
     QRadioButton *fromImageButton;
     QRadioButton *fromColorWheelButton;
-    QPushButton *setOverflowColorButton;
+    // QPushButton *setOverflowColorButton;
     QColorDialog *setOverflowColorPopUp;
 
     // IMAGE DATA POINTS
-    QPushButton *showImageDataGraphButton;
+    // QPushButton *showImageDataGraphButton;
     QPushButton *updateImageDataGraphButton;
     QScatterSeries *imageDataSeries;
     QScatterSeries *prevDataSeries;
@@ -418,6 +419,9 @@ public:
     
     void setSnapShotWindow(HistoryDisplay* window);
     // void setFunctionIconsWindow(QWidget* window);   
+
+signals:
+    void imageActionStatus(bool status);
 
 private slots:
     //void toggleViewMode();

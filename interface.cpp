@@ -110,8 +110,9 @@ void Interface::initInterfaceLayout()
     
     // INIT UI SUBELEMENTS
     initPreviewDisplay();
-    initFunctionConstants();
     initPatternType();
+    initFunctionConstants();
+    // initPatternType();
 
     polarPlane = new PolarPlane(currFunction, &termIndex, this);
     polarPlaneMapper = new QSignalMapper(this);
@@ -242,7 +243,6 @@ void Interface::initFunctionConstants()
     functionConstantsWidgetLayout = new QVBoxLayout(functionConstantsWidget);
     
     functionConstantsScalingTerms = new QHBoxLayout();
-    numTermsLayout = new QHBoxLayout();
     termsLayout = new QVBoxLayout();
     termEditLayout = new QHBoxLayout();
     functionConstantsFreqs = new QHBoxLayout();
@@ -371,14 +371,16 @@ void Interface::initPatternType()
     patternTypeBoxLayout = new QVBoxLayout(patternTypeBox);
     functionLayout = new QVBoxLayout();
     colorwheelLayout = new QVBoxLayout();
-    colorButtonLayout = new QHBoxLayout();
+    patternTitleLayout = new QHBoxLayout();
+    colorTitleLayout = new QHBoxLayout();
+    imageTitleLayout = new QHBoxLayout();
     globalConstantsLayout = new QVBoxLayout();
     globalConstantsGrid = new QGridLayout();
 
     setLoadedImage = new QPushButton(tr("Set/Change Image..."), patternTypeBox);
     fromImageButton = new QRadioButton(tr("Image"), patternTypeBox);
     fromColorWheelButton = new QRadioButton(tr("Color Wheel"), patternTypeBox);
-    showImageDataGraphButton = new QPushButton(tr("Show Graph"), patternTypeBox);
+    // showImageDataGraphButton = new QPushButton(tr("Show Graph"), patternTypeBox);
     functionLabel = new QLabel(patternTypeBox);
     colorwheelLabel = new QLabel(patternTypeBox);
     imagePathLabel = new QLabel(patternTypeBox);
@@ -497,7 +499,7 @@ void Interface::initPatternType()
 
     //initialize overflow color window
     setOverflowColorPopUp = new QColorDialog();
-    setOverflowColorButton = new QPushButton(tr("Set Overflow Color..."), patternTypeBox);
+    // setOverflowColorButton = new QPushButton(tr("Set Overflow Color..."), patternTypeBox);
 
     //initialize image data window
     imageDataWindow = new QWidget(this, Qt::Window);
@@ -548,32 +550,39 @@ void Interface::initPatternType()
     // imageDataWindow->show();
 
     // set image buttons false
-    setOverflowColorButton->setEnabled(false);
-    showImageDataGraphButton->setEnabled(false);
+    // setOverflowColorButton->setEnabled(false);
+    // showImageDataGraphButton->setEnabled(false);
+    // emit imageActionStatus(false);
     
     // ASSEMBLE LAYOUT
-    functionLayout->addWidget(functionLabel);
-    functionLayout->addWidget(functionSel);
+
+    patternTitleLayout->addWidget(functionLabel);
+    patternTitleLayout->addWidget(functionSel);;
+    // functionLayout->addWidget(functionSel);
+    // functionLayout->addWidget(functionLabel)
+    functionLayout->addLayout(patternTitleLayout);
     functionLayout->addWidget(viewFunctionIconsButton);
     patternTypeBoxLayout->addLayout(functionLayout);
     patternTypeBoxLayout->addWidget(endPattern);
-    //patternTypeBoxLayout->addItem(gspacer1);
     
-    //colorwheelLayout->addItem(gspacer3);
     colorwheelLayout->addWidget(colorwheelLabel);
-    colorwheelLayout->addWidget(fromColorWheelButton);
-    colorwheelLayout->addWidget(colorwheelSel);
-    colorwheelLayout->addWidget(fromImageButton);
-    colorwheelLayout->addWidget(setLoadedImage);
+    colorTitleLayout->addWidget(fromColorWheelButton);
+    colorTitleLayout->addWidget(colorwheelSel);
+    // colorwheelLayout->addWidget(fromColorWheelButton);
+    // colorwheelLayout->addWidget(colorwheelSel);
+    colorwheelLayout->addLayout(colorTitleLayout);
+    imageTitleLayout->addWidget(fromImageButton);
+    imageTitleLayout->addWidget(setLoadedImage);
+    colorwheelLayout->addLayout(imageTitleLayout);
+    // colorwheelLayout->addWidget(fromImageButton);
+    // colorwheelLayout->addWidget(setLoadedImage);
     colorwheelLayout->addWidget(imagePathLabel);
     
     patternTypeBoxLayout->addLayout(colorwheelLayout);
-    patternTypeBoxLayout->addWidget(setOverflowColorButton);
-    patternTypeBoxLayout->addWidget(showImageDataGraphButton);
+    // patternTypeBoxLayout->addWidget(setOverflowColorButton);
+    // patternTypeBoxLayout->addWidget(showImageDataGraphButton);
     patternTypeBoxLayout->addWidget(endColor);
-    patternTypeBoxLayout->addItem(gspacer2);
 
-    globalConstantsLayout->addItem(gspacer5);
     globalConstantsGrid->addWidget(scaleRLabel, 0, 0, 1, 1, Qt::AlignLeft);
     globalConstantsGrid->addWidget(scaleREdit, 0, 1, 1, 1, Qt::AlignCenter);
     globalConstantsGrid->addWidget(scaleALabel, 1, 0, 1, 1, Qt::AlignLeft);
@@ -747,7 +756,7 @@ void Interface::connectAllSignals()
     connect(fromColorWheelButton, SIGNAL(clicked()), this, SLOT(selectColorWheel()));
     connect(fromImageButton, SIGNAL(clicked()), this, SLOT(selectImage()));
     
-    connect(setOverflowColorButton, SIGNAL(clicked()), this, SLOT(showOverflowColorPopUp()));
+    // connect(setOverflowColorButton, SIGNAL(clicked()), this, SLOT(showOverflowColorPopUp()));
     connect(setOverflowColorPopUp, SIGNAL(colorSelected(QColor)), currColorWheel, SLOT(changeOverflowColor(QColor)));
     connect(setOverflowColorPopUp, SIGNAL(accepted()), this, SLOT(selectImage()));
 
@@ -756,7 +765,7 @@ void Interface::connectAllSignals()
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
     
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
-    connect(showImageDataGraphButton, SIGNAL(clicked()), this, SLOT(showImageDataGraph()));
+    // connect(showImageDataGraphButton, SIGNAL(clicked()), this, SLOT(showImageDataGraph()));
     connect(updateImageDataGraphButton, SIGNAL(clicked()), this, SLOT(updateImageDataGraph()));
     connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeNumTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateCurrTerm(int)));
@@ -875,19 +884,25 @@ void Interface::refreshMainWindowTerms()
     nEdit->blockSignals(true);
     aEdit->blockSignals(true);
     rEdit->blockSignals(true);
+    scaleAEdit->blockSignals(true);
+    scaleREdit->blockSignals(true);
     
     mEdit->setValue(currFunction->getM(termIndex));
     nEdit->setValue(currFunction->getN(termIndex));
     aEdit->setValue(currFunction->getA(termIndex) * 100);
     rEdit->setValue(currFunction->getR(termIndex) * 100);
-
-    aValueLabel->setText(QString::number(currFunction->getA(termIndex)));
-    rValueLabel->setText(QString::number(currFunction->getR(termIndex)));
+    scaleAEdit->setText(QString::number(currFunction->getScaleA()));
+    scaleREdit->setText(QString::number(currFunction->getScaleR()));
     
     mEdit->blockSignals(false);
     nEdit->blockSignals(false);
     aEdit->blockSignals(false);
     rEdit->blockSignals(false);
+    scaleAEdit->blockSignals(false);
+    scaleREdit->blockSignals(false);
+
+    aValueLabel->setText(QString::number(currFunction->getA(termIndex)));
+    rValueLabel->setText(QString::number(currFunction->getR(termIndex)));
     
     refreshLabels(); // update labels with appropriate text
     
@@ -1082,8 +1097,9 @@ void Interface::selectColorWheel()
 {
     colorwheelSel->setEnabled(true);
     setLoadedImage->setEnabled(false);
-    setOverflowColorButton->setEnabled(false);
-    showImageDataGraphButton->setEnabled(false);
+    // setOverflowColorButton->setEnabled(false);
+    // showImageDataGraphButton->setEnabled(false);
+    emit imageActionStatus(false);
     imagePathLabel->setEnabled(false);
 
     imageDataWindow->hide();
@@ -1097,8 +1113,9 @@ void Interface::selectImage()
 {
     colorwheelSel->setEnabled(false);
     setLoadedImage->setEnabled(true);
-    setOverflowColorButton->setEnabled(true);
-    showImageDataGraphButton->setEnabled(true);
+    // setOverflowColorButton->setEnabled(true);
+    // showImageDataGraphButton->setEnabled(true);
+    emit imageActionStatus(true);
     imagePathLabel->setEnabled(true);
 
     if (imageSetPath == "") {

@@ -18,6 +18,7 @@ MainWindow::MainWindow()
 
     setCentralWidget(centerWidget);
     
+    connect(this->currInterface, SIGNAL(imageActionStatus(bool)), this, SLOT(updateImageActionStatus(bool)));
     
     // QWidget *topFiller = new QWidget;
     // topFiller->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -95,13 +96,15 @@ void MainWindow::createActions()
     // exitAct->setStatusTip(tr("Exit the application"));
     // connect(exitAct, &QAction::triggered, this, &QWidget::close);
 
-    enlargePreviewAct = new QAction(tr("Enlarge Preview"), this);
-    enlargePreviewAct->setStatusTip(tr("Enlarge Preview Display by 25 %%"));
-    connect(enlargePreviewAct, SIGNAL(triggered()), currInterface, SLOT(previewDisplayEnlarge()));
+    setOverflowColorAct = new QAction(tr("Set Overflow Color..."), this);
+    setOverflowColorAct->setStatusTip(tr("Set default color for overflow pixel on image"));
+    connect(setOverflowColorAct, SIGNAL(triggered()), currInterface, SLOT(showOverflowColorPopUp()));
+    setOverflowColorAct->setEnabled(false);
 
-    shrinkPreviewAct = new QAction(tr("Shrink Preview"), this);
-    shrinkPreviewAct->setStatusTip(tr("Shrink Preview Display by 25 %%"));
-    connect(shrinkPreviewAct, SIGNAL(triggered()), currInterface, SLOT(previewDisplayShrink()));
+    showImageDataGraphAct = new QAction(tr("Show Image Data Points"), this);
+    showImageDataGraphAct->setStatusTip(tr("Display a graph that shows points of image that are called up"));
+    connect(showImageDataGraphAct, SIGNAL(triggered()), currInterface, SLOT(showImageDataGraph()));
+    showImageDataGraphAct->setEnabled(false);
 
     resetPreviewAct = new QAction(tr("Reset Preview"), this);
     resetPreviewAct->setStatusTip(tr("Reset Preview Display Size"));
@@ -229,10 +232,11 @@ void MainWindow::createMenus()
     // helpMenu->addAction(aboutAct);
     // helpMenu->addAction(aboutQtAct);
 
-    viewMenu = menuBar()->addMenu(tr("View"));
-    viewMenu->addAction(enlargePreviewAct);
-    viewMenu->addAction(shrinkPreviewAct);
+    viewMenu = menuBar()->addMenu(tr("Advanced"));
     viewMenu->addAction(resetPreviewAct);
+    viewMenu->addSeparator();
+    viewMenu->addAction(setOverflowColorAct);
+    viewMenu->addAction(showImageDataGraphAct);
 }
 
 void MainWindow::createDockWindows() 
