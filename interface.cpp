@@ -139,9 +139,9 @@ void Interface::initPreviewDisplay()
 {
     
     QRect screenGeometry = QApplication::desktop()->screenGeometry();
-    int previewWidth = screenGeometry.width() * PREVIEW_SCALING;
-    int previewHeight = screenGeometry.height() * PREVIEW_SCALING;
-    int previewSize = previewWidth > previewHeight ? previewWidth : previewHeight;
+    previewWidth = screenGeometry.width() * PREVIEW_SCALING;
+    previewHeight = screenGeometry.height() * PREVIEW_SCALING;
+    previewSize = previewWidth > previewHeight ? previewWidth : previewHeight;
 
     disp = new Display(previewSize, previewSize, displayWidget);
     updatePreview = new QPushButton(tr("Snapshot"), this);
@@ -504,7 +504,6 @@ void Interface::initPatternType()
     imageDataGraphView = new QChartView(imageDataGraph);
     updateImageDataGraphButton = new QPushButton(tr("Update Graph"), imageDataGraphView);
     imageLabel = new QLabel(imageDataWindow);
-    imagePixmap.convertFromImage(*(new QImage(imageSetPath + openImageName)));
 
     imageDataGraph->legend()->hide();
     imageDataGraph->setTitle("SAMPLE POINTS ON IMAGE");
@@ -528,14 +527,16 @@ void Interface::initPatternType()
     prevDataSeries->attachAxis(imageDataGraphAxisX);
     prevDataSeries->attachAxis(imageDataGraphAxisY);
 
-    imageLabel->setPixmap(imagePixmap);
+    //set size policies
+    // imageDataGraphView->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    // imageLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     imageDataWindowGraphLayout->addWidget(imageDataGraphView);
     imageDataWindowGraphLayout->addWidget(updateImageDataGraphButton);
     imageDataWindowLayout->addLayout(imageDataWindowGraphLayout);
     imageDataWindowLayout->addWidget(imageLabel);
     imageDataWindow->setLayout(imageDataWindowLayout);
-    imageDataWindow->setFixedSize(600, 600);
+    imageDataWindow->setFixedSize(previewSize * 2, previewSize);
 
     // imageDataWindow->show();
 
@@ -1715,7 +1716,12 @@ void Interface::setSnapShotWindow(HistoryDisplay* window)
 void Interface::updateImageDataGraph() 
 { 
     // prevDataSeries->clear(); 
-    // *prevDataSeries << imageDataSeries->points(); 
+    // *prevDataSeries << imageDataSeries->points();
+
+    imagePixmap.convertFromImage(QImage(imageSetPath + "/" + openImageName));
+    imagePixmap = imagePixmap.scaledToHeight(600);
+    imageLabel->setPixmap(imagePixmap);
+
     prevDataSeries->replace(imageDataSeries->pointsVector());
 }
 

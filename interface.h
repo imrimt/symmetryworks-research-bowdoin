@@ -496,6 +496,7 @@ private:
     void refreshTableTerms();
     void refreshMainWindowTerms();
 
+    int previewWidth, previewHeight, previewSize;
     int numTerms;
     unsigned int termIndex; 
     
