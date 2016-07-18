@@ -288,8 +288,6 @@ public:
     QVBoxLayout *functionConstantsBoxLayout;
     QVBoxLayout *functionConstantsWidgetLayout;
     QHBoxLayout *functionConstantsScalingTerms;
-    QHBoxLayout *numTermsLayout;
-    QVBoxLayout *termsLayout;
     QHBoxLayout *termEditLayout;
     QVBoxLayout *functionConstantsPairs;
     QHBoxLayout *functionConstantsFreqs;
@@ -308,8 +306,6 @@ public:
     QHBoxLayout *functionLayout;
     QHBoxLayout *colorwheelLayout;
     QHBoxLayout *fromImageLayout;
-    QHBoxLayout *numtermsLayout;
-    QHBoxLayout *colorButtonLayout;
     QVBoxLayout *globalConstantsLayout;
     QGridLayout *globalConstantsGrid;
     QLabel *colorwheelLabel;

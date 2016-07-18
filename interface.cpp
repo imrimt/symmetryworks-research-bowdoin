@@ -66,10 +66,16 @@ void Interface::initInterfaceLayout()
     functionConstantsWidget = new QWidget(this);
     
     //toggleViewWidget = new QWidget(this);
-    
+
+    QWidget *spacerWidget = new QWidget(this);
+    QVBoxLayout *spacerLayout = new QVBoxLayout(spacerWidget);
+    spacerLayout->addStretch();
+    spacerWidget->setLayout(spacerLayout);
+
     //leftbarLayout->addWidget(toggleViewWidget);
     leftbarLayout->addWidget(imagePropsBox);
     leftbarLayout->addWidget(patternTypeBox);
+    leftbarLayout->addWidget(spacerWidget);
     //leftbarLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     topbarLayout->addLayout(leftbarLayout);
@@ -241,7 +247,6 @@ void Interface::initFunctionConstants()
     functionConstantsWidgetLayout = new QVBoxLayout(functionConstantsWidget);
     
     functionConstantsScalingTerms = new QHBoxLayout();
-    termsLayout = new QVBoxLayout();
     termEditLayout = new QHBoxLayout();
     functionConstantsFreqs = new QHBoxLayout();
     functionConstantsCoeffs = new QHBoxLayout();
@@ -366,7 +371,6 @@ void Interface::initPatternType()
     functionLayout = new QHBoxLayout();
     colorwheelLayout = new QHBoxLayout();
     fromImageLayout = new QHBoxLayout();
-    colorButtonLayout = new QHBoxLayout();
     globalConstantsLayout = new QVBoxLayout();
     globalConstantsGrid = new QGridLayout();
 
@@ -580,9 +584,12 @@ void Interface::initPatternType()
     globalConstantsLayout->addWidget(scalePlaneEdit);
     patternTypeBoxLayout->addLayout(globalConstantsLayout);
     
-    patternTypeBoxLayout->addWidget(patternTypeBox);
-    patternTypeBoxLayout->setSizeConstraint(QBoxLayout::SetFixedSize);
-    //patternTypeBoxOverallLayout->addStretch();
+    // patternTypeBoxLayout->addWidget(patternTypeBox);
+    // patternTypeBoxLayout->setSizeConstraint(QBoxLayout::SetFixedSize);
+    // patternTypeBoxLayout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+    patternTypeBoxLayout->addStretch();
+    // patternTypeBoxLayout->addStrut(0);
+    // patternTypeBoxLayout->setSpacing(0);
     
 }
 
@@ -678,7 +685,11 @@ void Interface::initImageProps()
     imagePropsBoxLayout->addItem(pspacer1);
     imagePropsBoxLayout->addLayout(imageStretchXLayout);
     imagePropsBoxLayout->addLayout(imageStretchYLayout);
-    imagePropsBoxLayout->setSizeConstraint(QBoxLayout::SetFixedSize);
+    // imagePropsBoxLayout->setSpacing(0);
+    // imagePropsBoxLayout->setSizeConstraint(QBoxLayout::SetFixedSize);
+    // imagePropsBoxLayout->addStretch();
+    // imagePropsBoxLayout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+    // imagePropsBoxLayout->addStrut(0);
 
 }
 
