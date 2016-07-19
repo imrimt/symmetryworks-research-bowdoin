@@ -15,13 +15,13 @@
 
 #include <time.h>
 
-const double DEFAULT_WIDTH = 2.5;
+const double DEFAULT_WIDTH = 2.0;
 const double DEFAULT_HEIGHT = 2.0;
-const double DEFAULT_XCORNER = -0.5;
-const double DEFAULT_YCORNER = -0.5;
+const double DEFAULT_XCORNER = 0.0;
+const double DEFAULT_YCORNER = 0.0;
 const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art prints
 const int DEFAULT_OUTPUT_HEIGHT = 4800;
-const double PREVIEW_SCALING = 0.25;
+const double PREVIEW_SCALING = 0.3;
 
 
 struct Settings
