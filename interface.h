@@ -89,6 +89,7 @@ public:
         connect(this, SIGNAL(valueChanged(int)),
             this, SLOT(notifyValueChanged(int)));
     }
+    
 
 signals:
     void doubleValueChanged(double value);
@@ -253,7 +254,9 @@ public:
     QGroupBox *globalScalingBox;
     //QLabel *globalConstantsLabel;
     QVBoxLayout *globalScalingBoxLayout;
-    QGridLayout *globalScalingBoxGrid;
+    QHBoxLayout *scaleALayout;
+    QHBoxLayout *scaleRLayout;
+    //QGridLayout *globalScalingBoxGrid;
     QDoubleSlider *scaleAEditSlider;
     QDoubleSlider *scaleREditSlider;
     QLineEdit *scaleAEdit;
@@ -393,7 +396,7 @@ public:
     // DISP SUBELEMENTS
     QPushButton *updatePreview;
     QPushButton *exportImage;
-    QPushButton *resetImage;
+    QPushButton *resetButton;
     Display *disp;
     QVBoxLayout *dispLayout;
     QHBoxLayout *buttonLayout;
@@ -460,7 +463,7 @@ private slots:
     void cancelImageExport() { settingsPopUp->hide(); }
     void startImageExport();
     
-    void resetImageFunction();
+    void resetFunction();
     void loadFromSettings();
     void saveCurrSettings();
     void previewDisplayEnlarge() {disp->enlarge();}

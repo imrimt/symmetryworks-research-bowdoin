@@ -151,14 +151,14 @@ void Interface::initPreviewDisplay()
     disp = new Display(previewSize, previewSize, displayWidget);
     updatePreview = new QPushButton(tr("Snapshot"), this);
     exportImage = new QPushButton(tr("Export..."), this);
-    resetImage = new QPushButton(tr("Reset"), this);
+    resetButton = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
     //dispLayout->setSizeConstraint(QLayout::SetMinimumSize);
     buttonLayout = new QHBoxLayout();
     
     buttonLayout->addWidget(updatePreview);
     buttonLayout->addWidget(exportImage);
-    buttonLayout->addWidget(resetImage);
+    buttonLayout->addWidget(resetButton);
     
     //SET UP SHORTCUTS...add for save, open, undo?
     updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
@@ -357,7 +357,9 @@ void Interface::initGlobalScaling()
 {
     
     globalScalingBoxLayout = new QVBoxLayout(globalScalingBox);
-    globalScalingBoxGrid = new QGridLayout(globalScalingBox);
+    scaleRLayout = new QHBoxLayout(globalScalingBox);
+    scaleALayout = new QHBoxLayout(globalScalingBox);
+    //globalScalingBoxGrid = new QGridLayout(globalScalingBox);
     
    // globalConstantsLabel = new QLabel(tr("<b>Global Scaling Factors: <\b>"), patternTypeBox);
     scaleALabel = new QLabel(tr("Scaling Angle"), globalScalingBox);
@@ -378,17 +380,20 @@ void Interface::initGlobalScaling()
     scaleREditSlider->setSingleStep(1);
     scaleAEditSlider->setRange(-314,314);
     scaleAEditSlider->setSingleStep(1);
+    scaleREditSlider->setFixedWidth(100);
+    scaleAEditSlider->setFixedWidth(100);
     scalePlaneEdit = new QPushButton(tr("Set on plane"), globalScalingBox);
     
     
-    globalScalingBoxGrid->addWidget(scaleRLabel, 0, 0, 1, 1, Qt::AlignLeft);
-    globalScalingBoxGrid->addWidget(scaleREditSlider, 0, 1, 1, 1, Qt::AlignLeft);
-    globalScalingBoxGrid->addWidget(scaleREdit, 0, 2, 1, 1, Qt::AlignCenter);
-    globalScalingBoxGrid->addWidget(scaleALabel, 1, 0, 1, 1, Qt::AlignLeft);
-    globalScalingBoxGrid->addWidget(scaleAEditSlider, 1, 1, 1, 1, Qt::AlignLeft);
-    globalScalingBoxGrid->addWidget(scaleAEdit, 1, 2, 1, 1, Qt::AlignCenter);
+    scaleRLayout->addWidget(scaleRLabel);
+    scaleRLayout->addWidget(scaleREditSlider);
+    scaleRLayout->addWidget(scaleREdit);
+    scaleALayout->addWidget(scaleALabel);
+    scaleALayout->addWidget(scaleAEditSlider);
+    scaleALayout->addWidget(scaleAEdit);
     //globalConstantsLayout->addWidget(globalConstantsLabel);
-    globalScalingBoxLayout->addLayout(globalScalingBoxGrid);
+    globalScalingBoxLayout->addLayout(scaleRLayout);
+    globalScalingBoxLayout->addLayout(scaleALayout);
     globalScalingBoxLayout->addWidget(scalePlaneEdit);
     
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
@@ -773,7 +778,7 @@ void Interface::connectAllSignals()
    // connect(toggleViewButton, SIGNAL(clicked()), this, SLOT(toggleViewMode()));
     connect(updatePreview, SIGNAL(clicked()), this, SLOT(snapshotFunction()));
     connect(exportImage, SIGNAL(clicked()), this, SLOT(exportImageFunction()));
-    connect(resetImage, SIGNAL(clicked()), this, SLOT(resetImageFunction()));
+    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetFunction()));
     
     connect(fromColorWheelButton, SIGNAL(clicked()), this, SLOT(selectColorWheel()));
     connect(fromImageButton, SIGNAL(clicked()), this, SLOT(selectImage()));
@@ -1035,7 +1040,7 @@ void Interface::addTerm()
 
 
 // reset the image to its default settings with the current function and colorwheel
-void Interface::resetImageFunction()
+void Interface::resetFunction()
 {
 
     termIndex = 0;
@@ -1043,13 +1048,20 @@ void Interface::resetImageFunction()
     currFunction->refresh();
     numTermsEdit->setValue(1);
     
+    qDebug() << "scale R: " << currFunction->getScaleR();
+    qDebug() << "scale A: " << currFunction->getScaleA();
+    
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
+    scaleREditSlider->setValue(currFunction->getScaleR() * 100.0);
+    scaleAEditSlider->setValue(currFunction->getScaleA() * 100.0);
     
     worldWidthEditSlider->setValue(DEFAULT_WIDTH * 100.0);
     worldHeightEditSlider->setValue(DEFAULT_HEIGHT * 100.0);
     XShiftEdit->setValue(DEFAULT_XCORNER * 100.0);
     YShiftEdit->setValue(DEFAULT_YCORNER * 100.0);
+    
+    currColorWheel->changeOverflowColor(Qt::black);
 }
 
 //void Interface::toggleViewMode()
