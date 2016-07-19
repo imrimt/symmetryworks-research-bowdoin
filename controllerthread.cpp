@@ -143,8 +143,6 @@ void ControllerThread::run()
             else {
                 threads[i]->render(QPoint(i * counter, 0), QPoint((i + 1) * counter, height), &allWorkersFinishedCondition);
             }
-            
-            
     	}
 
         mutex.unlock();

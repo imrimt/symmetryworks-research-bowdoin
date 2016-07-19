@@ -47,6 +47,8 @@ const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
 const int MIN_IMAGE_DIM = 20;
 const int MAX_IMAGE_DIM = 10000;
 
+enum wallpaperFunctionSet { };
+
 // QSpinBox subclass that disallows user input
 class CustomSpinBox : public QSpinBox
 {
