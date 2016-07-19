@@ -43,7 +43,7 @@ public:
         overallWidth = currSettings->OWidth;
         overallHeight = currSettings->OHeight;
     }
-
+    
 protected:
     void run() Q_DECL_OVERRIDE;
     

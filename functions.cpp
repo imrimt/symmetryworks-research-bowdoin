@@ -245,7 +245,7 @@ std::complex<double> locSymCTFunction::bundle(double &x, double &y, unsigned int
 std::complex<double> locSymCTFunction::operator ()(double i, double j)
 {
     std::complex<double> ans(0,0);
-    for(unsigned int k=0; k<terms; k++)
+    for(unsigned int k = 0; k < terms; k++)
     {
         std::complex<double> thisterm = bundle(i, j, k);
         thisterm *= coeffs[k].combined();
@@ -272,11 +272,11 @@ std::complex<double> generalpairedFunction::bundle(double &x, double &y, unsigne
 std::complex<double> generalpairedFunction::operator ()(double i, double j)
 {
     std::complex<double> ans(0,0);
-    for(unsigned int k=0; k<terms; k++)
+    for(unsigned int k = 0; k < terms; k++)
     {
         std::complex<double> thisterm = bundle(i, j, k);
         thisterm *= coeffs[k].combined();
-        ans+= thisterm;
+        ans += thisterm;
     }
 
     ans *= scale.combined();

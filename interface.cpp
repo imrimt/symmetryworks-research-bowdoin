@@ -256,6 +256,7 @@ void Interface::initFunctionConstants()
     
     numTermsLabel = new QLabel(tr("<b>Total Number of Terms: <\b>"), functionConstantsBox);
     numTermsEdit = new QSpinBox(functionConstantsBox);
+    numTermsEdit->setValue(1);
     numTermsEdit->setRange(1, MAX_NUM_TERMS);
 
     QFrame* line1 = new QFrame(functionConstantsBox);
@@ -779,8 +780,8 @@ void Interface::connectAllSignals()
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
     connect(rEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeR(double)));
     connect(aEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeA(double)));
-    connect(scaleREdit, SIGNAL(editingFinished()), this, SLOT(changeScaleR()));
-    connect(scaleAEdit, SIGNAL(editingFinished()), this, SLOT(changeScaleA()));
+    connect(scaleREdit, SIGNAL(returnPressed()), this, SLOT(changeScaleR()));
+    connect(scaleAEdit, SIGNAL(returnPressed()), this, SLOT(changeScaleA()));
     
     connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
     connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
@@ -938,10 +939,15 @@ void Interface::removeTerm(int row)
     //qDebug() << "removing term " << row << "from function";
     currFunction->removeTerm(term);
     numTerms = currFunction->getNumTerms();
-   // qDebug() << "num terms is now" << currFunction->getNumTerms() << "num terms" << numTerms;
+
+    numTermsEdit->blockSignals(true);
+    numTermsEdit->setValue(numTerms);
+    numTermsEdit->blockSignals(false);
+    
+    // qDebug() << "num terms is now" << currFunction->getNumTerms() << "num terms" << numTerms;
     
     currTermEdit->blockSignals(true);
-    currTermEdit->setMaximum(currFunction->getNumTerms() + 1);
+    currTermEdit->setMaximum(currFunction->getNumTerms());
     currTermEdit->blockSignals(false);
 
 }
@@ -950,10 +956,11 @@ void Interface::removeTerm(int row)
 // adds a new term
 void Interface::addTerm()
 {
-    
     unsigned int highestIndex = termViewTable->rowCount();
     termViewTable->setRowCount(highestIndex + 1);
     
+    qDebug() << "highest index" << highestIndex;
+
     QSpinBox *nEditTable = new QSpinBox();
     QSpinBox *mEditTable = new QSpinBox();
     QDoubleSpinBox *aEditTable = new QDoubleSpinBox();
@@ -987,7 +994,7 @@ void Interface::addTerm()
     removeTermItem->setFlags(removeTermItem->flags() ^ Qt::ItemIsEditable);
     
     termViewTable->setItem(highestIndex, 5, removeTermItem);
-    
+
     // set defaults
     mEditTable->setValue(currFunction->getM(highestIndex));
     nEditTable->setValue(currFunction->getN(highestIndex));
@@ -1005,7 +1012,7 @@ void Interface::addTerm()
     termViewTableMapper->setMapping(aEditTable, (QObject*)new QPoint(highestIndex, 3));
     termViewTableMapper->setMapping(rEditTable, (QObject*)new QPoint(highestIndex, 4));
     connect(termViewTableMapper, SIGNAL(mapped(QObject*)), this, SLOT(updateTermTable(QObject*)));
-    
+
     refreshMainWindowTerms();
     // updatePreviewDisplay();
     // addTermButton->blockSignals(false);
@@ -1016,6 +1023,8 @@ void Interface::addTerm()
 // reset the image to its default settings with the current function and colorwheel
 void Interface::resetImageFunction()
 {
+
+    qDebug() << "ehl";
 
     termIndex = 0;
 
@@ -1064,6 +1073,8 @@ void Interface::updateCurrTerm(int i)
 void Interface::changeNumTerms(int i)
 {
 
+    if (!numTermsEdit->hasFocus()) numTermsEdit->setFocus();
+
     numTermsEdit->setEnabled(false);
 
     int oldNumTerms = numTerms;
@@ -1076,11 +1087,10 @@ void Interface::changeNumTerms(int i)
         currFunction->setNumTerms(i);
         numTerms = currFunction->getNumTerms();
         for (int k = oldNumTerms; k < i; ++k) addTerm();
-    }
-    
-    currTermEdit->blockSignals(true);
-    currTermEdit->setMaximum(i);
-    currTermEdit->blockSignals(false);
+        currTermEdit->blockSignals(true);
+        currTermEdit->setMaximum(i);
+        currTermEdit->blockSignals(false);
+    }    
 
     updateCurrTerm(i);
     updatePreviewDisplay();
@@ -1210,7 +1220,7 @@ void Interface::saveCurrSettings()
     
     qDebug() << "saving setting";
 
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Open File"),
                                                     saveloadPath,
                                                     tr("Wallpapers (*.wpr)"));
     
@@ -1225,30 +1235,71 @@ QString Interface::saveSettings(const QString &fileName) {
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         return nullptr;
     }
-    QDataStream out(&outFile);
-    out << settings->Width << settings->Height;
-    out << settings->XCorner << settings->YCorner;
-    out << settings->OWidth << settings->OHeight;
-    out << functionSel->currentIndex();
-    if (fromColorWheelButton->isChecked()) {
-        out << colorwheelSel->currentIndex();
+    // QDataStream out(&outFile);
+    // out << settings->Width << settings->Height;
+    // out << settings->XCorner << settings->YCorner;
+    // out << settings->OWidth << settings->OHeight;
+    // out << functionSel->currentIndex();
+    // if (fromColorWheelButton->isChecked()) {
+    //     out << colorwheelSel->currentIndex();
+    // }
+    // else {
+    //     out << 9;
+    // }
+    // out << currFunction->getScaleR() << currFunction->getScaleA();
+    // out << currFunction->getNumTerms();
+    
+    // unsigned int i;
+
+    // for(int index = 0; index < currFunction->getNumTerms(); index++)
+    // {
+    //     i = index;
+    //     out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
+    // }
+
+    // out << imageSetPath;
+    // out << openImageName;
+
+   	QTextStream out(&outFile);
+   	out << "Horizontal Stretch: " << QString::number(settings->Width) << endl;
+   	out << "Vertical StretcH: " << QString::number(settings->Height) << endl;
+   	out << "Horizontal Shift: " << QString::number(settings->XCorner) << endl;
+   	out << "Vertical Shift: " << QString::number(settings->YCorner) << endl;
+    out << "Output Width: " << QString::number(settings->OWidth) << endl;
+    out << "Output Height: " << QString::number(settings->OHeight) << endl;
+   	out << "Function Type: " << "Wallpapers" << endl;
+   	out << "Function: " << functionSel->currentText() << endl;
+
+   	if (fromColorWheelButton->isChecked()) {
+   		out << "Color Type: Colorwheel" << endl;
+        out << "Colorwheel: " << colorwheelSel->currentText();
     }
     else {
-        out << 9;
+        out << "Color Type: Image" << endl;
+        out << "Image Path: " << imageSetPath;
+        out << "Image Name: " << openImageName;
     }
-    out << currFunction->getScaleR() << currFunction->getScaleA();
-    out << currFunction->getNumTerms();
-    
+
+    out << endl;
+
+    out << "Scaling Radius: " << QString::number(currFunction->getScaleR()) << endl;
+    out << "Scaling Angle: " << QString::number(currFunction->getScaleA()) << endl;
+
     unsigned int i;
+    QString tabString(PARAMETER_SEPARATOR_LENGTH, ' ');
+
+    out << "NUMBERS OF TERMS: " << currFunction->getNumTerms() << endl;
 
     for(int index = 0; index < currFunction->getNumTerms(); index++)
     {
         i = index;
-        out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
+        out << "Term " << i << " : " << tabString
+        << "N: " << QString::number(currFunction->getN(i)) << tabString 
+        << "M: " << QString::number(currFunction->getM(i)) << tabString 
+        << "R: " << QString::number(currFunction->getR(i)) << tabString 
+        << "A: " << QString::number(currFunction->getA(i)) << endl;
+        // out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
     }
-
-    out << imageSetPath;
-    out << openImageName;
 
     outFile.close();
     
@@ -1276,62 +1327,144 @@ QString Interface::loadSettings(const QString &fileName) {
     if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
         return nullptr;
     
-    QDataStream in(&inFile);
+    // QDataStream in(&inFile);
+
+    QTextStream in(&inFile);
+    QString skipString;
+    QString functionType;
+    QString functionName;
+    QString colorType;
+    QString colorName;
+
+    QString line;
+
     QString imageLoadPath;
     QString loadImageName;
-    int tempint, newFunctionIndex, newColorIndex;
-    unsigned int count;
+    int tempint, newFunctionIndex, newColorIndex, count;
     double tempdouble;
 
-    // functionSel->blockSignals(true);
-    // colorwheelSel->blockSignals(true);
+    in.readLineInto(&line);
+    // qDebug() << "reading:" << line;
+    settings->Width = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
+    in.readLineInto(&line);
+    settings->Height = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
+    in.readLineInto(&line);
+    settings->XCorner = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
+    in.readLineInto(&line);
+    settings->YCorner = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
+    in.readLineInto(&line);
+    settings->OWidth = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toInt();
+    in.readLineInto(&line);
+    settings->OHeight = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toInt();
+    in.readLineInto(&line);
+    functionType = (line.right(line.length() - line.lastIndexOf(" ") - 1));
+
+    // in >> skipString >> settings->Width;
+    // in >> skipString >> settings->Height;
+    // in >> skipString >> settings->XCorner;
+    // in >> skipString >> settings->YCorner;
+    // in >> skipString >> settings->OWidth;
+    // in >> skipString >> settings->OHeight;
+    // in >> skipString >> functionType;
+
+    // if (functionType == "Wallpapers") {
+    	// in >> skipString >> functionName;
+    	in.readLineInto(&line);
+    	functionName = (line.right(line.length() - line.lastIndexOf(" ") - 1));
+    	newFunctionIndex = functionSel->findText(functionName, Qt::MatchExactly);
+    // }
+    // else {
+    // 	// deal with differnt types of functions
+    // }
+
+    in.readLineInto(&line);
+    colorType = (line.right(line.length() - line.lastIndexOf(" ") - 1));
+
+    // in >> skipString >> colorType;
+    if (colorType == "Image") {
+    	in.readLineInto(&line);
+	    imageLoadPath = (line.right(line.length() - line.lastIndexOf(" ") - 1));
+	    in.readLineInto(&line);
+	    loadImageName = (line.right(line.length() - line.lastIndexOf(" ") - 1));
+    	// in >> skipString >> imageLoadPath;
+    	// in >> skipString >> loadImageName;
+    }
+    else {
+    	in.readLineInto(&line);
+	    colorName = (line.right(line.length() - line.lastIndexOf(" ") - 1));
+    	// in >> skipString >> colorName;
+    	newColorIndex = colorwheelSel->findText(colorName, Qt::MatchExactly);
+    }
     
-    in >> settings->Width >> settings->Height;
-    in >> settings->XCorner >> settings->YCorner;
-    in >> settings->OWidth >> settings->OHeight;
-    in >> newFunctionIndex;
-    // functionSel->setCurrentIndex(newFunctionIndex);
+    // in >> settings->Width >> settings->Height;
+    // in >> settings->XCorner >> settings->YCorner;
+    // in >> settings->OWidth >> settings->OHeight;
+    // in >> newFunctionIndex;
     currFunction = functionVector[newFunctionIndex];
-    in >> newColorIndex;
-    // currColorWheel->setCurrent(newColorIndex);
-    // colorwheelSel->setCurrentIndex(newColorIndex);
-    
-    // functionSel->blockSignals(false);
-    // colorwheelSel->blockSignals(false);
+    // in >> newColorIndex;
 
-    qDebug() << "new color index is:" << newColorIndex;
+    // qDebug() << "new color index is:" << newColorIndex;
 
-    in >> tempdouble;
+    in.readLineInto(&line);
+	tempdouble = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
+    // in >> skipString >> tempDouble;
     currFunction->setScaleR(tempdouble);
     scaleREdit->blockSignals(true);
     scaleREdit->setText(QString::number(tempdouble));
     scaleREdit->blockSignals(false);
-    in >> tempdouble;
 
+    in.readLineInto(&line);
+	tempdouble = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
+    // in >> skipString >> tempdouble;
     scaleAEdit->blockSignals(true);
     currFunction->setScaleA(tempdouble);
     scaleAEdit->setText(QString::number(tempdouble));
     scaleAEdit->blockSignals(false);
 
-    in >> count;
+    in.readLineInto(&line);
+	count = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toInt();
+
+    // in >> count;
     // numTermsEdit->blockSignals(true);
     // numTermsEdit->setValue(count);
     // numTermsEdit->blockSignals(false);
 
-    int newNumTerms = count;
-    currFunction->setNumTerms(newNumTerms);
+    // int newNumTerms = count;
+    currFunction->setNumTerms(count);
+    unsigned int unsignedCount = count;
     // currFunction->refresh();
 
-    for(unsigned int i = 0; i < count; i++)
+    QString separator(PARAMETER_SEPARATOR_LENGTH, ' ');
+    QStringList resultList;
+    QString resultString;
+
+    for(unsigned int i = 0; i < unsignedCount; i++)
     {
-        in >> tempint; currFunction->setN(i, tempint);
-        in >> tempint; currFunction->setM(i, tempint);
-        in >> tempdouble; currFunction->setR(i, tempdouble);
-        in >> tempdouble; currFunction->setA(i, tempdouble);
+        in.readLineInto(&line);
+        resultList = line.split(separator, QString::SkipEmptyParts);
+        for (int j = 0; j < resultList.size(); j++) {
+            resultString = resultList.at(j);
+            if (j == 0) {
+                tempint = resultString.right(resultString.length() - resultString.lastIndexOf(" ") - 1).toInt(); 
+                currFunction->setN(i, tempint);
+            }
+            else if (j == 1) {
+                tempint = resultString.right(resultString.length() - resultString.lastIndexOf(" ") - 1).toInt(); 
+                currFunction->setM(i, tempint);
+            }
+            else if (j == 2) {
+                tempdouble = resultString.right(resultString.length() - resultString.lastIndexOf(" ") - 1).toDouble(); 
+                currFunction->setR(i, tempdouble);
+            }
+            else {
+                tempdouble = resultString.right(resultString.length() - resultString.lastIndexOf(" ") - 1).toDouble(); 
+                currFunction->setA(i, tempdouble);
+            }
+        }
     }
 
-    in >> imageLoadPath;
-    in >> loadImageName;
+    // in >> imageLoadPath;
+    // in >> loadImageName;
 
     inFile.close();    
 
@@ -1342,7 +1475,9 @@ QString Interface::loadSettings(const QString &fileName) {
 
     numTermsEdit->setValue(currFunction->getNumTerms());
 
+    // functionSel->blockSignals(true);
     functionSel->setCurrentIndex(newFunctionIndex);
+    // functionSel->blockSignals(false);
 
     if (newColorIndex == 9) {
         imageSetPath = imageLoadPath;
@@ -1620,7 +1755,7 @@ void Interface::setPolarCoordinates(int coeffFlag, const QString &radius, const 
     {
         scaleREdit->setText(radius);
         emit scaleREdit->editingFinished();
-        scaleAEdit->setText(angle);        
+        scaleAEdit->setText(angle);     
         emit scaleAEdit->editingFinished();
     }
     
