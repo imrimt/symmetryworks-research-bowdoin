@@ -73,7 +73,6 @@ void RenderThread::run()
            
         mutex.unlock();
 
-        // qDebug() << "drawing from" << topLeft << "to" << bottomRight
 
         // int count = 0;
 

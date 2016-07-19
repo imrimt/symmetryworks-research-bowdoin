@@ -248,6 +248,18 @@ public:
 //    QPushButton *toggleViewButton;
 //    QVBoxLayout *toggleViewLayout;
     
+    
+    // global scaling factors SUBELEMENTS
+    QGroupBox *globalScalingBox;
+    //QLabel *globalConstantsLabel;
+    QVBoxLayout *globalScalingBoxLayout;
+    QGridLayout *globalScalingBoxGrid;
+    QDoubleSlider *scaleAEditSlider;
+    QDoubleSlider *scaleREditSlider;
+    QLineEdit *scaleAEdit;
+    QLineEdit *scaleREdit;
+    QPushButton *scalePlaneEdit;
+    
     // functionConstants SUBELEMENTS
     QPushButton *termViewButton;
     QWidget *termViewWidget;
@@ -274,10 +286,8 @@ public:
     QDoubleSlider *aEdit;
     QDoubleSlider *rEdit;
     QPushButton *coeffPlaneEdit;
-    QLabel *globalConstantsLabel;
-    QLineEdit *scaleAEdit;
-    QLineEdit *scaleREdit;
-    QPushButton *scalePlaneEdit;
+    
+
     
     QSignalMapper *polarPlaneMapper;
 
@@ -306,8 +316,7 @@ public:
     QHBoxLayout *functionLayout;
     QHBoxLayout *colorwheelLayout;
     QHBoxLayout *fromImageLayout;
-    QVBoxLayout *globalConstantsLayout;
-    QGridLayout *globalConstantsGrid;
+    
     QLabel *colorwheelLabel;
     QLabel *functionLabel;
     QLabel *imagePathLabel;
@@ -368,12 +377,12 @@ public:
     QLabel *worldWidthLabel;
     QLabel *worldHeightLabel;
     
-//    QLineEdit *worldWidthEdit;
-//    QLineEdit *worldHeightEdit;
-    QDoubleSlider *worldWidthEdit;
-    QDoubleSlider *worldHeightEdit;
-    QLineEdit *worldWidthValueLabel;
-    QLineEdit *worldHeightValueLabel;
+//    QLineEdit *worldWidthEditSlider;
+//    QLineEdit *worldHeightEditSlider;
+    QDoubleSlider *worldWidthEditSlider;
+    QDoubleSlider *worldHeightEditSlider;
+    QLineEdit *worldWidthEdit;
+    QLineEdit *worldHeightEdit;
     
     QSpacerItem *pspacer1;
 //    QSpacerItem *pspacer2;
@@ -442,8 +451,10 @@ private slots:
     void changeM(int val);
     void changeR(double val);
     void changeA(double val);
-    void changeScaleR();
     void changeScaleA();
+    void changeScaleA(double val);
+    void changeScaleR();
+    void changeScaleR(double val);
 
     void exportImageFunction() { settingsPopUp->show(); }
     void cancelImageExport() { settingsPopUp->hide(); }
@@ -485,6 +496,7 @@ private:
     void initPreviewDisplay();
     void initFunctionConstants();
     void initPatternType();
+    void initGlobalScaling();
     void initImageProps();
     void initImageExportPopUp();
     void initCoeffPlane();

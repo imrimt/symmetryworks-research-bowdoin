@@ -71,6 +71,7 @@ void Port::handleRenderedImage(const int &actionFlag)
 
 void Port::render(QImage *output, const int &actionFlag)
 {
+   
     controller->prepareToRun(output, actionFlag);
 }
 

@@ -2,11 +2,13 @@
 
 ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *colorwheel, Settings *settings, Controller *controllerObject, const QSize &outputSize, QObject *parent) : QThread(parent)
 {
+    QMutexLocker locker(&mutex);
+    
     numThreadsActive = 0;
 
     NUM_THREADS = idealThreadCount() != -1 ? idealThreadCount() : 8;
 
-    // NUM_THREADS = 1;         //for testing
+    //NUM_THREADS = 1;         //for testing
 
     restart = false;
     abort = false;
@@ -35,9 +37,9 @@ ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *color
 ControllerThread::~ControllerThread()
 {
     mutex.lock();
+    restart = false;
     abort = true;
-    
-    delete controllerObject;
+
     restartCondition.wakeOne();
     mutex.unlock();
     
@@ -48,11 +50,10 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 {
 
 	QMutexLocker locker(&mutex);
-
+    
     AbstractFunction *imageFunction = currFunction->clone();
     ColorWheel *imageColorWheel = currColorWheel->clone();
     Settings *imageSettings = currSettings->clone();
-    
     
     //clone when dealing with image (usually I/O)
     for (int i = 0; i < threads.size(); i++) {
@@ -81,13 +82,20 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
         emit newWork();
         restartCondition.wakeOne();
     }
+    
+//    delete imageFunction;
+//    delete imageColorWheel;
+//    delete imageSettings;
+    
+    
 }
 
 void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
 {
 
     QMutexLocker locker(&mutex);
-
+    
+    
     this->display = display;
     overallWidth = display->width();
     overallHeight = display->height();

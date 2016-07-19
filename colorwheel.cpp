@@ -24,12 +24,19 @@ ColorWheel::ColorWheel(QObject *parent) :
 
 ColorWheel* ColorWheel::clone()
 {
-    ColorWheel *copy = new ColorWheel();
-    copy->setCurrent(this->currentSel);
+    
+    ColorWheel *c = new ColorWheel();
+  
+    c->setCurrent(this->currentSel);
+
     if (!(this->image.isNull())) {
-        copy->image = this->image.copy();
+     
+        c->image = this->image.copy();
+    } else {
+       
     }
-    return copy;
+   
+    return c;
 }
 
 QRgb ColorWheel::operator() (std::complex<double> zin)
