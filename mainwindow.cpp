@@ -46,7 +46,10 @@ MainWindow::MainWindow()
     this->move(x, y);
                                
     setWindowTitle(tr("Wallpaper Generation"));
+    
+    
     setFixedSize(sizeHint());
+    
     //setFixedSize(screenGeometry.width() * 0.6, screenGeometry.height() * 0.7);
     //resize(this->currInterface->width() * 0.85, this->currInterface->height() * 0.85);
 }
@@ -54,6 +57,7 @@ MainWindow::MainWindow()
 MainWindow::~MainWindow()
 {
     delete currInterface;
+    
 }
 
 // #ifndef QT_NO_CONTEXTMENU

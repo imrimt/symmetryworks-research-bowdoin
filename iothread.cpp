@@ -1,21 +1,20 @@
 #include "iothread.h"
 
 IOThread::IOThread(QObject *parent) : QThread(parent)
-{    
-    connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));    
+{
+    connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 IOThread::~IOThread()
-{    
-    // wait();
+{
+     wait();
 }
 
 
 void IOThread::prepareToWrite(QImage *output, const QString &filePathToExport)
 {
     
-    QMutexLocker locked(&mutex);
-    
+    QMutexLocker locker(&mutex);
     this->output = output;
     this->filePathToExport = filePathToExport;
     

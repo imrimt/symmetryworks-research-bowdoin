@@ -63,19 +63,18 @@ void Interface::initInterfaceLayout()
     imagePropsBox = new QGroupBox(tr("Image Properties"), this);
     displayWidget = new QWidget(this);
     patternTypeBox = new QGroupBox(tr("Pattern Properties"),this);
+    globalScalingBox = new QGroupBox(tr("Global Scaling Factors"), this);
     functionConstantsWidget = new QWidget(this);
     
     //toggleViewWidget = new QWidget(this);
 
-    QWidget *spacerWidget = new QWidget(this);
-    QVBoxLayout *spacerLayout = new QVBoxLayout(spacerWidget);
-    spacerLayout->addStretch();
-    spacerWidget->setLayout(spacerLayout);
+    
 
     //leftbarLayout->addWidget(toggleViewWidget);
     leftbarLayout->addWidget(imagePropsBox);
     leftbarLayout->addWidget(patternTypeBox);
-    leftbarLayout->addWidget(spacerWidget);
+    leftbarLayout->addWidget(globalScalingBox);
+    //leftbarLayout->addWidget(spacerWidget);
     //leftbarLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     topbarLayout->addLayout(leftbarLayout);
@@ -117,6 +116,7 @@ void Interface::initInterfaceLayout()
     // INIT UI SUBELEMENTS
     initPreviewDisplay();
     initPatternType();
+    initGlobalScaling();
     initFunctionConstants();
     // initPatternType();
 
@@ -127,8 +127,8 @@ void Interface::initInterfaceLayout()
     initImageExportPopUp();
     
     // SET DEFAULTS
-    scaleREdit->setText(QString::number(currFunction->getScaleR()));
-    scaleAEdit->setText(QString::number(currFunction->getScaleA()));
+   // scaleREdit->setText(QString::number(currFunction->getScaleR()));
+   // scaleAEdit->setText(QString::number(currFunction->getScaleA()));
 
     connectAllSignals();
 
@@ -200,7 +200,7 @@ void Interface::initFunctionConstants()
     currTermLine->setFrameShadow(QFrame::Raised);
     
     currTermLabel = new QLabel(functionConstantsBox);
-    currTermLabel->setText(tr("<b>Current Term: <\b>"));
+    currTermLabel->setText(tr("<b>Current Term:<\b>"));
     currTermEdit = new CustomSpinBox(functionConstantsBox);
     currTermEdit->setRange(1, numTerms);
     
@@ -354,6 +354,52 @@ void Interface::initFunctionConstants()
 
 }
 
+void Interface::initGlobalScaling()
+{
+    
+    globalScalingBoxLayout = new QVBoxLayout(globalScalingBox);
+    globalScalingBoxGrid = new QGridLayout(globalScalingBox);
+    
+   // globalConstantsLabel = new QLabel(tr("<b>Global Scaling Factors: <\b>"), patternTypeBox);
+    scaleALabel = new QLabel(tr("Scaling Angle"), globalScalingBox);
+    scaleRLabel = new QLabel(tr("Scaling Radius"), globalScalingBox);
+    scaleAEditSlider = new QDoubleSlider(globalScalingBox);
+    scaleREditSlider = new QDoubleSlider(globalScalingBox);
+    scaleAEdit = new QLineEdit(patternTypeBox);
+    scaleREdit = new QLineEdit(patternTypeBox);
+    scaleAEdit->setValidator(doubleValidate);
+    scaleREdit->setValidator(doubleValidate);
+    scaleAEdit->setFixedWidth(40);
+    scaleREdit->setFixedWidth(40);
+    scaleAEdit->setAlignment(Qt::AlignCenter);
+    scaleREdit->setAlignment(Qt::AlignCenter);
+    scaleAEditSlider->setOrientation(Qt::Horizontal);
+    scaleREditSlider->setOrientation(Qt::Horizontal);
+    scaleREditSlider->setRange(0, 500);
+    scaleREditSlider->setSingleStep(1);
+    scaleAEditSlider->setRange(-314,314);
+    scaleAEditSlider->setSingleStep(1);
+    scalePlaneEdit = new QPushButton(tr("Set on plane"), globalScalingBox);
+    
+    
+    globalScalingBoxGrid->addWidget(scaleRLabel, 0, 0, 1, 1, Qt::AlignLeft);
+    globalScalingBoxGrid->addWidget(scaleREditSlider, 0, 1, 1, 1, Qt::AlignLeft);
+    globalScalingBoxGrid->addWidget(scaleREdit, 0, 2, 1, 1, Qt::AlignCenter);
+    globalScalingBoxGrid->addWidget(scaleALabel, 1, 0, 1, 1, Qt::AlignLeft);
+    globalScalingBoxGrid->addWidget(scaleAEditSlider, 1, 1, 1, 1, Qt::AlignLeft);
+    globalScalingBoxGrid->addWidget(scaleAEdit, 1, 2, 1, 1, Qt::AlignCenter);
+    //globalConstantsLayout->addWidget(globalConstantsLabel);
+    globalScalingBoxLayout->addLayout(globalScalingBoxGrid);
+    globalScalingBoxLayout->addWidget(scalePlaneEdit);
+    
+    scaleREdit->setText(QString::number(currFunction->getScaleR()));
+    scaleAEdit->setText(QString::number(currFunction->getScaleA()));
+    scaleREditSlider->setValue(currFunction->getScaleR() * 100.0);
+    scaleAEditSlider->setValue(currFunction->getScaleA() * 100.0);
+    
+    
+}
+
 // INIT PATTERN TYPE BOX
 void Interface::initPatternType()
 {
@@ -372,8 +418,7 @@ void Interface::initPatternType()
     functionLayout = new QHBoxLayout();
     colorwheelLayout = new QHBoxLayout();
     fromImageLayout = new QHBoxLayout();
-    globalConstantsLayout = new QVBoxLayout();
-    globalConstantsGrid = new QGridLayout();
+    
 
     setLoadedImage = new QPushButton(tr("Set/Change Image..."), patternTypeBox);
     fromImageButton = new QRadioButton(tr("Image"), patternTypeBox);
@@ -382,18 +427,6 @@ void Interface::initPatternType()
     functionLabel = new QLabel(patternTypeBox);
     colorwheelLabel = new QLabel(patternTypeBox);
     imagePathLabel = new QLabel(patternTypeBox);
-    globalConstantsLabel = new QLabel(tr("<b>Global Scaling Factors: <\b>"), patternTypeBox);
-    scaleALabel = new QLabel(tr("Scaling Angle"), patternTypeBox);
-    scaleRLabel = new QLabel(tr("Scaling Radius"), patternTypeBox); 
-    scaleAEdit = new QLineEdit(patternTypeBox);
-    scaleREdit = new QLineEdit(patternTypeBox);
-    scaleAEdit->setValidator(doubleValidate);
-    scaleREdit->setValidator(doubleValidate);
-    scaleAEdit->setFixedWidth(100);
-    scaleREdit->setFixedWidth(100);
-    scaleAEdit->setAlignment(Qt::AlignCenter);
-    scaleREdit->setAlignment(Qt::AlignCenter);
-    scalePlaneEdit = new QPushButton(tr("Set on plane"), patternTypeBox);
     
     QFrame* endPattern = new QFrame(patternTypeBox);
     endPattern->setLineWidth(2);
@@ -401,11 +434,11 @@ void Interface::initPatternType()
     endPattern->setFrameShape(QFrame::HLine);
     endPattern->setFrameShadow(QFrame::Raised);
     
-    QFrame* endColor = new QFrame(patternTypeBox);
-    endColor->setLineWidth(2);
-    endColor->setMidLineWidth(1);
-    endColor->setFrameShape(QFrame::HLine);
-    endColor->setFrameShadow(QFrame::Raised);
+//    QFrame* endColor = new QFrame(patternTypeBox);
+//    endColor->setLineWidth(2);
+//    endColor->setMidLineWidth(1);
+//    endColor->setFrameShape(QFrame::HLine);
+//    endColor->setFrameShadow(QFrame::Raised);
     
     fromColorWheelButton->setChecked(true);
     setLoadedImage->setEnabled(false);
@@ -466,7 +499,6 @@ void Interface::initPatternType()
     int col = 0;
     
     for (int i = 0; i < functionSel->count(); ++i) {
-        
         QVBoxLayout *layout = new QVBoxLayout();
         
         QPixmap pixmap;
@@ -476,16 +508,14 @@ void Interface::initPatternType()
         connect(preview, SIGNAL(doubleClickFunctionIcon(int)), functionSel, SLOT(setCurrentIndex(int)));
         
         preview->setFixedWidth(100);
-        
         preview->setPixmap(pixmap);
         
         QLabel *label = new QLabel(functionSel->itemText(i), functionIconsWindow);
-        
         layout->addWidget(preview);
         layout->addWidget(label);
         
         functionIconsWindowLayout->addLayout(layout, row, col);
-        
+    
         col++;
         if (col % 5 == 0) {
             row++;
@@ -576,21 +606,14 @@ void Interface::initPatternType()
     
     // patternTypeBoxLayout->addWidget(setOverflowColorButton);
     // patternTypeBoxLayout->addWidget(showImageDataGraphButton);
-    patternTypeBoxLayout->addWidget(endColor);
+    //patternTypeBoxLayout->addWidget(endColor);
 
-    globalConstantsGrid->addWidget(scaleRLabel, 0, 0, 1, 1, Qt::AlignLeft);
-    globalConstantsGrid->addWidget(scaleREdit, 0, 1, 1, 1, Qt::AlignCenter);
-    globalConstantsGrid->addWidget(scaleALabel, 1, 0, 1, 1, Qt::AlignLeft);
-    globalConstantsGrid->addWidget(scaleAEdit, 1, 1, 1, 1, Qt::AlignCenter);
-    globalConstantsLayout->addWidget(globalConstantsLabel);
-    globalConstantsLayout->addLayout(globalConstantsGrid);
-    globalConstantsLayout->addWidget(scalePlaneEdit);
-    patternTypeBoxLayout->addLayout(globalConstantsLayout);
+    
     
     // patternTypeBoxLayout->addWidget(patternTypeBox);
     // patternTypeBoxLayout->setSizeConstraint(QBoxLayout::SetFixedSize);
     // patternTypeBoxLayout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
-    patternTypeBoxLayout->addStretch();
+    //patternTypeBoxLayout->addStretch();
     // patternTypeBoxLayout->addStrut(0);
     // patternTypeBoxLayout->setSpacing(0);
     
@@ -626,33 +649,30 @@ void Interface::initImageProps()
     imageShiftYLayout->addWidget(YShiftEdit);
     imageShiftYLayout->addWidget(YShiftValueLabel);
     
-    
     imageStretchXLayout = new QHBoxLayout();
     imageStretchYLayout = new QHBoxLayout();
     
     worldWidthLabel = new QLabel(tr("Horizontal Stretch"), imagePropsBox);
     worldHeightLabel = new QLabel(tr("Vertical Stretch"), imagePropsBox);
     
-    worldWidthEdit = new QDoubleSlider(imagePropsBox);
-    worldHeightEdit = new QDoubleSlider(imagePropsBox);
-    worldWidthValueLabel = new QLineEdit(imagePropsBox);
-    worldHeightValueLabel = new QLineEdit(imagePropsBox);
-    worldWidthValueLabel->setValidator(doubleValidate);
-    worldHeightValueLabel->setValidator(doubleValidate);
-    worldWidthValueLabel->setFixedWidth(40);
-    worldHeightValueLabel->setFixedWidth(40);
-    worldWidthValueLabel->setAlignment(Qt::AlignCenter);
-    worldHeightValueLabel->setAlignment(Qt::AlignCenter);
+    worldWidthEditSlider = new QDoubleSlider(imagePropsBox);
+    worldHeightEditSlider = new QDoubleSlider(imagePropsBox);
+    worldWidthEdit = new QLineEdit(imagePropsBox);
+    worldHeightEdit = new QLineEdit(imagePropsBox);
+    worldWidthEdit->setValidator(doubleValidate);
+    worldHeightEdit->setValidator(doubleValidate);
+    worldWidthEdit->setFixedWidth(40);
+    worldHeightEdit->setFixedWidth(40);
+    worldWidthEdit->setAlignment(Qt::AlignCenter);
+    worldHeightEdit->setAlignment(Qt::AlignCenter);
     
     imageStretchXLayout->addWidget(worldWidthLabel);
+    imageStretchXLayout->addWidget(worldWidthEditSlider);
     imageStretchXLayout->addWidget(worldWidthEdit);
-    imageStretchXLayout->addWidget(worldWidthValueLabel);
     
     imageStretchYLayout->addWidget(worldHeightLabel);
+    imageStretchYLayout->addWidget(worldHeightEditSlider);
     imageStretchYLayout->addWidget(worldHeightEdit);
-    imageStretchYLayout->addWidget(worldHeightValueLabel);
-    
-    pspacer1 = new QSpacerItem(0, 20);
     
     XShiftEdit->setFixedWidth(100);
     YShiftEdit->setFixedWidth(100);
@@ -668,24 +688,23 @@ void Interface::initImageProps()
     XShiftEdit->setValue(settings->XCorner * 100.0);
     YShiftEdit->setValue(settings->YCorner * 100.0);
     
-    worldWidthEdit->setFixedWidth(100);
-    worldHeightEdit->setFixedWidth(100);
-    worldWidthEdit->setRange(0, 800);
-    worldWidthEdit->setSingleStep(1);
-    worldHeightEdit->setRange(0,800);
-    worldHeightEdit->setSingleStep(1);
-    worldWidthEdit->setOrientation(Qt::Horizontal);
-    worldHeightEdit->setOrientation(Qt::Horizontal);
+    worldWidthEditSlider->setFixedWidth(100);
+    worldHeightEditSlider->setFixedWidth(100);
+    worldWidthEditSlider->setRange(0, 800);
+    worldWidthEditSlider->setSingleStep(1);
+    worldHeightEditSlider->setRange(0,800);
+    worldHeightEditSlider->setSingleStep(1);
+    worldWidthEditSlider->setOrientation(Qt::Horizontal);
+    worldHeightEditSlider->setOrientation(Qt::Horizontal);
     
-    worldWidthValueLabel->setText(QString::number(settings->Width));
-    worldHeightValueLabel->setText(QString::number(settings->Height));
-    worldWidthEdit->setValue(settings->Width * 100.0);
-    worldHeightEdit->setValue(settings->Height * 100.0);
+    worldWidthEdit->setText(QString::number(settings->Width));
+    worldHeightEdit->setText(QString::number(settings->Height));
+    worldWidthEditSlider->setValue(settings->Width * 100.0);
+    worldHeightEditSlider->setValue(settings->Height * 100.0);
     
     // ASSEMBLE LAYOUT
     imagePropsBoxLayout->addLayout(imageShiftXLayout);
     imagePropsBoxLayout->addLayout(imageShiftYLayout);
-    imagePropsBoxLayout->addItem(pspacer1);
     imagePropsBoxLayout->addLayout(imageStretchXLayout);
     imagePropsBoxLayout->addLayout(imageStretchYLayout);
     // imagePropsBoxLayout->setSpacing(0);
@@ -782,14 +801,17 @@ void Interface::connectAllSignals()
     connect(aEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeA(double)));
     connect(scaleREdit, SIGNAL(returnPressed()), this, SLOT(changeScaleR()));
     connect(scaleAEdit, SIGNAL(returnPressed()), this, SLOT(changeScaleA()));
+
+    connect(scaleREditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeScaleR(double)));
+    connect(scaleAEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeScaleA(double)));
     
     connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
     connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
     
-    connect(worldWidthEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldWidth(double)));
-    connect(worldHeightEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldHeight(double)));
-    connect(worldWidthValueLabel, SIGNAL(returnPressed()), this, SLOT(changeWorldWidth()));
-    connect(worldHeightValueLabel, SIGNAL(returnPressed()), this, SLOT(changeWorldHeight()));
+    connect(worldWidthEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldWidth(double)));
+    connect(worldHeightEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldHeight(double)));
+    connect(worldWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeWorldWidth()));
+    connect(worldHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeWorldHeight()));
     
     connect(XShiftEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeXCorner(double)));
     connect(YShiftEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeYCorner(double)));
@@ -1034,8 +1056,8 @@ void Interface::resetImageFunction()
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
     
-    worldWidthEdit->setValue(DEFAULT_WIDTH * 100.0);
-    worldHeightEdit->setValue(DEFAULT_HEIGHT * 100.0);
+    worldWidthEditSlider->setValue(DEFAULT_WIDTH * 100.0);
+    worldHeightEditSlider->setValue(DEFAULT_HEIGHT * 100.0);
     XShiftEdit->setValue(DEFAULT_XCORNER * 100.0);
     YShiftEdit->setValue(DEFAULT_YCORNER * 100.0);
 }
@@ -1468,8 +1490,8 @@ QString Interface::loadSettings(const QString &fileName) {
 
     inFile.close();    
 
-    worldWidthEdit->setValue(settings->Width * 100.0);
-    worldHeightEdit->setValue(settings->Height * 100.0);
+    worldWidthEditSlider->setValue(settings->Width * 100.0);
+    worldHeightEditSlider->setValue(settings->Height * 100.0);
     XShiftEdit->setValue(settings->XCorner * 100.0);
     YShiftEdit->setValue(settings->YCorner * 100.0);
 
@@ -1553,38 +1575,42 @@ void Interface::changeOWidth()
     // updatePreviewDisplay();
 }
 
+//changing slider values
 void Interface::changeWorldHeight(double val)
 {
     settings->Height = val;
-    worldHeightValueLabel->setText(QString::number(val));
+    worldHeightEdit->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
+//changing edit box values
 void Interface::changeWorldHeight()
 {
-    double val = worldHeightValueLabel->text().toDouble();
+    double val = worldHeightEdit->text().toDouble();
     settings->Height = val;
-    worldHeightEdit->blockSignals(true);
-    worldHeightEdit->setValue(val * 100.0);
-    worldHeightEdit->blockSignals(false);
+    worldHeightEditSlider->blockSignals(true);
+    worldHeightEditSlider->setValue(val * 100.0);
+    worldHeightEditSlider->blockSignals(false);
     
     updatePreviewDisplay();
 }
 
+//changing slider values
 void Interface::changeWorldWidth(double val)
 {
     settings->Width = val;
-    worldWidthValueLabel->setText(QString::number(val));
+    worldWidthEdit->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
+//changing edit box values
 void Interface::changeWorldWidth()
 {
-    double val = worldWidthValueLabel->text().toDouble();
+    double val = worldWidthEdit->text().toDouble();
     settings->Width = val;
-    worldWidthEdit->blockSignals(true);
-    worldWidthEdit->setValue(val * 100.0);
-    worldWidthEdit->blockSignals(false);
+    worldWidthEditSlider->blockSignals(true);
+    worldWidthEditSlider->setValue(val * 100.0);
+    worldWidthEditSlider->blockSignals(false);
     updatePreviewDisplay();
 }
 
@@ -1629,9 +1655,6 @@ void Interface::changeYCorner()
 // SLOT FUNCTIONS TO CHANGE FREQ AND COEFF PAIRS
 void Interface::changeN(int val)
 {
-
-    qDebug() << "change N";
-
     currFunction->setN(termIndex, val);
     refreshTableTerms();
     refreshMainWindowTerms();
@@ -1640,20 +1663,18 @@ void Interface::changeN(int val)
 
 void Interface::changeM(int val)
 {
-    qDebug() << "change M";
-    
+   
     currFunction->setM(termIndex, val);
     refreshTableTerms();
     refreshMainWindowTerms();
     updatePreviewDisplay();
 }
 
+
 void Interface::changeR(double val)
 {
     
-    qDebug() << "change R";
-
-    currFunction->setR(termIndex, val);
+        currFunction->setR(termIndex, val);
     rValueLabel->setText(QString::number(val));
     refreshTableTerms();
     refreshMainWindowTerms();
@@ -1663,8 +1684,6 @@ void Interface::changeR(double val)
 void Interface::changeA(double val)
 {
 
-    qDebug() << "change A";
-
     currFunction->setA(termIndex, val);
     aValueLabel->setText(QString::number(val));
     refreshTableTerms();
@@ -1672,28 +1691,44 @@ void Interface::changeA(double val)
     updatePreviewDisplay();
 }
 
-void Interface::changeScaleA()
+//changing slider values
+void Interface::changeScaleA(double val)
 {
-
-    qDebug() << "change scale A";
-
-    double passedval = scaleAEdit->text().toDouble();
-    currFunction->setScaleA(passedval);
-    refreshTableTerms();
-    refreshMainWindowTerms();
+    currFunction->setScaleA(val);
+    scaleAEdit->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
+//changing edit box values
+void Interface::changeScaleA()
+{
+    double val = scaleAEdit->text().toDouble();
+    currFunction->setScaleA(val);
+    scaleAEditSlider->blockSignals(true);
+    scaleAEditSlider->setValue(val * 100.0);
+    scaleAEditSlider->blockSignals(false);
+    updatePreviewDisplay();
+}
+
+
+//changing slider values
+void Interface::changeScaleR(double val)
+{
+    
+    currFunction->setScaleR(val);
+    scaleREdit->setText(QString::number(val));
+    updatePreviewDisplay();
+}
+
+//changing edit box values
 void Interface::changeScaleR()
 {
-
-    qDebug() << "change scale R";
-
-    double passedval = scaleREdit->text().toDouble();
-    qDebug() << "passedval is" << passedval;
-    currFunction->setScaleR(passedval);
-    refreshTableTerms();
-    refreshMainWindowTerms();
+    
+    double val = scaleREdit->text().toDouble();
+    currFunction->setScaleA(val);
+    scaleREditSlider->blockSignals(true);
+    scaleREditSlider->setValue(val * 100.0);
+    scaleREditSlider->blockSignals(false);
     updatePreviewDisplay();
 }
 
@@ -1720,8 +1755,10 @@ void Interface::startImageExport()
     dispLayout->insertLayout(2, exportProgressBar->layout);
 
     QImage *output = new QImage(settings->OWidth, settings->OHeight, QImage::Format_RGB32);
-
-    imageExportPort->exportImage(output, fileName);    
+    
+    imageExportPort->exportImage(output, fileName);
+    
+    
 }
 
 // function for error handling
@@ -1754,9 +1791,11 @@ void Interface::setPolarCoordinates(int coeffFlag, const QString &radius, const 
     else if (coeffFlag == GLOBAL_FLAG)
     {
         scaleREdit->setText(radius);
-        emit scaleREdit->editingFinished();
-        scaleAEdit->setText(angle);     
-        emit scaleAEdit->editingFinished();
+        scaleREditSlider->setValue(radius.toDouble() * 100.0);
+        emit scaleREdit->returnPressed();
+        scaleAEdit->setText(angle);
+        scaleAEditSlider->setValue(angle.toDouble() * 100.0);
+        emit scaleAEdit->returnPressed();
     }
     
 }
