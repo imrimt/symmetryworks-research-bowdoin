@@ -229,7 +229,7 @@ void Interface::initFunctionConstants()
     mEdit->setSingleStep(1);
     aEdit->setRange(-314, 314);
     aEdit->setSingleStep(25);
-    rEdit->setRange(-1000,1000);
+    rEdit->setRange(0,1000);
     rEdit->setSingleStep(1);
     
     nEdit->setAlignment(Qt::AlignCenter);
@@ -386,6 +386,8 @@ void Interface::initPatternType()
     scaleRLabel = new QLabel(tr("Scaling Radius"), patternTypeBox); 
     scaleAEdit = new QLineEdit(patternTypeBox);
     scaleREdit = new QLineEdit(patternTypeBox);
+    scaleAEdit->setValidator(doubleValidate);
+    scaleREdit->setValidator(doubleValidate);
     scaleAEdit->setFixedWidth(100);
     scaleREdit->setFixedWidth(100);
     scaleAEdit->setAlignment(Qt::AlignCenter);
@@ -777,8 +779,8 @@ void Interface::connectAllSignals()
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
     connect(rEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeR(double)));
     connect(aEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeA(double)));
-    connect(scaleREdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleR(QString)));
-    connect(scaleAEdit, SIGNAL(textChanged(QString)), this, SLOT(changeScaleA(QString)));
+    connect(scaleREdit, SIGNAL(editingFinished()), this, SLOT(changeScaleR()));
+    connect(scaleAEdit, SIGNAL(editingFinished()), this, SLOT(changeScaleA()));
     
     connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
     connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
@@ -1535,24 +1537,25 @@ void Interface::changeA(double val)
     updatePreviewDisplay();
 }
 
-void Interface::changeScaleA(const QString &val)
+void Interface::changeScaleA()
 {
 
     qDebug() << "change scale A";
 
-    double passedval = val.toDouble();
+    double passedval = scaleAEdit->text().toDouble();
     currFunction->setScaleA(passedval);
     refreshTableTerms();
     refreshMainWindowTerms();
     updatePreviewDisplay();
 }
 
-void Interface::changeScaleR(const QString &val)
+void Interface::changeScaleR()
 {
 
     qDebug() << "change scale R";
 
-    double passedval = val.toDouble();
+    double passedval = scaleREdit->text().toDouble();
+    qDebug() << "passedval is" << passedval;
     currFunction->setScaleR(passedval);
     refreshTableTerms();
     refreshMainWindowTerms();
@@ -1616,7 +1619,9 @@ void Interface::setPolarCoordinates(int coeffFlag, const QString &radius, const 
     else if (coeffFlag == GLOBAL_FLAG)
     {
         scaleREdit->setText(radius);
-        scaleAEdit->setText(angle);
+        emit scaleREdit->editingFinished();
+        scaleAEdit->setText(angle);        
+        emit scaleAEdit->editingFinished();
     }
     
 }

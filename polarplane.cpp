@@ -20,7 +20,7 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     actionButtonLayout = new QHBoxLayout();
     zoomButtonLayout = new QHBoxLayout();
     
-    polarPlanePopUp->setWindowModality(Qt::WindowModal);
+    // polarPlanePopUp->setWindowModality(Qt::WindowModal);
     // GRAPH ELEMENTS
     graph = new QChart();
     
@@ -42,7 +42,7 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     // UI ELEMENTS
     confirmButton = new QPushButton(tr("OK"));
     resetButton = new QPushButton(tr("Reset"));
-    cancelButton = new QPushButton(tr("Cancel"));
+    // cancelButton = new QPushButton(tr("Cancel"));
     zoomInButton = new QPushButton(QIcon(":/Images/Icons/zoomin.png"), "Zoom In");
     zoomInButton->setStyleSheet("QPushButton { text-align:center; padding:5px}");
     zoomOutButton = new QPushButton(QIcon(":/Images/Icons/zoomout.png"), "Zoom Out");
@@ -133,7 +133,7 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     polarCoordinatesLayout->addWidget(angleEdit);
     polarCoordinatesLayout->addItem(planeSpacer1);
     polarCoordinatesLayout->addLayout(actionButtonLayout);
-    polarCoordinatesLayout->addWidget(cancelButton);
+    // polarCoordinatesLayout->addWidget(cancelButton);
     polarCoordinatesLayout->addStretch(0);
     polarCoordinatesLayout->setSizeConstraint(QLayout::SetFixedSize);
     
@@ -153,11 +153,12 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     connect(radiusEdit, SIGNAL(editingFinished()), this, SLOT(updatePolarCoordinates()));
     connect(angleEdit, SIGNAL(editingFinished()), this, SLOT(updatePolarCoordinates()));
     connect(coordinateSeries, SIGNAL(pointReplaced(int)), this, SLOT(updatePolarCoordinatesWithIndex(int)));
-    connect(confirmButton, SIGNAL(clicked()), this, SLOT(setPolarCoordinates()));
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(hidePolarPlane()));
+    connect(confirmButton, SIGNAL(clicked()), this, SLOT(hidePolarPlane()));
+    // connect(cancelButton, SIGNAL(clicked()), this, SLOT(hidePolarPlane()));
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetPolarCoordinates()));
     connect(zoomInButton, SIGNAL(clicked()), this, SLOT(polarPlaneZoomIn()));
     connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(polarPlaneZoomOut()));
+    connect(graphDisplay, SIGNAL(newCoordinate()), this, SLOT(setPolarCoordinates()));
     
 }
 
@@ -212,7 +213,7 @@ void PolarPlane::setPolarCoordinates()
 {
     emit setPolarCoordinates(coeffFlag, radiusEdit->text(), angleEdit->text());
     
-    hidePolarPlane();
+    //hidePolarPlane();
 }
 
 void PolarPlane::resetPolarCoordinates()
@@ -244,6 +245,8 @@ void PolarPlane::updatePolarCoordinates(QPointF point)
     
     radiusEdit->setText(QString::number(sqrt(pow(point.x(), 2) + pow(point.y(), 2)), 'f', 2));
     angleEdit->setText(QString::number(atan(point.y() / point.x()), 'f', 2));
+
+    setPolarCoordinates();
 }
 
 void PolarPlane::polarPlaneZoomOut()

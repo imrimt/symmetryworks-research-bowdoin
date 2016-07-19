@@ -442,8 +442,8 @@ private slots:
     void changeM(int val);
     void changeR(double val);
     void changeA(double val);
-    void changeScaleR(const QString &val);
-    void changeScaleA(const QString &val);
+    void changeScaleR();
+    void changeScaleA();
 
     void exportImageFunction() { settingsPopUp->show(); }
     void cancelImageExport() { settingsPopUp->hide(); }

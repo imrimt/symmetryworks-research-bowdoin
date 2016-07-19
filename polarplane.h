@@ -38,6 +38,9 @@ class PolarPlaneView : public QChartView {
 public:
     
     PolarPlaneView(QChart *chart, QScatterSeries *coordinateSeries) : QChartView(chart) { this->chart = chart; this->coordinateSeries = coordinateSeries; setMouseTracking(false);}
+
+signals:
+	void newCoordinate();
     
 protected:
     // MOUSE EVENTS
@@ -69,6 +72,7 @@ protected:
         {
             // qDebug() << "Clicked on: " << event->pos();
             coordinateSeries->replace(0, chart->mapToValue(event->pos(), coordinateSeries));
+            emit newCoordinate();
         }
     };
     
