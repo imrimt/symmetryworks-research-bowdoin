@@ -870,21 +870,27 @@ void Interface::refreshMainWindowTerms()
     aEdit->blockSignals(true);
     rEdit->blockSignals(true);
     scaleAEdit->blockSignals(true);
+    scaleAEditSlider->blockSignals(true);
     scaleREdit->blockSignals(true);
+    scaleREditSlider->blockSignals(true);
     
     mEdit->setValue(currFunction->getM(termIndex));
     nEdit->setValue(currFunction->getN(termIndex));
     aEdit->setValue(currFunction->getA(termIndex) * 100);
     rEdit->setValue(currFunction->getR(termIndex) * 100);
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
+    scaleAEditSlider->setValue(currFunction->getScaleA() * 100);
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
+    scaleREditSlider->setValue(currFunction->getScaleR() * 100);
     
     mEdit->blockSignals(false);
     nEdit->blockSignals(false);
     aEdit->blockSignals(false);
     rEdit->blockSignals(false);
     scaleAEdit->blockSignals(false);
+    scaleAEditSlider->blockSignals(false);
     scaleREdit->blockSignals(false);
+    scaleAEditSlider->blockSignals(false);
 
     aValueLabel->setText(QString::number(currFunction->getA(termIndex)));
     rValueLabel->setText(QString::number(currFunction->getR(termIndex)));
@@ -1172,8 +1178,16 @@ void Interface::changeFunction(int index)
     //qDebug() << "change Function";
     
     termIndex = 0;
+
+    // qDebug() << "address of currFunction pointer" << &currFunction;
+
+    qDebug() << "address of oldFunction" << &(*currFunction);
     
     currFunction = functionVector[index];
+
+    polarPlane->changeFunction(currFunction);
+
+    qDebug() << "address of currFunction" << &(*currFunction);
     
     numTerms = currFunction->getNumTerms();
 
@@ -1281,7 +1295,7 @@ QString Interface::saveSettings(const QString &fileName) {
         // out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
     }    
 
-    outFile.setPermissions(QFile::ReadOther);
+    // outFile.setPermissions(QFile::ReadOther);
 
     outFile.close();
     
@@ -1305,6 +1319,8 @@ void Interface::loadFromSettings()
 // internal function that handles loading settings from a specified file
 QString Interface::loadSettings(const QString &fileName) {
     
+    qDebug() << "load" << fileName;
+
     QFile inFile(fileName);
     if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
         return nullptr;
@@ -1503,6 +1519,8 @@ void Interface::snapshotFunction()
     QDateTime savedTime = QDateTime::currentDateTimeUtc();
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
     QString filePath = saveSettings(newFile).append("/" + newFile);
+
+    qDebug() << "save" << filePath;
 
     historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
 

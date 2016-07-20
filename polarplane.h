@@ -89,8 +89,10 @@ class PolarPlane : public QWidget
     Q_OBJECT
 public:
     PolarPlane(QWidget *parent = 0) : QWidget(parent) { }
-    explicit PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, QWidget *parent);
+    explicit PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, QWidget *parent = 0);
     ~PolarPlane() { }
+
+    void changeFunction(AbstractFunction* newFunction) { currFunction = newFunction; }
     
 signals:
     void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
@@ -129,11 +131,13 @@ private:
     
     QDoubleValidator *doubleValidate;
     QDoubleValidator *angleValidate;
-    
-    void updatePolarCoordinates(QPointF point);
-    
+
+protected:
+
     AbstractFunction *currFunction;
     unsigned int *termIndex;
+
+    void updatePolarCoordinates(QPointF point);
     
 private slots:
     

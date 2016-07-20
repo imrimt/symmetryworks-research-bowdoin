@@ -2,10 +2,12 @@
 
 
 // CONSTRUCTOR sets up layout for plane pop-up window
-PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, QWidget *parent)
+PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, QWidget *parent) : QWidget(parent)
 {
     this->currFunction = currFunction;
     this->termIndex = termIndex;
+
+    qDebug() << "currFunction address in polarplane constructor" << &(*currFunction);
     
     // INPUT VALIDATORS (NUMERICAL)
     doubleValidate = new QDoubleValidator(-9999999.0, 9999999.0, 5, this);
@@ -187,6 +189,10 @@ void PolarPlane::showPlanePopUp(int flag)
     }
     
     QPointF point(tempR * cos(tempA), tempR * sin(tempA));
+
+    // qDebug() << "address of currFunction pointer in polarplane" << &currFunction;
+    qDebug() << "obtain R&A from" << &(*currFunction);
+    qDebug() << "update" << point;
     
     coordinateSeries->replace(0, point);
     updatePolarCoordinates(QPointF(tempR * cos(tempA), tempR * sin(tempA)));

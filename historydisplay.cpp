@@ -99,7 +99,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     connect(viewButton, SIGNAL(clicked()), viewMapper, SLOT(map()));
     connect(removeButton, SIGNAL(clicked()), removeMapper, SLOT(map()));
     
-    viewMapper->setMapping(viewButton, newFile);
+    viewMapper->setMapping(viewButton, filePathName);
     removeMapper->setMapping(removeButton, item);
     
     // map the timestamp to the history item and port

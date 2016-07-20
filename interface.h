@@ -295,8 +295,6 @@ public:
     QDoubleSlider *rEdit;
     QPushButton *coeffPlaneEdit;
     
-
-    
     QSignalMapper *polarPlaneMapper;
 
     QGroupBox *functionConstantsBox;
