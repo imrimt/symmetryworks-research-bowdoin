@@ -358,8 +358,8 @@ void Interface::initGlobalScaling()
 {
     
     globalScalingBoxLayout = new QVBoxLayout(globalScalingBox);
-    scaleRLayout = new QHBoxLayout(globalScalingBox);
-    scaleALayout = new QHBoxLayout(globalScalingBox);
+    scaleRLayout = new QHBoxLayout();
+    scaleALayout = new QHBoxLayout();
     //globalScalingBoxGrid = new QGridLayout(globalScalingBox);
     
    // globalConstantsLabel = new QLabel(tr("<b>Global Scaling Factors: <\b>"), patternTypeBox);
@@ -562,8 +562,8 @@ void Interface::initPatternType()
     //adjust axis settings
     imageDataGraphAxisX->setRange(-2, 2);
     imageDataGraphAxisY->setRange(-2, 2);
-    imageDataGraphAxisX->setTickCount(11);
-    imageDataGraphAxisY->setTickCount(11);
+    imageDataGraphAxisX->setTickCount(9);
+    imageDataGraphAxisY->setTickCount(9);
 
     imageDataGraph->addSeries(prevDataSeries);
     imageDataGraph->addAxis(imageDataGraphAxisX, Qt::AlignBottom);
@@ -572,8 +572,10 @@ void Interface::initPatternType()
     prevDataSeries->attachAxis(imageDataGraphAxisY);
 
     //set size policies
-    // imageDataGraphView->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    // imageLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    // imageDataGraphView->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    // imageLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    // imageDataWindowLayout->addStretch();
 
     imageDataWindowGraphLayout->addWidget(imageDataGraphView);
     imageDataWindowGraphLayout->addWidget(updateImageDataGraphButton);
@@ -1058,8 +1060,8 @@ void Interface::resetFunction()
     currFunction->refresh();
     numTermsEdit->setValue(1);
     
-    qDebug() << "scale R: " << currFunction->getScaleR();
-    qDebug() << "scale A: " << currFunction->getScaleA();
+    // qDebug() << "scale R: " << currFunction->getScaleR();
+    // qDebug() << "scale A: " << currFunction->getScaleA();
     
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
@@ -1269,6 +1271,7 @@ QString Interface::saveSettings(const QString &fileName) {
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         return nullptr;
     }
+    
     // QDataStream out(&outFile);
     // out << settings->Width << settings->Height;
     // out << settings->XCorner << settings->YCorner;
@@ -1333,7 +1336,9 @@ QString Interface::saveSettings(const QString &fileName) {
         << "R: " << QString::number(currFunction->getR(i)) << tabString 
         << "A: " << QString::number(currFunction->getA(i)) << endl;
         // out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
-    }
+    }    
+
+    outFile.setPermissions(QFile::ReadOther);
 
     outFile.close();
     
@@ -1685,8 +1690,7 @@ void Interface::changeM(int val)
 
 void Interface::changeR(double val)
 {
-    
-        currFunction->setR(termIndex, val);
+    currFunction->setR(termIndex, val);
     rValueLabel->setText(QString::number(val));
     refreshTableTerms();
     refreshMainWindowTerms();
@@ -1935,7 +1939,7 @@ void Interface::updateImageDataGraph()
     // *prevDataSeries << imageDataSeries->points();
 
     imagePixmap.convertFromImage(QImage(imageSetPath + "/" + openImageName));
-    imagePixmap = imagePixmap.scaledToHeight(600);
+    imagePixmap = imagePixmap.scaledToHeight(previewSize);
     imageLabel->setPixmap(imagePixmap);
 
     prevDataSeries->replace(imageDataSeries->pointsVector());
