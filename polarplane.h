@@ -114,7 +114,7 @@ private:
     QLabel *angleLabel;
     QLineEdit *radiusEdit;
     QLineEdit *angleEdit;
-    QPushButton *confirmButton;
+    //sQPushButton *confirmButton;
     QPushButton *resetButton;
     QPushButton *cancelButton;
     QPushButton *zoomInButton;
