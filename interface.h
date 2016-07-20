@@ -232,6 +232,7 @@ public:
     QVBoxLayout *leftbarLayout;
     QGroupBox *imagePropsBox;
     QSpacerItem *spacerItem;
+    QSpacerItem *spacerItem2;
     //QWidget *toggleViewWidget;
     //QWidget *patternTypeWidget;
     QMessageBox *errorMessageBox;

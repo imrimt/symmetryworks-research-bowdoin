@@ -68,11 +68,12 @@ void Interface::initInterfaceLayout()
     
     QRect screenGeometry = QApplication::desktop()->screenGeometry();
     spacerItem = new QSpacerItem(1, screenGeometry.height() * 0.02);
+    spacerItem2 = new QSpacerItem(1, screenGeometry.height() * 0.02);
     
     leftbarLayout->addWidget(imagePropsBox);
     leftbarLayout->addItem(spacerItem);
     leftbarLayout->addWidget(patternTypeBox);
-    leftbarLayout->addItem(spacerItem);
+    leftbarLayout->addItem(spacerItem2);
     leftbarLayout->addWidget(globalScalingBox);
 
     topbarLayout->addLayout(leftbarLayout);
