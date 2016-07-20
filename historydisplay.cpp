@@ -16,7 +16,7 @@ HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
     // create layout elements
     
     viewHistoryWidget = new QWidget(static_cast<QWidget *>(parent), Qt::Drawer);
-    viewHistoryWidget->setWindowTitle(tr("Snapshots"));
+    viewHistoryWidget->setWindowTitle(tr("Saved Snapshots"));
    
     viewHistoryBox = new QGroupBox(viewHistoryWidget);
     viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
@@ -60,7 +60,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     QHBoxLayout *historyItemsLayout = new QHBoxLayout();
     QVBoxLayout *historyItemsButtonsLayout = new QVBoxLayout();
     Display *d = new Display(HISTORY_ITEM_SIZE, HISTORY_ITEM_SIZE, viewHistoryBox);
-    QPushButton *viewButton = new QPushButton(tr("View"), viewHistoryBox);
+    QPushButton *viewButton = new QPushButton(tr("Restore"), viewHistoryBox);
     QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
     QLabel *timeStampLabel = new QLabel(viewHistoryBox);
     
