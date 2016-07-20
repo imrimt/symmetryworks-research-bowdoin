@@ -127,6 +127,16 @@ void MainWindow::createActions()
     // exportImageAct->setShortCuts()
     exportImageAct->setStatusTip(tr("Export to an image file"));
     connect(exportImageAct, SIGNAL(triggered()), currInterface, SLOT(exportImageFunction()));
+    
+    snapshotAct = new QAction(tr("Snapshot Image"), this);
+    snapshotAct->setShortcut(QKeySequence("Ctrl+D"));
+    snapshotAct->setStatusTip(tr("Save current instance to snapshots"));
+    connect(snapshotAct, SIGNAL(triggered()), currInterface, SLOT(snapshotFunction()));
+    
+//    clearSnapshotsAct = new QAction(tr("Clear All Snapshots"), this);
+//    clearSnapshotsAct->setShortcut(QKeySequence("Ctrl+K"));
+//    clearSnapshotsAct->setStatusTip(tr("Save current instance to snapshots"));
+//    connect(clearSnapshotsAct, SIGNAL(triggered()), currInterface->historyDisplay, SLOT(clearAllHistory()));
 
     // exitAct = new QAction(tr("Exit"), this);
     // exitAct->setShortcuts(QKeySequence::Quit);
@@ -162,6 +172,8 @@ void MainWindow::createMenus()
     // fileMenu->addAction(printAct);
     fileMenu->addSeparator();
     // fileMenu->addAction(exitAct);
+    fileMenu->addAction(snapshotAct);
+    //fileMenu->addAction(clearSnapshotsAct);
     fileMenu->addAction(exportImageAct);
 
 //     editMenu = menuBar()->addMenu(tr("Edit"));
