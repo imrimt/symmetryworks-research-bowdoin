@@ -221,6 +221,7 @@ public:
     // Interface(QWidget *parent = 0) : QWidget(parent) { }
     // explicit Interface(QWidget *parent = 0);
     Interface(QWidget *parent = 0); 
+    ~Interface() {;} 
 
     // ORGANIZATIONAL ELEMENTS
     QWidget *functionConstantsWidget;
@@ -230,6 +231,7 @@ public:
     QHBoxLayout *topbarLayout;
     QVBoxLayout *leftbarLayout;
     QGroupBox *imagePropsBox;
+    QSpacerItem *spacerItem;
     //QWidget *toggleViewWidget;
     //QWidget *patternTypeWidget;
     QMessageBox *errorMessageBox;
@@ -371,10 +373,10 @@ public:
     
     QLabel *XShiftLabel;
     QLabel *YShiftLabel;
-    QDoubleSlider *XShiftEdit;
-    QDoubleSlider *YShiftEdit;
-    QLineEdit *XShiftValueLabel;
-    QLineEdit *YShiftValueLabel;
+    QDoubleSlider *XShiftEditSlider;
+    QDoubleSlider *YShiftEditSlider;
+    QLineEdit *XShiftEdit;
+    QLineEdit *YShiftEdit;
     
 //    QLabel *outHeightLabel;
 //    QLabel *outWidthLabel;

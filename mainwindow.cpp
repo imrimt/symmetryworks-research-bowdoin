@@ -56,7 +56,7 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
-    delete currInterface;
+    //delete currInterface;
     
 }
 
