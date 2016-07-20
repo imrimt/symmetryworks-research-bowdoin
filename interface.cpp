@@ -131,7 +131,7 @@ void Interface::initPreviewDisplay()
     previewSize = previewWidth > previewHeight ? previewWidth : previewHeight;
 
     disp = new Display(previewSize, previewSize, displayWidget);
-    snapshotButton= new QPushButton(tr("Snapshot"), this);
+    snapshotButton= new QPushButton(tr("Take Snapshot"), this);
     //exportImage = new QPushButton(tr("Export..."), this);
     //resetButton = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
@@ -143,7 +143,7 @@ void Interface::initPreviewDisplay()
     //buttonLayout->addWidget(resetButton);
     
     //SET UP SHORTCUTS...add for save, open, undo?
-    updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
+    //updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
     
     imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
     previewDisplayPort = new Port(currFunction, currColorWheel, disp->width(), disp->height(), settings);
@@ -780,7 +780,7 @@ void Interface::connectAllSignals()
     
     connect(polarPlane, SIGNAL(setPolarCoordinates(int, QString, QString)), this, SLOT(setPolarCoordinates(int, QString, QString)));
     
-    connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(snapshotFunction()));
+    //connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(snapshotFunction()));
     
 }
 

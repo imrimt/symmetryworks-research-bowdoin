@@ -54,6 +54,8 @@ private:
     QAction *saveAct;
     QAction *saveAsAct;
     QAction *exportImageAct;
+    QAction *snapshotAct;
+    //QAction *clearSnapshotsAct;
     QAction *setOverflowColorAct;
     QAction *showImageDataGraphAct;
     QAction *resetPreviewAct;
