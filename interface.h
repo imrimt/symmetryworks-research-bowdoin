@@ -408,7 +408,7 @@ public:
     
 
     // SHORTCUTS
-    //QShortcut *updatePreviewShortcut;
+    QShortcut *updatePreviewShortcut;
     
    
     // PROGRESS BARS

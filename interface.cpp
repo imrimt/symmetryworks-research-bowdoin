@@ -1301,7 +1301,7 @@ QString Interface::saveSettings(const QString &fileName) {
     for(int index = 0; index < currFunction->getNumTerms(); index++)
     {
         i = index;
-        out << "Term " << i << " : " << tabString
+        out << "Term " << i << " :" << tabString
         << "N: " << QString::number(currFunction->getN(i)) << tabString 
         << "M: " << QString::number(currFunction->getM(i)) << tabString 
         << "R: " << QString::number(currFunction->getR(i)) << tabString 
@@ -1454,17 +1454,19 @@ QString Interface::loadSettings(const QString &fileName) {
     {
         in.readLineInto(&line);
         resultList = line.split(separator, QString::SkipEmptyParts);
-        for (int j = 0; j < resultList.size(); j++) {
+        for (int j = 1; j < resultList.size(); j++) {
+            
             resultString = resultList.at(j);
-            if (j == 0) {
+            qDebug() << "resultString:" << resultString;
+            if (j == 1) {
                 tempint = resultString.right(resultString.length() - resultString.lastIndexOf(" ") - 1).toInt(); 
                 currFunction->setN(i, tempint);
             }
-            else if (j == 1) {
+            else if (j == 2) {
                 tempint = resultString.right(resultString.length() - resultString.lastIndexOf(" ") - 1).toInt(); 
                 currFunction->setM(i, tempint);
             }
-            else if (j == 2) {
+            else if (j == 3) {
                 tempdouble = resultString.right(resultString.length() - resultString.lastIndexOf(" ") - 1).toDouble(); 
                 currFunction->setR(i, tempdouble);
             }
