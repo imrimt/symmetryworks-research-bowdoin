@@ -15,6 +15,7 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     
     //SET UP COEFFICIENT PLANE
     polarPlanePopUp = new QWidget(parent, Qt::Window);
+    
     polarPlanePopUpLayout = new QHBoxLayout();
     polarPlaneWithZoomLayout = new QVBoxLayout();
     polarCoordinatesBox = new QGroupBox(tr("Polar Cooridnates"), polarPlanePopUp);
@@ -42,7 +43,7 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     angleEdit = new QLineEdit();
     
     // UI ELEMENTS
-    confirmButton = new QPushButton(tr("OK"));
+    //confirmButton = new QPushButton(tr("OK"));
     resetButton = new QPushButton(tr("Reset"));
     // cancelButton = new QPushButton(tr("Cancel"));
     zoomInButton = new QPushButton(QIcon(":/Images/Icons/zoomin.png"), "Zoom In");
@@ -73,14 +74,14 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     series2->setPen(axisPen);
     
     //adjust line series size & color
-    QPen linePen(Qt::green);
+    QPen linePen(Qt::gray);
     linePen.setWidth(2);
     xSeries->setPen(linePen);
     ySeries->setPen(linePen);
 
     //adjust data points size & color
-    QPen pointPen(Qt::red);
-    QBrush pointBrush(Qt::red);
+    QPen pointPen(Qt::black);
+    QBrush pointBrush(Qt::black);
     coordinateSeries->setPen(pointPen);
     coordinateSeries->setBrush(pointBrush);
     coordinateSeries->setMarkerSize(10.0);
@@ -117,7 +118,7 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     graphDisplay->setRenderHint(QPainter::Antialiasing);
     
     graph->legend()->hide();
-    graph->setTitle("PLANE FOR COEFFICIENT PAIR");
+    //graph->setTitle("PLANE FOR COEFFICIENT PAIR");
     
     // coeffPlanePopUpLayout->setFixedSize(600,600);
     
@@ -126,7 +127,7 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     angleLabel->setFixedWidth(200);
     angleEdit->setFixedWidth(200);
     
-    actionButtonLayout->addWidget(confirmButton);
+    //actionButtonLayout->addWidget(confirmButton);
     actionButtonLayout->addWidget(resetButton);
     
     polarCoordinatesLayout->addWidget(radiusLabel);
@@ -149,13 +150,13 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     polarPlanePopUpLayout->addWidget(polarCoordinatesBox);
     
     polarPlanePopUp->setLayout(polarPlanePopUpLayout);
-    polarPlanePopUp->setFixedSize(1000, 600);
+    polarPlanePopUp->setFixedSize(720, 400);
     
     // CONNECT ALL SIGNALS
     connect(radiusEdit, SIGNAL(editingFinished()), this, SLOT(updatePolarCoordinates()));
     connect(angleEdit, SIGNAL(editingFinished()), this, SLOT(updatePolarCoordinates()));
     connect(coordinateSeries, SIGNAL(pointReplaced(int)), this, SLOT(updatePolarCoordinatesWithIndex(int)));
-    connect(confirmButton, SIGNAL(clicked()), this, SLOT(hidePolarPlane()));
+    //connect(confirmButton, SIGNAL(clicked()), this, SLOT(hidePolarPlane()));
     // connect(cancelButton, SIGNAL(clicked()), this, SLOT(hidePolarPlane()));
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetPolarCoordinates()));
     connect(zoomInButton, SIGNAL(clicked()), this, SLOT(polarPlaneZoomIn()));
@@ -168,7 +169,15 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
 // show plane in new window
 void PolarPlane::showPlanePopUp(int flag)
 {
-    
+    switch(flag) {
+        case LOCAL_FLAG:
+             polarPlanePopUp->setWindowTitle(tr("Function Coefficient Pair"));
+            break;
+        case GLOBAL_FLAG:
+             polarPlanePopUp->setWindowTitle(tr("Global Scaling Factors"));
+            break;
+    };
+   
     coeffFlag = flag;
     
     double tempA, tempR = 0;

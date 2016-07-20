@@ -107,6 +107,7 @@ void Interface::initInterfaceLayout()
     initFunctionConstants();
 
     polarPlane = new PolarPlane(currFunction, &termIndex, this);
+
     polarPlaneMapper = new QSignalMapper(this);
     
     initImageProps();
