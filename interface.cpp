@@ -34,8 +34,8 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     
     // DEFAULT SETTINGS
     settings = new Settings;
-    settings->Width = DEFAULT_WIDTH;
-    settings->Height = DEFAULT_HEIGHT;
+    settings->Width = DEFAULT_WORLD_WIDTH;
+    settings->Height = DEFAULT_WORLD_HEIGHT;
     settings->XCorner = DEFAULT_XCORNER;
     settings->YCorner = DEFAULT_YCORNER;
     settings->OWidth = DEFAULT_OUTPUT_WIDTH;
@@ -66,35 +66,24 @@ void Interface::initInterfaceLayout()
     globalScalingBox = new QGroupBox(tr("Global Scaling Factors"), this);
     functionConstantsWidget = new QWidget(this);
     
-    //toggleViewWidget = new QWidget(this);
-
+    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    spacerItem = new QSpacerItem(1, screenGeometry.height() * 0.02);
     
-
-    //leftbarLayout->addWidget(toggleViewWidget);
     leftbarLayout->addWidget(imagePropsBox);
+    leftbarLayout->addItem(spacerItem);
     leftbarLayout->addWidget(patternTypeBox);
+    leftbarLayout->addItem(spacerItem);
     leftbarLayout->addWidget(globalScalingBox);
-    //leftbarLayout->addWidget(spacerWidget);
-    //leftbarLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     topbarLayout->addLayout(leftbarLayout);
     topbarLayout->addWidget(displayWidget);
-    
-    // historyDisplay = new HistoryDisplay(this);
-    // historyDisplay->hide();
-    
-    //historyDisplay->viewHistoryWidget->setGeometery(this->parent()->rect().topLeft().x()
     
     InterfaceLayout->addLayout(topbarLayout);
     InterfaceLayout->addWidget(functionConstantsWidget);
     
     
     overallLayout->addLayout(InterfaceLayout);
-    // overallLayout->addWidget(historyDisplay->viewHistoryWidget);
-    //overallLayout->setSizeConstraint(QLayout::SetFixedSize);
     overallLayout->activate();
-    //overallLayout->addWidget(historyDisplay->dock);
-   
     this->setLayout(overallLayout);
     
     errorMessageBox = new QMessageBox(this);
@@ -109,16 +98,11 @@ void Interface::initInterfaceLayout()
     numtermsValidate = new QIntValidator(1, 99, this);
     dimValidate = new QIntValidator(1, 10000, this);
 
-//    toggleViewButton = new QPushButton(tr("Switch to Advanced View"), this);
-//    toggleViewLayout = new QVBoxLayout(toggleViewWidget);
-//    toggleViewLayout->addWidget(toggleViewButton);
-    
     // INIT UI SUBELEMENTS
     initPreviewDisplay();
     initPatternType();
     initGlobalScaling();
     initFunctionConstants();
-    // initPatternType();
 
     polarPlane = new PolarPlane(currFunction, &termIndex, this);
     polarPlaneMapper = new QSignalMapper(this);
@@ -126,10 +110,6 @@ void Interface::initInterfaceLayout()
     initImageProps();
     initImageExportPopUp();
     
-    // SET DEFAULTS
-   // scaleREdit->setText(QString::number(currFunction->getScaleR()));
-   // scaleAEdit->setText(QString::number(currFunction->getScaleA()));
-
     connectAllSignals();
 
     refreshTableTerms();
@@ -354,15 +334,14 @@ void Interface::initFunctionConstants()
 
 }
 
+// INIT GLOBAL SCALING FACTORS BOX
 void Interface::initGlobalScaling()
 {
     
     globalScalingBoxLayout = new QVBoxLayout(globalScalingBox);
     scaleRLayout = new QHBoxLayout(globalScalingBox);
     scaleALayout = new QHBoxLayout(globalScalingBox);
-    //globalScalingBoxGrid = new QGridLayout(globalScalingBox);
-    
-   // globalConstantsLabel = new QLabel(tr("<b>Global Scaling Factors: <\b>"), patternTypeBox);
+   
     scaleALabel = new QLabel(tr("Scaling Angle"), globalScalingBox);
     scaleRLabel = new QLabel(tr("Scaling Radius"), globalScalingBox);
     scaleAEditSlider = new QDoubleSlider(globalScalingBox);
@@ -392,7 +371,7 @@ void Interface::initGlobalScaling()
     scaleALayout->addWidget(scaleALabel);
     scaleALayout->addWidget(scaleAEditSlider);
     scaleALayout->addWidget(scaleAEdit);
-    //globalConstantsLayout->addWidget(globalConstantsLabel);
+
     globalScalingBoxLayout->addLayout(scaleRLayout);
     globalScalingBoxLayout->addLayout(scaleALayout);
     globalScalingBoxLayout->addWidget(scalePlaneEdit);
@@ -418,7 +397,6 @@ void Interface::initPatternType()
     gspacer4 = new QSpacerItem(0,50);
     gspacer5 = new QSpacerItem(0,10);
 
-//    patternTypeBoxOverallLayout = new QVBoxLayout(patternTypeWidget);
     patternTypeBoxLayout = new QVBoxLayout(patternTypeBox);
     functionLayout = new QHBoxLayout();
     colorwheelLayout = new QHBoxLayout();
@@ -438,12 +416,6 @@ void Interface::initPatternType()
     endPattern->setMidLineWidth(1);
     endPattern->setFrameShape(QFrame::HLine);
     endPattern->setFrameShadow(QFrame::Raised);
-    
-//    QFrame* endColor = new QFrame(patternTypeBox);
-//    endColor->setLineWidth(2);
-//    endColor->setMidLineWidth(1);
-//    endColor->setFrameShape(QFrame::HLine);
-//    endColor->setFrameShadow(QFrame::Raised);
     
     fromColorWheelButton->setChecked(true);
     setLoadedImage->setEnabled(false);
@@ -494,11 +466,6 @@ void Interface::initPatternType()
     functionIconsWindow = new QWidget(this, Qt::Window);
     functionIconsWindow->setWindowTitle(tr("Pattern Previews"));
     functionIconsWindowLayout = new QGridLayout(functionIconsWindow);
-
-    // functionIconsWindow->setWindowFlags(functionIconsWindow->windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
-
-    // functionIconsWindowLayout->setSpacing(0);
-    // functionIconsWindow
     
     int row = 0;
     int col = 0;
@@ -609,18 +576,6 @@ void Interface::initPatternType()
     patternTypeBoxLayout->addLayout(fromImageLayout);
     patternTypeBoxLayout->addWidget(imagePathLabel);
     
-    // patternTypeBoxLayout->addWidget(setOverflowColorButton);
-    // patternTypeBoxLayout->addWidget(showImageDataGraphButton);
-    //patternTypeBoxLayout->addWidget(endColor);
-
-    
-    
-    // patternTypeBoxLayout->addWidget(patternTypeBox);
-    // patternTypeBoxLayout->setSizeConstraint(QBoxLayout::SetFixedSize);
-    // patternTypeBoxLayout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
-    //patternTypeBoxLayout->addStretch();
-    // patternTypeBoxLayout->addStrut(0);
-    // patternTypeBoxLayout->setSpacing(0);
     
 }
 
@@ -635,24 +590,24 @@ void Interface::initImageProps()
     
     XShiftLabel = new QLabel(tr("Horizontal Shift"), imagePropsBox);
     YShiftLabel = new QLabel(tr("Vertical Shift"), imagePropsBox);
-    XShiftEdit = new QDoubleSlider(imagePropsBox);
-    YShiftEdit = new QDoubleSlider(imagePropsBox);
-    XShiftValueLabel = new QLineEdit(imagePropsBox);
-    YShiftValueLabel = new QLineEdit(imagePropsBox);
-    XShiftValueLabel->setValidator(doubleValidate);
-    YShiftValueLabel->setValidator(doubleValidate);
-    XShiftValueLabel->setFixedWidth(40);
-    YShiftValueLabel->setFixedWidth(40);
-    XShiftValueLabel->setAlignment(Qt::AlignCenter);
-    YShiftValueLabel->setAlignment(Qt::AlignCenter);
+    XShiftEditSlider = new QDoubleSlider(imagePropsBox);
+    YShiftEditSlider = new QDoubleSlider(imagePropsBox);
+    XShiftEdit = new QLineEdit(imagePropsBox);
+    YShiftEdit = new QLineEdit(imagePropsBox);
+    XShiftEdit->setValidator(doubleValidate);
+    YShiftEdit->setValidator(doubleValidate);
+    XShiftEdit->setFixedWidth(40);
+    YShiftEdit->setFixedWidth(40);
+    XShiftEdit->setAlignment(Qt::AlignCenter);
+    YShiftEdit->setAlignment(Qt::AlignCenter);
     
     imageShiftXLayout->addWidget(XShiftLabel);
+    imageShiftXLayout->addWidget(XShiftEditSlider);
     imageShiftXLayout->addWidget(XShiftEdit);
-    imageShiftXLayout->addWidget(XShiftValueLabel);
     
     imageShiftYLayout->addWidget(YShiftLabel);
+    imageShiftYLayout->addWidget(YShiftEditSlider);
     imageShiftYLayout->addWidget(YShiftEdit);
-    imageShiftYLayout->addWidget(YShiftValueLabel);
     
     imageStretchXLayout = new QHBoxLayout();
     imageStretchYLayout = new QHBoxLayout();
@@ -679,19 +634,19 @@ void Interface::initImageProps()
     imageStretchYLayout->addWidget(worldHeightEditSlider);
     imageStretchYLayout->addWidget(worldHeightEdit);
     
-    XShiftEdit->setFixedWidth(100);
-    YShiftEdit->setFixedWidth(100);
-    XShiftEdit->setRange(-200, 150);
-    XShiftEdit->setSingleStep(1);
-    YShiftEdit->setRange(-200,150);
-    YShiftEdit->setSingleStep(1);
-    XShiftEdit->setOrientation(Qt::Horizontal);
-    YShiftEdit->setOrientation(Qt::Horizontal);
+    XShiftEditSlider->setFixedWidth(100);
+    YShiftEditSlider->setFixedWidth(100);
+    XShiftEditSlider->setRange(-200, 150);
+    XShiftEditSlider->setSingleStep(1);
+    YShiftEditSlider->setRange(-200,150);
+    YShiftEditSlider->setSingleStep(1);
+    XShiftEditSlider->setOrientation(Qt::Horizontal);
+    YShiftEditSlider->setOrientation(Qt::Horizontal);
     
-    XShiftValueLabel->setText(QString::number(settings->XCorner));
-    YShiftValueLabel->setText(QString::number(settings->YCorner));
-    XShiftEdit->setValue(settings->XCorner * 100.0);
-    YShiftEdit->setValue(settings->YCorner * 100.0);
+    XShiftEdit->setText(QString::number(settings->XCorner));
+    YShiftEdit->setText(QString::number(settings->YCorner));
+    XShiftEditSlider->setValue(settings->XCorner * 100.0);
+    YShiftEditSlider->setValue(settings->YCorner * 100.0);
     
     worldWidthEditSlider->setFixedWidth(100);
     worldHeightEditSlider->setFixedWidth(100);
@@ -712,11 +667,7 @@ void Interface::initImageProps()
     imagePropsBoxLayout->addLayout(imageShiftYLayout);
     imagePropsBoxLayout->addLayout(imageStretchXLayout);
     imagePropsBoxLayout->addLayout(imageStretchYLayout);
-    // imagePropsBoxLayout->setSpacing(0);
-    // imagePropsBoxLayout->setSizeConstraint(QBoxLayout::SetFixedSize);
-    // imagePropsBoxLayout->addStretch();
-    // imagePropsBoxLayout->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
-    // imagePropsBoxLayout->addStrut(0);
+    
 
 }
 
@@ -729,7 +680,6 @@ void Interface::initImageExportPopUp()
     settingsPopUpLayout = new QVBoxLayout(settingsPopUp);
    // settingsPopUp->setMinimumWidth(300);
     
-
     outHeightEdit = new QLineEdit(settingsPopUp);
     outWidthEdit = new QLineEdit(settingsPopUp);
     
@@ -818,10 +768,10 @@ void Interface::connectAllSignals()
     connect(worldWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeWorldWidth()));
     connect(worldHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeWorldHeight()));
     
-    connect(XShiftEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeXCorner(double)));
-    connect(YShiftEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeYCorner(double)));
-    connect(XShiftValueLabel, SIGNAL(returnPressed()), this, SLOT(changeXCorner()));
-    connect(YShiftValueLabel, SIGNAL(returnPressed()), this, SLOT(changeYCorner()));
+    connect(XShiftEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeXCorner(double)));
+    connect(YShiftEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeYCorner(double)));
+    connect(XShiftEdit, SIGNAL(returnPressed()), this, SLOT(changeXCorner()));
+    connect(YShiftEdit, SIGNAL(returnPressed()), this, SLOT(changeYCorner()));
     
     connect(polarPlane, SIGNAL(setPolarCoordinates(int, QString, QString)), this, SLOT(setPolarCoordinates(int, QString, QString)));
     
@@ -986,7 +936,7 @@ void Interface::addTerm()
     unsigned int highestIndex = termViewTable->rowCount();
     termViewTable->setRowCount(highestIndex + 1);
     
-    qDebug() << "highest index" << highestIndex;
+    //qDebug() << "highest index" << highestIndex;
 
     QSpinBox *nEditTable = new QSpinBox();
     QSpinBox *mEditTable = new QSpinBox();
@@ -1050,40 +1000,26 @@ void Interface::addTerm()
 // reset the image to its default settings with the current function and colorwheel
 void Interface::resetFunction()
 {
-
-    qDebug() << "ehl";
-
     termIndex = 0;
 
     currFunction->refresh();
     numTermsEdit->setValue(1);
     
-    qDebug() << "scale R: " << currFunction->getScaleR();
-    qDebug() << "scale A: " << currFunction->getScaleA();
+    changeScaleR(currFunction->getScaleR());
+    changeScaleA(currFunction->getScaleA());
     
-    scaleREdit->setText(QString::number(currFunction->getScaleR()));
-    scaleAEdit->setText(QString::number(currFunction->getScaleA()));
-    scaleREditSlider->setValue(currFunction->getScaleR() * 100.0);
-    scaleAEditSlider->setValue(currFunction->getScaleA() * 100.0);
-    
-    worldWidthEditSlider->setValue(DEFAULT_WIDTH * 100.0);
-    worldHeightEditSlider->setValue(DEFAULT_HEIGHT * 100.0);
-    XShiftEdit->setValue(DEFAULT_XCORNER * 100.0);
-    YShiftEdit->setValue(DEFAULT_YCORNER * 100.0);
+    changeWorldHeight(DEFAULT_WORLD_HEIGHT);
+    changeWorldWidth(DEFAULT_WORLD_WIDTH);
+    changeXCorner(DEFAULT_XCORNER);
+    changeYCorner(DEFAULT_YCORNER);
     
     currColorWheel->changeOverflowColor(Qt::black);
+    
+    refreshTableTerms();
+    refreshMainWindowTerms();
+    updatePreviewDisplay();
+    
 }
-
-//void Interface::toggleViewMode()
-//{
-//    if (advancedMode) {
-//        advancedMode = false;
-//        toggleViewButton->setText(tr("Switch to Advanced View"));
-//    } else {
-//        advancedMode = true;
-//        toggleViewButton->setText(tr("Switch to Default View"));
-//    }
-//}
 
 
 void Interface::termViewPopUp()
@@ -1113,7 +1049,7 @@ void Interface::changeNumTerms(int i)
 
     int oldNumTerms = numTerms;
 
-    qDebug() << "old:" << oldNumTerms << "| new:" << i;    
+    //qDebug() << "old:" << oldNumTerms << "| new:" << i;
 
     if (i < oldNumTerms) {
         for (int k = oldNumTerms; k > i; --k) { removeTerm(k-1); }
@@ -1224,7 +1160,7 @@ void Interface::setImagePushed()
 void Interface::changeFunction(int index)
 {
 
-    qDebug() << "change Function";
+    //qDebug() << "change Function";
     
     termIndex = 0;
     
@@ -1232,7 +1168,7 @@ void Interface::changeFunction(int index)
     
     numTerms = currFunction->getNumTerms();
 
-    qDebug() << "numTerms:" << numTerms;
+    //qDebug() << "numTerms:" << numTerms;
 
     termViewTable->setRowCount(0);
 
@@ -1504,8 +1440,8 @@ QString Interface::loadSettings(const QString &fileName) {
 
     worldWidthEditSlider->setValue(settings->Width * 100.0);
     worldHeightEditSlider->setValue(settings->Height * 100.0);
-    XShiftEdit->setValue(settings->XCorner * 100.0);
-    YShiftEdit->setValue(settings->YCorner * 100.0);
+    XShiftEditSlider->setValue(settings->XCorner * 100.0);
+    YShiftEditSlider->setValue(settings->YCorner * 100.0);
 
     numTermsEdit->setValue(currFunction->getNumTerms());
 
@@ -1630,36 +1566,36 @@ void Interface::changeXCorner(double val)
 {
   
     settings->XCorner = val;
-    XShiftValueLabel->setText(QString::number(val));
+    XShiftEdit->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
 void Interface::changeXCorner()
 {
   
-    double val = XShiftValueLabel->text().toDouble();
+    double val = XShiftEdit->text().toDouble();
     settings->XCorner = val;
     
-    XShiftEdit->blockSignals(true);
-    XShiftEdit->setValue(val * 100.0);
-    XShiftEdit->blockSignals(false);
+    XShiftEditSlider->blockSignals(true);
+    XShiftEditSlider->setValue(val * 100.0);
+    XShiftEditSlider->blockSignals(false);
     updatePreviewDisplay();
 }
 
 void Interface::changeYCorner(double val)
 {
     settings->YCorner = val;
-    YShiftValueLabel->setText(QString::number(val));
+    YShiftEdit->setText(QString::number(val));
     updatePreviewDisplay();
 }
 
 void Interface::changeYCorner()
 {
-    double val = YShiftValueLabel->text().toDouble();
+    double val = YShiftEdit->text().toDouble();
     settings->YCorner = val;
-    YShiftEdit->blockSignals(true);
-    YShiftEdit->setValue(val * 100.0);
-    YShiftEdit->blockSignals(false);
+    YShiftEditSlider->blockSignals(true);
+    YShiftEditSlider->setValue(val * 100.0);
+    YShiftEditSlider->blockSignals(false);
     updatePreviewDisplay();
 }
 
