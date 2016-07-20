@@ -7,7 +7,7 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     this->currFunction = currFunction;
     this->termIndex = termIndex;
 
-    qDebug() << "currFunction address in polarplane constructor" << &(*currFunction);
+    // qDebug() << "currFunction address in polarplane constructor" << &(*currFunction);
     
     // INPUT VALIDATORS (NUMERICAL)
     doubleValidate = new QDoubleValidator(-9999999.0, 9999999.0, 5, this);
@@ -191,8 +191,8 @@ void PolarPlane::showPlanePopUp(int flag)
     QPointF point(tempR * cos(tempA), tempR * sin(tempA));
 
     // qDebug() << "address of currFunction pointer in polarplane" << &currFunction;
-    qDebug() << "obtain R&A from" << &(*currFunction);
-    qDebug() << "update" << point;
+    // qDebug() << "obtain R&A from" << &(*currFunction);
+    // qDebug() << "update" << point;
     
     coordinateSeries->replace(0, point);
     updatePolarCoordinates(QPointF(tempR * cos(tempA), tempR * sin(tempA)));

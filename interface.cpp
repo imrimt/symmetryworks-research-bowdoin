@@ -891,7 +891,7 @@ void Interface::refreshMainWindowTerms()
     scaleAEdit->blockSignals(false);
     scaleAEditSlider->blockSignals(false);
     scaleREdit->blockSignals(false);
-    scaleAEditSlider->blockSignals(false);
+    scaleREditSlider->blockSignals(false);
 
     aValueLabel->setText(QString::number(currFunction->getA(termIndex)));
     rValueLabel->setText(QString::number(currFunction->getR(termIndex)));
@@ -1716,7 +1716,7 @@ void Interface::changeScaleR()
 {
     
     double val = scaleREdit->text().toDouble();
-    currFunction->setScaleA(val);
+    currFunction->setScaleR(val);
     scaleREditSlider->blockSignals(true);
     scaleREditSlider->setValue(val * 100.0);
     scaleREditSlider->blockSignals(false);

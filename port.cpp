@@ -7,7 +7,7 @@ Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width
     overallHeight = height;    
     this->currFunction = currFunction;
 
-    qDebug() << "address of currFunction in port constructor" << &(*currFunction);
+    // qDebug() << "address of currFunction in port constructor" << &(*currFunction);
 
     this->currColorWheel = currColorWheel;
     this->currSettings = currSettings;
@@ -79,7 +79,7 @@ void Port::render(QImage *output, const int &actionFlag)
 
 void Port::render(Display *display, const int &actionFlag)
 {
-    qDebug() << "in port, currFunction is" << &(*currFunction);    
+    // qDebug() << "in port, currFunction is" << &(*currFunction);    
     controller->prepareToRun(display, actionFlag);
 }
 
