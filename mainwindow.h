@@ -11,6 +11,18 @@ class QActionGroup;
 class QLabel;
 class QMenu;
 
+//class ChangeCommand : public QUndoCommand
+//{
+//public:
+//    ChangeCommand(QUndoCommand *parent = 0) {}
+//    ~ChangeCommand() {}
+//    
+//    void undo();
+//    void redo();
+//    
+//private:
+//};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -33,13 +45,14 @@ private:
     // QDockWidget *leftDock;
 
     QMenu *fileMenu;
-    // QMenu *editMenu;
+    QMenu *editMenu;
     QMenu *viewMenu;
     // QMenu *helpMenu;
     QActionGroup *alignmentGroup;
     // QAction *newAct;
     QAction *loadAct;
     QAction *saveAct;
+    QAction *saveAsAct;
     QAction *exportImageAct;
     QAction *setOverflowColorAct;
     QAction *showImageDataGraphAct;
