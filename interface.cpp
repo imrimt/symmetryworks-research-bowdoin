@@ -41,6 +41,7 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     settings->OWidth = DEFAULT_OUTPUT_WIDTH;
     settings->OHeight = DEFAULT_OUTPUT_HEIGHT;
     
+    
     // INITIALIZE LAYOUT
     initInterfaceLayout();
     
@@ -130,16 +131,16 @@ void Interface::initPreviewDisplay()
     previewSize = previewWidth > previewHeight ? previewWidth : previewHeight;
 
     disp = new Display(previewSize, previewSize, displayWidget);
-    updatePreview = new QPushButton(tr("Snapshot"), this);
-    exportImage = new QPushButton(tr("Export..."), this);
-    resetButton = new QPushButton(tr("Reset"), this);
+    snapshotButton= new QPushButton(tr("Snapshot"), this);
+    //exportImage = new QPushButton(tr("Export..."), this);
+    //resetButton = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
     //dispLayout->setSizeConstraint(QLayout::SetMinimumSize);
     buttonLayout = new QHBoxLayout();
     
-    buttonLayout->addWidget(updatePreview);
-    buttonLayout->addWidget(exportImage);
-    buttonLayout->addWidget(resetButton);
+    buttonLayout->addWidget(snapshotButton);
+    //buttonLayout->addWidget(exportImage);
+    //buttonLayout->addWidget(resetButton);
     
     //SET UP SHORTCUTS...add for save, open, undo?
     updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
@@ -678,14 +679,14 @@ void Interface::initImageProps()
 void Interface::initImageExportPopUp()
 {
     // IMAGE DIMENSIONS POP UP WINDOW
-    settingsPopUp = new QWidget(this, Qt::Window);
-    settingsPopUp->setWindowModality(Qt::WindowModal);
-    settingsPopUp->setWindowTitle(tr("Image Settings"));
-    settingsPopUpLayout = new QVBoxLayout(settingsPopUp);
-   // settingsPopUp->setMinimumWidth(300);
+    imageDimensionsPopUp = new QWidget(this, Qt::Window);
+    imageDimensionsPopUp->setWindowModality(Qt::WindowModal);
+    imageDimensionsPopUp->setWindowTitle(tr("Image Settings"));
+    imageDimensionsPopUpLayout = new QVBoxLayout(imageDimensionsPopUp);
+   // imageDimensionsPopUp->setMinimumWidth(300);
     
-    outHeightEdit = new QLineEdit(settingsPopUp);
-    outWidthEdit = new QLineEdit(settingsPopUp);
+    outHeightEdit = new QLineEdit(imageDimensionsPopUp);
+    outWidthEdit = new QLineEdit(imageDimensionsPopUp);
     
     outWidthLayout = new QHBoxLayout();
     outWidthLabel = new QLabel(tr("Image Width"));
@@ -701,12 +702,12 @@ void Interface::initImageExportPopUp()
     outHeightLayout->addWidget(new QLabel(tr("pixels")));
     
     
-    settingsPopUpLayout->addLayout(outWidthLayout);
-    settingsPopUpLayout->addLayout(outHeightLayout);
+    imageDimensionsPopUpLayout->addLayout(outWidthLayout);
+    imageDimensionsPopUpLayout->addLayout(outHeightLayout);
     
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                      | QDialogButtonBox::Cancel);
-    settingsPopUpLayout->addWidget(buttonBox);
+    imageDimensionsPopUpLayout->addWidget(buttonBox);
     
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(startImageExport()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancelImageExport()));
@@ -714,7 +715,7 @@ void Interface::initImageExportPopUp()
     outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
     outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
    
-    settingsPopUp->hide();
+    imageDimensionsPopUp->hide();
 
 }
 
@@ -731,9 +732,9 @@ void Interface::connectAllSignals()
     connect(polarPlaneMapper,SIGNAL(mapped(int)), polarPlane, SLOT(showPlanePopUp(int)));
 
    // connect(toggleViewButton, SIGNAL(clicked()), this, SLOT(toggleViewMode()));
-    connect(updatePreview, SIGNAL(clicked()), this, SLOT(snapshotFunction()));
-    connect(exportImage, SIGNAL(clicked()), this, SLOT(exportImageFunction()));
-    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetFunction()));
+    connect(snapshotButton, SIGNAL(clicked()), this, SLOT(snapshotFunction()));
+    //connect(exportImage, SIGNAL(clicked()), this, SLOT(exportImageFunction()));
+    //connect(resetButton, SIGNAL(clicked()), this, SLOT(resetFunction()));
     
     connect(fromColorWheelButton, SIGNAL(clicked()), this, SLOT(selectColorWheel()));
     connect(fromImageButton, SIGNAL(clicked()), this, SLOT(selectImage()));
@@ -1194,18 +1195,31 @@ void Interface::changeFunction(int index)
 
 
 // SLOT function called when user attempts to save current settings into a wpr file
-void Interface::saveCurrSettings()
+void Interface::saveCurrWorkspace()
 {
     
-    qDebug() << "saving setting";
-
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Open File"),
-                                                    saveloadPath,
-                                                    tr("Wallpapers (*.wpr)"));
+    if (currFileName.isEmpty()) {
+        currFileName = QFileDialog::getSaveFileName(this, tr("Open File"),
+                                                        saveloadPath,
+                                                        tr("Wallpapers (*.wpr)"));
+    }
     
-    saveloadPath = saveSettings(fileName) != nullptr ? saveSettings(fileName) : nullptr;
+    saveloadPath = saveSettings(currFileName);
     
 }
+
+void Interface::saveCurrWorkspaceAs()
+{
+    QString newFileName = QFileDialog::getSaveFileName(this, tr("Open File"),
+                                                       saveloadPath,
+                                                       tr("Wallpapers (*.wpr)"));
+    currFileName = newFileName;
+    
+    saveloadPath = saveSettings(currFileName);
+    
+    
+}
+
 
 // internal function that handles saving settings
 QString Interface::saveSettings(const QString &fileName) {
@@ -1488,7 +1502,7 @@ void Interface::updatePreviewDisplay()
     // if (!imageDataGraph->series().empty()) imageDataGraph->removeSeries(imageDataSeries);
 	imageDataSeries->clear();
 
-    updatePreview->setEnabled(false);
+    snapshotButton->setEnabled(false);
 
     displayProgressBar->reset();
     
@@ -1696,7 +1710,7 @@ void Interface::changeScaleR()
 void Interface::startImageExport() 
 {
     
-    settingsPopUp->hide();
+    imageDimensionsPopUp->hide();
     
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"),
                                                     saveloadPath,
@@ -1853,7 +1867,7 @@ void Interface::resetTableButton()
 void Interface::resetMainWindowButton(const bool &status) 
 {
     numTermsEdit->setEnabled(status);
-    updatePreview->setEnabled(status);
+    snapshotButton->setEnabled(status);
 }
 
 void Interface::setSnapShotWindow(HistoryDisplay* window)

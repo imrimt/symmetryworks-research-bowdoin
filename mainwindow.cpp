@@ -32,10 +32,12 @@ MainWindow::MainWindow()
 
     // QWidget *bottomFiller = new QWidget;
     // bottomFiller->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
+    //undoStack = new QUndoStack(this);
+    
     createActions();
     createMenus();
     createDockWindows();
+   
 
     // QString message = tr("A context menu is available by right-clicking");
     // statusBar()->showMessage(message);
@@ -60,6 +62,12 @@ MainWindow::~MainWindow()
     
 }
 
+//void MainWindow::changedCommand()
+//{
+//    QUndoCommand *changedCommand = new UndoCommand();
+//    undoStack->push(changedCommand);
+//}
+
 // #ifndef QT_NO_CONTEXTMENU
 // void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 // {
@@ -79,22 +87,43 @@ void MainWindow::createActions()
     // newAct->setStatusTip(tr("Create a new file"));
     // connect(newAct, &QAction::triggered, this, &MainWindow::newFile);
 
-    loadAct = new QAction(tr("Load..."), this);
+    loadAct = new QAction(tr("Load Workspace..."), this);
     loadAct->setShortcuts(QKeySequence::Open);
-    loadAct->setStatusTip(tr("Load an existing file"));
+    loadAct->setStatusTip(tr("Load an existing .wpr file"));
     connect(loadAct, SIGNAL(triggered()), currInterface, SLOT(loadFromSettings()));
 
-    saveAct = new QAction(tr("Save..."), this);
+    saveAct = new QAction(tr("Save Current Workspace"), this);
     saveAct->setShortcuts(QKeySequence::Save);
     saveAct->setStatusTip(tr("Save the setting to disk"));
-    connect(saveAct, SIGNAL(triggered()), currInterface, SLOT(saveCurrSettings()));
+    connect(saveAct, SIGNAL(triggered()), currInterface, SLOT(saveCurrWorkspace()));
+    
+    saveAsAct = new QAction(tr("Save Current Workspace As..."), this);
+    saveAsAct->setShortcuts(QKeySequence::SaveAs);
+    connect(saveAsAct, SIGNAL(triggered()), currInterface, SLOT(saveCurrWorkspaceAs()));
+    
+   // connect(currInterface, SIGNAL(somethingChanged()), this, SLOT(changedCommand()));
+    
+//    undoAction = undoStack->createUndoAction(this, tr("&Undo"));
+//    undoAction->setShortcuts(QKeySequence::Undo);
+//    undoAction->setStatusTip(tr("Revert most recent changes"));
+//    
+//    
+//    connect(undoAction, SIGNAL(triggered()), this, SLOT(undo());
+//    //undoAction->setIcon(QIcon(":/icons/undo.png"));
+//    redoAction = undoStack->createRedoAction(this, tr("&Redo"));
+//    redoAction->setShortcuts(QKeySequence::Redo);
+//    connect(redoAction, SIGNAL(triggered()), this, SLOT(redo());
+   
+    //redoAction->setIcon(QIcon(":/icons/redo.png"));
+    
+//    undoAct = new QAction(tr("Undo"), this)
 
     // printAct = new QAction(tr("&Print..."), this);
     // printAct->setShortcuts(QKeySequence::Print);
     // printAct->setStatusTip(tr("Print the document"));
     // connect(printAct, &QAction::triggered, this, &MainWindow::print);
 
-    exportImageAct = new QAction(tr("Export Image"), this);
+    exportImageAct = new QAction(tr("Export Image..."), this);
     // exportImageAct->setShortCuts()
     exportImageAct->setStatusTip(tr("Export to an image file"));
     connect(exportImageAct, SIGNAL(triggered()), currInterface, SLOT(exportImageFunction()));
@@ -114,13 +143,13 @@ void MainWindow::createActions()
     connect(showImageDataGraphAct, SIGNAL(triggered()), currInterface, SLOT(showImageDataGraph()));
     showImageDataGraphAct->setEnabled(false);
 
-    resetPreviewAct = new QAction(tr("Reset Preview"), this);
-    resetPreviewAct->setStatusTip(tr("Reset Preview Display Size"));
-    connect(resetPreviewAct, SIGNAL(triggered()), currInterface, SLOT(previewDisplayResetSize()));
+//    resetPreviewAct = new QAction(tr("Reset Preview"), this);
+//    resetPreviewAct->setStatusTip(tr("Reset Preview Display Size"));
+//    connect(resetPreviewAct, SIGNAL(triggered()), currInterface, SLOT(previewDisplayResetSize()));
 
-    viewTermsTableAct = new QAction(tr("View/Edit All Terms"), this);
-    viewTermsTableAct->setStatusTip(tr("View or Edit all function terms"));
-    connect(viewTermsTableAct, SIGNAL(triggered()), currInterface, SLOT(termViewPopUp()));
+//    viewTermsTableAct = new QAction(tr("View/Edit All Terms"), this);
+//    viewTermsTableAct->setStatusTip(tr("View or Edit all function terms"));
+//    connect(viewTermsTableAct, SIGNAL(triggered()), currInterface, SLOT(termViewPopUp()));
 }
 
 void MainWindow::createMenus()
@@ -129,30 +158,34 @@ void MainWindow::createMenus()
     // fileMenu->addAction(newAct);
     fileMenu->addAction(loadAct);
     fileMenu->addAction(saveAct);
+    fileMenu->addAction(saveAsAct);
     // fileMenu->addAction(printAct);
     fileMenu->addSeparator();
     // fileMenu->addAction(exitAct);
+    fileMenu->addAction(exportImageAct);
 
-    // editMenu = menuBar()->addMenu(tr("&Edit"));
-    // editMenu->addAction(undoAct);
-    // editMenu->addAction(redoAct);
-    // editMenu->addSeparator();
-    // editMenu->addAction(cutAct);
-    // editMenu->addAction(copyAct);
-    // editMenu->addAction(pasteAct);
-    // editMenu->addSeparator();
+//     editMenu = menuBar()->addMenu(tr("Edit"));
+//     editMenu->addAction(undoAct);
+//     editMenu->addAction(redoAct);
+//     editMenu->addSeparator();
+    
+    
+//     editMenu->addAction(cutAct);
+//     editMenu->addAction(copyAct);
+//     editMenu->addAction(pasteAct);
+//     editMenu->addSeparator();
 
     // helpMenu = menuBar()->addMenu(tr("&Help"));
     // helpMenu->addAction(aboutAct);
     // helpMenu->addAction(aboutQtAct);
 
     viewMenu = menuBar()->addMenu(tr("Advanced"));
-    viewMenu->addAction(resetPreviewAct);
+    //viewMenu->addAction(resetPreviewAct);
     viewMenu->addSeparator();
     viewMenu->addAction(setOverflowColorAct);
     viewMenu->addAction(showImageDataGraphAct);
-    viewMenu->addSeparator();
-    viewMenu->addAction(viewTermsTableAct);
+    //viewMenu->addSeparator();
+    //viewMenu->addAction(viewTermsTableAct);
 }
 
 void MainWindow::createDockWindows() 

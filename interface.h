@@ -30,6 +30,7 @@
 #include <QObject>
 #include <QApplication>
 #include <QDesktopWidget>
+//#include <QUndoStack>
 
 #include <QProgressBar>
 #include <QTableWidget>
@@ -399,24 +400,26 @@ public:
 //    QSpacerItem *pspacer5;
 
     // DISP SUBELEMENTS
-    QPushButton *updatePreview;
-    QPushButton *exportImage;
-    QPushButton *resetButton;
+    QPushButton *snapshotButton;
+    //QPushButton *exportImage;
+    //QPushButton *resetButton;
     Display *disp;
     QVBoxLayout *dispLayout;
     QHBoxLayout *buttonLayout;
+    
+    
 
     // SHORTCUTS
     QShortcut *updatePreviewShortcut;
     
-    
+   
     // PROGRESS BARS
     ProgressBar *displayProgressBar;
     ProgressBar *exportProgressBar;
     
     // OUTPUT IMAGE DIM POP UP
-    QWidget *settingsPopUp;
-    QVBoxLayout *settingsPopUpLayout;
+    QWidget *imageDimensionsPopUp;
+    QVBoxLayout *imageDimensionsPopUpLayout;
     QDialogButtonBox *buttonBox;
     QHBoxLayout *outWidthLayout;
     QHBoxLayout *outHeightLayout;
@@ -464,13 +467,17 @@ private slots:
     void changeScaleR();
     void changeScaleR(double val);
 
-    void exportImageFunction() { settingsPopUp->show(); }
-    void cancelImageExport() { settingsPopUp->hide(); }
+    void exportImageFunction() { imageDimensionsPopUp->show(); }
+    void cancelImageExport() { imageDimensionsPopUp->hide(); }
     void startImageExport();
+    
+//    void undo();
+//    void redo();
     
     void resetFunction();
     void loadFromSettings();
-    void saveCurrSettings();
+    void saveCurrWorkspace();
+    void saveCurrWorkspaceAs();
     void previewDisplayEnlarge() {disp->enlarge();}
     void previewDisplayShrink() {disp->shrink();}
     void previewDisplayResetSize() {disp->resetSize();}
@@ -521,6 +528,7 @@ private:
     unsigned int termIndex; 
     
     QString saveloadPath;
+    QString currFileName;
     QString imageSetPath;
     QString openImageName;
     
