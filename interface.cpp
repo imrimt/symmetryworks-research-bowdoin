@@ -71,12 +71,13 @@ void Interface::initInterfaceLayout()
     spacerItem = new QSpacerItem(1, screenGeometry.height() * 0.02);
     spacerItem2 = new QSpacerItem(1, screenGeometry.height() * 0.02);
     
-    leftbarLayout->addWidget(imagePropsBox);
-    leftbarLayout->addItem(spacerItem);
-    leftbarLayout->addWidget(patternTypeBox);
-    leftbarLayout->addItem(spacerItem2);
-    leftbarLayout->addWidget(globalScalingBox);
 
+    leftbarLayout->addWidget(patternTypeBox);
+    leftbarLayout->addItem(spacerItem);
+    leftbarLayout->addWidget(globalScalingBox);
+    leftbarLayout->addItem(spacerItem2);
+    leftbarLayout->addWidget(imagePropsBox);
+    
     topbarLayout->addLayout(leftbarLayout);
     topbarLayout->addWidget(displayWidget);
     
@@ -149,8 +150,8 @@ void Interface::initPreviewDisplay()
     imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
     previewDisplayPort = new Port(currFunction, currColorWheel, disp->width(), disp->height(), settings);
     
-    displayProgressBar = new ProgressBar(tr("Preview"), true, previewDisplayPort);
-    exportProgressBar = new ProgressBar(tr("Exporting"), false, imageExportPort);
+    displayProgressBar = new ProgressBar(tr("Preview"), previewDisplayPort);
+    exportProgressBar = new ProgressBar(tr("Exporting"), imageExportPort);
     // connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), displayProgressBar, SLOT(update(int)));
     connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
     connect(previewDisplayPort, SIGNAL(paintingFinished(bool)), this, SLOT(resetMainWindowButton(bool)));
@@ -1743,7 +1744,7 @@ void Interface::startImageExport()
     if (!inFile.open(QIODevice::WriteOnly))
         return;
 
-    exportProgressBar->resetBar(tr("Exporting"), true, imageExportPort);
+    exportProgressBar->resetBar(tr("Exporting"), imageExportPort);
     exportProgressBar->reset();
 
     dispLayout->insertLayout(2, exportProgressBar->layout);

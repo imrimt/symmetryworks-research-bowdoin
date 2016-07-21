@@ -48,6 +48,8 @@ const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
 const int MIN_IMAGE_DIM = 20;
 const int MAX_IMAGE_DIM = 10000;
 
+const int PROG_BAR_TIMEOUT = 100;
+
 enum wallpaperFunctionSet { };
 
 // QSpinBox subclass that disallows user input
@@ -111,7 +113,7 @@ class ProgressBar : public QProgressBar
     Q_OBJECT
     
 public:
-    ProgressBar(const QString &title, bool visible, Port *port) {
+    ProgressBar(const QString &title, Port *port) {
         
         label = new QLabel(title);
         percentLabel = new QLabel();
@@ -121,7 +123,7 @@ public:
         progBar->setValue(0);
         progBar->setVisible(visible);
         progBar->setPalette(QColor(Qt::gray));
-        label->setVisible(visible);
+        this->setVisible(false);
         
         layout = new QHBoxLayout();
         layout->addWidget(label);
@@ -129,7 +131,7 @@ public:
         layout->addWidget(percentLabel);
 
         this->port = port;
-        this->visible = visible;
+        
         
     }
 
@@ -141,16 +143,14 @@ public:
         delete progBar;
     }
 
-    void resetBar(const QString &title, bool visible, Port *port) {
+    void resetBar(const QString &title, Port *port) {
         label = new QLabel(title);
         percentLabel = new QLabel();
         progBar = new QProgressBar();
         progBar->setRange(0, 100);
         progBar->setAlignment(Qt::AlignCenter);
         progBar->setValue(0);
-        progBar->setVisible(visible);
         progBar->setPalette(QColor(Qt::gray));
-        label->setVisible(visible);
         
         layout = new QHBoxLayout();
         layout->addWidget(label);
@@ -158,13 +158,14 @@ public:
         layout->addWidget(percentLabel);
 
         this->port = port;
-        this->visible = visible;
+    
     }
 
     void setVisible(bool visible) { 
         this->visible = visible;
         progBar->setVisible(visible);
         label->setVisible(visible);
+        percentLabel->setVisible(visible);
     }
     
     QProgressBar *progBar;
@@ -173,6 +174,7 @@ public:
     QHBoxLayout *layout;
     
 private:
+    int timer;
     bool visible;
     Port *port;
     
@@ -180,8 +182,8 @@ protected:
     
     void setNewValue(int val) {
         // qDebug() << "progBar exists?:" << (bool)(progBar != NULL);
+        
         progBar->setValue(val);
-        // qDebug() << "why am I crashing here?";
         percentLabel->setText(progBar->text());
     }
     
@@ -194,22 +196,24 @@ public slots:
     // called to update progress bar throughout the rendering process
     void partialUpdate(const double &progress)
     {
-        if (!visible) { progBar->setVisible(true); label->setVisible(true); }
+        if (timer > PROG_BAR_TIMEOUT) { this->setVisible(true); }
+        timer++;
         //qDebug() << "progress" << progress;
         this->setNewValue(progress);
 
         //emit signals to reset table buttons
         if (progress == 100) {
             emit renderFinished();
-            QTimer::singleShot(2000, this, SLOT(updateColor()));
+            this->setVisible(false);
+            //QTimer::singleShot(100, this, SLOT(progBar->setVisible(false)));
         }
     }
-
-    void updateColor() {
-        // qDebug() << "updating color";
-        // QString value1 = "QProgressBar::chunk {background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #F10350,stop: 0.4999 #FF3320,stop: 0.5 #FF0019,stop: 1 #FF0000 );}";
-        // this->setStyleSheet(value1);
-    }
+//
+//    void updateColor() {
+//        // qDebug() << "updating color";
+//        // QString value1 = "QProgressBar::chunk {background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #F10350,stop: 0.4999 #FF3320,stop: 0.5 #FF0019,stop: 1 #FF0000 );}";
+//        // this->setStyleSheet(value1);
+//    }
 
 };
 
@@ -445,6 +449,8 @@ private slots:
     void setImagePushed();
     void selectColorWheel();
     void selectImage();
+    
+    //TODO for each change function, push current value onto the undostack...each action has its own command?
     void changeFunction(int index);
     void changeWorldWidth(double val);
     void changeWorldWidth();
