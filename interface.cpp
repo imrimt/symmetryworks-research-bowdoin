@@ -4,7 +4,7 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
 {
     
     // FUNCTIONAL VARIABLES
-
+    newUpdate = true;
     termIndex = 0;
     saveloadPath = QDir::homePath();
     
@@ -48,7 +48,22 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     functionSel->setCurrentIndex(0);
     colorwheelSel->setCurrentIndex(0);
 
-    
+    functionSel->setFocus();
+
+    // Set Up Tab Orders
+    setTabOrder(functionSel, colorwheelSel);
+    setTabOrder(colorwheelSel, scaleREdit);
+    setTabOrder(scaleREdit, scaleAEdit);
+    setTabOrder(scaleAEdit, XShiftEdit);
+    setTabOrder(XShiftEdit, YShiftEdit);
+    setTabOrder(YShiftEdit, worldWidthEdit);
+    setTabOrder(worldWidthEdit, worldHeightEdit);
+    setTabOrder(worldHeightEdit, numTermsEdit);
+    setTabOrder(numTermsEdit, currTermEdit);
+    setTabOrder(currTermEdit, mEdit);
+    setTabOrder(nEdit, mEdit);
+    setTabOrder(mEdit, rEdit);
+    setTabOrder(rEdit, aEdit);    
 }
 
 
@@ -113,7 +128,8 @@ void Interface::initInterfaceLayout()
     
     initImageProps();
     initImageExportPopUp();
-    
+    initToolTips();
+
     connectAllSignals();
 
     refreshTableTerms();
@@ -152,15 +168,6 @@ void Interface::initPreviewDisplay()
     
     displayProgressBar = new ProgressBar(tr("Preview"), previewDisplayPort);
     exportProgressBar = new ProgressBar(tr("Exporting"), imageExportPort);
-    // connect(previewDisplayPort->getControllerObject(), SIGNAL(progressChanged(int)), displayProgressBar, SLOT(update(int)));
-    connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
-    connect(previewDisplayPort, SIGNAL(paintingFinished(bool)), this, SLOT(resetMainWindowButton(bool)));
-    connect(displayProgressBar, SIGNAL(renderFinished()), this, SLOT(resetTableButton()));
-    connect(imageExportPort, SIGNAL(finishedExport(QString)), this, SLOT(popUpImageExportFinished(QString)));
-    connect(imageExportPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), exportProgressBar, SLOT(partialUpdate(double)));
-
-    qRegisterMetaType<ComplexValue>("ComplexValue");
-    connect(previewDisplayPort->getControllerObject(), SIGNAL(newImageDataPoint(ComplexValue)), this, SLOT(addNewImageDataPoint(ComplexValue)));
 
     dispLayout->setAlignment(disp, Qt::AlignCenter);
     dispLayout->addWidget(disp);
@@ -351,8 +358,8 @@ void Interface::initGlobalScaling()
     scaleRLabel = new QLabel(tr("Scaling Radius"), globalScalingBox);
     scaleAEditSlider = new QDoubleSlider(globalScalingBox);
     scaleREditSlider = new QDoubleSlider(globalScalingBox);
-    scaleAEdit = new QLineEdit(patternTypeBox);
-    scaleREdit = new QLineEdit(patternTypeBox);
+    scaleAEdit = new CustomLineEdit(patternTypeBox);
+    scaleREdit = new CustomLineEdit(patternTypeBox);
     scaleAEdit->setValidator(doubleValidate);
     scaleREdit->setValidator(doubleValidate);
     scaleAEdit->setFixedWidth(40);
@@ -395,6 +402,9 @@ void Interface::initPatternType()
 
     functionSel = new QComboBox(patternTypeBox);
     colorwheelSel = new QComboBox(patternTypeBox);
+
+    functionSel->setFocusPolicy(Qt::StrongFocus);
+    colorwheelSel->setFocusPolicy(Qt::StrongFocus);
 
     gspacer1 = new QSpacerItem(0,20);
     gspacer2 = new QSpacerItem(0,10);
@@ -599,8 +609,8 @@ void Interface::initImageProps()
     YShiftLabel = new QLabel(tr("Vertical Shift"), imagePropsBox);
     XShiftEditSlider = new QDoubleSlider(imagePropsBox);
     YShiftEditSlider = new QDoubleSlider(imagePropsBox);
-    XShiftEdit = new QLineEdit(imagePropsBox);
-    YShiftEdit = new QLineEdit(imagePropsBox);
+    XShiftEdit = new CustomLineEdit(imagePropsBox);
+    YShiftEdit = new CustomLineEdit(imagePropsBox);
     XShiftEdit->setValidator(doubleValidate);
     YShiftEdit->setValidator(doubleValidate);
     XShiftEdit->setFixedWidth(40);
@@ -624,8 +634,8 @@ void Interface::initImageProps()
     
     worldWidthEditSlider = new QDoubleSlider(imagePropsBox);
     worldHeightEditSlider = new QDoubleSlider(imagePropsBox);
-    worldWidthEdit = new QLineEdit(imagePropsBox);
-    worldHeightEdit = new QLineEdit(imagePropsBox);
+    worldWidthEdit = new CustomLineEdit(imagePropsBox);
+    worldHeightEdit = new CustomLineEdit(imagePropsBox);
     worldWidthEdit->setValidator(doubleValidate);
     worldHeightEdit->setValidator(doubleValidate);
     worldWidthEdit->setFixedWidth(40);
@@ -721,67 +731,98 @@ void Interface::initImageExportPopUp()
 
 }
 
+void Interface::initToolTips() 
+{
+
+    QString lineEditText = "Press <i> Enter </i> when finish editing to update preview.";
+    QString editingBoxText = "Editing box for ";
+
+    //patern properties
+    functionLabel->setToolTip("Select among 17 different wallpaper patterns.");
+    colorwheelLabel->setToolTip("Select among different color wheels or load in an image.");
+
+    //scaling factors & image
+    scaleAEdit->setToolTip(editingBoxText + "Scaling Angle. " + lineEditText);
+    scaleREdit->setToolTip(editingBoxText + "Scaling Radius. " + lineEditText);
+    XShiftEdit->setToolTip(editingBoxText + "horizontal shifting factor. " + lineEditText);
+    YShiftEdit->setToolTip(editingBoxText + "vertical shifting factor. " + lineEditText);
+    worldWidthEdit->setToolTip(editingBoxText + "horizontal stretching factor. " + lineEditText);
+    worldHeightEdit->setToolTip(editingBoxText + "vertical stretching factor. " + lineEditText);
+
+    //function parameters
+    numTermsEdit->setToolTip(editingBoxText + "total number of terms.");
+    currTermEdit->setToolTip(editingBoxText + "currently editing term.");
+    freqpairLabel->setToolTip("Frequency pair for the function. NEEDS DESCRIPTION!");
+    coeffLabel->setToolTip("Coefficient pair for the function. NEEDS DESCRIPTION!");
+    nEdit->setToolTip("One of values for frequency pair.");
+    mEdit->setToolTip("One of values for frequency pair.");
+    rEdit->setToolTip("Radius for a given term.");
+    aEdit->setToolTip("Angle for a given term.");
+
+}
+
 // CONNECT SIGNALS TO SLOTS
 void Interface::connectAllSignals()
-{
-    
-    connect(termViewTable, SIGNAL(cellClicked(int, int)), this, SLOT(termViewCellClicked(int, int)));
-    
-    connect(coeffPlaneEdit, SIGNAL(clicked()), polarPlaneMapper, SLOT(map()));
-    connect(scalePlaneEdit, SIGNAL(clicked()), polarPlaneMapper, SLOT(map()));
-    polarPlaneMapper->setMapping(coeffPlaneEdit, LOCAL_FLAG);
-    polarPlaneMapper->setMapping(scalePlaneEdit, GLOBAL_FLAG);
-    connect(polarPlaneMapper,SIGNAL(mapped(int)), polarPlane, SLOT(showPlanePopUp(int)));
+{   
 
-   // connect(toggleViewButton, SIGNAL(clicked()), this, SLOT(toggleViewMode()));
+    connect(disp, SIGNAL(displayPressed(QPoint)), this, SLOT(startShifting(QPoint)));
+    connect(disp, SIGNAL(displayReleased()), this, SLOT(finishShifting()));
+    connect(disp, SIGNAL(displayMoved(QPoint)), this, SLOT(updateShifting(QPoint)));
     connect(snapshotButton, SIGNAL(clicked()), this, SLOT(snapshotFunction()));
-    //connect(exportImage, SIGNAL(clicked()), this, SLOT(exportImageFunction()));
-    //connect(resetButton, SIGNAL(clicked()), this, SLOT(resetFunction()));
-    
-    connect(fromColorWheelButton, SIGNAL(clicked()), this, SLOT(selectColorWheel()));
-    connect(fromImageButton, SIGNAL(clicked()), this, SLOT(selectImage()));
-    
-    // connect(setOverflowColorButton, SIGNAL(clicked()), this, SLOT(showOverflowColorPopUp()));
-    connect(setOverflowColorPopUp, SIGNAL(colorSelected(QColor)), currColorWheel, SLOT(changeOverflowColor(QColor)));
-    connect(setOverflowColorPopUp, SIGNAL(accepted()), this, SLOT(selectImage()));
 
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), currColorWheel, SLOT(setCurrent(int)));
     connect(colorwheelSel, SIGNAL(currentIndexChanged(int)), this, SLOT(colorWheelChanged(int)));
-    
+    connect(fromColorWheelButton, SIGNAL(clicked()), this, SLOT(selectColorWheel()));
+    connect(fromImageButton, SIGNAL(clicked()), this, SLOT(selectImage()));
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
-    // connect(showImageDataGraphButton, SIGNAL(clicked()), this, SLOT(showImageDataGraph()));
+    connect(setOverflowColorPopUp, SIGNAL(colorSelected(QColor)), currColorWheel, SLOT(changeOverflowColor(QColor)));
+    connect(setOverflowColorPopUp, SIGNAL(accepted()), this, SLOT(selectImage()));
     connect(updateImageDataGraphButton, SIGNAL(clicked()), this, SLOT(updateImageDataGraph()));
+
+    connect(scaleREdit, SIGNAL(returnPressed()), this, SLOT(changeScaleR()));
+    connect(scaleAEdit, SIGNAL(returnPressed()), this, SLOT(changeScaleA()));
+    connect(scaleREditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeScaleR(double)));
+    connect(scaleAEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeScaleA(double)));
+
     connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeNumTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateCurrTerm(int)));
+    connect(termViewTable, SIGNAL(cellClicked(int, int)), this, SLOT(termViewCellClicked(int, int)));
     connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
     connect(addTermButton, SIGNAL(clicked()), this, SLOT(addTermTable()));
-    
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
     connect(rEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeR(double)));
     connect(aEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeA(double)));
-    connect(scaleREdit, SIGNAL(returnPressed()), this, SLOT(changeScaleR()));
-    connect(scaleAEdit, SIGNAL(returnPressed()), this, SLOT(changeScaleA()));
-
-    connect(scaleREditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeScaleR(double)));
-    connect(scaleAEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeScaleA(double)));
-    
-    connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
-    connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
     
     connect(worldWidthEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldWidth(double)));
     connect(worldHeightEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldHeight(double)));
     connect(worldWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeWorldWidth()));
     connect(worldHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeWorldHeight()));
-    
     connect(XShiftEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeXCorner(double)));
     connect(YShiftEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeYCorner(double)));
     connect(XShiftEdit, SIGNAL(returnPressed()), this, SLOT(changeXCorner()));
     connect(YShiftEdit, SIGNAL(returnPressed()), this, SLOT(changeYCorner()));
-    
+
+    connect(coeffPlaneEdit, SIGNAL(clicked()), polarPlaneMapper, SLOT(map()));
+    connect(scalePlaneEdit, SIGNAL(clicked()), polarPlaneMapper, SLOT(map()));
+    polarPlaneMapper->setMapping(coeffPlaneEdit, LOCAL_FLAG);
+    polarPlaneMapper->setMapping(scalePlaneEdit, GLOBAL_FLAG);
+    connect(polarPlaneMapper,SIGNAL(mapped(int)), polarPlane, SLOT(showPlanePopUp(int)));
     connect(polarPlane, SIGNAL(setPolarCoordinates(int, QString, QString)), this, SLOT(setPolarCoordinates(int, QString, QString)));
-    
+
+    connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
+    connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
+
+    connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
+    connect(previewDisplayPort, SIGNAL(paintingFinished(bool)), this, SLOT(resetMainWindowButton(bool)));
+    connect(displayProgressBar, SIGNAL(renderFinished()), this, SLOT(resetTableButton()));
+    connect(imageExportPort, SIGNAL(finishedExport(QString)), this, SLOT(popUpImageExportFinished(QString)));
+    connect(imageExportPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), exportProgressBar, SLOT(partialUpdate(double)));
+    qRegisterMetaType<ComplexValue>("ComplexValue");
+    connect(previewDisplayPort->getControllerObject(), SIGNAL(newImageDataPoint(ComplexValue)), this, SLOT(addNewImageDataPoint(ComplexValue)));
+       
+    //shortcut    
     connect(updatePreviewShortcut, SIGNAL(activated()), this, SLOT(snapshotFunction()));
     
 }
@@ -1026,10 +1067,15 @@ void Interface::resetFunction()
     changeScaleR(currFunction->getScaleR());
     changeScaleA(currFunction->getScaleA());
     
-    changeWorldHeight(DEFAULT_WORLD_HEIGHT);
-    changeWorldWidth(DEFAULT_WORLD_WIDTH);
-    changeXCorner(DEFAULT_XCORNER);
-    changeYCorner(DEFAULT_YCORNER);
+    // changeWorldHeight(DEFAULT_WORLD_HEIGHT);
+    // changeWorldWidth(DEFAULT_WORLD_WIDTH);
+    // changeXCorner(DEFAULT_XCORNER);
+    // changeYCorner(DEFAULT_YCORNER);
+
+    worldWidthEditSlider->setValue(DEFAULT_WORLD_HEIGHT * 100.0);
+    worldHeightEditSlider->setValue(DEFAULT_WORLD_WIDTH * 100.0);
+    XShiftEditSlider->setValue(DEFAULT_XCORNER * 100.0);
+    YShiftEditSlider->setValue(DEFAULT_YCORNER * 100.0);
     
     currColorWheel->changeOverflowColor(Qt::black);
     
@@ -1518,6 +1564,11 @@ QString Interface::loadSettings(const QString &fileName) {
 // updates the preview to reflect changes to the settings, function, and color wheel
 void Interface::updatePreviewDisplay()
 {
+    if (!newUpdate) {
+        return;
+    }
+
+    qDebug() << "updating preview display";
 
     // if (!imageDataGraph->series().empty()) imageDataGraph->removeSeries(imageDataSeries);
 	imageDataSeries->clear();
@@ -1576,6 +1627,7 @@ void Interface::changeWorldHeight(double val)
 {
     settings->Height = val;
     worldHeightEdit->setText(QString::number(val));
+    worldHeightEdit->setModified(false);
     updatePreviewDisplay();
 }
 
@@ -1587,7 +1639,8 @@ void Interface::changeWorldHeight()
     worldHeightEditSlider->blockSignals(true);
     worldHeightEditSlider->setValue(val * 100.0);
     worldHeightEditSlider->blockSignals(false);
-    
+    worldHeightEdit->setModified(false);
+
     updatePreviewDisplay();
 }
 
@@ -1596,6 +1649,7 @@ void Interface::changeWorldWidth(double val)
 {
     settings->Width = val;
     worldWidthEdit->setText(QString::number(val));
+    worldWidthEdit->setModified(false);
     updatePreviewDisplay();
 }
 
@@ -1607,6 +1661,7 @@ void Interface::changeWorldWidth()
     worldWidthEditSlider->blockSignals(true);
     worldWidthEditSlider->setValue(val * 100.0);
     worldWidthEditSlider->blockSignals(false);
+    worldWidthEdit->setModified(false);
     updatePreviewDisplay();
 }
 
@@ -1615,6 +1670,7 @@ void Interface::changeXCorner(double val)
   
     settings->XCorner = val;
     XShiftEdit->setText(QString::number(val));
+    XShiftEdit->setModified(false);
     updatePreviewDisplay();
 }
 
@@ -1627,6 +1683,7 @@ void Interface::changeXCorner()
     XShiftEditSlider->blockSignals(true);
     XShiftEditSlider->setValue(val * 100.0);
     XShiftEditSlider->blockSignals(false);
+    XShiftEdit->setModified(false);
     updatePreviewDisplay();
 }
 
@@ -1634,6 +1691,7 @@ void Interface::changeYCorner(double val)
 {
     settings->YCorner = val;
     YShiftEdit->setText(QString::number(val));
+    YShiftEdit->setModified(false);
     updatePreviewDisplay();
 }
 
@@ -1644,6 +1702,7 @@ void Interface::changeYCorner()
     YShiftEditSlider->blockSignals(true);
     YShiftEditSlider->setValue(val * 100.0);
     YShiftEditSlider->blockSignals(false);
+    YShiftEdit->setModified(false);
     updatePreviewDisplay();
 }
 
@@ -1702,6 +1761,7 @@ void Interface::changeScaleA()
     scaleAEditSlider->blockSignals(true);
     scaleAEditSlider->setValue(val * 100.0);
     scaleAEditSlider->blockSignals(false);
+    scaleAEdit->setModified(false);
     updatePreviewDisplay();
 }
 
@@ -1724,6 +1784,7 @@ void Interface::changeScaleR()
     scaleREditSlider->blockSignals(true);
     scaleREditSlider->setValue(val * 100.0);
     scaleREditSlider->blockSignals(false);
+    scaleREdit->setModified(false);
     updatePreviewDisplay();
 }
 
@@ -1899,17 +1960,51 @@ void Interface::setSnapShotWindow(HistoryDisplay* window)
 
 }
 
-// void Interface::addNewImageDataPoint(const std::complex<double> &data)
-// {
-// 	// qDebug() << "got here" << data.real() << data.imag();
+void Interface::mousePressEvent(QMouseEvent* event) 
+{
+    QWidget *widget = QApplication::focusWidget();
+    if (event->button() == Qt::LeftButton) {
+        if (!widget->underMouse()) {
+            if (QLineEdit* lineEditBox = dynamic_cast<QLineEdit*>(widget)) {
+                if (lineEditBox->isModified()) {
+                    lineEditBox->undo();
+                }
+            }
+        }
+    }
+}
 
-// 	*imageDataSeries << QPointF(data.real(), data.imag());
-// }
+void Interface::startShifting(const QPoint &point) 
+{
+    prevMousePos = point;
+    mouseMoving = true;
+}
 
-// void Interface::showImageDataGraph() 
+void Interface::finishShifting()
+{
+    mouseMoving = false;
+}
+
+void Interface::updateShifting(const QPoint &point) 
+{
+    if (mouseMoving) {
+        // qDebug() << "pointx:" << point.x() << "prevmousepos.x:" << prevMousePos.x();
+        double xTranslation = (double)(point.x() - prevMousePos.x()) / 100;
+        double yTranslation = (double)(point.y() - prevMousePos.y()) / 100;
+        // qDebug() << "xTranslation:" << xTranslation << "and yTranslation:" << yTranslation;
+        newUpdate = false;
+        XShiftEdit->setText(QString::number(XShiftEdit->text().toDouble() - xTranslation));
+        YShiftEdit->setText(QString::number(YShiftEdit->text().toDouble() + yTranslation));
+        emit XShiftEdit->returnPressed();
+        newUpdate = true;
+        emit YShiftEdit->returnPressed();
+        prevMousePos = point;
+    }
+}
+
+// void Interface::mouseMoveEvent(QMouseEvent *event) 
 // {
-//     updateImageDataGraph();
-//     imageDataWindow->show();
+
 // }
 
 void Interface::updateImageDataGraph() 

@@ -9,6 +9,7 @@
 #include <QPixmap>
 #include <QDebug>
 #include <QVector>
+#include <QMouseEvent>
 
 const double SCALE = 0.25;
 const double MAX_PREVIEW_IMAGE_SIZE = 600;
@@ -30,9 +31,17 @@ public:
     int height() { return imageSize;}
     void resetSize() {resize(imageSize, imageSize); update();}
 
+signals:
+    void displayPressed(const QPoint &point);
+    void displayReleased();
+    void displayMoved(const QPoint &point);
+
 protected:
     void paintEvent(QPaintEvent *event);
     // void resizeEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
 
 private:
@@ -44,6 +53,9 @@ private:
 
     QPoint topLeft;
     QPoint bottomRight;
+
+    bool mouseMoving;
+    QPoint prevMousePos;
 };
 
 

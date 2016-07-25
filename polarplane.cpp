@@ -60,7 +60,7 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     *series2 << QPointF(0, 10) << QPointF(0,2) << QPointF(0,-2) << QPointF(0, -10);
     *xSeries << QPointF(0,0) << QPointF(1,0);
     *ySeries << QPointF(0,0) << QPointF(1,0);
-    *coordinateSeries << QPointF(1, 0);
+    *coordinateSeries << QPointF(1.00, 0.00);
     
     radiusEdit->setValidator(doubleValidate);
     radiusEdit->setText("1.00");

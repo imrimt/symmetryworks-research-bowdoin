@@ -44,13 +44,27 @@
 
 const unsigned int INVALID_FILE_ERROR = 0;
 const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
-
 const int MIN_IMAGE_DIM = 20;
 const int MAX_IMAGE_DIM = 10000;
+const int PROG_BAR_TIMEOUT = 50;
 
-const int PROG_BAR_TIMEOUT = 100;
+// QLineEdit subclass that undo changes (if not entered) when loses focus
+class CustomLineEdit : public QLineEdit 
+{
+    Q_OBJECT
+public:
+    CustomLineEdit(QWidget *parent = 0) : QLineEdit(parent) { }
 
-enum wallpaperFunctionSet { };
+protected:
+    void focusOutEvent(QFocusEvent * /*unused*/) {
+        if (isModified()) undo();
+        setReadOnly(true);
+    }
+
+    void focusInEvent(QFocusEvent * /*unused*/) {
+        setReadOnly(false);
+    }
+};
 
 // QSpinBox subclass that disallows user input
 class CustomSpinBox : public QSpinBox
@@ -205,15 +219,8 @@ public slots:
         if (progress == 100) {
             emit renderFinished();
             this->setVisible(false);
-            //QTimer::singleShot(100, this, SLOT(progBar->setVisible(false)));
         }
     }
-//
-//    void updateColor() {
-//        // qDebug() << "updating color";
-//        // QString value1 = "QProgressBar::chunk {background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #F10350,stop: 0.4999 #FF3320,stop: 0.5 #FF0019,stop: 1 #FF0000 );}";
-//        // this->setStyleSheet(value1);
-//    }
 
 };
 
@@ -223,8 +230,6 @@ class Interface : public QWidget
 {
     Q_OBJECT
 public:
-    // Interface(QWidget *parent = 0) : QWidget(parent) { }
-    // explicit Interface(QWidget *parent = 0);
     Interface(QWidget *parent = 0); 
     ~Interface() {;} 
 
@@ -238,8 +243,6 @@ public:
     QGroupBox *imagePropsBox;
     QSpacerItem *spacerItem;
     QSpacerItem *spacerItem2;
-    //QWidget *toggleViewWidget;
-    //QWidget *patternTypeWidget;
     QMessageBox *errorMessageBox;
 
     // INPUT VALIDATORS
@@ -254,26 +257,47 @@ public:
     // SUPPLEMENTAL WINDOWS
     HistoryDisplay *historyDisplay;
     PolarPlane *polarPlane;
-
-    //modeToggle SUBELEMENTS
-//    QPushButton *toggleViewButton;
-//    QVBoxLayout *toggleViewLayout;
-    
+    QSignalMapper *polarPlaneMapper;    
     
     // global scaling factors SUBELEMENTS
     QGroupBox *globalScalingBox;
-    //QLabel *globalConstantsLabel;
     QVBoxLayout *globalScalingBoxLayout;
     QHBoxLayout *scaleALayout;
     QHBoxLayout *scaleRLayout;
-    //QGridLayout *globalScalingBoxGrid;
+    QLabel *scaleALabel;
+    QLabel *scaleRLabel;
     QDoubleSlider *scaleAEditSlider;
     QDoubleSlider *scaleREditSlider;
-    QLineEdit *scaleAEdit;
-    QLineEdit *scaleREdit;
+    CustomLineEdit *scaleAEdit;
+    CustomLineEdit *scaleREdit;
     QPushButton *scalePlaneEdit;
     
     // functionConstants SUBELEMENTS
+    QLabel *currTermLabel;
+    QLabel *nLabel;
+    QLabel *mLabel;
+    QLabel *aLabel;
+    QLabel *rLabel;
+    QLabel *aValueLabel;
+    QLabel *rValueLabel;
+    CustomSpinBox *currTermEdit;
+    QSpinBox *nEdit;
+    QSpinBox *mEdit;
+    QDoubleSlider *aEdit;
+    QDoubleSlider *rEdit;
+    QPushButton *coeffPlaneEdit;
+
+    QGroupBox *functionConstantsBox;
+    QGridLayout *functionTermsGrid;
+    QVBoxLayout *functionConstantsBoxLayout;
+    QVBoxLayout *functionConstantsWidgetLayout;
+    QHBoxLayout *functionConstantsScalingTerms;
+    QHBoxLayout *termEditLayout;
+    QVBoxLayout *functionConstantsPairs;
+    QHBoxLayout *functionConstantsFreqs;
+    QHBoxLayout *functionConstantsCoeffs;
+
+    // TERM VIEW TABLE
     QPushButton *termViewButton;
     QWidget *termViewWidget;
     QVBoxLayout *termViewLayout;
@@ -283,40 +307,6 @@ public:
     QStringList termViewHorizontalHeaders;
     QStringList termViewVerticalHeaders;
     QPushButton *addTermButton;
-    
-    QLabel *currTermLabel;
-    CustomSpinBox *currTermEdit;
-    QLabel *nLabel;
-    QLabel *mLabel;
-    QLabel *aLabel;
-    QLabel *rLabel;
-    QLabel *aValueLabel;
-    QLabel *rValueLabel;
-    QLabel *scaleALabel;
-    QLabel *scaleRLabel;
-    QSpinBox *nEdit;
-    QSpinBox *mEdit;
-    QDoubleSlider *aEdit;
-    QDoubleSlider *rEdit;
-    QPushButton *coeffPlaneEdit;
-    
-    QSignalMapper *polarPlaneMapper;
-
-    QGroupBox *functionConstantsBox;
-    
-    QGridLayout *functionTermsGrid;
-
-    QVBoxLayout *functionConstantsBoxLayout;
-    QVBoxLayout *functionConstantsWidgetLayout;
-    QHBoxLayout *functionConstantsScalingTerms;
-    QHBoxLayout *termEditLayout;
-    QVBoxLayout *functionConstantsPairs;
-    QHBoxLayout *functionConstantsFreqs;
-    QHBoxLayout *functionConstantsCoeffs;
-    
-    QPushButton *loadButton;
-    QPushButton *saveButton;
-    
     QSignalMapper *termViewTableMapper;
     QSignalMapper *removeTermMapper;
 
@@ -345,11 +335,9 @@ public:
     QPushButton *setLoadedImage;
     QRadioButton *fromImageButton;
     QRadioButton *fromColorWheelButton;
-    // QPushButton *setOverflowColorButton;
     QColorDialog *setOverflowColorPopUp;
 
     // IMAGE DATA POINTS
-    // QPushButton *showImageDataGraphButton;
     QPushButton *updateImageDataGraphButton;
     QScatterSeries *imageDataSeries;
     QScatterSeries *prevDataSeries;
@@ -364,12 +352,7 @@ public:
     QHBoxLayout *imageDataWindowLayout;
 
     // imagePropsBox SUBELEMENTS
-    //QVBoxLayout *imagePropsBoxStack;
-    //QVBoxLayout *imagePropsEditStack;
     QVBoxLayout *imagePropsBoxLayout;
-    //QHBoxLayout *savePushLayout;
-    //QVBoxLayout *imagePropsBoxOverallLayout;
-    
     QHBoxLayout *imageShiftXLayout;
     QHBoxLayout *imageShiftYLayout;
     QHBoxLayout *imageStretchXLayout;
@@ -379,42 +362,26 @@ public:
     QLabel *YShiftLabel;
     QDoubleSlider *XShiftEditSlider;
     QDoubleSlider *YShiftEditSlider;
-    QLineEdit *XShiftEdit;
-    QLineEdit *YShiftEdit;
-    
-//    QLabel *outHeightLabel;
-//    QLabel *outWidthLabel;
-    
+    CustomLineEdit *XShiftEdit;
+    CustomLineEdit *YShiftEdit;
     QLabel *worldWidthLabel;
     QLabel *worldHeightLabel;
-    
-//    QLineEdit *worldWidthEditSlider;
-//    QLineEdit *worldHeightEditSlider;
     QDoubleSlider *worldWidthEditSlider;
     QDoubleSlider *worldHeightEditSlider;
-    QLineEdit *worldWidthEdit;
-    QLineEdit *worldHeightEdit;
+    CustomLineEdit *worldWidthEdit;
+    CustomLineEdit *worldHeightEdit;
     
     QSpacerItem *pspacer1;
-//    QSpacerItem *pspacer2;
-//    QSpacerItem *pspacer3;
-//    QSpacerItem *pspacer4;
-//    QSpacerItem *pspacer5;
 
     // DISP SUBELEMENTS
     QPushButton *snapshotButton;
-    //QPushButton *exportImage;
-    //QPushButton *resetButton;
     Display *disp;
     QVBoxLayout *dispLayout;
-    QHBoxLayout *buttonLayout;
-    
-    
+    QHBoxLayout *buttonLayout;    
 
     // SHORTCUTS
     QShortcut *updatePreviewShortcut;
     
-   
     // PROGRESS BARS
     ProgressBar *displayProgressBar;
     ProgressBar *exportProgressBar;
@@ -435,14 +402,12 @@ public:
     QGridLayout *functionIconsWindowLayout;
     QPushButton *viewFunctionIconsButton;
     
-    void setSnapShotWindow(HistoryDisplay* window);
-    // void setFunctionIconsWindow(QWidget* window);   
+    void setSnapShotWindow(HistoryDisplay* window); 
 
 signals:
     void imageActionStatus(bool status);
 
 private slots:
-    //void toggleViewMode();
     void updateCurrTerm(int i);
     void changeNumTerms(int i);
     void colorWheelChanged(int index);
@@ -499,11 +464,18 @@ private slots:
     
     void showFunctionIcons() { functionIconsWindow->hide(), functionIconsWindow->show(); }
     void showOverflowColorPopUp() { setOverflowColorPopUp->show(); }
-    //void hideFunctionicon(int index) { functionIconsWindow->hide(); }
 
     void addNewImageDataPoint(const ComplexValue &data) { *imageDataSeries << QPointF(data.real(), data.imag()); }
     void showImageDataGraph() { updateImageDataGraph(); imageDataWindow->hide(); imageDataWindow->show(); }
     void updateImageDataGraph();
+
+    void startShifting(const QPoint &point);
+    void updateShifting(const QPoint &point);
+    void finishShifting();
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    // void mouseMoveEvent(QMouseEvent *event);
     
 private:    
     QString genLabel(const char * in);    
@@ -519,6 +491,7 @@ private:
     void initImageProps();
     void initImageExportPopUp();
     void initCoeffPlane();
+    void initToolTips();
     void connectAllSignals();
     void removeTerm(int row);
     void refreshLabels();
@@ -527,28 +500,29 @@ private:
     void refreshTableTerms();
     void refreshMainWindowTerms();
 
-    int previewWidth, previewHeight, previewSize;
-    int numTerms;
-    unsigned int termIndex; 
+    //main data structures
+    QVector<AbstractFunction *> functionVector;
+    AbstractFunction *currFunction;
+    ColorWheel *currColorWheel;
+    Settings *settings;
+    Port *previewDisplayPort, *imageExportPort;
+
+    //operational variables
+    int previewWidth, previewHeight, previewSize;       //preview display size
+    int numTerms;               //total number of terms
+    unsigned int termIndex;     //currently editing term
+    int coeffFlag;      //mapping variable for polar plane
+    bool newUpdate;     //guard variable for preview update 
     
+    //I/O-related variables    
     QString saveloadPath;
     QString currFileName;
     QString imageSetPath;
     QString openImageName;
-    
-    AbstractFunction * currFunction;
-    ColorWheel * currColorWheel;
-    QSharedPointer<AbstractFunction> currFunctionPtr;
-    QSharedPointer<ColorWheel> currColorWheelPtr;
-    
-    Port *previewDisplayPort, *imageExportPort;
 
-    //bool advancedMode;
-    int coeffFlag;
-    
-    QVector<AbstractFunction *> functionVector;
-    
-    Settings *settings;
+    //mouse-related variables
+    bool mouseMoving;
+    QPoint prevMousePos;
     
 };
 

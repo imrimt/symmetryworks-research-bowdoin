@@ -29,7 +29,6 @@ public:
     explicit RenderThread(AbstractFunction *function, ColorWheel *colorwheel, Settings *settings, QSize outputSize, QObject *parent = 0);
     ~RenderThread();
     
-    // void render(AbstractFunction *function, ColorWheel *colorwheel, QPoint topLeft, QPoint bottomRight, Settings *settings, QImage *output, Controller *controllerObject, QWaitCondition *controllerCondition);
     void render(QPoint topLeft, QPoint bottomRight, QWaitCondition *controllerCondition);
 
     // SETTERS 

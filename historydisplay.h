@@ -1,15 +1,11 @@
-
-
 #ifndef historydisplay_h
 #define historydisplay_h
-
 
 #include "port.h"
 
 #include <QGroupBox>
 #include <QSignalMapper>
 #include <QLabel>
-
 
 const int MAX_HISTORY_ITEMS = 8;
 const int HISTORY_ITEM_SIZE = 60;

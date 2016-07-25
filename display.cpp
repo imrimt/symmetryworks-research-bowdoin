@@ -68,6 +68,29 @@ void Display::enlarge()
     update();
 }
 
+void Display::mousePressEvent(QMouseEvent *event) 
+{
+    if (event->button() == Qt::LeftButton) {
+        mouseMoving = true;
+        emit displayPressed(event->pos());
+    }
+}
+
+void Display::mouseReleaseEvent(QMouseEvent *event) 
+{
+    if (event->button() == Qt::LeftButton) {
+        mouseMoving = false;
+        emit displayReleased();
+    }
+}
+
+void Display::mouseMoveEvent(QMouseEvent *event) 
+{
+    if (mouseMoving) {
+        emit displayMoved(event->pos());
+    }   
+}
+
 void Display::paintEvent(QPaintEvent * /* unused */)
 {
     QPainter painter(this);
