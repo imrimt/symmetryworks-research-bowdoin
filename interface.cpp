@@ -688,10 +688,12 @@ void Interface::initImageExportPopUp()
     imageDimensionsPopUp->setWindowModality(Qt::WindowModal);
     imageDimensionsPopUp->setWindowTitle(tr("Image Settings"));
     imageDimensionsPopUpLayout = new QVBoxLayout(imageDimensionsPopUp);
+    
    // imageDimensionsPopUp->setMinimumWidth(300);
     
     outHeightEdit = new QLineEdit(imageDimensionsPopUp);
     outWidthEdit = new QLineEdit(imageDimensionsPopUp);
+    
     
     outWidthLayout = new QHBoxLayout();
     outWidthLabel = new QLabel(tr("Image Width"));
@@ -706,9 +708,28 @@ void Interface::initImageExportPopUp()
     outHeightLayout->addWidget(outHeightEdit);
     outHeightLayout->addWidget(new QLabel(tr("pixels")));
     
+    outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
+    outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
+    
+    
+    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
+    double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
+    double aspectRatio = (double)(width / height);
+    qDebug() << "aspect ratio: " << aspectRatio;
+    
+
+    aspectRatioPreview = new Display(width, height, imageDimensionsPopUp);
+    aspectRatioPreviewLayout = new QHBoxLayout();
+    aspectRatioLabel = new QLabel(tr("Aspect Ratio: %1").arg(aspectRatio));
+    aspectRatioPreviewLayout->addWidget(aspectRatioLabel);
+    aspectRatioPreviewLayout->addWidget(aspectRatioPreview);
+    aspectRatioPreviewDisplayPort = new Port(currFunction, currColorWheel, width, height, settings);
+    
     
     imageDimensionsPopUpLayout->addLayout(outWidthLayout);
     imageDimensionsPopUpLayout->addLayout(outHeightLayout);
+    imageDimensionsPopUpLayout->addItem(new QSpacerItem(10, 20));
+    imageDimensionsPopUpLayout->addLayout(aspectRatioPreviewLayout);
     
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                      | QDialogButtonBox::Cancel);
@@ -717,8 +738,6 @@ void Interface::initImageExportPopUp()
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(startImageExport()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancelImageExport()));
     
-    outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
-    outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
    
     imageDimensionsPopUp->hide();
 
@@ -772,6 +791,8 @@ void Interface::connectAllSignals()
     
     connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
     connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
+    connect(outWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeOWidth()));
+    connect(outHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeOHeight()));
     
     connect(worldWidthEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldWidth(double)));
     connect(worldHeightEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldHeight(double)));
@@ -1053,7 +1074,6 @@ void Interface::termViewPopUp()
 // updates the term that is currently being edited
 void Interface::updateCurrTerm(int i)
 {
-    int old = termIndex;
     if (i > 0) termIndex = i - 1;
     
     refreshTableTerms();
@@ -1091,7 +1111,6 @@ void Interface::changeNumTerms(int i)
     
    
 
-    
     updateCurrTerm(i);
     updatePreviewDisplay();
 }
@@ -1533,6 +1552,8 @@ QString Interface::loadSettings(const QString &fileName) {
 void Interface::updatePreviewDisplay()
 {
 
+    
+    
     // if (!imageDataGraph->series().empty()) imageDataGraph->removeSeries(imageDataSeries);
 	imageDataSeries->clear();
 
@@ -1541,6 +1562,7 @@ void Interface::updatePreviewDisplay()
     displayProgressBar->reset();
     
     previewDisplayPort->paintToDisplay(disp);
+    
 }
 
 // slot function called when clicked "update preview" button to add to history and update the preview display to reflect current settings
@@ -1570,18 +1592,32 @@ void Interface::changeOHeight()
     }
     settings->OHeight = val;
     imageExportPort->changeSettings(settings);
+    
+    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
+    double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
+    aspectRatio = (double)(width / height);
+    aspectRatioLabel->setText(tr("Aspect Ratio: %1").arg(aspectRatio));
+    aspectRatioPreviewDisplayPort->changeDimensions(width, height);
+    aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
     // updatePreviewDisplay();
 }
 
 void Interface::changeOWidth()
 {
-    
     int val = outWidthEdit->text().toInt();
     if (val < MIN_IMAGE_DIM || val > MAX_IMAGE_DIM) {
         errorHandler(INVALID_OUTPUT_IMAGE_DIM);
     }
     settings->OWidth = val;
     imageExportPort->changeSettings(settings);
+    
+    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
+    double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
+    aspectRatio = (double)(width / height);
+    aspectRatioLabel->setText(tr("Aspect Ratio: %1").arg(aspectRatio));
+    aspectRatioPreviewDisplayPort->changeDimensions(width, height);
+    aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
+    
     // updatePreviewDisplay();
 }
 
@@ -1589,6 +1625,7 @@ void Interface::changeOWidth()
 void Interface::changeWorldHeight(double val)
 {
     settings->Height = val;
+    
     worldHeightEdit->setText(QString::number(val));
     updatePreviewDisplay();
 }
@@ -1749,6 +1786,8 @@ void Interface::changeScaleR()
 
 void Interface::startImageExport() 
 {
+    aspectRatio = (double)settings->Width/settings->Height;
+    
     
     imageDimensionsPopUp->hide();
     

@@ -43,6 +43,10 @@ public:
         overallWidth = currSettings->OWidth;
         overallHeight = currSettings->OHeight;
     }
+    void changeDimensions(double newWidth, double newHeight) {
+        overallWidth = newWidth;
+        overallHeight = newHeight;
+    }
     
 protected:
     void run() Q_DECL_OVERRIDE;

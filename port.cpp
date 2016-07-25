@@ -35,7 +35,7 @@ void Port::exportImage(QImage *output, const QString &fileName)
 
 
 void Port::paintToDisplay(Display *display)
-{ 
+{
     this->display = display;
     render(display, DISPLAY_REPAINT_FLAG);
 }

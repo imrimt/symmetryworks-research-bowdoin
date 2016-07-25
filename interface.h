@@ -51,6 +51,8 @@ const int MAX_IMAGE_DIM = 10000;
 
 const int PROG_BAR_TIMEOUT = 50;
 
+const double ASPECT_SCALE = 0.025;
+
 enum wallpaperFunctionSet { };
 
 
@@ -468,6 +470,10 @@ public:
     QGridLayout *functionIconsWindowLayout;
     QPushButton *viewFunctionIconsButton;
     
+    Display *aspectRatioPreview;
+    QLabel *aspectRatioLabel;
+    QHBoxLayout *aspectRatioPreviewLayout;
+    
     void setSnapShotWindow(HistoryDisplay* window);
     // void setFunctionIconsWindow(QWidget* window);   
 
@@ -504,7 +510,7 @@ private slots:
     void changeScaleR();
     void changeScaleR(double val);
 
-    void exportImageFunction() { imageDimensionsPopUp->show(); }
+    void exportImageFunction() { imageDimensionsPopUp->show();  aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview); }
     void cancelImageExport() { imageDimensionsPopUp->hide(); }
     void startImageExport();
     
@@ -574,10 +580,11 @@ private:
     QSharedPointer<AbstractFunction> currFunctionPtr;
     QSharedPointer<ColorWheel> currColorWheelPtr;
     
-    Port *previewDisplayPort, *imageExportPort;
-
-    //bool advancedMode;
+    Port *previewDisplayPort, *imageExportPort, *aspectRatioPreviewDisplayPort;
+ 
     int coeffFlag;
+    
+    double aspectRatio;
     
     QVector<AbstractFunction *> functionVector;
     
