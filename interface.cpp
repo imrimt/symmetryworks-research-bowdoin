@@ -1,5 +1,6 @@
 #include "Interface.h"
 
+
 Interface::Interface(QWidget *parent) : QWidget(parent)
 {
     
@@ -44,6 +45,8 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     
     // INITIALIZE LAYOUT
     initInterfaceLayout();
+
+    undoStack = new QUndoStack(this);
     
     functionSel->setCurrentIndex(0);
     colorwheelSel->setCurrentIndex(0);
@@ -695,10 +698,12 @@ void Interface::initImageExportPopUp()
     imageDimensionsPopUp->setWindowModality(Qt::WindowModal);
     imageDimensionsPopUp->setWindowTitle(tr("Image Settings"));
     imageDimensionsPopUpLayout = new QVBoxLayout(imageDimensionsPopUp);
+    
    // imageDimensionsPopUp->setMinimumWidth(300);
     
     outHeightEdit = new QLineEdit(imageDimensionsPopUp);
     outWidthEdit = new QLineEdit(imageDimensionsPopUp);
+    
     
     outWidthLayout = new QHBoxLayout();
     outWidthLabel = new QLabel(tr("Image Width"));
@@ -713,9 +718,28 @@ void Interface::initImageExportPopUp()
     outHeightLayout->addWidget(outHeightEdit);
     outHeightLayout->addWidget(new QLabel(tr("pixels")));
     
+    outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
+    outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
+    
+    
+    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
+    double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
+    double aspectRatio = (double)(width / height);
+    qDebug() << "aspect ratio: " << aspectRatio;
+    
+
+    aspectRatioPreview = new Display(width, height, imageDimensionsPopUp);
+    aspectRatioPreviewLayout = new QHBoxLayout();
+    aspectRatioLabel = new QLabel(tr("Aspect Ratio: %1").arg(aspectRatio));
+    aspectRatioPreviewLayout->addWidget(aspectRatioLabel);
+    aspectRatioPreviewLayout->addWidget(aspectRatioPreview);
+    aspectRatioPreviewDisplayPort = new Port(currFunction, currColorWheel, width, height, settings);
+    
     
     imageDimensionsPopUpLayout->addLayout(outWidthLayout);
     imageDimensionsPopUpLayout->addLayout(outHeightLayout);
+    imageDimensionsPopUpLayout->addItem(new QSpacerItem(10, 20));
+    imageDimensionsPopUpLayout->addLayout(aspectRatioPreviewLayout);
     
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                      | QDialogButtonBox::Cancel);
@@ -724,8 +748,6 @@ void Interface::initImageExportPopUp()
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(startImageExport()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(cancelImageExport()));
     
-    outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
-    outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
    
     imageDimensionsPopUp->hide();
 
@@ -813,6 +835,8 @@ void Interface::connectAllSignals()
 
     connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
     connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
+    // connect(outWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeOWidth()));
+    // connect(outHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeOHeight()));
 
     connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
     connect(previewDisplayPort, SIGNAL(paintingFinished(bool)), this, SLOT(resetMainWindowButton(bool)));
@@ -901,6 +925,7 @@ void Interface::refreshMainWindowTerms()
 
     currTermEdit->blockSignals(true);
     numTermsEdit->blockSignals(true);
+    
 
     currTermEdit->setValue(termIndex + 1);
     
@@ -1095,7 +1120,6 @@ void Interface::termViewPopUp()
 // updates the term that is currently being edited
 void Interface::updateCurrTerm(int i)
 {
-    
     if (i > 0) termIndex = i - 1;
     
     refreshTableTerms();
@@ -1114,6 +1138,7 @@ void Interface::changeNumTerms(int i)
     int oldNumTerms = numTerms;
 
     //qDebug() << "old:" << oldNumTerms << "| new:" << i;
+    
 
     if (i < oldNumTerms) {
         for (int k = oldNumTerms; k > i; --k) { removeTerm(k-1); }
@@ -1124,11 +1149,18 @@ void Interface::changeNumTerms(int i)
         currTermEdit->blockSignals(true);
         currTermEdit->setMaximum(i);
         currTermEdit->blockSignals(false);
-    }    
+    }
+    
+  
+    QUndoCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
+    undoStack->push(command);
+    
+   
 
     updateCurrTerm(i);
     updatePreviewDisplay();
 }
+
 
 // handles changing to a new color wheel
 void Interface::colorWheelChanged(int /* unused */ )
@@ -1536,6 +1568,7 @@ QString Interface::loadSettings(const QString &fileName) {
     YShiftEditSlider->setValue(settings->YCorner * 100.0);
 
     numTermsEdit->setValue(currFunction->getNumTerms());
+    
 
     // functionSel->blockSignals(true);
     functionSel->setCurrentIndex(newFunctionIndex);
@@ -1570,6 +1603,8 @@ void Interface::updatePreviewDisplay()
 
     qDebug() << "updating preview display";
 
+    
+    
     // if (!imageDataGraph->series().empty()) imageDataGraph->removeSeries(imageDataSeries);
 	imageDataSeries->clear();
 
@@ -1578,6 +1613,7 @@ void Interface::updatePreviewDisplay()
     displayProgressBar->reset();
     
     previewDisplayPort->paintToDisplay(disp);
+    
 }
 
 // slot function called when clicked "update preview" button to add to history and update the preview display to reflect current settings
@@ -1607,18 +1643,32 @@ void Interface::changeOHeight()
     }
     settings->OHeight = val;
     imageExportPort->changeSettings(settings);
+    
+    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
+    double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
+    aspectRatio = (double)(width / height);
+    aspectRatioLabel->setText(tr("Aspect Ratio: %1").arg(aspectRatio));
+    aspectRatioPreviewDisplayPort->changeDimensions(width, height);
+    aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
     // updatePreviewDisplay();
 }
 
 void Interface::changeOWidth()
 {
-    
     int val = outWidthEdit->text().toInt();
     if (val < MIN_IMAGE_DIM || val > MAX_IMAGE_DIM) {
         errorHandler(INVALID_OUTPUT_IMAGE_DIM);
     }
     settings->OWidth = val;
     imageExportPort->changeSettings(settings);
+    
+    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
+    double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
+    aspectRatio = (double)(width / height);
+    aspectRatioLabel->setText(tr("Aspect Ratio: %1").arg(aspectRatio));
+    aspectRatioPreviewDisplayPort->changeDimensions(width, height);
+    aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
+    
     // updatePreviewDisplay();
 }
 
@@ -1626,6 +1676,7 @@ void Interface::changeOWidth()
 void Interface::changeWorldHeight(double val)
 {
     settings->Height = val;
+    
     worldHeightEdit->setText(QString::number(val));
     worldHeightEdit->setModified(false);
     updatePreviewDisplay();
@@ -1667,7 +1718,7 @@ void Interface::changeWorldWidth()
 
 void Interface::changeXCorner(double val)
 {
-  
+    
     settings->XCorner = val;
     XShiftEdit->setText(QString::number(val));
     XShiftEdit->setModified(false);
@@ -1676,7 +1727,7 @@ void Interface::changeXCorner(double val)
 
 void Interface::changeXCorner()
 {
-  
+    
     double val = XShiftEdit->text().toDouble();
     settings->XCorner = val;
     
@@ -1748,8 +1799,10 @@ void Interface::changeA(double val)
 //changing slider values
 void Interface::changeScaleA(double val)
 {
+
     currFunction->setScaleA(val);
     scaleAEdit->setText(QString::number(val));
+    
     updatePreviewDisplay();
 }
 
@@ -1763,6 +1816,7 @@ void Interface::changeScaleA()
     scaleAEditSlider->blockSignals(false);
     scaleAEdit->setModified(false);
     updatePreviewDisplay();
+    //qDebug() << (bool)scaleAEdit->isUndoAvailable();
 }
 
 
@@ -1792,6 +1846,8 @@ void Interface::changeScaleR()
 
 void Interface::startImageExport() 
 {
+    aspectRatio = (double)settings->Width/settings->Height;
+    
     
     imageDimensionsPopUp->hide();
     
@@ -1921,6 +1977,8 @@ void Interface::addTermTable()
     int newNumTerms = currFunction->getNumTerms() + 1;
     currFunction->setNumTerms(newNumTerms);
     numTermsEdit->setValue(newNumTerms);
+    
+    //undoStack->push(new ChangeCommand(numTermsEdit, currFunction->getNumTerms(), newNumTerms));
 } 
 
 // pop up window to appear when image file has finished exporting
@@ -2018,4 +2076,19 @@ void Interface::updateImageDataGraph()
 
     prevDataSeries->replace(imageDataSeries->pointsVector());
 }
+
+
+
+bool ChangeCommand::mergeWith(const QUndoCommand *command)
+{
+    const ChangeCommand *changeCommand = static_cast<const ChangeCommand *>(command);
+    QSpinBox *item2 = changeCommand->item;
+    
+    if (item2 != item)
+        return false;
+    
+    return true;
+}
+
+
 

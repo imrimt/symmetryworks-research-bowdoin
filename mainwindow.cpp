@@ -101,22 +101,14 @@ void MainWindow::createActions()
     saveAsAct->setShortcuts(QKeySequence::SaveAs);
     connect(saveAsAct, SIGNAL(triggered()), currInterface, SLOT(saveCurrWorkspaceAs()));
     
-   // connect(currInterface, SIGNAL(somethingChanged()), this, SLOT(changedCommand()));
+    undoAct = currInterface->undoStack->createUndoAction(this, tr("&Undo"));
+    undoAct->setShortcuts(QKeySequence::Undo);
+//    connect(undoAct, SIGNAL(triggered()), currInterface->scaleAEdit, SLOT(undo()));
     
-//    undoAction = undoStack->createUndoAction(this, tr("&Undo"));
-//    undoAction->setShortcuts(QKeySequence::Undo);
-//    undoAction->setStatusTip(tr("Revert most recent changes"));
-//    
-//    
-//    connect(undoAction, SIGNAL(triggered()), this, SLOT(undo());
-//    //undoAction->setIcon(QIcon(":/icons/undo.png"));
-//    redoAction = undoStack->createRedoAction(this, tr("&Redo"));
-//    redoAction->setShortcuts(QKeySequence::Redo);
-//    connect(redoAction, SIGNAL(triggered()), this, SLOT(redo());
-   
-    //redoAction->setIcon(QIcon(":/icons/redo.png"));
-    
-//    undoAct = new QAction(tr("Undo"), this)
+    redoAct = currInterface->undoStack->createRedoAction(this, tr("&Redo"));
+    redoAct->setShortcuts(QKeySequence::Redo);
+//    connect(redoAct, SIGNAL(triggered()), currInterface->scaleAEdit, SLOT(redo()));
+
 
     // printAct = new QAction(tr("&Print..."), this);
     // printAct->setShortcuts(QKeySequence::Print);
@@ -176,11 +168,12 @@ void MainWindow::createMenus()
     //fileMenu->addAction(clearSnapshotsAct);
     fileMenu->addAction(exportImageAct);
 
-//     editMenu = menuBar()->addMenu(tr("Edit"));
-//     editMenu->addAction(undoAct);
-//     editMenu->addAction(redoAct);
-//     editMenu->addSeparator();
-    
+     editMenu = menuBar()->addMenu(tr("Edit"));
+     editMenu->addAction(undoAct);
+     editMenu->addAction(redoAct);
+     editMenu->addSeparator();
+
+   
     
 //     editMenu->addAction(cutAct);
 //     editMenu->addAction(copyAct);

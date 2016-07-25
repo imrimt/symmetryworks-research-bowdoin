@@ -60,6 +60,10 @@ private:
     QAction *showImageDataGraphAct;
     QAction *resetPreviewAct;
     QAction *viewTermsTableAct;
+    
+    QAction *undoAct;
+    QAction *redoAct;
+    
     // QAction *printAct;
     // QAction *exitAct;
     // QAction *undoAct;

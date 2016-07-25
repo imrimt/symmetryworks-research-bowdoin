@@ -152,6 +152,15 @@ public:
             threads[i]->changeSettings(newSettings);
         }
     }
+    void changeDimensions(double newWidth, double newHeight)
+    {
+        overallWidth = newWidth;
+        overallHeight = newHeight;
+        for (int i = 0; i < NUM_THREADS; i++) {
+            threads[i]->changeDimensions(newWidth, newHeight);
+        }
+    }
+    
 
     // CONSTANTS (SET VALUE ONCE)
     int NUM_THREADS;

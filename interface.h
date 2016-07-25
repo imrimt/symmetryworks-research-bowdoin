@@ -30,7 +30,8 @@
 #include <QObject>
 #include <QApplication>
 #include <QDesktopWidget>
-//#include <QUndoStack>
+#include <QUndoStack>
+#include <QUndoCommand>
 
 #include <QProgressBar>
 #include <QTableWidget>
@@ -47,6 +48,7 @@ const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
 const int MIN_IMAGE_DIM = 20;
 const int MAX_IMAGE_DIM = 10000;
 const int PROG_BAR_TIMEOUT = 50;
+const double ASPECT_SCALE = 0.025;
 
 // QLineEdit subclass that undo changes (if not entered) when loses focus
 class CustomLineEdit : public QLineEdit 
@@ -55,7 +57,6 @@ class CustomLineEdit : public QLineEdit
 public:
     CustomLineEdit(QWidget *parent = 0) : QLineEdit(parent) { }
 
-protected:
     void focusOutEvent(QFocusEvent * /*unused*/) {
         if (isModified()) undo();
         setReadOnly(true);
@@ -65,6 +66,8 @@ protected:
         setReadOnly(false);
     }
 };
+
+
 
 // QSpinBox subclass that disallows user input
 class CustomSpinBox : public QSpinBox
@@ -120,6 +123,7 @@ public slots:
     }
 
 };
+
 
 // QProgressBar subclass for tracking wallgen rendering
 class ProgressBar : public QProgressBar
@@ -222,7 +226,40 @@ public slots:
         }
     }
 
+
 };
+
+
+class ChangeCommand : public QUndoCommand
+{
+public:
+    
+    ChangeCommand(QSpinBox *item, float oldVal, float newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
+    {
+        
+        this->item = item;
+        this->oldVal = oldVal;
+        qDebug() << "old value" << oldVal;
+        this->newVal = newVal;
+        qDebug() << "new value" << newVal;
+        //this->canRedo = canRedo;
+    }
+    
+    ~ChangeCommand() {}
+    
+    void undo() Q_DECL_OVERRIDE { item->setValue(oldVal); }
+    void redo() Q_DECL_OVERRIDE { item->setValue(newVal); }
+    bool mergeWith(const QUndoCommand *command) Q_DECL_OVERRIDE ;
+    
+    
+private:
+    QSpinBox *item;
+    
+    float oldVal, newVal;
+    //bool canRedo;
+    
+};
+
 
 
 // Interface class
@@ -382,6 +419,8 @@ public:
     // SHORTCUTS
     QShortcut *updatePreviewShortcut;
     
+    QUndoStack *undoStack;
+    
     // PROGRESS BARS
     ProgressBar *displayProgressBar;
     ProgressBar *exportProgressBar;
@@ -402,7 +441,11 @@ public:
     QGridLayout *functionIconsWindowLayout;
     QPushButton *viewFunctionIconsButton;
     
-    void setSnapShotWindow(HistoryDisplay* window); 
+    Display *aspectRatioPreview;
+    QLabel *aspectRatioLabel;
+    QHBoxLayout *aspectRatioPreviewLayout;
+    
+    void setSnapShotWindow(HistoryDisplay* window);
 
 signals:
     void imageActionStatus(bool status);
@@ -436,7 +479,7 @@ private slots:
     void changeScaleR();
     void changeScaleR(double val);
 
-    void exportImageFunction() { imageDimensionsPopUp->show(); }
+    void exportImageFunction() { imageDimensionsPopUp->show();  aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview); }
     void cancelImageExport() { imageDimensionsPopUp->hide(); }
     void startImageExport();
     
@@ -505,14 +548,15 @@ private:
     AbstractFunction *currFunction;
     ColorWheel *currColorWheel;
     Settings *settings;
-    Port *previewDisplayPort, *imageExportPort;
+    Port *previewDisplayPort, *imageExportPort, *aspectRatioPreviewDisplayPort;
 
     //operational variables
     int previewWidth, previewHeight, previewSize;       //preview display size
     int numTerms;               //total number of terms
     unsigned int termIndex;     //currently editing term
     int coeffFlag;      //mapping variable for polar plane
-    bool newUpdate;     //guard variable for preview update 
+    bool newUpdate;     //guard variable for preview update
+    double aspectRatio; 
     
     //I/O-related variables    
     QString saveloadPath;
@@ -522,8 +566,7 @@ private:
 
     //mouse-related variables
     bool mouseMoving;
-    QPoint prevMousePos;
-    
+    QPoint prevMousePos;    
 };
 
 #endif // Interface_H

@@ -34,6 +34,14 @@ public:
         
         controller->changeSettings(newSettings);
     }
+    void changeDimensions(double newWidth, double newHeight)
+    {
+        overallWidth = newWidth;
+        overallHeight = newHeight;
+        
+        controller->changeDimensions(newWidth, newHeight);
+    }
+    
 
     Controller *getControllerObject() { return controllerObject; }
 
