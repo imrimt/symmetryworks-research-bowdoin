@@ -30,7 +30,8 @@
 #include <QObject>
 #include <QApplication>
 #include <QDesktopWidget>
-//#include <QUndoStack>
+#include <QUndoStack>
+#include <QUndoCommand>
 
 #include <QProgressBar>
 #include <QTableWidget>
@@ -48,9 +49,11 @@ const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
 const int MIN_IMAGE_DIM = 20;
 const int MAX_IMAGE_DIM = 10000;
 
-const int PROG_BAR_TIMEOUT = 100;
+const int PROG_BAR_TIMEOUT = 50;
 
 enum wallpaperFunctionSet { };
+
+
 
 // QSpinBox subclass that disallows user input
 class CustomSpinBox : public QSpinBox
@@ -106,6 +109,7 @@ public slots:
     }
 
 };
+
 
 // QProgressBar subclass for tracking wallgen rendering
 class ProgressBar : public QProgressBar
@@ -208,14 +212,41 @@ public slots:
             //QTimer::singleShot(100, this, SLOT(progBar->setVisible(false)));
         }
     }
-//
-//    void updateColor() {
-//        // qDebug() << "updating color";
-//        // QString value1 = "QProgressBar::chunk {background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #F10350,stop: 0.4999 #FF3320,stop: 0.5 #FF0019,stop: 1 #FF0000 );}";
-//        // this->setStyleSheet(value1);
-//    }
+
 
 };
+
+
+class ChangeCommand : public QUndoCommand
+{
+public:
+    
+    ChangeCommand(QSpinBox *item, float oldVal, float newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
+    {
+        
+        this->item = item;
+        this->oldVal = oldVal;
+        qDebug() << "old value" << oldVal;
+        this->newVal = newVal;
+        qDebug() << "new value" << newVal;
+        //this->canRedo = canRedo;
+    }
+    
+    ~ChangeCommand() {}
+    
+    void undo() Q_DECL_OVERRIDE { item->setValue(oldVal); }
+    void redo() Q_DECL_OVERRIDE { item->setValue(newVal); }
+    bool mergeWith(const QUndoCommand *command) Q_DECL_OVERRIDE ;
+    
+    
+private:
+    QSpinBox *item;
+    
+    float oldVal, newVal;
+    //bool canRedo;
+    
+};
+
 
 
 // Interface class
@@ -413,6 +444,8 @@ public:
 
     // SHORTCUTS
     QShortcut *updatePreviewShortcut;
+    
+    QUndoStack *undoStack;
     
    
     // PROGRESS BARS

@@ -1,5 +1,6 @@
 #include "Interface.h"
 
+
 Interface::Interface(QWidget *parent) : QWidget(parent)
 {
     
@@ -44,6 +45,8 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     
     // INITIALIZE LAYOUT
     initInterfaceLayout();
+
+    undoStack = new QUndoStack(this);
     
     functionSel->setCurrentIndex(0);
     colorwheelSel->setCurrentIndex(0);
@@ -860,6 +863,7 @@ void Interface::refreshMainWindowTerms()
 
     currTermEdit->blockSignals(true);
     numTermsEdit->blockSignals(true);
+    
 
     currTermEdit->setValue(termIndex + 1);
     
@@ -1049,7 +1053,7 @@ void Interface::termViewPopUp()
 // updates the term that is currently being edited
 void Interface::updateCurrTerm(int i)
 {
-    
+    int old = termIndex;
     if (i > 0) termIndex = i - 1;
     
     refreshTableTerms();
@@ -1068,6 +1072,7 @@ void Interface::changeNumTerms(int i)
     int oldNumTerms = numTerms;
 
     //qDebug() << "old:" << oldNumTerms << "| new:" << i;
+    
 
     if (i < oldNumTerms) {
         for (int k = oldNumTerms; k > i; --k) { removeTerm(k-1); }
@@ -1078,11 +1083,19 @@ void Interface::changeNumTerms(int i)
         currTermEdit->blockSignals(true);
         currTermEdit->setMaximum(i);
         currTermEdit->blockSignals(false);
-    }    
+    }
+    
+  
+    QUndoCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
+    undoStack->push(command);
+    
+   
 
+    
     updateCurrTerm(i);
     updatePreviewDisplay();
 }
+
 
 // handles changing to a new color wheel
 void Interface::colorWheelChanged(int /* unused */ )
@@ -1490,6 +1503,7 @@ QString Interface::loadSettings(const QString &fileName) {
     YShiftEditSlider->setValue(settings->YCorner * 100.0);
 
     numTermsEdit->setValue(currFunction->getNumTerms());
+    
 
     // functionSel->blockSignals(true);
     functionSel->setCurrentIndex(newFunctionIndex);
@@ -1612,15 +1626,16 @@ void Interface::changeWorldWidth()
 
 void Interface::changeXCorner(double val)
 {
-  
+    
     settings->XCorner = val;
     XShiftEdit->setText(QString::number(val));
+    
     updatePreviewDisplay();
 }
 
 void Interface::changeXCorner()
 {
-  
+    
     double val = XShiftEdit->text().toDouble();
     settings->XCorner = val;
     
@@ -1689,8 +1704,10 @@ void Interface::changeA(double val)
 //changing slider values
 void Interface::changeScaleA(double val)
 {
+
     currFunction->setScaleA(val);
     scaleAEdit->setText(QString::number(val));
+    
     updatePreviewDisplay();
 }
 
@@ -1703,6 +1720,7 @@ void Interface::changeScaleA()
     scaleAEditSlider->setValue(val * 100.0);
     scaleAEditSlider->blockSignals(false);
     updatePreviewDisplay();
+    //qDebug() << (bool)scaleAEdit->isUndoAvailable();
 }
 
 
@@ -1860,6 +1878,8 @@ void Interface::addTermTable()
     int newNumTerms = currFunction->getNumTerms() + 1;
     currFunction->setNumTerms(newNumTerms);
     numTermsEdit->setValue(newNumTerms);
+    
+    //undoStack->push(new ChangeCommand(numTermsEdit, currFunction->getNumTerms(), newNumTerms));
 } 
 
 // pop up window to appear when image file has finished exporting
@@ -1923,4 +1943,19 @@ void Interface::updateImageDataGraph()
 
     prevDataSeries->replace(imageDataSeries->pointsVector());
 }
+
+
+
+bool ChangeCommand::mergeWith(const QUndoCommand *command)
+{
+    const ChangeCommand *changeCommand = static_cast<const ChangeCommand *>(command);
+    QSpinBox *item2 = changeCommand->item;
+    
+    if (item2 != item)
+        return false;
+    
+    return true;
+}
+
+
 

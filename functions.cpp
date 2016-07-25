@@ -59,7 +59,7 @@ void AbstractFunction::setN(unsigned int &i, int &val)
 }
 
 void AbstractFunction::setM(unsigned int &i, int &val)
-{    
+{
     if(i < terms)
         freqs[i].setM(val);
     else
