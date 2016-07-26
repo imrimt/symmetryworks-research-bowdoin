@@ -10,8 +10,6 @@ MainWindow::MainWindow()
 {
     
     currInterface = new Interface(this);
-  
-    // qDebug() << "setting " << this->currInterface << " to " << currInterface;
 
     QHBoxLayout *centerLayout = new QHBoxLayout();
     QWidget *centerWidget = new QWidget();
@@ -32,7 +30,7 @@ MainWindow::MainWindow()
 
     // QWidget *bottomFiller = new QWidget;
     // bottomFiller->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    //undoStack = new QUndoStack(this);
+    // undoStack = new QUndoStack(this);
     
     createActions();
     createMenus();
@@ -48,7 +46,6 @@ MainWindow::MainWindow()
     this->move(x, y);
                                
     setWindowTitle(tr("Wallpaper Generation"));
-    
     
     setFixedSize(sizeHint());
     
@@ -116,7 +113,7 @@ void MainWindow::createActions()
     // connect(printAct, &QAction::triggered, this, &MainWindow::print);
 
     exportImageAct = new QAction(tr("Export Image..."), this);
-    // exportImageAct->setShortCuts()
+    exportImageAct->setShortcut(QKeySequence("Ctrl+E"));
     exportImageAct->setStatusTip(tr("Export to an image file"));
     connect(exportImageAct, SIGNAL(triggered()), currInterface, SLOT(exportImageFunction()));
     
@@ -124,6 +121,10 @@ void MainWindow::createActions()
     snapshotAct->setShortcut(QKeySequence("Ctrl+D"));
     snapshotAct->setStatusTip(tr("Save current instance to snapshots"));
     connect(snapshotAct, SIGNAL(triggered()), currInterface, SLOT(snapshotFunction()));
+
+    resetImageAct = new QAction(tr("Reset Image"), this);
+    resetImageAct->setStatusTip(tr("Reset the current image to its default settings"));
+    connect(resetImageAct, SIGNAL(triggered()), currInterface, SLOT(resetFunction()));
     
 //    clearSnapshotsAct = new QAction(tr("Clear All Snapshots"), this);
 //    clearSnapshotsAct->setShortcut(QKeySequence("Ctrl+K"));
@@ -156,7 +157,7 @@ void MainWindow::createActions()
 
 void MainWindow::createMenus()
 {
-    fileMenu = menuBar()->addMenu(tr("File"));
+    fileMenu = menuBar()->addMenu(tr("F&ile"));
     // fileMenu->addAction(newAct);
     fileMenu->addAction(loadAct);
     fileMenu->addAction(saveAct);
@@ -167,18 +168,12 @@ void MainWindow::createMenus()
     fileMenu->addAction(snapshotAct);
     //fileMenu->addAction(clearSnapshotsAct);
     fileMenu->addAction(exportImageAct);
+    fileMenu->addAction(resetImageAct);
 
-     editMenu = menuBar()->addMenu(tr("Edit"));
-     editMenu->addAction(undoAct);
-     editMenu->addAction(redoAct);
-     editMenu->addSeparator();
-
-   
-    
-//     editMenu->addAction(cutAct);
-//     editMenu->addAction(copyAct);
-//     editMenu->addAction(pasteAct);
-//     editMenu->addSeparator();
+    editMenu = menuBar()->addMenu(tr("E&dit"));
+    editMenu->addAction(undoAct);
+    editMenu->addAction(redoAct);
+    editMenu->addSeparator();
 
     // helpMenu = menuBar()->addMenu(tr("&Help"));
     // helpMenu->addAction(aboutAct);

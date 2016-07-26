@@ -13,9 +13,7 @@
 #include <QGroupBox>
 #include <QComboBox>
 #include <QString>
-#include <QPushButton>
 #include <QImage>
-#include <QDir>
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QSignalMapper>
@@ -32,7 +30,6 @@
 #include <QDesktopWidget>
 #include <QUndoStack>
 #include <QUndoCommand>
-
 #include <QProgressBar>
 #include <QTableWidget>
 #include <QHeaderView>
@@ -60,6 +57,7 @@ public:
     void focusOutEvent(QFocusEvent * /*unused*/) {
         if (isModified()) undo();
         setReadOnly(true);
+        deselect();
     }
 
     void focusInEvent(QFocusEvent * /*unused*/) {
@@ -537,6 +535,7 @@ private:
     void initToolTips();
     void connectAllSignals();
     void removeTerm(int row);
+    void removeTableTerm(int row);
     void refreshLabels();
     void updatePreviewDisplay();
     void errorHandler(const int &flag);

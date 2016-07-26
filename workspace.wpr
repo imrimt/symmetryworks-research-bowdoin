@@ -1,0 +1,17 @@
+Horizontal Stretch: 2
+Vertical StretcH: 2
+Horizontal Shift: 0
+Vertical Shift: 0
+Output Width: 6000
+Output Height: 4800
+Function Type: Wallpapers
+Function: Hex3
+Color Type: Image
+Image Path: /Users/sngo/Desktop/SymmetryWorks/SamplePhotographsImage Name: PeppersWheel.jpg
+Scaling Radius: 1
+Scaling Angle: 0
+NUMBERS OF TERMS: 4
+Term 0 :          N: 1          M: 1          R: 0.7          A: 0.75
+Term 1 :          N: 0          M: 1          R: -0.2          A: 0.75
+Term 2 :          N: 2          M: -1          R: 1.5          A: 1
+Term 3 :          N: 0          M: 1          R: 0          A: 0.75

@@ -55,11 +55,11 @@ private:
     QAction *saveAsAct;
     QAction *exportImageAct;
     QAction *snapshotAct;
+    QAction *resetImageAct;
     //QAction *clearSnapshotsAct;
     QAction *setOverflowColorAct;
     QAction *showImageDataGraphAct;
-    QAction *resetPreviewAct;
-    QAction *viewTermsTableAct;
+    // QAction *viewTermsTableAct;
     
     QAction *undoAct;
     QAction *redoAct;

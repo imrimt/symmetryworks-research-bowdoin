@@ -4,17 +4,15 @@
 #include <QVector>
 #include <QDebug>
 #include <QDateTime>
-// #include <QMetaType>
-
 #include <complex>
 #include <QLayout>
 #include <QPushButton>
 #include <QDir>
+#include <time.h>
 
 #include "display.h"
 
-#include <time.h>
-
+//constants
 const double DEFAULT_WORLD_WIDTH = 2.0;
 const double DEFAULT_WORLD_HEIGHT = 2.0;
 const double DEFAULT_XCORNER = 0.0;
@@ -25,6 +23,7 @@ const double PREVIEW_SCALING = 0.25;
 const int PARAMETER_SEPARATOR_LENGTH = 10;
 
 
+//struct that holds information about image and output properties
 struct Settings
 {
     double Width = DEFAULT_WORLD_WIDTH;
@@ -48,7 +47,7 @@ struct Settings
     }
 };
 
-
+//object that represents a snapshot
 class HistoryItem : public QObject
 {
     Q_OBJECT

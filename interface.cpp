@@ -877,7 +877,6 @@ void Interface::refreshTableTerms()
 
     numTerms = currFunction->getNumTerms();
     
-
     if (termViewTable->rowCount() == 0) {
         for (int i = 0; i < numTerms; ++i) {     
             addTerm();
@@ -972,6 +971,27 @@ void Interface::refreshMainWindowTerms()
 void Interface::removeTerm(int row)
 {
 
+    removeTableTerm(row);
+
+    unsigned int term = row;
+    //qDebug() << "removing term " << row << "from function";
+    currFunction->removeTerm(term);
+    numTerms = currFunction->getNumTerms();
+
+    numTermsEdit->blockSignals(true);
+    numTermsEdit->setValue(numTerms);
+    numTermsEdit->blockSignals(false);
+    
+    // qDebug() << "num terms is now" << currFunction->getNumTerms() << "num terms" << numTerms;
+    
+    currTermEdit->blockSignals(true);
+    currTermEdit->setMaximum(currFunction->getNumTerms());
+    currTermEdit->blockSignals(false);
+
+}
+
+void Interface::removeTableTerm(int row)
+{
     if (termViewTable->rowCount() == 1) {
         return;
     }
@@ -990,22 +1010,6 @@ void Interface::removeTerm(int row)
     if (static_cast<int>(termIndex) > termViewTable->rowCount()) {
         termIndex = termViewTable->rowCount() - 1;
     }
-
-    unsigned int term = row;
-    //qDebug() << "removing term " << row << "from function";
-    currFunction->removeTerm(term);
-    numTerms = currFunction->getNumTerms();
-
-    numTermsEdit->blockSignals(true);
-    numTermsEdit->setValue(numTerms);
-    numTermsEdit->blockSignals(false);
-    
-    // qDebug() << "num terms is now" << currFunction->getNumTerms() << "num terms" << numTerms;
-    
-    currTermEdit->blockSignals(true);
-    currTermEdit->setMaximum(currFunction->getNumTerms());
-    currTermEdit->blockSignals(false);
-
 }
 
 
@@ -1079,6 +1083,7 @@ void Interface::addTerm()
 // reset the image to its default settings with the current function and colorwheel
 void Interface::resetFunction()
 {
+    newUpdate = false;
     termIndex = 0;
 
     currFunction->refresh();
@@ -1106,6 +1111,8 @@ void Interface::resetFunction()
     
     refreshTableTerms();
     refreshMainWindowTerms();
+    
+    newUpdate = true;
     updatePreviewDisplay();
     
 }
@@ -1130,7 +1137,7 @@ void Interface::updateCurrTerm(int i)
 // updates the number of terms of the current function
 void Interface::changeNumTerms(int i)
 {
-
+    newUpdate = false;
     if (!numTermsEdit->hasFocus()) numTermsEdit->setFocus();
 
     numTermsEdit->setEnabled(false);
@@ -1139,7 +1146,6 @@ void Interface::changeNumTerms(int i)
 
     //qDebug() << "old:" << oldNumTerms << "| new:" << i;
     
-
     if (i < oldNumTerms) {
         for (int k = oldNumTerms; k > i; --k) { removeTerm(k-1); }
     } else if (i > oldNumTerms) {
@@ -1154,10 +1160,9 @@ void Interface::changeNumTerms(int i)
   
     QUndoCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
     undoStack->push(command);
-    
-   
 
     updateCurrTerm(i);
+    newUpdate = true;
     updatePreviewDisplay();
 }
 
@@ -1176,10 +1181,9 @@ void Interface::selectColorWheel()
 {
     colorwheelSel->setEnabled(true);
     setLoadedImage->setEnabled(false);
-    // setOverflowColorButton->setEnabled(false);
-    // showImageDataGraphButton->setEnabled(false);
-    emit imageActionStatus(false);
     imagePathLabel->setEnabled(false);
+
+    emit imageActionStatus(false);
 
     imageDataWindow->hide();
 
@@ -1192,10 +1196,9 @@ void Interface::selectImage()
 {
     colorwheelSel->setEnabled(false);
     setLoadedImage->setEnabled(true);
-    // setOverflowColorButton->setEnabled(true);
-    // showImageDataGraphButton->setEnabled(true);
-    emit imageActionStatus(true);
     imagePathLabel->setEnabled(true);
+
+    emit imageActionStatus(true);
 
     if (imageSetPath == "") {
         setImagePushed();
@@ -1256,33 +1259,24 @@ void Interface::setImagePushed()
 void Interface::changeFunction(int index)
 {
 
-    //qDebug() << "change Function";
+    qDebug() << "change Function";
+    newUpdate = false;
     
     termIndex = 0;
-
-    // qDebug() << "address of currFunction pointer" << &currFunction;
-
-    qDebug() << "address of oldFunction" << &(*currFunction);
     
     currFunction = functionVector[index];
-
-    polarPlane->changeFunction(currFunction);
-
-    qDebug() << "address of currFunction" << &(*currFunction);
-    
     numTerms = currFunction->getNumTerms();
-
-    //qDebug() << "numTerms:" << numTerms;
-
     termViewTable->setRowCount(0);
-
     currTermEdit->setMaximum(numTerms);
     
+    polarPlane->changeFunction(currFunction);
     previewDisplayPort->changeFunction(currFunction);
     imageExportPort->changeFunction(currFunction);
     
     refreshMainWindowTerms();
     refreshTableTerms();
+
+    newUpdate = true;
     updatePreviewDisplay();
 
 }
@@ -1364,7 +1358,7 @@ QString Interface::saveSettings(const QString &fileName) {
     }
     else {
         out << "Color Type: Image" << endl;
-        out << "Image Path: " << imageSetPath;
+        out << "Image Path: " << imageSetPath << endl;
         out << "Image Name: " << openImageName;
     }
 
@@ -1451,13 +1445,6 @@ QString Interface::loadSettings(const QString &fileName) {
     in.readLineInto(&line);
     functionType = (line.right(line.length() - line.lastIndexOf(" ") - 1));
 
-    // in >> skipString >> settings->Width;
-    // in >> skipString >> settings->Height;
-    // in >> skipString >> settings->XCorner;
-    // in >> skipString >> settings->YCorner;
-    // in >> skipString >> settings->OWidth;
-    // in >> skipString >> settings->OHeight;
-    // in >> skipString >> functionType;
 
     // if (functionType == "Wallpapers") {
     	// in >> skipString >> functionName;
@@ -1478,28 +1465,17 @@ QString Interface::loadSettings(const QString &fileName) {
 	    imageLoadPath = (line.right(line.length() - line.lastIndexOf(" ") - 1));
 	    in.readLineInto(&line);
 	    loadImageName = (line.right(line.length() - line.lastIndexOf(" ") - 1));
-    	// in >> skipString >> imageLoadPath;
-    	// in >> skipString >> loadImageName;
     }
     else {
     	in.readLineInto(&line);
 	    colorName = (line.right(line.length() - line.lastIndexOf(" ") - 1));
-    	// in >> skipString >> colorName;
     	newColorIndex = colorwheelSel->findText(colorName, Qt::MatchExactly);
     }
     
-    // in >> settings->Width >> settings->Height;
-    // in >> settings->XCorner >> settings->YCorner;
-    // in >> settings->OWidth >> settings->OHeight;
-    // in >> newFunctionIndex;
     currFunction = functionVector[newFunctionIndex];
-    // in >> newColorIndex;
-
-    // qDebug() << "new color index is:" << newColorIndex;
 
     in.readLineInto(&line);
 	tempdouble = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
-    // in >> skipString >> tempDouble;
     currFunction->setScaleR(tempdouble);
     scaleREdit->blockSignals(true);
     scaleREdit->setText(QString::number(tempdouble));
@@ -1507,7 +1483,6 @@ QString Interface::loadSettings(const QString &fileName) {
 
     in.readLineInto(&line);
 	tempdouble = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
-    // in >> skipString >> tempdouble;
     scaleAEdit->blockSignals(true);
     currFunction->setScaleA(tempdouble);
     scaleAEdit->setText(QString::number(tempdouble));
@@ -1516,12 +1491,6 @@ QString Interface::loadSettings(const QString &fileName) {
     in.readLineInto(&line);
 	count = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toInt();
 
-    // in >> count;
-    // numTermsEdit->blockSignals(true);
-    // numTermsEdit->setValue(count);
-    // numTermsEdit->blockSignals(false);
-
-    // int newNumTerms = count;
     currFunction->setNumTerms(count);
     unsigned int unsignedCount = count;
     // currFunction->refresh();
@@ -1557,9 +1526,6 @@ QString Interface::loadSettings(const QString &fileName) {
         }
     }
 
-    // in >> imageLoadPath;
-    // in >> loadImageName;
-
     inFile.close();    
 
     worldWidthEditSlider->setValue(settings->Width * 100.0);
@@ -1567,12 +1533,13 @@ QString Interface::loadSettings(const QString &fileName) {
     XShiftEditSlider->setValue(settings->XCorner * 100.0);
     YShiftEditSlider->setValue(settings->YCorner * 100.0);
 
-    numTermsEdit->setValue(currFunction->getNumTerms());
-    
+    // numTermsEdit->blockSignals(true);
+    // numTermsEdit->setValue(currFunction->getNumTerms());
+    // numTermsEdit->blockSignals(false);
 
-    // functionSel->blockSignals(true);
+    functionSel->blockSignals(true);
     functionSel->setCurrentIndex(newFunctionIndex);
-    // functionSel->blockSignals(false);
+    functionSel->blockSignals(false);
 
     if (newColorIndex == 9) {
         imageSetPath = imageLoadPath;
@@ -1586,12 +1553,13 @@ QString Interface::loadSettings(const QString &fileName) {
         fromColorWheelButton->clicked();
     }
 
-    //refreshTableTerms();
-    //updatePreviewDisplay();
+    refreshMainWindowTerms();
+    refreshTableTerms();
+    updatePreviewDisplay();
     
     QDir stickypath(fileName);
     stickypath.cdUp();
-    return stickypath.path();
+    return saveloadPath = stickypath.path();
 }
 
 // updates the preview to reflect changes to the settings, function, and color wheel
@@ -2027,6 +1995,7 @@ void Interface::mousePressEvent(QMouseEvent* event)
                 if (lineEditBox->isModified()) {
                     lineEditBox->undo();
                 }
+                lineEditBox->deselect();
             }
         }
     }
@@ -2060,15 +2029,9 @@ void Interface::updateShifting(const QPoint &point)
     }
 }
 
-// void Interface::mouseMoveEvent(QMouseEvent *event) 
-// {
-
-// }
 
 void Interface::updateImageDataGraph() 
 { 
-    // prevDataSeries->clear(); 
-    // *prevDataSeries << imageDataSeries->points();
 
     imagePixmap.convertFromImage(QImage(imageSetPath + "/" + openImageName));
     imagePixmap = imagePixmap.scaledToHeight(previewSize);
