@@ -851,6 +851,8 @@ void Interface::connectAllSignals()
     connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
     // connect(outWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeOWidth()));
     // connect(outHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeOHeight()));
+    
+    connect(aspectRatioEdit, SIGNAL(editingFinished()), this, SLOT(changeAspectRatio()));
 
     connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
     connect(previewDisplayPort, SIGNAL(paintingFinished(bool)), this, SLOT(resetMainWindowButton(bool)));
@@ -1640,6 +1642,17 @@ void Interface::updateAspectRatio()
   
     aspectRatioEdit->setText(QString::number(aspectRatio));
     aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
+    
+}
+
+void Interface::changeAspectRatio()
+{
+    double val = aspectRatioEdit->text().toDouble();
+    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
+    double height = width / val;
+    
+    outHeightEdit->setText(QString::number(height / ASPECT_SCALE));
+    emit outHeightEdit->editingFinished();
     
 }
 

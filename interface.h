@@ -527,6 +527,8 @@ private slots:
     void startShifting(const QPoint &point);
     void updateShifting(const QPoint &point);
     void finishShifting();
+    
+    void changeAspectRatio();
 
 protected:
     void mousePressEvent(QMouseEvent *event);
