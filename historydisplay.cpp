@@ -59,7 +59,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     QVBoxLayout *historyItemsWithLabelLayout = new QVBoxLayout();
     QHBoxLayout *historyItemsLayout = new QHBoxLayout();
     QVBoxLayout *historyItemsButtonsLayout = new QVBoxLayout();
-    Display *d = new Display(HISTORY_ITEM_SIZE, HISTORY_ITEM_SIZE, viewHistoryBox);
+    Display *d = new Display(HISTORY_ITEM_SIZE, HISTORY_ITEM_SIZE, HISTORY_ITEM_SIZE, viewHistoryBox);
     QPushButton *viewButton = new QPushButton(tr("Restore"), viewHistoryBox);
     QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
     QLabel *timeStampLabel = new QLabel(viewHistoryBox);
@@ -92,7 +92,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     ColorWheel *currColorWheel = colorwheel;
     Settings *clonedSettings = settings;
     
-    Port *historyDisplayPort = new Port(currFunction, currColorWheel, item->preview->width(), item->preview->height(), clonedSettings);
+    Port *historyDisplayPort = new Port(currFunction, currColorWheel, item->preview->getWidth(), item->preview->getHeight(), clonedSettings);
     historyDisplayPort->paintHistoryIcon(item);
     
     // connect and map signals
