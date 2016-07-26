@@ -725,8 +725,6 @@ void Interface::initImageExportPopUp()
     double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
     double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
     double aspectRatio = (double)(width / height);
-    qDebug() << "aspect ratio: " << aspectRatio;
-    
 
     aspectRatioPreview = new Display(width, height, imageDimensionsPopUp);
     aspectRatioPreviewLayout = new QHBoxLayout();
@@ -809,6 +807,9 @@ void Interface::connectAllSignals()
 
     connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeNumTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateCurrTerm(int)));
+    
+    
+    
     connect(termViewTable, SIGNAL(cellClicked(int, int)), this, SLOT(termViewCellClicked(int, int)));
     connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
     connect(addTermButton, SIGNAL(clicked()), this, SLOT(addTermTable()));
@@ -1144,25 +1145,24 @@ void Interface::changeNumTerms(int i)
 
     int oldNumTerms = numTerms;
 
-    //qDebug() << "old:" << oldNumTerms << "| new:" << i;
-    
     if (i < oldNumTerms) {
         for (int k = oldNumTerms; k > i; --k) { removeTerm(k-1); }
     } else if (i > oldNumTerms) {
         currFunction->setNumTerms(i);
         numTerms = currFunction->getNumTerms();
         for (int k = oldNumTerms; k < i; ++k) addTerm();
+        
+        QUndoCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
+        undoStack->push(command);
+        qDebug() << "pushing command" << command->id();
+        
         currTermEdit->blockSignals(true);
         currTermEdit->setMaximum(i);
         currTermEdit->blockSignals(false);
     }
-    
-  
-    QUndoCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
-    undoStack->push(command);
 
-    updateCurrTerm(i);
-    newUpdate = true;
+    //updateCurrTerm(i);
+
     updatePreviewDisplay();
 }
 
@@ -1569,9 +1569,6 @@ void Interface::updatePreviewDisplay()
         return;
     }
 
-    qDebug() << "updating preview display";
-
-    
     
     // if (!imageDataGraph->series().empty()) imageDataGraph->removeSeries(imageDataSeries);
 	imageDataSeries->clear();
@@ -2041,17 +2038,15 @@ void Interface::updateImageDataGraph()
 }
 
 
-
-bool ChangeCommand::mergeWith(const QUndoCommand *command)
-{
-    const ChangeCommand *changeCommand = static_cast<const ChangeCommand *>(command);
-    QSpinBox *item2 = changeCommand->item;
-    
-    if (item2 != item)
-        return false;
-    
-    return true;
-}
+//bool ChangeCommand::mergeWith(const ChangeCommand *command)
+//{
+//    qDebug() << "MERGING";
+//    if (command->id() != id()) // make sure other is also an AppendText command
+//        return false;
+//    newVal = command->item->value();
+//    
+//    return true;
+//}
 
 
 

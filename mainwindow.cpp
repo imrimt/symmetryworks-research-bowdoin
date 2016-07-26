@@ -103,6 +103,7 @@ void MainWindow::createActions()
 //    connect(undoAct, SIGNAL(triggered()), currInterface->scaleAEdit, SLOT(undo()));
     
     redoAct = currInterface->undoStack->createRedoAction(this, tr("&Redo"));
+    
     redoAct->setShortcuts(QKeySequence::Redo);
 //    connect(redoAct, SIGNAL(triggered()), currInterface->scaleAEdit, SLOT(redo()));
 
