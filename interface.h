@@ -65,6 +65,7 @@ public:
     void focusInEvent(QFocusEvent * /*unused*/) {
         setReadOnly(false);
     }
+    
 };
 
 
@@ -236,27 +237,39 @@ public:
     
     ChangeCommand(QSpinBox *item, float oldVal, float newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
     {
-        
+
         this->item = item;
         this->oldVal = oldVal;
         qDebug() << "old value" << oldVal;
         this->newVal = newVal;
         qDebug() << "new value" << newVal;
-        //this->canRedo = canRedo;
+        canRedo = false;
     }
     
     ~ChangeCommand() {}
     
-    void undo() Q_DECL_OVERRIDE { item->setValue(oldVal); }
-    void redo() Q_DECL_OVERRIDE { item->setValue(newVal); }
-    bool mergeWith(const QUndoCommand *command) Q_DECL_OVERRIDE ;
-    
+    void undo() Q_DECL_OVERRIDE {
+        qDebug() << "UNDO";
+        item->setValue(oldVal);
+        canRedo = true;
+    }
+    void redo() Q_DECL_OVERRIDE {
+        if(!canRedo) return;
+        qDebug() << "REDO";
+        
+        item->blockSignals(true);
+        item->setValue(newVal);
+        item->blockSignals(false);
+        
+        
+    }
+
     
 private:
     QSpinBox *item;
     
     float oldVal, newVal;
-    //bool canRedo;
+    bool canRedo;
     
 };
 
@@ -483,8 +496,6 @@ private slots:
     void cancelImageExport() { imageDimensionsPopUp->hide(); }
     void startImageExport();
     
-//    void undo();
-//    void redo();
     
     void resetFunction();
     void loadFromSettings();
@@ -518,6 +529,7 @@ private slots:
 
 protected:
     void mousePressEvent(QMouseEvent *event);
+    //void keyPressEvent(QKeyEvent *event);
     // void mouseMoveEvent(QMouseEvent *event);
     
 private:    
