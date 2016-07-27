@@ -1217,6 +1217,7 @@ void Interface::colorWheelChanged(int /* unused */ )
     // else
     //     setLoadedImage->hide();
     updatePreviewDisplay();
+    updateAspectRatio();
 }
 
 void Interface::selectColorWheel() 
@@ -1301,7 +1302,7 @@ void Interface::setImagePushed()
 void Interface::changeFunction(int index)
 {
 
-    qDebug() << "change Function";
+    //qDebug() << "change Function";
     newUpdate = false;
     
     termIndex = 0;
@@ -1314,12 +1315,14 @@ void Interface::changeFunction(int index)
     polarPlane->changeFunction(currFunction);
     previewDisplayPort->changeFunction(currFunction);
     imageExportPort->changeFunction(currFunction);
+    aspectRatioPreviewDisplayPort->changeFunction(currFunction);
     
     refreshMainWindowTerms();
     refreshTableTerms();
 
     newUpdate = true;
     updatePreviewDisplay();
+    updateAspectRatio();
 
     // if (!newAction) {
     //     QUndoCommand *command = new ChangeCommand()
@@ -1694,7 +1697,8 @@ void Interface::updateAspectRatio()
     
     QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
     aspectRatioPreviewDisplayPort->changeDimensions(size.width(), size.height());
-  
+    //aspectRatioPreviewDisplayPort->changeSettings(settings);
+    
     aspectRatioEdit->setText(QString::number(aspectRatio));
     aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
     
