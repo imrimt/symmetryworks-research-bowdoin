@@ -33,6 +33,7 @@
 #include <QProgressBar>
 #include <QTableWidget>
 #include <QHeaderView>
+#include <QToolTip>
 
 #include "historydisplay.h"
 #include "polarplane.h"
@@ -88,6 +89,8 @@ public:
     ClickableLabel(QWidget *parent = 0) : QLabel(parent) { }
     explicit ClickableLabel(int index, QWidget *parent = 0) : QLabel(parent) { this->index = index; }
     
+    
+    
 signals:
     void doubleClickFunctionIcon(int index) ;
     
@@ -96,8 +99,11 @@ protected:
         emit doubleClickFunctionIcon(index);
     }
     
+    
 private:
     int index;
+    
+    
 };
 
 // QSlider subclass that takes doubles
@@ -517,6 +523,7 @@ private slots:
     void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
     QString loadSettings(const QString &fileName);
     void popUpImageExportFinished(const QString &filePath);
+ 
     void resetMainWindowButton(const bool &status);
     
     void showFunctionIcons() { functionIconsWindow->hide(), functionIconsWindow->show(); }

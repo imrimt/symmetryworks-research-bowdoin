@@ -127,7 +127,7 @@ void MainWindow::createActions()
     snapshotAct->setStatusTip(tr("Save current instance to snapshots"));
     connect(snapshotAct, SIGNAL(triggered()), currInterface, SLOT(snapshotFunction()));
 
-    resetImageAct = new QAction(tr("Reset Image"), this);
+    resetImageAct = new QAction(tr("Reset All Settings"), this);
     resetImageAct->setStatusTip(tr("Reset the current image to its default settings"));
     connect(resetImageAct, SIGNAL(triggered()), currInterface, SLOT(resetFunction()));
     
@@ -173,13 +173,13 @@ void MainWindow::createMenus()
     fileMenu->addAction(snapshotAct);
     //fileMenu->addAction(clearSnapshotsAct);
     fileMenu->addAction(exportImageAct);
-    fileMenu->addAction(resetImageAct);
+    
 
-    editMenu = menuBar()->addMenu(tr("E&dit"));
+    editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(undoAct);
     editMenu->addAction(redoAct);
     editMenu->addSeparator();
-
+    editMenu->addAction(resetImageAct);
     // helpMenu = menuBar()->addMenu(tr("&Help"));
     // helpMenu->addAction(aboutAct);
     // helpMenu->addAction(aboutQtAct);
