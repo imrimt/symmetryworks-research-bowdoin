@@ -128,6 +128,9 @@ private:
     QLineSeries *ySeries;
     
     int coeffFlag; // stores type of function constant pair
+    bool showActionFlag; //stores if the user trigger the "show" action
+    double startingRadius; //stores the radius when first shown
+    double startingAngle;  //stores the angle when first shown
     
     QDoubleValidator *doubleValidate;
     QDoubleValidator *angleValidate;

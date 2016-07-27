@@ -173,6 +173,9 @@ void Interface::initPreviewDisplay()
     displayProgressBar = new ProgressBar(tr("Preview"), previewDisplayPort);
     exportProgressBar = new ProgressBar(tr("Exporting"), imageExportPort);
 
+    displayProgressBar->setPermanentVisibility(false);
+    exportProgressBar->setPermanentVisibility(true);
+
     dispLayout->setAlignment(disp, Qt::AlignCenter);
     dispLayout->addWidget(disp);
     dispLayout->addLayout(displayProgressBar->layout);
@@ -822,10 +825,9 @@ void Interface::connectAllSignals()
     connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeNumTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateCurrTerm(int)));
     
-    
-    
     connect(termViewTable, SIGNAL(cellClicked(int, int)), this, SLOT(termViewCellClicked(int, int)));
     connect(termViewButton, SIGNAL(clicked()), this, SLOT(termViewPopUp()));
+    connect(termViewTableMapper, SIGNAL(mapped(QObject*)), this, SLOT(updateTermTable(QObject*)));
     connect(addTermButton, SIGNAL(clicked()), this, SLOT(addTermTable()));
     connect(nEdit, SIGNAL(valueChanged(int)), this, SLOT(changeN(int)));
     connect(mEdit, SIGNAL(valueChanged(int)), this, SLOT(changeM(int)));
@@ -1087,7 +1089,6 @@ void Interface::addTerm()
     termViewTableMapper->setMapping(nEditTable, (QObject*)new QPoint(highestIndex, 2));
     termViewTableMapper->setMapping(aEditTable, (QObject*)new QPoint(highestIndex, 3));
     termViewTableMapper->setMapping(rEditTable, (QObject*)new QPoint(highestIndex, 4));
-    connect(termViewTableMapper, SIGNAL(mapped(QObject*)), this, SLOT(updateTermTable(QObject*)));
 
     refreshMainWindowTerms();
     // updatePreviewDisplay();

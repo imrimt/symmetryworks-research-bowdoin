@@ -44,7 +44,7 @@ const unsigned int INVALID_FILE_ERROR = 0;
 const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
 const int MIN_IMAGE_DIM = 20;
 const int MAX_IMAGE_DIM = 10000;
-const int PROG_BAR_TIMEOUT = 50;
+const int PROG_BAR_TIMEOUT = 1000;
 const double ASPECT_SCALE = 0.025;
 const int MAX_ASPECT_RATIO_PREVIEW = MAX_IMAGE_DIM * ASPECT_SCALE;
 
@@ -100,8 +100,6 @@ private:
     int index;
 };
 
-
-
 // QSlider subclass that takes doubles
 class QDoubleSlider : public QSlider
 {
@@ -133,15 +131,15 @@ class ProgressBar : public QProgressBar
 public:
     ProgressBar(const QString &title, Port *port) {
         
-        label = new QLabel(title);
-        percentLabel = new QLabel();
-        progBar = new QProgressBar();
+        label = new QLabel(title, this);
+        percentLabel = new QLabel(this);
+        progBar = new QProgressBar(this);
         progBar->setRange(0, 100);
         progBar->setAlignment(Qt::AlignCenter);
         progBar->setValue(0);
-        progBar->setVisible(visible);
+        // progBar->setVisible(false);
         progBar->setPalette(QColor(Qt::gray));
-        this->setVisible(false);
+        this->setVisible(true);
         
         layout = new QHBoxLayout();
         layout->addWidget(label);
@@ -180,10 +178,13 @@ public:
     }
 
     void setVisible(bool visible) { 
-        this->visible = visible;
         progBar->setVisible(visible);
         label->setVisible(visible);
         percentLabel->setVisible(visible);
+    }
+
+    void setPermanentVisibility(bool visibility) {
+        this->visibility = visibility;
     }
     
     QProgressBar *progBar;
@@ -192,15 +193,12 @@ public:
     QHBoxLayout *layout;
     
 private:
-    int timer;
-    bool visible;
     Port *port;
+    bool visibility;
     
 protected:
     
     void setNewValue(int val) {
-        // qDebug() << "progBar exists?:" << (bool)(progBar != NULL);
-        
         progBar->setValue(val);
         percentLabel->setText(progBar->text());
     }
@@ -214,9 +212,8 @@ public slots:
     // called to update progress bar throughout the rendering process
     void partialUpdate(const double &progress)
     {
-        if (timer > PROG_BAR_TIMEOUT) { this->setVisible(true); }
-        timer++;
-        //qDebug() << "progress" << progress;
+        if (!this->isVisible() && visibility) { this->setVisible(true); }
+
         this->setNewValue(progress);
 
         //emit signals to reset table buttons
@@ -277,43 +274,6 @@ private:
     bool canRedo;
     
 };
-
-// class CustomUndoStack : public QUndoStack 
-// {
-// public:
-//     CustomUndoStack(QObject *parent = 0) : QUndoStack(parent) { }
-
-//     ~CustomUndoStack() { } 
-
-//     void undo() Q_DECL_OVERRIDE {
-//         if (!canUndo()) return;
-//         // item->setValue(oldVal);
-
-//         emit performUndo();
-
-//         this->child(this->id())->undo();
-//     }
-
-//     void redo() Q_DECL_OVERRIDE {
-//         if(!canRedo()) return;
-        
-//         emit performRedo();
-
-//         this->child(this->id())->redo();
-
-//         // item->blockSignals(true);
-//         // item->setValue(newVal);
-//         // item->blockSignals(false);        
-        
-//     }
-
-// signals:
-//     void performUndo();
-//     void performRedo();
-
-// };
-
-
 
 // Interface class
 class Interface : public QWidget
