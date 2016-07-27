@@ -772,7 +772,11 @@ void Interface::initImageExportPopUp()
 
 void Interface::initToolTips() 
 {
-
+    QFont font;
+    font.setFamily(font.defaultFamily());
+    font.setPointSize(14);
+    QToolTip::setFont(font);
+    
     QString lineEditText = "Press <i> Enter </i> when finish editing to update preview.";
     QString editingBoxText = "Editing box for ";
 
@@ -787,16 +791,21 @@ void Interface::initToolTips()
     YShiftEdit->setToolTip(editingBoxText + "vertical shifting factor. " + lineEditText);
     worldWidthEdit->setToolTip(editingBoxText + "horizontal stretching factor. " + lineEditText);
     worldHeightEdit->setToolTip(editingBoxText + "vertical stretching factor. " + lineEditText);
-
+    
     //function parameters
     numTermsEdit->setToolTip(editingBoxText + "total number of terms.");
     currTermEdit->setToolTip(editingBoxText + "currently editing term.");
-    freqpairLabel->setToolTip("Frequency pair for the function. NEEDS DESCRIPTION!");
-    coeffLabel->setToolTip("Coefficient pair for the function. NEEDS DESCRIPTION!");
-    nEdit->setToolTip("One of values for frequency pair.");
-    mEdit->setToolTip("One of values for frequency pair.");
-    rEdit->setToolTip("Radius for a given term.");
-    aEdit->setToolTip("Angle for a given term.");
+    QString freqToolTip = "Larger values of <b>n</b> and <b>m</b> will make your wallpaper pattern more 'wiggly.' \nThese represent directional frequencies of waves.";
+    freqpairLabel->setToolTip(freqToolTip);
+    mLabel->setToolTip(freqToolTip);
+    nLabel->setToolTip(freqToolTip);
+    
+    QString coeffToolTip = "These represent the radius and angle of the wave function.";
+    QString rToolTip = "Increasing <b>r</b> reflects in larger 'nuclei.'";
+    QString aToolTip = "Adjusting <b>a</b> will rotate about the nuclei of your pattern.";
+    coeffLabel->setToolTip(coeffToolTip);
+    rLabel->setToolTip(rToolTip);
+    aLabel->setToolTip(aToolTip);
 
 }
 
@@ -2071,6 +2080,7 @@ void Interface::setSnapShotWindow(HistoryDisplay* window)
 void Interface::mousePressEvent(QMouseEvent* event) 
 {
     QWidget *widget = QApplication::focusWidget();
+    
     if (event->button() == Qt::LeftButton) {
         if (!widget->underMouse()) {
             if (QLineEdit* lineEditBox = dynamic_cast<QLineEdit*>(widget)) {
@@ -2080,6 +2090,11 @@ void Interface::mousePressEvent(QMouseEvent* event)
                 lineEditBox->deselect();
             }
         }
+    } else if (event->button() == Qt::RightButton) {
+        
+        QLabel* lbl = static_cast<QLabel*>(QApplication::widgetAt(QCursor::pos()));
+        
+        QToolTip::showText(QCursor::pos(), lbl->toolTip());
     }
 }
 

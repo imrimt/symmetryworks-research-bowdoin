@@ -33,6 +33,7 @@
 #include <QProgressBar>
 #include <QTableWidget>
 #include <QHeaderView>
+#include <QToolTip>
 
 #include "historydisplay.h"
 #include "polarplane.h"
@@ -88,6 +89,8 @@ public:
     ClickableLabel(QWidget *parent = 0) : QLabel(parent) { }
     explicit ClickableLabel(int index, QWidget *parent = 0) : QLabel(parent) { this->index = index; }
     
+    
+    
 signals:
     void doubleClickFunctionIcon(int index) ;
     
@@ -96,8 +99,11 @@ protected:
         emit doubleClickFunctionIcon(index);
     }
     
+    
 private:
     int index;
+    QLabel *infoLabel;
+    
 };
 
 // QSlider subclass that takes doubles
