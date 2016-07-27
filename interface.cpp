@@ -1233,6 +1233,7 @@ void Interface::selectColorWheel()
     currColorWheel->setCurrent(colorwheelSel->currentIndex());
 
     updatePreviewDisplay();
+    //updateAspectRatio();
 }
 
 void Interface::selectImage()
@@ -1255,7 +1256,9 @@ void Interface::selectImage()
             currColorWheel->setCurrent(9);
             currColorWheel->loadImage(imageSetPath + "/" + openImageName);
             imagePathLabel->setText(openImageName);
+            
             updatePreviewDisplay();
+            //updateAspectRatio();
         }
     }
 }
@@ -1296,6 +1299,7 @@ void Interface::setImagePushed()
     imagePathLabel->setText(openImageName);
 
     updatePreviewDisplay();
+    updateAspectRatio();
 }
 
 // handles changing to a new function
