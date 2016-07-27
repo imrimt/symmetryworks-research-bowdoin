@@ -6,6 +6,7 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     
     // FUNCTIONAL VARIABLES
     newUpdate = true;
+    newAction = true;
     termIndex = 0;
     saveloadPath = QDir::homePath();
     
@@ -925,7 +926,6 @@ void Interface::refreshMainWindowTerms()
 
     currTermEdit->blockSignals(true);
     numTermsEdit->blockSignals(true);
-    
 
     currTermEdit->setValue(termIndex + 1);
     
@@ -1008,7 +1008,7 @@ void Interface::removeTableTerm(int row)
         term->setText(QString::number(term->text().toInt() - 1));
     }
     
-    if (static_cast<int>(termIndex) > termViewTable->rowCount()) {
+    if (static_cast<int>(termIndex) >= termViewTable->rowCount()) {
         termIndex = termViewTable->rowCount() - 1;
     }
 }
@@ -1138,6 +1138,9 @@ void Interface::updateCurrTerm(int i)
 // updates the number of terms of the current function
 void Interface::changeNumTerms(int i)
 {
+
+    // qDebug() << "size of stack" << undoStack->count();
+
     newUpdate = false;
     if (!numTermsEdit->hasFocus()) numTermsEdit->setFocus();
 
@@ -1152,17 +1155,26 @@ void Interface::changeNumTerms(int i)
         numTerms = currFunction->getNumTerms();
         for (int k = oldNumTerms; k < i; ++k) addTerm();
         
-        QUndoCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
-        undoStack->push(command);
-        qDebug() << "pushing command" << command->id();
-        
         currTermEdit->blockSignals(true);
         currTermEdit->setMaximum(i);
         currTermEdit->blockSignals(false);
     }
 
+
+    if (newAction) {
+        ChangeCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
+        undoStack->push(command);
+        qDebug() << "pushing command" << command->id();
+    } 
+    else {
+        newAction = true;
+    }    
+
     //updateCurrTerm(i);
 
+    refreshMainWindowTerms();
+    refreshTableTerms();
+    newUpdate = true;
     updatePreviewDisplay();
 }
 
@@ -1279,6 +1291,10 @@ void Interface::changeFunction(int index)
     newUpdate = true;
     updatePreviewDisplay();
 
+    // if (!newAction) {
+    //     QUndoCommand *command = new ChangeCommand()
+    // }
+
 }
 
 
@@ -1317,36 +1333,12 @@ QString Interface::saveSettings(const QString &fileName) {
         return nullptr;
     }
     
-    // QDataStream out(&outFile);
-    // out << settings->Width << settings->Height;
-    // out << settings->XCorner << settings->YCorner;
-    // out << settings->OWidth << settings->OHeight;
-    // out << functionSel->currentIndex();
-    // if (fromColorWheelButton->isChecked()) {
-    //     out << colorwheelSel->currentIndex();
-    // }
-    // else {
-    //     out << 9;
-    // }
-    // out << currFunction->getScaleR() << currFunction->getScaleA();
-    // out << currFunction->getNumTerms();
-    
-    // unsigned int i;
-
-    // for(int index = 0; index < currFunction->getNumTerms(); index++)
-    // {
-    //     i = index;
-    //     out << currFunction->getN(i) << currFunction->getM(i) << currFunction->getR(i) << currFunction->getA(i);
-    // }
-
-    // out << imageSetPath;
-    // out << openImageName;
 
    	QTextStream out(&outFile);
+    out << "Horizontal Shift: " << QString::number(settings->XCorner) << endl;
+    out << "Vertical Shift: " << QString::number(settings->YCorner) << endl;
    	out << "Horizontal Stretch: " << QString::number(settings->Width) << endl;
-   	out << "Vertical StretcH: " << QString::number(settings->Height) << endl;
-   	out << "Horizontal Shift: " << QString::number(settings->XCorner) << endl;
-   	out << "Vertical Shift: " << QString::number(settings->YCorner) << endl;
+   	out << "Vertical Stretch: " << QString::number(settings->Height) << endl;   	
     out << "Output Width: " << QString::number(settings->OWidth) << endl;
     out << "Output Height: " << QString::number(settings->OHeight) << endl;
    	out << "Function Type: " << "Wallpapers" << endl;
@@ -1429,15 +1421,16 @@ QString Interface::loadSettings(const QString &fileName) {
     int tempint, newFunctionIndex, newColorIndex, count;
     double tempdouble;
 
-    in.readLineInto(&line);
-    // qDebug() << "reading:" << line;
-    settings->Width = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
-    in.readLineInto(&line);
-    settings->Height = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
+    newColorIndex = -1;
+
     in.readLineInto(&line);
     settings->XCorner = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
     in.readLineInto(&line);
     settings->YCorner = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
+    in.readLineInto(&line);
+    settings->Width = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
+    in.readLineInto(&line);
+    settings->Height = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
     in.readLineInto(&line);
     settings->OWidth = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toInt();
     in.readLineInto(&line);
@@ -1537,11 +1530,21 @@ QString Interface::loadSettings(const QString &fileName) {
     // numTermsEdit->setValue(currFunction->getNumTerms());
     // numTermsEdit->blockSignals(false);
 
-    functionSel->blockSignals(true);
-    functionSel->setCurrentIndex(newFunctionIndex);
-    functionSel->blockSignals(false);
+    if (functionSel->currentIndex() == newFunctionIndex) {
+        changeFunction(newFunctionIndex);
+    }
+    else {
+        functionSel->setCurrentIndex(newFunctionIndex);
+    }
 
-    if (newColorIndex == 9) {
+    // functionSel->blockSignals(true);
+    // functionSel->setCurrentIndex(newFunctionIndex);
+    // functionSel->blockSignals(false);
+
+    refreshMainWindowTerms();
+    refreshTableTerms();
+
+    if (newColorIndex == -1) {
         imageSetPath = imageLoadPath;
         openImageName = loadImageName;
         fromImageButton->setChecked(true);
@@ -1553,13 +1556,13 @@ QString Interface::loadSettings(const QString &fileName) {
         fromColorWheelButton->clicked();
     }
 
-    refreshMainWindowTerms();
-    refreshTableTerms();
     updatePreviewDisplay();
     
     QDir stickypath(fileName);
     stickypath.cdUp();
-    return saveloadPath = stickypath.path();
+    saveloadPath = stickypath.path();
+    currFileName = saveloadPath + "/" + openImageName;
+    return saveloadPath;
 }
 
 // updates the preview to reflect changes to the settings, function, and color wheel
@@ -1568,7 +1571,6 @@ void Interface::updatePreviewDisplay()
     if (!newUpdate) {
         return;
     }
-
     
     // if (!imageDataGraph->series().empty()) imageDataGraph->removeSeries(imageDataSeries);
 	imageDataSeries->clear();
@@ -1835,7 +1837,6 @@ void Interface::startImageExport()
     
     imageExportPort->exportImage(output, fileName);
     
-    
 }
 
 // function for error handling
@@ -2035,6 +2036,23 @@ void Interface::updateImageDataGraph()
     imageLabel->setPixmap(imagePixmap);
 
     prevDataSeries->replace(imageDataSeries->pointsVector());
+}
+
+void Interface::handleUndo()
+{
+    qDebug() << "setting newAction to false due to undo";
+    newAction = false;
+    undoStack->undo();
+    // item->setValue(undoVal);
+
+}
+
+void Interface::handleRedo()
+{
+    qDebug() << "setting newAction to false due to redo";
+    newAction = false;
+    undoStack->redo();
+    // item->setValue(redoVal);
 }
 
 

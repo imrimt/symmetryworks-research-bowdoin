@@ -233,7 +233,8 @@ class ChangeCommand : public QUndoCommand
 {
 public:
     
-    ChangeCommand(QSpinBox *item, float oldVal, float newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
+    // ChangeCommand(QSpinBox *item, double oldVal, double newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
+    ChangeCommand(QObject *item, double oldVal, double newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
     {
 
         this->item = item;
@@ -247,29 +248,69 @@ public:
     ~ChangeCommand() {}
     
     void undo() Q_DECL_OVERRIDE {
-        qDebug() << "UNDO";
-        item->setValue(oldVal);
+        qDebug() << "UNDO to" << oldVal;
+        if (QSpinBox* boxItem = dynamic_cast<QSpinBox*>(item)) {
+            boxItem->setValue(oldVal);
+        }   
+
         canRedo = true;
     }
     void redo() Q_DECL_OVERRIDE {
         if(!canRedo) return;
-        qDebug() << "REDO";
-        
-        item->blockSignals(true);
-        item->setValue(newVal);
-        item->blockSignals(false);
-        
+        qDebug() << "REDO to" << newVal;
+
+        if (QSpinBox* boxItem = dynamic_cast<QSpinBox*>(item)) {
+            boxItem->setValue(newVal);
+        }         
         
     }
 
+
+
     
 private:
-    QSpinBox *item;
-    
-    float oldVal, newVal;
+    // QSpinBox *item;
+    QObject *item;
+
+    double oldVal, newVal;
     bool canRedo;
     
 };
+
+// class CustomUndoStack : public QUndoStack 
+// {
+// public:
+//     CustomUndoStack(QObject *parent = 0) : QUndoStack(parent) { }
+
+//     ~CustomUndoStack() { } 
+
+//     void undo() Q_DECL_OVERRIDE {
+//         if (!canUndo()) return;
+//         // item->setValue(oldVal);
+
+//         emit performUndo();
+
+//         this->child(this->id())->undo();
+//     }
+
+//     void redo() Q_DECL_OVERRIDE {
+//         if(!canRedo()) return;
+        
+//         emit performRedo();
+
+//         this->child(this->id())->redo();
+
+//         // item->blockSignals(true);
+//         // item->setValue(newVal);
+//         // item->blockSignals(false);        
+        
+//     }
+
+// signals:
+//     void performUndo();
+//     void performRedo();
+
+// };
 
 
 
@@ -525,6 +566,9 @@ private slots:
     void updateShifting(const QPoint &point);
     void finishShifting();
 
+    void handleUndo();
+    void handleRedo();
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     //void keyPressEvent(QKeyEvent *event);
@@ -567,7 +611,8 @@ private:
     unsigned int termIndex;     //currently editing term
     int coeffFlag;      //mapping variable for polar plane
     bool newUpdate;     //guard variable for preview update
-    double aspectRatio; 
+    double aspectRatio;
+    bool newAction;     //new action performed, not because of undo/redo 
     
     //I/O-related variables    
     QString saveloadPath;

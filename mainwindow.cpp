@@ -98,15 +98,19 @@ void MainWindow::createActions()
     saveAsAct->setShortcuts(QKeySequence::SaveAs);
     connect(saveAsAct, SIGNAL(triggered()), currInterface, SLOT(saveCurrWorkspaceAs()));
     
-    undoAct = currInterface->undoStack->createUndoAction(this, tr("&Undo"));
-    undoAct->setShortcuts(QKeySequence::Undo);
-//    connect(undoAct, SIGNAL(triggered()), currInterface->scaleAEdit, SLOT(undo()));
+    // undoAct = currInterface->undoStack->createUndoAction(this, tr("&Undo"));
+    undoAct = new QAction(tr("&Undo"), this);
+    // undoAct->setShortcuts(QKeySequence::Undo);
+    undoAct->setShortcut(QKeySequence(tr("Ctrl+Shift+R")));
+    undoAct->setStatusTip(tr("Undo the most current action"));
+    connect(undoAct, SIGNAL(triggered()), currInterface, SLOT(handleUndo()));
     
-    redoAct = currInterface->undoStack->createRedoAction(this, tr("&Redo"));
-    
-    redoAct->setShortcuts(QKeySequence::Redo);
-//    connect(redoAct, SIGNAL(triggered()), currInterface->scaleAEdit, SLOT(redo()));
-
+    // redoAct = currInterface->undoStack->createRedoAction(this, tr("&Redo"));
+    redoAct = new QAction(tr("&Redo"), this);
+    // redoAct->setShortcuts(QKeySequence::Redo);
+    redoAct->setShortcut(QKeySequence(tr("Ctrl+Shift+T")));
+    redoAct->setStatusTip(tr("Redo the most current action"));
+    connect(redoAct, SIGNAL(triggered()), currInterface, SLOT(handleRedo()));
 
     // printAct = new QAction(tr("&Print..."), this);
     // printAct->setShortcuts(QKeySequence::Print);
