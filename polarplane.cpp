@@ -24,6 +24,7 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     zoomButtonLayout = new QHBoxLayout();
     
     // polarPlanePopUp->setWindowModality(Qt::WindowModal);
+
     // GRAPH ELEMENTS
     graph = new QChart();
     
@@ -43,15 +44,11 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     angleEdit = new QLineEdit();
     
     // UI ELEMENTS
-    //confirmButton = new QPushButton(tr("OK"));
     resetButton = new QPushButton(tr("Reset"));
-    // cancelButton = new QPushButton(tr("Cancel"));
     zoomInButton = new QPushButton(QIcon(":/Images/Icons/zoomin.png"), "Zoom In");
     zoomInButton->setStyleSheet("QPushButton { text-align:center; padding:5px}");
     zoomOutButton = new QPushButton(QIcon(":/Images/Icons/zoomout.png"), "Zoom Out");
     zoomOutButton->setStyleSheet("QPushButton { text-align:center; padding:5px}");
-
-    // cancelButton->setStyleSheet("background-color: red");
     
     planeSpacer1 = new QSpacerItem(15,15);
     planeSpacer2 = new QSpacerItem(5,5);
@@ -256,19 +253,21 @@ void PolarPlane::setPolarCoordinates()
 
 void PolarPlane::resetPolarCoordinates()
 {
-    QPointF point(1, 0);
-    coordinateSeries->replace(0, point);
+    // QPointF point(1, 0);
+    // coordinateSeries->replace(0, point);
     
-    QVector<QPointF> list1;
-    list1 << QPointF(0,0) << point;
-    QVector<QPointF> list2;
-    list2 << QPointF(point.x(), 0) << point;
+    // QVector<QPointF> list1;
+    // list1 << QPointF(0,0) << point;
+    // QVector<QPointF> list2;
+    // list2 << QPointF(point.x(), 0) << point;
     
-    xSeries->replace(list1);
-    ySeries->replace(list2);
+    // xSeries->replace(list1);
+    // ySeries->replace(list2);
     
-    radiusEdit->setText("1.00");
-    angleEdit->setText("0.00");
+    // radiusEdit->setText("1.00");
+    // angleEdit->setText("0.00");
+
+    coordinateSeries->replace(0, QPointF(startingRadius * cos(startingAngle), startingRadius * sin(startingAngle)));
 }
 
 void PolarPlane::polarPlaneZoomOut()
