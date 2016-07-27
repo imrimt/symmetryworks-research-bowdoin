@@ -542,8 +542,8 @@ void Interface::initPatternType()
     imageDataGraph->setTitle("SAMPLE POINTS ON IMAGE");
 
     //adjust data points size & color
-    QPen pointPen(Qt::red);
-    QBrush pointBrush(Qt::red);
+    QPen pointPen(Qt::black);
+    QBrush pointBrush(Qt::gray);
     prevDataSeries->setPen(pointPen);
     prevDataSeries->setBrush(pointBrush);
     prevDataSeries->setMarkerSize(5.0);
@@ -815,7 +815,7 @@ void Interface::connectAllSignals()
     connect(fromColorWheelButton, SIGNAL(clicked()), this, SLOT(selectColorWheel()));
     connect(fromImageButton, SIGNAL(clicked()), this, SLOT(selectImage()));
     connect(setLoadedImage, SIGNAL(clicked()), this, SLOT(setImagePushed()));
-    connect(setOverflowColorPopUp, SIGNAL(colorSelected(QColor)), currColorWheel, SLOT(changeOverflowColor(QColor)));
+    connect(setOverflowColorPopUp, SIGNAL(colorSelected(QColor)), this, SLOT(changeOverflowColor(QColor)));
     connect(setOverflowColorPopUp, SIGNAL(accepted()), this, SLOT(selectImage()));
     connect(updateImageDataGraphButton, SIGNAL(clicked()), this, SLOT(updateImageDataGraph()));
 

@@ -494,11 +494,11 @@ private slots:
     void changeScaleA(double val);
     void changeScaleR();
     void changeScaleR(double val);
+    void changeOverflowColor(const QColor &color) { currColorWheel->changeOverflowColor(color); updatePreviewDisplay(); }
 
     void exportImageFunction() { imageDimensionsPopUp->show(); }
     void cancelImageExport() { imageDimensionsPopUp->hide(); }
     void startImageExport();
-    
     
     void resetFunction();
     void loadFromSettings();
