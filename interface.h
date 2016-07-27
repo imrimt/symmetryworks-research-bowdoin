@@ -102,7 +102,7 @@ protected:
     
 private:
     int index;
-    QLabel *infoLabel;
+    
     
 };
 
@@ -523,6 +523,7 @@ private slots:
     void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
     QString loadSettings(const QString &fileName);
     void popUpImageExportFinished(const QString &filePath);
+ 
     void resetMainWindowButton(const bool &status);
     
     void showFunctionIcons() { functionIconsWindow->hide(), functionIconsWindow->show(); }

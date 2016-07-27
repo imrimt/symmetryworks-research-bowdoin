@@ -778,23 +778,26 @@ void Interface::initToolTips()
     QToolTip::setFont(font);
     
     QString lineEditText = "Press <i> Enter </i> when finish editing to update preview.";
-    QString editingBoxText = "Editing box for ";
+    //QString editingBoxText = "Editing box for ";
 
     //patern properties
     functionLabel->setToolTip("Select among 17 different wallpaper patterns.");
     colorwheelLabel->setToolTip("Select among different color wheels or load in an image.");
-
+    
+    scaleRLabel->setToolTip("Changes which points on the color wheel\n will be called up by the wallpaper function.");
+    scaleALabel->setToolTip("Changes which points on the color wheel\n will be called up by the wallpaper function.");
+    
     //scaling factors & image
-    scaleAEdit->setToolTip(editingBoxText + "Scaling Angle. " + lineEditText);
-    scaleREdit->setToolTip(editingBoxText + "Scaling Radius. " + lineEditText);
-    XShiftEdit->setToolTip(editingBoxText + "horizontal shifting factor. " + lineEditText);
-    YShiftEdit->setToolTip(editingBoxText + "vertical shifting factor. " + lineEditText);
-    worldWidthEdit->setToolTip(editingBoxText + "horizontal stretching factor. " + lineEditText);
-    worldHeightEdit->setToolTip(editingBoxText + "vertical stretching factor. " + lineEditText);
+//    scaleALabel->setToolTip("Scaling Angle\n" + lineEditText);
+//    scaleRLabel->setToolTip("Scaling Radius\n" + lineEditText);
+//    XShiftLabel->setToolTip("Horizontal shifting factor\n" + lineEditText);
+//    YShiftLabelt->setToolTip("vertical shifting factor. " + lineEditText);
+//    worldWidthLabel->setToolTip(editingBoxText + "horizontal stretching factor. " + lineEditText);
+//    worldHeightLabel->setToolTip(editingBoxText + "vertical stretching factor. " + lineEditText);
     
     //function parameters
-    numTermsEdit->setToolTip(editingBoxText + "total number of terms.");
-    currTermEdit->setToolTip(editingBoxText + "currently editing term.");
+//    numTermsLabel->setToolTip(editingBoxText + "total number of terms.");
+//    currTermLabel->setToolTip(editingBoxText + "currently editing term.");
     QString freqToolTip = "Larger values of <b>n</b> and <b>m</b> will make your wallpaper pattern more 'wiggly.' \nThese represent directional frequencies of waves.";
     freqpairLabel->setToolTip(freqToolTip);
     mLabel->setToolTip(freqToolTip);
@@ -1337,6 +1340,10 @@ void Interface::saveCurrWorkspace()
     
     saveloadPath = saveSettings(currFileName);
     
+    QMessageBox msgBox;
+    msgBox.setText(tr("The file has been successfully saved to: ").append(saveloadPath));
+    msgBox.exec();
+    
 }
 
 void Interface::saveCurrWorkspaceAs()
@@ -1348,6 +1355,9 @@ void Interface::saveCurrWorkspaceAs()
     
     saveloadPath = saveSettings(currFileName);
     
+    QMessageBox msgBox;
+    msgBox.setText(tr("The file has been successfully saved to: ").append(saveloadPath));
+    msgBox.exec();
     
 }
 
