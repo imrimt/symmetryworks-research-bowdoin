@@ -1388,11 +1388,10 @@ QString Interface::saveSettings(const QString &fileName) {
     else {
         out << "Color Type: Image" << endl;
         out << "Image Path: " << imageSetPath << endl;
-        out << "Image Name: " << openImageName;
+        out << "Image Name: " << openImageName << endl;
+        out << "Overflow Color: " << currColorWheel->getOverflowColor().name() << endl;
     }
-
-    out << endl;
-
+    
     out << "Scaling Radius: " << QString::number(currFunction->getScaleR()) << endl;
     out << "Scaling Angle: " << QString::number(currFunction->getScaleA()) << endl;
 
@@ -1457,6 +1456,7 @@ QString Interface::loadSettings(const QString &fileName) {
     QString loadImageName;
     int tempint, newFunctionIndex, newColorIndex, count;
     double tempdouble;
+    QColor overflowColor;
 
     newColorIndex = -1;
 
@@ -1495,6 +1495,8 @@ QString Interface::loadSettings(const QString &fileName) {
 	    imageLoadPath = (line.right(line.length() - line.lastIndexOf(" ") - 1));
 	    in.readLineInto(&line);
 	    loadImageName = (line.right(line.length() - line.lastIndexOf(" ") - 1));
+	    in.readLineInto(&line);
+	    overflowColor = QColor(line.right(line.length() - line.lastIndexOf(" ") - 1));
     }
     else {
     	in.readLineInto(&line);
@@ -1584,6 +1586,7 @@ QString Interface::loadSettings(const QString &fileName) {
     if (newColorIndex == -1) {
         imageSetPath = imageLoadPath;
         openImageName = loadImageName;
+        currColorWheel->changeOverflowColor(overflowColor);
         fromImageButton->setChecked(true);
         fromImageButton->clicked();
     }

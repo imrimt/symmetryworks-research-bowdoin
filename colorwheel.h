@@ -33,6 +33,8 @@ class ColorWheel : public QObject
     
     ColorWheel* clone();
 
+    QColor getOverflowColor() { return overflowColor; }
+
   private:
 
     // FUNCTIONAL VARIABLES
