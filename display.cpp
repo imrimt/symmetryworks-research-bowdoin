@@ -1,6 +1,6 @@
 #include "display.h"
 
-Display::Display(int inputDim, int imageDim, QWidget *parent) :
+Display::Display(int inputDim, double imageWidth, double imageHeight, QWidget *parent) :
     QWidget(parent)
 {
     // setAttribute(Qt::WA_StaticContents);
@@ -9,8 +9,9 @@ Display::Display(int inputDim, int imageDim, QWidget *parent) :
     
     
     dimension = inputDim;
-    imageSize = imageDim;
-    disp = QImage(imageSize, imageSize, QImage::Format_RGB32);
+    width = imageWidth;
+    height = imageHeight;
+    disp = QImage(width, height, QImage::Format_RGB32);
     disp.fill(0);
 
     // for (int i = 0; i < imageSize; i++) {
@@ -19,7 +20,7 @@ Display::Display(int inputDim, int imageDim, QWidget *parent) :
     //     }
     // }
 
-    colorMap = QVector<QVector<QRgb>>(imageSize, QVector<QRgb>(imageSize));
+    colorMap = QVector<QVector<QRgb>>(width, QVector<QRgb>(height));
 }
 
 void Display::setPixel(int i, int j, QRgb color)
@@ -41,8 +42,8 @@ int Display::dim() const
 void Display::shrink() 
 {
     int newSize = disp.width();
-    if (disp.width() * (1 - SCALE) >= MIN_PREVIEW_IMAGE_SIZE) {
-        newSize = (int)(newSize * (1 - SCALE));
+    if (disp.width() * (1 - SCREEN_SCALING_FACTOR) >= MIN_PREVIEW_IMAGE_SIZE) {
+        newSize = (int)(newSize * (1 - SCREEN_SCALING_FACTOR));
     }
     else {
         newSize = MIN_PREVIEW_IMAGE_SIZE;
@@ -55,8 +56,8 @@ void Display::shrink()
 void Display::enlarge()
 {
     int newSize = disp.width();
-    if (disp.width() * (1 + SCALE) <= MAX_PREVIEW_IMAGE_SIZE) {
-        newSize = (int)(newSize * (1 + SCALE));
+    if (disp.width() * (1 + SCREEN_SCALING_FACTOR) <= MAX_PREVIEW_IMAGE_SIZE) {
+        newSize = (int)(newSize * (1 + SCREEN_SCALING_FACTOR));
     }
     else {
         newSize = MAX_PREVIEW_IMAGE_SIZE;
@@ -91,6 +92,18 @@ void Display::mouseMoveEvent(QMouseEvent *event)
     }   
 }
 
+void Display::changeAspectRatio(double width, double height) {
+    
+    this->width = width;
+    this->height = height;
+    
+    //disp = disp.scaled(this->width, this->height);
+    resetSize();
+
+    
+   // update();
+}
+
 void Display::paintEvent(QPaintEvent * /* unused */)
 {
     QPainter painter(this);
@@ -115,8 +128,8 @@ void Display::paintEvent(QPaintEvent * /* unused */)
 
     // for (int i = 0; i < disp.width(); i++) {
         // for (int j = 0; j < disp.height(); j++) {
-    for (int i = 0; i < imageSize; i++) {
-        for (int j = 0; j < imageSize; j++) {
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
             // color = QColor::fromRgb(disp.pixel(i,j));
             color = QColor::fromRgb(colorMap[i][j]);
             painter.setPen(color);

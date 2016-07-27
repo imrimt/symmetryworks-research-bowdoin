@@ -97,8 +97,8 @@ void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
     
     
     this->display = display;
-    overallWidth = display->width();
-    overallHeight = display->height();
+    overallWidth = display->getWidth();
+    overallHeight = display->getHeight();
     this->actionFlag = actionFlag;
     controllerObject->setActionFlag(this->actionFlag);
     controllerObject->setDisplay(this->display);

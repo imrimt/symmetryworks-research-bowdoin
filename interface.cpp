@@ -152,7 +152,7 @@ void Interface::initPreviewDisplay()
     previewHeight = screenGeometry.height() * PREVIEW_SCALING;
     previewSize = previewWidth > previewHeight ? previewWidth : previewHeight;
 
-    disp = new Display(previewSize, previewSize, displayWidget);
+    disp = new Display(previewSize, previewSize, previewSize, displayWidget);
     snapshotButton= new QPushButton(tr("Snapshot"), this);
     //exportImage = new QPushButton(tr("Export..."), this);
     //resetButton = new QPushButton(tr("Reset"), this);
@@ -168,7 +168,7 @@ void Interface::initPreviewDisplay()
     updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
     
     imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
-    previewDisplayPort = new Port(currFunction, currColorWheel, disp->width(), disp->height(), settings);
+    previewDisplayPort = new Port(currFunction, currColorWheel, disp->getWidth(), disp->getHeight(), settings);
     
     displayProgressBar = new ProgressBar(tr("Preview"), previewDisplayPort);
     exportProgressBar = new ProgressBar(tr("Exporting"), imageExportPort);
@@ -726,18 +726,31 @@ void Interface::initImageExportPopUp()
     double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
     double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
     double aspectRatio = (double)(width / height);
+    aspectRatioEdit = new QLineEdit();
+    aspectRatioPreview = new Display(MAX_ASPECT_RATIO_PREVIEW, MAX_ASPECT_RATIO_PREVIEW, MAX_ASPECT_RATIO_PREVIEW, imageDimensionsPopUp);
+    aspectRatioPreview->changeAspectRatio(width, height);
 
-    aspectRatioPreview = new Display(width, height, imageDimensionsPopUp);
+    aspectRatioEditLayout = new QHBoxLayout();
     aspectRatioPreviewLayout = new QHBoxLayout();
-    aspectRatioLabel = new QLabel(tr("Aspect Ratio: %1").arg(aspectRatio));
-    aspectRatioPreviewLayout->addWidget(aspectRatioLabel);
-    aspectRatioPreviewLayout->addWidget(aspectRatioPreview);
-    aspectRatioPreviewDisplayPort = new Port(currFunction, currColorWheel, width, height, settings);
+    aspectRatioLabel = new QLabel(tr("Aspect Ratio: "));
+    aspectRatioEdit->setFixedWidth(100);
+    aspectRatioEdit->setAlignment(Qt::AlignCenter);
+    aspectRatioEdit->setText(QString::number(aspectRatio));
     
+    aspectRatioEditLayout->addWidget(aspectRatioLabel);
+    aspectRatioEditLayout->addWidget(aspectRatioEdit);
+    aspectRatioEditLayout->setAlignment(Qt::AlignLeft);
+    
+    aspectRatioPreviewLayout->addWidget(aspectRatioPreview);
+    
+    aspectRatioPreviewLayout->setAlignment(Qt::AlignCenter);
+    aspectRatioPreviewDisplayPort = new Port(currFunction, currColorWheel, width, height, settings);
+    aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
     
     imageDimensionsPopUpLayout->addLayout(outWidthLayout);
     imageDimensionsPopUpLayout->addLayout(outHeightLayout);
     imageDimensionsPopUpLayout->addItem(new QSpacerItem(10, 20));
+    imageDimensionsPopUpLayout->addLayout(aspectRatioEditLayout);
     imageDimensionsPopUpLayout->addLayout(aspectRatioPreviewLayout);
     
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
@@ -839,6 +852,8 @@ void Interface::connectAllSignals()
     connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
     // connect(outWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeOWidth()));
     // connect(outHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeOHeight()));
+    
+    connect(aspectRatioEdit, SIGNAL(editingFinished()), this, SLOT(changeAspectRatio()));
 
     connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
     connect(previewDisplayPort, SIGNAL(paintingFinished(bool)), this, SLOT(resetMainWindowButton(bool)));
@@ -1611,13 +1626,36 @@ void Interface::changeOHeight()
     settings->OHeight = val;
     imageExportPort->changeSettings(settings);
     
+   updateAspectRatio();
+    
+}
+
+void Interface::updateAspectRatio()
+{
+    
     double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
     double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
     aspectRatio = (double)(width / height);
-    aspectRatioLabel->setText(tr("Aspect Ratio: %1").arg(aspectRatio));
+    //qDebug() << width << height << aspectRatio;
+    //    QSize newSize = aspectRatioPreview->resetImageDimensions(width, height);
+    aspectRatioPreview->changeAspectRatio(width, height);
     aspectRatioPreviewDisplayPort->changeDimensions(width, height);
+    
+  
+    aspectRatioEdit->setText(QString::number(aspectRatio));
     aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
-    // updatePreviewDisplay();
+    
+}
+
+void Interface::changeAspectRatio()
+{
+    double val = aspectRatioEdit->text().toDouble();
+    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
+    double height = width / val;
+    
+    outHeightEdit->setText(QString::number(height / ASPECT_SCALE));
+    emit outHeightEdit->editingFinished();
+    
 }
 
 void Interface::changeOWidth()
@@ -1629,14 +1667,8 @@ void Interface::changeOWidth()
     settings->OWidth = val;
     imageExportPort->changeSettings(settings);
     
-    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
-    double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
-    aspectRatio = (double)(width / height);
-    aspectRatioLabel->setText(tr("Aspect Ratio: %1").arg(aspectRatio));
-    aspectRatioPreviewDisplayPort->changeDimensions(width, height);
-    aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
+    updateAspectRatio();
     
-    // updatePreviewDisplay();
 }
 
 //changing slider values

@@ -46,6 +46,7 @@ const int MIN_IMAGE_DIM = 20;
 const int MAX_IMAGE_DIM = 10000;
 const int PROG_BAR_TIMEOUT = 50;
 const double ASPECT_SCALE = 0.025;
+const int MAX_ASPECT_RATIO_PREVIEW = MAX_IMAGE_DIM * ASPECT_SCALE;
 
 // QLineEdit subclass that undo changes (if not entered) when loses focus
 class CustomLineEdit : public QLineEdit 
@@ -494,7 +495,9 @@ public:
     QPushButton *viewFunctionIconsButton;
     
     Display *aspectRatioPreview;
+    QLineEdit *aspectRatioEdit;
     QLabel *aspectRatioLabel;
+    QHBoxLayout *aspectRatioEditLayout;
     QHBoxLayout *aspectRatioPreviewLayout;
     
     void setSnapShotWindow(HistoryDisplay* window);
@@ -531,7 +534,7 @@ private slots:
     void changeScaleR();
     void changeScaleR(double val);
 
-    void exportImageFunction() { imageDimensionsPopUp->show();  aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview); }
+    void exportImageFunction() { imageDimensionsPopUp->show(); }
     void cancelImageExport() { imageDimensionsPopUp->hide(); }
     void startImageExport();
     
@@ -565,6 +568,8 @@ private slots:
     void startShifting(const QPoint &point);
     void updateShifting(const QPoint &point);
     void finishShifting();
+    
+    void changeAspectRatio();
 
     void handleUndo();
     void handleRedo();
@@ -597,6 +602,7 @@ private:
     void errorHandler(const int &flag);
     void refreshTableTerms();
     void refreshMainWindowTerms();
+    void updateAspectRatio();
 
     //main data structures
     QVector<AbstractFunction *> functionVector;
