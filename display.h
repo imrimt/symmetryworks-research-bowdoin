@@ -20,18 +20,16 @@ class Display : public QWidget
     Q_OBJECT
 
 public:
-    explicit Display(int inputdim = 600, double imageWidth = 200, double imageHeight = 200, QWidget *parent = 0);
+    explicit Display(double imageWidth = 200, double imageHeight = 200, QWidget *parent = 0);
     void setPixel(int i, int j, QRgb color);
     QSize sizeHint() const;
-    int dim() const;
     QImage *getImage() { return &disp; }
     void shrink();
     void enlarge();
     int getWidth() { return width;}
     int getHeight() { return height;}
     void resetSize() {resize(width, height); update();}
-    //QSize resetImageDimensions(double width, double height);
-    void changeAspectRatio(double width, double height);
+    QSize changeDisplayDimensions(double width, double height);
     
 signals:
     void displayPressed(const QPoint &point);
@@ -50,7 +48,6 @@ private:
     
     QImage disp;
     QVector<QVector<QRgb>> colorMap;
-    int dimension;
     double width, height;
 
     QPoint topLeft;

@@ -59,7 +59,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     QVBoxLayout *historyItemsWithLabelLayout = new QVBoxLayout();
     QHBoxLayout *historyItemsLayout = new QHBoxLayout();
     QVBoxLayout *historyItemsButtonsLayout = new QVBoxLayout();
-    Display *d = new Display(HISTORY_ITEM_SIZE, HISTORY_ITEM_SIZE, HISTORY_ITEM_SIZE, viewHistoryBox);
+    Display *d = new Display(HISTORY_ITEM_SIZE, HISTORY_ITEM_SIZE, viewHistoryBox);
     QPushButton *viewButton = new QPushButton(tr("Restore"), viewHistoryBox);
     QPushButton *removeButton = new QPushButton(tr("Remove"), viewHistoryBox);
     QLabel *timeStampLabel = new QLabel(viewHistoryBox);

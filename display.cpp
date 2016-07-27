@@ -1,14 +1,12 @@
 #include "display.h"
 
-Display::Display(int inputDim, double imageWidth, double imageHeight, QWidget *parent) :
+Display::Display(double imageWidth, double imageHeight, QWidget *parent) :
     QWidget(parent)
 {
     // setAttribute(Qt::WA_StaticContents);
     // setAttribute(Qt::WA_LayoutOnEntireRect);
     //setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     
-    
-    dimension = inputDim;
     width = imageWidth;
     height = imageHeight;
     disp = QImage(width, height, QImage::Format_RGB32);
@@ -34,10 +32,6 @@ QSize Display::sizeHint() const
     return disp.size();
 }
 
-int Display::dim() const
-{
-    return dimension;
-}
 
 void Display::shrink() 
 {
@@ -92,14 +86,19 @@ void Display::mouseMoveEvent(QMouseEvent *event)
     }   
 }
 
-void Display::changeAspectRatio(double width, double height) {
+QSize Display::changeDisplayDimensions(double width, double height) {
     
-    this->width = width;
-    this->height = height;
-    
+    if (width > height) {
+        this->height = this->width * (double)(height/width);
+    } else {
+        this->width = this->height * (double)(width/height);
+    }
+
+    //resize(this->width, this->height);
     //disp = disp.scaled(this->width, this->height);
     resetSize();
-
+    
+    return QSize(this->width, this->height);
     
    // update();
 }
