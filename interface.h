@@ -45,8 +45,9 @@ const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
 const int MIN_IMAGE_DIM = 20;
 const int MAX_IMAGE_DIM = 10000;
 const int PROG_BAR_TIMEOUT = 50;
-const double ASPECT_SCALE = 0.025;
-const int MAX_ASPECT_RATIO_PREVIEW = MAX_IMAGE_DIM * ASPECT_SCALE;
+const double ASPECT_SCALE = 0.02;
+const double MAX_ASPECT_RATIO_PREVIEW = MAX_IMAGE_DIM * ASPECT_SCALE;
+const double MIN_ASPECT_RATIO_PREVIEW = MIN_IMAGE_DIM * ASPECT_SCALE;
 
 // QLineEdit subclass that undo changes (if not entered) when loses focus
 class CustomLineEdit : public QLineEdit 
@@ -494,6 +495,7 @@ public:
     QGridLayout *functionIconsWindowLayout;
     QPushButton *viewFunctionIconsButton;
     
+    QWidget *aspectRatioWidget;
     Display *aspectRatioPreview;
     QLineEdit *aspectRatioEdit;
     QLabel *aspectRatioLabel;

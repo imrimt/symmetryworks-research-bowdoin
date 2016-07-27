@@ -152,7 +152,7 @@ void Interface::initPreviewDisplay()
     previewHeight = screenGeometry.height() * PREVIEW_SCALING;
     previewSize = previewWidth > previewHeight ? previewWidth : previewHeight;
 
-    disp = new Display(previewSize, previewSize, previewSize, displayWidget);
+    disp = new Display(previewSize, previewSize, displayWidget);
     snapshotButton= new QPushButton(tr("Snapshot"), this);
     //exportImage = new QPushButton(tr("Export..."), this);
     //resetButton = new QPushButton(tr("Reset"), this);
@@ -697,15 +697,13 @@ void Interface::initImageExportPopUp()
     // IMAGE DIMENSIONS POP UP WINDOW
     imageDimensionsPopUp = new QWidget(this, Qt::Window);
     imageDimensionsPopUp->setWindowModality(Qt::WindowModal);
-    imageDimensionsPopUp->setWindowTitle(tr("Image Settings"));
+    imageDimensionsPopUp->setWindowTitle(tr("Output Image Dimensions"));
     imageDimensionsPopUpLayout = new QVBoxLayout(imageDimensionsPopUp);
     
    // imageDimensionsPopUp->setMinimumWidth(300);
     
     outHeightEdit = new QLineEdit(imageDimensionsPopUp);
     outWidthEdit = new QLineEdit(imageDimensionsPopUp);
-    
-    
     outWidthLayout = new QHBoxLayout();
     outWidthLabel = new QLabel(tr("Image Width"));
     outWidthLayout->addWidget(outWidthLabel);
@@ -726,26 +724,30 @@ void Interface::initImageExportPopUp()
     double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
     double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
     double aspectRatio = (double)(width / height);
-    aspectRatioEdit = new QLineEdit();
-    aspectRatioPreview = new Display(MAX_ASPECT_RATIO_PREVIEW, MAX_ASPECT_RATIO_PREVIEW, MAX_ASPECT_RATIO_PREVIEW, imageDimensionsPopUp);
-    aspectRatioPreview->changeAspectRatio(width, height);
 
     aspectRatioEditLayout = new QHBoxLayout();
     aspectRatioPreviewLayout = new QHBoxLayout();
     aspectRatioLabel = new QLabel(tr("Aspect Ratio: "));
+    aspectRatioEdit = new QLineEdit();
     aspectRatioEdit->setFixedWidth(100);
+    aspectRatioEdit->setMaxLength(4);
     aspectRatioEdit->setAlignment(Qt::AlignCenter);
     aspectRatioEdit->setText(QString::number(aspectRatio));
     
-    aspectRatioEditLayout->addWidget(aspectRatioLabel);
-    aspectRatioEditLayout->addWidget(aspectRatioEdit);
-    aspectRatioEditLayout->setAlignment(Qt::AlignLeft);
+    aspectRatioWidget = new QWidget();
+    aspectRatioWidget->setFixedSize(MAX_ASPECT_RATIO_PREVIEW, MAX_ASPECT_RATIO_PREVIEW);
+    aspectRatioPreview = new Display(MAX_ASPECT_RATIO_PREVIEW, MAX_ASPECT_RATIO_PREVIEW, aspectRatioWidget);
+    QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
+    aspectRatioPreviewLayout->addWidget(aspectRatioWidget);
     
-    aspectRatioPreviewLayout->addWidget(aspectRatioPreview);
     
     aspectRatioPreviewLayout->setAlignment(Qt::AlignCenter);
     aspectRatioPreviewDisplayPort = new Port(currFunction, currColorWheel, width, height, settings);
+    aspectRatioPreviewDisplayPort->changeDimensions(size.width(), size.height());
     aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
+    
+    aspectRatioEditLayout->addWidget(aspectRatioLabel);
+    aspectRatioEditLayout->addWidget(aspectRatioEdit);
     
     imageDimensionsPopUpLayout->addLayout(outWidthLayout);
     imageDimensionsPopUpLayout->addLayout(outHeightLayout);
@@ -1607,7 +1609,7 @@ void Interface::snapshotFunction()
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
     QString filePath = saveSettings(newFile).append("/" + newFile);
 
-    qDebug() << "save" << filePath;
+    //qDebug() << "save" << filePath;
 
     historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
 
@@ -1618,11 +1620,18 @@ void Interface::snapshotFunction()
 // SLOT FUNCTIONS TO CHANGE OUTPUT IMAGE PROPERTIES
 void Interface::changeOHeight()
 {
-    
     int val = outHeightEdit->text().toInt();
-    if (val < MIN_IMAGE_DIM || val > MAX_IMAGE_DIM) {
+    
+    
+    if (val < MIN_IMAGE_DIM) {
         errorHandler(INVALID_OUTPUT_IMAGE_DIM);
+        settings->OHeight = MIN_IMAGE_DIM;
+    } else if (val > MAX_IMAGE_DIM) {
+        
+        errorHandler(INVALID_OUTPUT_IMAGE_DIM);
+        settings->OHeight = MAX_IMAGE_DIM - 1.0;
     }
+    
     settings->OHeight = val;
     imageExportPort->changeSettings(settings);
     
@@ -1630,17 +1639,41 @@ void Interface::changeOHeight()
     
 }
 
+void Interface::changeOWidth()
+{
+    int val = outWidthEdit->text().toInt();
+   
+    
+    if (val < MIN_IMAGE_DIM) {
+        errorHandler(INVALID_OUTPUT_IMAGE_DIM);
+        settings->OHeight = MIN_IMAGE_DIM;
+    } else if (val > MAX_IMAGE_DIM) {
+        errorHandler(INVALID_OUTPUT_IMAGE_DIM);
+        settings->OHeight = MAX_IMAGE_DIM;
+    }
+    
+    settings->OWidth = val;
+//    qDebug() << "VAL" << val;
+    imageExportPort->changeSettings(settings);
+    
+    updateAspectRatio();
+    
+}
+
 void Interface::updateAspectRatio()
 {
     
-    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
-    double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
+    double width = outWidthEdit->text().toInt() * ASPECT_SCALE;
+    double height = outHeightEdit->text().toInt() * ASPECT_SCALE;
     aspectRatio = (double)(width / height);
-    //qDebug() << width << height << aspectRatio;
-    //    QSize newSize = aspectRatioPreview->resetImageDimensions(width, height);
-    aspectRatioPreview->changeAspectRatio(width, height);
-    aspectRatioPreviewDisplayPort->changeDimensions(width, height);
     
+    if (width >= MAX_ASPECT_RATIO_PREVIEW || height >= MAX_ASPECT_RATIO_PREVIEW
+        || width <= MIN_ASPECT_RATIO_PREVIEW || height <= MIN_ASPECT_RATIO_PREVIEW) {
+        errorHandler(INVALID_OUTPUT_IMAGE_DIM);
+    }
+    
+    QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
+    aspectRatioPreviewDisplayPort->changeDimensions(size.width(), size.height());
   
     aspectRatioEdit->setText(QString::number(aspectRatio));
     aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
@@ -1649,27 +1682,45 @@ void Interface::updateAspectRatio()
 
 void Interface::changeAspectRatio()
 {
-    double val = aspectRatioEdit->text().toDouble();
-    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
-    double height = width / val;
+    double aspectRatio = aspectRatioEdit->text().toDouble();
+    double width, height, val;
     
-    outHeightEdit->setText(QString::number(height / ASPECT_SCALE));
-    emit outHeightEdit->editingFinished();
+    if (aspectRatio > 1.0) {
+        width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
+        height = width / aspectRatio;
+
+        val = (int)(height / ASPECT_SCALE);
+        outHeightEdit->setText(QString::number(val));
+        settings->OHeight = val;
+        
+    } else {
+        qDebug() << "this is crashing";
+        
+        height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
+        width = height * aspectRatio;
+        
+        val = (int)(width / ASPECT_SCALE);
+        outWidthEdit->setText(QString::number(val));
+        settings->OWidth = val;
+        
+    }
+    
+    
+    if (width >= MAX_ASPECT_RATIO_PREVIEW || height >= MAX_ASPECT_RATIO_PREVIEW
+        || width <= MIN_ASPECT_RATIO_PREVIEW || height <= MIN_ASPECT_RATIO_PREVIEW) {
+        
+        errorHandler(INVALID_OUTPUT_IMAGE_DIM);
+    }
+
+    imageExportPort->changeSettings(settings);
+    QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
+    aspectRatioPreviewDisplayPort->changeDimensions(size.width(), size.height());
+    aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
+    
     
 }
 
-void Interface::changeOWidth()
-{
-    int val = outWidthEdit->text().toInt();
-    if (val < MIN_IMAGE_DIM || val > MAX_IMAGE_DIM) {
-        errorHandler(INVALID_OUTPUT_IMAGE_DIM);
-    }
-    settings->OWidth = val;
-    imageExportPort->changeSettings(settings);
-    
-    updateAspectRatio();
-    
-}
+
 
 //changing slider values
 void Interface::changeWorldHeight(double val)
@@ -1881,7 +1932,7 @@ void Interface::errorHandler(const int &flag)
             errorMessageBox->exec();
             break;
         case INVALID_OUTPUT_IMAGE_DIM:
-            errorMessageBox->setText("Error: image dimensions must be between 20 and 10000");
+            errorMessageBox->setText("Error: image dimensions must be between 20 and 9999");
             errorMessageBox->exec();
             break;
     }
