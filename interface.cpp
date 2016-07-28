@@ -1217,7 +1217,6 @@ void Interface::colorWheelChanged(int /* unused */ )
     // else
     //     setLoadedImage->hide();
     updatePreviewDisplay();
-    updateAspectRatio();
 }
 
 void Interface::selectColorWheel() 
@@ -1233,7 +1232,6 @@ void Interface::selectColorWheel()
     currColorWheel->setCurrent(colorwheelSel->currentIndex());
 
     updatePreviewDisplay();
-    updateAspectRatio();
 }
 
 void Interface::selectImage()
@@ -1257,7 +1255,6 @@ void Interface::selectImage()
             currColorWheel->loadImage(imageSetPath + "/" + openImageName);
             imagePathLabel->setText(openImageName);
             updatePreviewDisplay();
-            updateAspectRatio();
         }
     }
 }
@@ -1298,7 +1295,6 @@ void Interface::setImagePushed()
     imagePathLabel->setText(openImageName);
 
     updatePreviewDisplay();
-    updateAspectRatio();
 }
 
 // handles changing to a new function
@@ -1325,12 +1321,6 @@ void Interface::changeFunction(int index)
 
     newUpdate = true;
     updatePreviewDisplay();
-    updateAspectRatio();
-
-    // if (!newAction) {
-    //     QUndoCommand *command = new ChangeCommand()
-    // }
-
 }
 
 
@@ -1626,6 +1616,8 @@ void Interface::updatePreviewDisplay()
     displayProgressBar->reset();
     
     previewDisplayPort->paintToDisplay(disp);
+
+    updateAspectRatio();
     
 }
 

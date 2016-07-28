@@ -11,10 +11,10 @@ const double pi = 3.1415926535;
 const int deg = 3;
 const double rx[deg] = {1.0,-2.0,1.0};
 const double ry[deg] = {0.0,1.0,-2.0};
-const double gold = (1.0+sqrt(5.0))/2.0;
-const double ma = sqrt(5.0/2.0);
-const double q2 = sqrt(2.0); const double q3 = sqrt(3.0);
-const double q7 = sqrt(7.0);
+const double gold = (1.0+qSqrt(5.0))/2.0;
+const double ma = qSqrt(5.0/2.0);
+const double q2 = qSqrt(2.0); const double q3 = qSqrt(3.0);
+const double q7 = qSqrt(7.0);
 const double c2 = cos(2.0 * pi/5.0); const double s2 = sin(2.0 * pi/5.0);
 const double c4 = cos(4.0 * pi/5.0); const double s4 = sin(4.0 * pi/5.0);
 const double c6 = cos(6.0 * pi/5.0); const double s6 = sin(6.0 * pi/5.0);
@@ -47,11 +47,11 @@ inline vect5 Bvect5(double a, double b, double c)
 {
     vect5 vec;
     double x5,y5,z5,u5,v5;
-    x5=a/ma+c/sqrt(5.0);
-    y5=a*c2/ma+b*s2/ma+c/sqrt(5.0);
-    z5=a*c4/ma+b*s4/ma+c/sqrt(5.0);
-    u5=a*c6/ma+b*s6/ma+c/sqrt(5.0);
-    v5=a*c8/ma+b*s8/ma+c/sqrt(5.0);
+    x5=a/ma+c/qSqrt(5.0);
+    y5=a*c2/ma+b*s2/ma+c/qSqrt(5.0);
+    z5=a*c4/ma+b*s4/ma+c/qSqrt(5.0);
+    u5=a*c6/ma+b*s6/ma+c/qSqrt(5.0);
+    v5=a*c8/ma+b*s8/ma+c/qSqrt(5.0);
     vec = initVect5(x5,y5,z5,u5,v5);
     return vec;
 }

@@ -234,8 +234,8 @@ void PolarPlane::updatePolarCoordinates(QPointF point)
     
     radiusEdit->blockSignals(true);
     angleEdit->blockSignals(true);
-    radiusEdit->setText(QString::number(sqrt(pow(point.x(), 2) + pow(point.y(), 2)), 'f', 2));
-    angleEdit->setText(QString::number(atan(point.y() / point.x()), 'f', 2));
+    radiusEdit->setText(QString::number(qSqrt(pow(point.x(), 2) + pow(point.y(), 2)), 'f', 2));
+    angleEdit->setText(QString::number(qAtan2(point.y(), point.x()), 'f', 2));
     radiusEdit->blockSignals(false);
     angleEdit->blockSignals(false);
 
