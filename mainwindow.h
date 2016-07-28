@@ -11,6 +11,8 @@ class QActionGroup;
 class QLabel;
 class QMenu;
 
+const int SMALL_SCREEN_HEIGHT = 1000;
+
 //class ChangeCommand : public QUndoCommand
 //{
 //public:

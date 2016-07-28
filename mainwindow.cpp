@@ -44,6 +44,14 @@ MainWindow::MainWindow()
     int x = (screenGeometry.width()-this->width()) * 0.3;
     int y = (screenGeometry.height()-this->height()) * 0.15;
     this->move(x, y);
+    
+    qDebug() << screenGeometry;
+    if (screenGeometry.height() < SMALL_SCREEN_HEIGHT){
+        QFont font;
+        font.setFamily(font.defaultFamily());
+        font.setPointSize(10);
+        currInterface->setFont(font);
+    }
                                
     setWindowTitle(tr("Wallpaper Generation"));
     
