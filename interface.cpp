@@ -1256,7 +1256,6 @@ void Interface::selectImage()
             currColorWheel->setCurrent(9);
             currColorWheel->loadImage(imageSetPath + "/" + openImageName);
             imagePathLabel->setText(openImageName);
-            
             updatePreviewDisplay();
             updateAspectRatio();
         }

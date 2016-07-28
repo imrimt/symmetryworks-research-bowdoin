@@ -28,10 +28,10 @@ ColorWheel* ColorWheel::clone()
     ColorWheel *c = new ColorWheel();
   
     c->setCurrent(this->currentSel);
+    c->changeOverflowColor(this->getOverflowColor());
 
     if (!(this->image.isNull())) {
-     
-        c->image = this->image.copy();
+        c->image = this->image.copy();        
     } else {
        
     }
