@@ -91,7 +91,7 @@ class generalFunction : public AbstractFunction
 
 //#define Kgen 1.6
 //#define Lgen 1
-// locSym function uses a special lattice with sqrt 7
+// locSym function uses a special lattice with qSqrt 7
 
 //#define Xgen ( 2*pi*x ) original defaults
 //#define Ygen ( 2*pi*(x/Kgen + y/Lgen) )

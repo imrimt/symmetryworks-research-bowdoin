@@ -185,7 +185,7 @@ QRgb ColorWheel::SectCol(std::complex<double> zin)
     double x = zin.real();
     double y = -zin.imag();
 
-    ra = sqrt(x*x+y*y);
+    ra = qSqrt(x*x+y*y);
 
     int extremeValue = int(MAX_RGB - (MAX_RGB * ra)/2.0);
 
@@ -282,7 +282,7 @@ QRgb ColorWheel::Sect6Col(std::complex<double> zin)
     double x = zin.real();
     double y = zin.imag();
 
-    double ra = sqrt(x * x + y * y);
+    double ra = qSqrt(x * x + y * y);
 
     int specialValue1 = int(MAX_RGB * (1.5 - 2 * ra));
     int specialValue2 = int(MAX_RGB - (MAX_RGB * ra)/2.0);
@@ -476,7 +476,7 @@ QRgb ColorWheel::WinCol(std::complex<double> zin)
 
     E1 = initVect5(1.0/ma,c2/ma,c4/ma,c6/ma,c8/ma);
     E2 = initVect5(0.0,s2/ma,s4/ma,s6/ma,s8/ma);
-    E3 = initVect5(1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0),1.0/sqrt(5.0));
+    E3 = initVect5(1.0/qSqrt(5.0),1.0/qSqrt(5.0),1.0/qSqrt(5.0),1.0/qSqrt(5.0),1.0/qSqrt(5.0));
 
     xa = zin.real();
     ya = zin.imag();
