@@ -11,7 +11,7 @@ class QActionGroup;
 class QLabel;
 class QMenu;
 
-const int SMALL_SCREEN_HEIGHT = 1000;
+const int SCREEN_INTERFACE_MARGIN = 50;
 
 //class ChangeCommand : public QUndoCommand
 //{

@@ -45,11 +45,11 @@ MainWindow::MainWindow()
     int y = (screenGeometry.height()-this->height()) * 0.15;
     this->move(x, y);
     
-    qDebug() << screenGeometry;
-    if (screenGeometry.height() < SMALL_SCREEN_HEIGHT){
+    qDebug() << "SCREEN GEOMETRY: " << screenGeometry;
+    if (qFabs(screenGeometry.height() - this->height()) < SCREEN_INTERFACE_MARGIN){
         QFont font;
         font.setFamily(font.defaultFamily());
-        font.setPointSize(10);
+        font.setPointSize(font.pointSize() - 2);
         currInterface->setFont(font);
     }
                                
