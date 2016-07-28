@@ -1,6 +1,6 @@
 /****************************************************************************
 
-Deploy on Mac: /Users/sngo/Applications/Qt/5.7/clang_64/bin/macdeployqt3
+Deploy on Mac: /Users/sngo/Qt/5.7/clang_64/bin/macdeployqt
 
 ****************************************************************************/
 
