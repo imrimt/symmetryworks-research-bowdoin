@@ -46,6 +46,9 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     
     // INITIALIZE LAYOUT
     initInterfaceLayout();
+    initShortcuts();
+
+    connectAllSignals();
 
     undoStack = new QUndoStack(this);
     
@@ -67,7 +70,10 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     setTabOrder(currTermEdit, mEdit);
     setTabOrder(nEdit, mEdit);
     setTabOrder(mEdit, rEdit);
-    setTabOrder(rEdit, aEdit);    
+    setTabOrder(rEdit, aEdit);
+
+    refreshTableTerms();
+    updatePreviewDisplay();    
 }
 
 
@@ -133,12 +139,6 @@ void Interface::initInterfaceLayout()
     initImageProps();
     initImageExportPopUp();
     initToolTips();
-
-    connectAllSignals();
-
-    refreshTableTerms();
-    updatePreviewDisplay();
-
 }
 
 
@@ -154,18 +154,10 @@ void Interface::initPreviewDisplay()
 
     disp = new Display(previewSize, previewSize, displayWidget);
     snapshotButton= new QPushButton(tr("Snapshot"), this);
-    //exportImage = new QPushButton(tr("Export..."), this);
-    //resetButton = new QPushButton(tr("Reset"), this);
     dispLayout = new QVBoxLayout(displayWidget);
     //dispLayout->setSizeConstraint(QLayout::SetMinimumSize);
     buttonLayout = new QHBoxLayout();
-    
     buttonLayout->addWidget(snapshotButton);
-    //buttonLayout->addWidget(exportImage);
-    //buttonLayout->addWidget(resetButton);
-    
-    //SET UP SHORTCUTS...add for save, open, undo?
-    updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
     
     imageExportPort = new Port(currFunction, currColorWheel, settings->OWidth, settings->OHeight, settings);
     previewDisplayPort = new Port(currFunction, currColorWheel, disp->getWidth(), disp->getHeight(), settings);
@@ -221,14 +213,15 @@ void Interface::initFunctionConstants()
     mEdit->setFixedWidth(100);
     rEdit->setFixedWidth(100);
     aEdit->setFixedWidth(100);
-    nEdit->setRange(-10,10);
-    nEdit->setSingleStep(1);
-    mEdit->setRange(-10,10);
-    mEdit->setSingleStep(1);
-    aEdit->setRange(-314, 314);
-    aEdit->setSingleStep(25);
-    rEdit->setRange(0,1000);
-    rEdit->setSingleStep(1);
+    nEdit->setRange(MIN_FREQ_VALUE, MAX_FREQ_VALUE);
+    nEdit->setSingleStep(FREQ_SPINBOX_STEP);
+    mEdit->setRange(MIN_FREQ_VALUE, MAX_FREQ_VALUE);
+    mEdit->setSingleStep(FREQ_SPINBOX_STEP);
+    // aEdit->setRange((-314, 314);
+    aEdit->setRange((int)(-pi*100), (int)(pi*100));
+    aEdit->setSingleStep(ANGLE_SPINBOX_STEP * 100);
+    rEdit->setRange(0,(int)MAX_RADIUS * 100);
+    rEdit->setSingleStep(RADIUS_SPINBOX_STEP * 10);
     
     nEdit->setAlignment(Qt::AlignCenter);
     mEdit->setAlignment(Qt::AlignCenter);
@@ -572,21 +565,12 @@ void Interface::initPatternType()
     imageDataWindowLayout->addWidget(imageLabel);
     imageDataWindow->setLayout(imageDataWindowLayout);
     imageDataWindow->setFixedSize(previewSize * 2, previewSize);
-
-    // imageDataWindow->show();
-
-    // set image buttons false
-    // setOverflowColorButton->setEnabled(false);
-    // showImageDataGraphButton->setEnabled(false);
-    // emit imageActionStatus(false);
     
     // ASSEMBLE LAYOUT
 
     functionLayout->addWidget(functionLabel);
     functionLayout->addWidget(functionSel);    
     functionLayout->addWidget(viewFunctionIconsButton);
-    // functionLayout->addLayout(patternTitleLayout);
-    // functionLayout->addWidget(viewFunctionIconsButton);
     patternTypeBoxLayout->addLayout(functionLayout);
     patternTypeBoxLayout->addWidget(endPattern);
     patternTypeBoxLayout->addWidget(colorwheelLabel);
@@ -660,9 +644,9 @@ void Interface::initImageProps()
     
     XShiftEditSlider->setFixedWidth(100);
     YShiftEditSlider->setFixedWidth(100);
-    XShiftEditSlider->setRange(-200, 150);
+    XShiftEditSlider->setRange(-1000, 1000);
     XShiftEditSlider->setSingleStep(1);
-    YShiftEditSlider->setRange(-200,150);
+    YShiftEditSlider->setRange(-1000, 1000);
     YShiftEditSlider->setSingleStep(1);
     XShiftEditSlider->setOrientation(Qt::Horizontal);
     YShiftEditSlider->setOrientation(Qt::Horizontal);
@@ -674,9 +658,9 @@ void Interface::initImageProps()
     
     worldWidthEditSlider->setFixedWidth(100);
     worldHeightEditSlider->setFixedWidth(100);
-    worldWidthEditSlider->setRange(0, 800);
+    worldWidthEditSlider->setRange(0, 1000);
     worldWidthEditSlider->setSingleStep(1);
-    worldHeightEditSlider->setRange(0,800);
+    worldHeightEditSlider->setRange(0, 1000);
     worldHeightEditSlider->setSingleStep(1);
     worldWidthEditSlider->setOrientation(Qt::Horizontal);
     worldHeightEditSlider->setOrientation(Qt::Horizontal);
@@ -809,7 +793,12 @@ void Interface::initToolTips()
     coeffLabel->setToolTip(coeffToolTip);
     rLabel->setToolTip(rToolTip);
     aLabel->setToolTip(aToolTip);
+}
 
+void Interface::initShortcuts() 
+{
+    //SET UP SHORTCUTS...add for save, open, undo?
+    updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
 }
 
 // CONNECT SIGNALS TO SLOTS
@@ -1058,14 +1047,14 @@ void Interface::addTerm()
     QDoubleSpinBox *aEditTable = new QDoubleSpinBox();
     QDoubleSpinBox *rEditTable = new QDoubleSpinBox();
     
-    nEditTable->setRange(-10,10);
-    nEditTable->setSingleStep(1);
-    mEditTable->setRange(-10,10);
-    mEditTable->setSingleStep(1);
-    aEditTable->setRange(-3.14, 3.14);
-    aEditTable->setSingleStep(0.25);
-    rEditTable->setRange(-10,10);
-    rEditTable->setSingleStep(0.1);
+    nEditTable->setRange(MIN_FREQ_VALUE,MAX_FREQ_VALUE);
+    nEditTable->setSingleStep(FREQ_SPINBOX_STEP);
+    mEditTable->setRange(MIN_FREQ_VALUE,MAX_FREQ_VALUE);
+    mEditTable->setSingleStep(FREQ_SPINBOX_STEP);
+    aEditTable->setRange(-pi, pi);
+    aEditTable->setSingleStep(ANGLE_SPINBOX_STEP);
+    rEditTable->setRange(MIN_FREQ_VALUE,MAX_FREQ_VALUE);
+    rEditTable->setSingleStep(RADIUS_SPINBOX_STEP);
     nEditTable->setAlignment(Qt::AlignCenter);
     mEditTable->setAlignment(Qt::AlignCenter);
     aEditTable->setAlignment(Qt::AlignCenter);
@@ -1242,13 +1231,13 @@ void Interface::selectImage()
 
     emit imageActionStatus(true);
 
-    if (imageSetPath == "") {
+    if (openImageName == "") {
         setImagePushed();
     }
     else {
         QDir checkDir(imageSetPath);
         if (!checkDir.exists(openImageName)) {
-            errorHandler(INVALID_FILE_ERROR);
+            errorHandler(INVALID_IMAGE_FILE_ERROR);
         }
         else {
             currColorWheel->setCurrent(9);
@@ -1263,7 +1252,7 @@ void Interface::selectImage()
 void Interface::setImagePushed()
 {
 
-    QString startingPath = imageSetPath == "" ? "/Documents" : imageSetPath;
+    QString startingPath = openImageName == "" ? "/Documents" : imageSetPath;
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
                                                     startingPath,
                                                     tr("Images (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.tiff *.xbm *.xpm)"));
@@ -1274,7 +1263,7 @@ void Interface::setImagePushed()
     }
 
     if (!inFile.exists()){
-        errorHandler(INVALID_FILE_ERROR);
+        errorHandler(INVALID_IMAGE_FILE_ERROR);
         return;
     }
 
@@ -1431,7 +1420,7 @@ void Interface::loadFromSettings()
 // internal function that handles loading settings from a specified file
 QString Interface::loadSettings(const QString &fileName) {
     
-    qDebug() << "load" << fileName;
+   //qDebug() << "load" << fileName;
 
     QFile inFile(fileName);
     if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -1534,7 +1523,7 @@ QString Interface::loadSettings(const QString &fileName) {
         for (int j = 1; j < resultList.size(); j++) {
             
             resultString = resultList.at(j);
-            qDebug() << "resultString:" << resultString;
+            // qDebug() << "resultString:" << resultString;
             if (j == 1) {
                 tempint = resultString.right(resultString.length() - resultString.lastIndexOf(" ") - 1).toInt(); 
                 currFunction->setN(i, tempint);
@@ -1737,12 +1726,8 @@ void Interface::changeAspectRatio()
     imageExportPort->changeSettings(settings);
     QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
     aspectRatioPreviewDisplayPort->changeDimensions(size.width(), size.height());
-    aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
-    
-    
+    aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);    
 }
-
-
 
 //changing slider values
 void Interface::changeWorldHeight(double val)
@@ -1759,6 +1744,16 @@ void Interface::changeWorldHeight()
 {
     double val = worldHeightEdit->text().toDouble();
     settings->Height = val;
+
+    if (newAction) {
+        ChangeCommand *command = new ChangeCommand(worldHeightEdit, worldHeightEditSlider->value() / 100.0, val);
+        undoStack->push(command);
+        qDebug() << "pushing command" << command->id();
+    } 
+    else {
+        newAction = true;
+    } 
+
     worldHeightEditSlider->blockSignals(true);
     worldHeightEditSlider->setValue(val * 100.0);
     worldHeightEditSlider->blockSignals(false);
@@ -1781,6 +1776,16 @@ void Interface::changeWorldWidth()
 {
     double val = worldWidthEdit->text().toDouble();
     settings->Width = val;
+
+    if (newAction) {
+        ChangeCommand *command = new ChangeCommand(worldWidthEdit, worldWidthEditSlider->value() / 100.0, val);
+        undoStack->push(command);
+        qDebug() << "pushing command" << command->id();
+    } 
+    else {
+        newAction = true;
+    } 
+
     worldWidthEditSlider->blockSignals(true);
     worldWidthEditSlider->setValue(val * 100.0);
     worldWidthEditSlider->blockSignals(false);
@@ -1802,11 +1807,23 @@ void Interface::changeXCorner()
     
     double val = XShiftEdit->text().toDouble();
     settings->XCorner = val;
+
+    qDebug() << "newAction is" << (bool)newAction;
+
+    if (newAction) {
+        ChangeCommand *command = new ChangeCommand(XShiftEdit, XShiftEditSlider->value() / 100.0, val);
+        undoStack->push(command);
+        qDebug() << "pushing command" << command->id();
+    } 
+    else {
+        newAction = true;
+    } 
     
     XShiftEditSlider->blockSignals(true);
     XShiftEditSlider->setValue(val * 100.0);
     XShiftEditSlider->blockSignals(false);
     XShiftEdit->setModified(false);
+
     updatePreviewDisplay();
 }
 
@@ -1822,6 +1839,16 @@ void Interface::changeYCorner()
 {
     double val = YShiftEdit->text().toDouble();
     settings->YCorner = val;
+
+    if (newAction) {
+        ChangeCommand *command = new ChangeCommand(YShiftEdit, YShiftEditSlider->value() / 100.0, val);
+        undoStack->push(command);
+        qDebug() << "pushing command" << command->id();
+    } 
+    else {
+        newAction = true;
+    } 
+
     YShiftEditSlider->blockSignals(true);
     YShiftEditSlider->setValue(val * 100.0);
     YShiftEditSlider->blockSignals(false);
@@ -1949,8 +1976,11 @@ void Interface::errorHandler(const int &flag)
 {
     switch(flag)
     {
-        case INVALID_FILE_ERROR:
-            errorMessageBox->setText("Invalid file name/path");
+        case INVALID_IMAGE_FILE_ERROR:
+            errorMessageBox->setText("Unable to load image from path: " + imageSetPath + "/" + openImageName);
+            imageSetPath = saveloadPath;
+            openImageName = "";
+            imagePathLabel->setText("<i>(no image has been set)</i>");
             errorMessageBox->exec();
             break;
         case INVALID_OUTPUT_IMAGE_DIM:
@@ -2055,7 +2085,6 @@ void Interface::addTermTable()
 // pop up window to appear when image file has finished exporting
 void Interface::popUpImageExportFinished(const QString &filePath)
 {
-    
     QMessageBox msgBox;
     msgBox.setText(tr("The file has been successfully saved to: ").append(filePath));
     msgBox.exec();
@@ -2070,9 +2099,7 @@ void Interface::popUpImageExportFinished(const QString &filePath)
 void Interface::resetTableButton() 
 {
     addTermButton->blockSignals(false);
-    termViewTable->blockSignals(false);
-
- 	// imageDataWindow->show();   
+    termViewTable->blockSignals(false); 
 }
 
 // reset the main window to receive signals - prevent updating too fast
@@ -2165,17 +2192,3 @@ void Interface::handleRedo()
     undoStack->redo();
     // item->setValue(redoVal);
 }
-
-
-//bool ChangeCommand::mergeWith(const ChangeCommand *command)
-//{
-//    qDebug() << "MERGING";
-//    if (command->id() != id()) // make sure other is also an AppendText command
-//        return false;
-//    newVal = command->item->value();
-//    
-//    return true;
-//}
-
-
-

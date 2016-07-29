@@ -41,13 +41,20 @@
 
 #define MAX_NUM_TERMS 99
 
-const unsigned int INVALID_FILE_ERROR = 0;
+const unsigned int INVALID_IMAGE_FILE_ERROR = 0;
 const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
 const int MIN_IMAGE_DIM = 20;
 const int MAX_IMAGE_DIM = 10000;
 const double ASPECT_SCALE = 0.02;
 const double MAX_ASPECT_RATIO_PREVIEW = MAX_IMAGE_DIM * ASPECT_SCALE;
 const double MIN_ASPECT_RATIO_PREVIEW = MIN_IMAGE_DIM * ASPECT_SCALE;
+const int MAX_FREQ_VALUE = 10;
+const int MIN_FREQ_VALUE = -10;
+const int FREQ_SPINBOX_STEP = 1;
+const double MAX_RADIUS = 10.0;
+const double MIN_RADIUS = -10.0;
+const double RADIUS_SPINBOX_STEP = 0.1;
+const double ANGLE_SPINBOX_STEP = 0.25;
 
 // QLineEdit subclass that undo changes (if not entered) when loses focus
 class CustomLineEdit : public QLineEdit 
@@ -253,8 +260,23 @@ public:
     
     void undo() Q_DECL_OVERRIDE {
         qDebug() << "UNDO to" << oldVal;
-        if (QSpinBox* boxItem = dynamic_cast<QSpinBox*>(item)) {
+        if (QSpinBox *boxItem = dynamic_cast<QSpinBox*>(item) ) {
             boxItem->setValue(oldVal);
+            // emit boxItem->returnPressed();
+        }
+        if (QDoubleSpinBox *boxItem = dynamic_cast<QDoubleSpinBox*>(item)) {
+        	boxItem->setValue(oldVal);
+        	// emit boxItem->returnPressed();
+        }
+        if (CustomLineEdit *lineEditItem = dynamic_cast<CustomLineEdit*>(item)) {
+        	qDebug() << "customlineedit";
+        	lineEditItem->setText(QString::number(oldVal));
+        	emit lineEditItem->returnPressed();
+        }
+        else if (QLineEdit *lineEditItem = dynamic_cast<QLineEdit*>(item)) {
+			lineEditItem->setText(QString::number(oldVal));
+			qDebug() << "qlineedit";
+			emit lineEditItem->returnPressed();
         }   
 
         canRedo = true;
@@ -263,17 +285,28 @@ public:
         if(!canRedo) return;
         qDebug() << "REDO to" << newVal;
 
-        if (QSpinBox* boxItem = dynamic_cast<QSpinBox*>(item)) {
+        if (QSpinBox *boxItem = dynamic_cast<QSpinBox*>(item) ) {
             boxItem->setValue(newVal);
-        }         
-        
+            // emit boxItem->returnPressed();
+        }
+        if (QDoubleSpinBox *boxItem = dynamic_cast<QDoubleSpinBox*>(item)) {
+        	boxItem->setValue(newVal);
+        	// emit boxItem->returnPressed();
+        }
+        if (CustomLineEdit *lineEditItem = dynamic_cast<CustomLineEdit*>(item)) {
+        	qDebug() << "customlineedit";
+        	lineEditItem->setText(QString::number(newVal));
+        	emit lineEditItem->returnPressed();
+        }
+        else if (QLineEdit *lineEditItem = dynamic_cast<QLineEdit*>(item)) {
+			lineEditItem->setText(QString::number(newVal));
+			qDebug() << "qlineedit";
+			emit lineEditItem->returnPressed();
+        }   
     }
-
-
 
     
 private:
-    // QSpinBox *item;
     QObject *item;
 
     double oldVal, newVal;
@@ -562,6 +595,7 @@ private:
     void initImageExportPopUp();
     void initCoeffPlane();
     void initToolTips();
+    void initShortcuts();
     void connectAllSignals();
     void removeTerm(int row);
     void removeTableTerm(int row);
