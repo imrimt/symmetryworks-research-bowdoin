@@ -78,7 +78,6 @@ public:
 };
 
 
-
 // QSpinBox subclass that disallows user input
 class CustomSpinBox : public QSpinBox
 {
@@ -124,16 +123,36 @@ public:
         connect(this, SIGNAL(valueChanged(int)),
             this, SLOT(notifyValueChanged(int)));
     }
-    
 
+protected:
+	void mouseReleaseEvent(QMouseEvent *event) {
+		if (event->button() == Qt::LeftButton) {
+			newVal = (double)this->value() / 100.0;
+			qDebug() << "release";
+			emit newSliderAction(this, oldVal, newVal);
+		}
+	}
+
+	void mousePressEvent(QMouseEvent *event) {
+		if (event->button() == Qt::LeftButton) {
+			oldVal = (double)this->value() / 100.0;
+			QSlider::mousePressEvent(event);
+		}
+	}
+    
 signals:
     void doubleValueChanged(double value);
+    void newSliderAction(QObject *item, double oldVal, double newVal);
 
 public slots:
     void notifyValueChanged(int value) {
         double doubleValue = value / 100.0;
         emit doubleValueChanged(doubleValue);
     }
+
+private:
+	double oldVal;
+	double newVal;
 
 };
 
@@ -271,14 +290,15 @@ public:
         	// emit boxItem->returnPressed();
         }
         if (CustomLineEdit *lineEditItem = dynamic_cast<CustomLineEdit*>(item)) {
-        	qDebug() << "customlineedit";
         	lineEditItem->setText(QString::number(oldVal));
         	emit lineEditItem->returnPressed();
         }
         else if (QLineEdit *lineEditItem = dynamic_cast<QLineEdit*>(item)) {
 			lineEditItem->setText(QString::number(oldVal));
-			qDebug() << "qlineedit";
 			emit lineEditItem->returnPressed();
+        }
+        else if (QDoubleSlider *sliderItem = dynamic_cast<QDoubleSlider*>(item)) {
+        	sliderItem->setValue(oldVal * 100.0);
         }   
 
         canRedo = true;
@@ -296,15 +316,16 @@ public:
         	// emit boxItem->returnPressed();
         }
         if (CustomLineEdit *lineEditItem = dynamic_cast<CustomLineEdit*>(item)) {
-        	qDebug() << "customlineedit";
         	lineEditItem->setText(QString::number(newVal));
         	emit lineEditItem->returnPressed();
         }
         else if (QLineEdit *lineEditItem = dynamic_cast<QLineEdit*>(item)) {
 			lineEditItem->setText(QString::number(newVal));
-			qDebug() << "qlineedit";
 			emit lineEditItem->returnPressed();
-        }   
+        }
+        else if (QDoubleSlider *sliderItem = dynamic_cast<QDoubleSlider*>(item)) {
+        	sliderItem->setValue(newVal * 100.0);
+        }      
     }
 
     
@@ -576,6 +597,7 @@ private slots:
 
     void handleUndo();
     void handleRedo();
+    void createUndoAction(QObject *item, double oldVal, double newVal);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -607,6 +629,7 @@ private:
     void refreshTableTerms();
     void refreshMainWindowTerms();
     void updateAspectRatio();
+
 
     //main data structures
     QVector<AbstractFunction *> functionVector;

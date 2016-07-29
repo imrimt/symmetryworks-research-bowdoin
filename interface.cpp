@@ -376,7 +376,6 @@ void Interface::initGlobalScaling()
     scaleAEditSlider->setFixedWidth(100);
     scalePlaneEdit = new QPushButton(tr("Set on plane"), globalScalingBox);
     
-    
     scaleRLayout->addWidget(scaleRLabel);
     scaleRLayout->addWidget(scaleREditSlider);
     scaleRLayout->addWidget(scaleREdit);
@@ -391,8 +390,7 @@ void Interface::initGlobalScaling()
     scaleREdit->setText(QString::number(currFunction->getScaleR()));
     scaleAEdit->setText(QString::number(currFunction->getScaleA()));
     scaleREditSlider->setValue(currFunction->getScaleR() * 100.0);
-    scaleAEditSlider->setValue(currFunction->getScaleA() * 100.0);
-    
+    scaleAEditSlider->setValue(currFunction->getScaleA() * 100.0);    
     
 }
 
@@ -820,7 +818,9 @@ void Interface::connectAllSignals()
     connect(scaleREdit, SIGNAL(returnPressed()), this, SLOT(changeScaleR()));
     connect(scaleAEdit, SIGNAL(returnPressed()), this, SLOT(changeScaleA()));
     connect(scaleREditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeScaleR(double)));
+    connect(scaleREditSlider, SIGNAL(newSliderAction(QObject*, double, double)), this, SLOT(createUndoAction(QObject*, double, double)));
     connect(scaleAEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeScaleA(double)));
+    connect(scaleAEditSlider, SIGNAL(newSliderAction(QObject*, double, double)), this, SLOT(createUndoAction(QObject*, double, double)));
 
     connect(numTermsEdit, SIGNAL(valueChanged(int)), this, SLOT(changeNumTerms(int)));
     connect(currTermEdit, SIGNAL(valueChanged(int)), this, SLOT(updateCurrTerm(int)));
@@ -835,11 +835,15 @@ void Interface::connectAllSignals()
     connect(aEdit, SIGNAL(doubleValueChanged(double)), this, SLOT(changeA(double)));
     
     connect(worldWidthEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldWidth(double)));
+    connect(worldWidthEditSlider, SIGNAL(newSliderAction(QObject*, double, double)), this, SLOT(createUndoAction(QObject*, double, double)));
     connect(worldHeightEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeWorldHeight(double)));
+    connect(worldHeightEditSlider, SIGNAL(newSliderAction(QObject*, double, double)), this, SLOT(createUndoAction(QObject*, double, double)));
     connect(worldWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeWorldWidth()));
     connect(worldHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeWorldHeight()));
     connect(XShiftEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeXCorner(double)));
+    connect(XShiftEditSlider, SIGNAL(newSliderAction(QObject*, double, double)), this, SLOT(createUndoAction(QObject*, double, double)));
     connect(YShiftEditSlider, SIGNAL(doubleValueChanged(double)), this, SLOT(changeYCorner(double)));
+    connect(YShiftEditSlider, SIGNAL(newSliderAction(QObject*, double, double)), this, SLOT(createUndoAction(QObject*, double, double)));
     connect(XShiftEdit, SIGNAL(returnPressed()), this, SLOT(changeXCorner()));
     connect(YShiftEdit, SIGNAL(returnPressed()), this, SLOT(changeYCorner()));
 
@@ -1754,14 +1758,16 @@ void Interface::changeWorldHeight()
     double val = worldHeightEdit->text().toDouble();
     settings->Height = val;
 
-    if (newAction) {
-        ChangeCommand *command = new ChangeCommand(worldHeightEdit, worldHeightEditSlider->value() / 100.0, val);
-        undoStack->push(command);
-        qDebug() << "pushing command" << command->id();
-    } 
-    else {
-        newAction = true;
-    } 
+    // if (newAction) {
+    //     ChangeCommand *command = new ChangeCommand(worldHeightEdit, worldHeightEditSlider->value() / 100.0, val);
+    //     undoStack->push(command);
+    //     qDebug() << "pushing command" << command->id();
+    // } 
+    // else {
+    //     newAction = true;
+    // } 
+
+    createUndoAction(worldHeightEdit, worldHeightEditSlider->value() / 100.0, val);
 
     worldHeightEditSlider->blockSignals(true);
     worldHeightEditSlider->setValue(val * 100.0);
@@ -1786,14 +1792,16 @@ void Interface::changeWorldWidth()
     double val = worldWidthEdit->text().toDouble();
     settings->Width = val;
 
-    if (newAction) {
-        ChangeCommand *command = new ChangeCommand(worldWidthEdit, worldWidthEditSlider->value() / 100.0, val);
-        undoStack->push(command);
-        qDebug() << "pushing command" << command->id();
-    } 
-    else {
-        newAction = true;
-    } 
+    // if (newAction) {
+    //     ChangeCommand *command = new ChangeCommand(worldWidthEdit, worldWidthEditSlider->value() / 100.0, val);
+    //     undoStack->push(command);
+    //     qDebug() << "pushing command" << command->id();
+    // } 
+    // else {
+    //     newAction = true;
+    // } 
+
+    createUndoAction(worldWidthEdit, worldWidthEditSlider->value() / 100.0, val);
 
     worldWidthEditSlider->blockSignals(true);
     worldWidthEditSlider->setValue(val * 100.0);
@@ -1817,16 +1825,16 @@ void Interface::changeXCorner()
     double val = XShiftEdit->text().toDouble();
     settings->XCorner = val;
 
-    qDebug() << "newAction is" << (bool)newAction;
+    // if (newAction) {
+    //     ChangeCommand *command = new ChangeCommand(XShiftEdit, XShiftEditSlider->value() / 100.0, val);
+    //     undoStack->push(command);
+    //     qDebug() << "pushing command" << command->id();
+    // } 
+    // else {
+    //     newAction = true;
+    // }
 
-    if (newAction) {
-        ChangeCommand *command = new ChangeCommand(XShiftEdit, XShiftEditSlider->value() / 100.0, val);
-        undoStack->push(command);
-        qDebug() << "pushing command" << command->id();
-    } 
-    else {
-        newAction = true;
-    } 
+    createUndoAction(XShiftEdit, XShiftEditSlider->value() / 100.0, val); 
     
     XShiftEditSlider->blockSignals(true);
     XShiftEditSlider->setValue(val * 100.0);
@@ -1849,14 +1857,16 @@ void Interface::changeYCorner()
     double val = YShiftEdit->text().toDouble();
     settings->YCorner = val;
 
-    if (newAction) {
-        ChangeCommand *command = new ChangeCommand(YShiftEdit, YShiftEditSlider->value() / 100.0, val);
-        undoStack->push(command);
-        qDebug() << "pushing command" << command->id();
-    } 
-    else {
-        newAction = true;
-    } 
+    // if (newAction) {
+    //     ChangeCommand *command = new ChangeCommand(YShiftEdit, YShiftEditSlider->value() / 100.0, val);
+    //     undoStack->push(command);
+    //     qDebug() << "pushing command" << command->id();
+    // } 
+    // else {
+    //     newAction = true;
+    // } 
+
+    createUndoAction(YShiftEdit, YShiftEditSlider->value() / 100.0, val);
 
     YShiftEditSlider->blockSignals(true);
     YShiftEditSlider->setValue(val * 100.0);
@@ -1919,6 +1929,9 @@ void Interface::changeScaleA()
 {
     double val = scaleAEdit->text().toDouble();
     currFunction->setScaleA(val);
+
+    createUndoAction(scaleAEdit, scaleAEditSlider->value() / 100.0, val);
+
     scaleAEditSlider->blockSignals(true);
     scaleAEditSlider->setValue(val * 100.0);
     scaleAEditSlider->blockSignals(false);
@@ -1943,6 +1956,9 @@ void Interface::changeScaleR()
     
     double val = scaleREdit->text().toDouble();
     currFunction->setScaleR(val);
+
+    createUndoAction(scaleREdit, scaleREditSlider->value() / 100.0, val);
+
     scaleREditSlider->blockSignals(true);
     scaleREditSlider->setValue(val * 100.0);
     scaleREditSlider->blockSignals(false);
@@ -2194,6 +2210,7 @@ void Interface::handleUndo()
     qDebug() << "setting newAction to false due to undo";
     newAction = false;
     undoStack->undo();
+    newAction = true;
     // item->setValue(undoVal);
 
 }
@@ -2203,5 +2220,19 @@ void Interface::handleRedo()
     qDebug() << "setting newAction to false due to redo";
     newAction = false;
     undoStack->redo();
+    newAction = true;
     // item->setValue(redoVal);
+}
+
+void Interface::createUndoAction(QObject *item, double oldVal, double newVal)
+{
+    if (newAction) {
+        ChangeCommand *command = new ChangeCommand(item, oldVal, newVal);
+        qDebug() << "pushing command: " << "old val:" << oldVal << "newVal:" << newVal;
+        undoStack->push(command);
+        qDebug() << "undo stack size" << undoStack->count();
+    }
+    else {
+        newAction = true;
+    }
 }
