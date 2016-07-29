@@ -43,11 +43,14 @@
 
 const unsigned int INVALID_FILE_ERROR = 0;
 const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
+const unsigned int INVALID_ASPECT_RATIO = 2;
+
 const int MIN_IMAGE_DIM = 20;
 const int MAX_IMAGE_DIM = 10000;
 const double ASPECT_SCALE = 0.02;
-const double MAX_ASPECT_RATIO_PREVIEW = MAX_IMAGE_DIM * ASPECT_SCALE;
-const double MIN_ASPECT_RATIO_PREVIEW = MIN_IMAGE_DIM * ASPECT_SCALE;
+const double MIN_ASPECT_RATIO = 0.1;
+const double MAX_ASPECT_RATIO = 10;
+
 
 // QLineEdit subclass that undo changes (if not entered) when loses focus
 class CustomLineEdit : public QLineEdit 
@@ -581,12 +584,13 @@ private:
 
     //operational variables
     int previewWidth, previewHeight, previewSize;       //preview display size
+    double aspectRatio;
     int numTerms;               //total number of terms
     unsigned int termIndex;     //currently editing term
     int coeffFlag;      //mapping variable for polar plane
     bool newUpdate;     //guard variable for preview update
-    double aspectRatio;
     bool newAction;     //new action performed, not because of undo/redo 
+    
     
     //I/O-related variables    
     QString saveloadPath;

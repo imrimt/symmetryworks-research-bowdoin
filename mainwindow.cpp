@@ -45,7 +45,7 @@ MainWindow::MainWindow()
     int y = (screenGeometry.height()-this->height()) * SCREEN_HEIGHT_MARGIN;
     this->move(x, y);
     
-    //qDebug() << "SCREEN GEOMETRY: " << screenGeometry;
+    //resize(QDesktopWidget().availableGeometry(this).size() * 0.5);
     
     if (qFabs(screenGeometry.height() - this->height()) < SCREEN_INTERFACE_MARGIN){
         QFont font;
@@ -109,9 +109,13 @@ void MainWindow::createActions()
     
     // undoAct = currInterface->undoStack->createUndoAction(this, tr("&Undo"));
     undoAct = new QAction(tr("&Undo"), this);
-    // undoAct->setShortcuts(QKeySequence::Undo);
+    undoShortcut = new QShortcut(QKeySequence(QKeySequence::Undo), this);
+    //undoAct->setShortcut(undoShortcut);
     undoAct->setShortcut(QKeySequence(tr("Ctrl+Shift+R")));
     undoAct->setStatusTip(tr("Undo the most current action"));
+    
+
+    
     connect(undoAct, SIGNAL(triggered()), currInterface, SLOT(handleUndo()));
     
     // redoAct = currInterface->undoStack->createRedoAction(this, tr("&Redo"));
@@ -226,5 +230,17 @@ void MainWindow::createDockWindows()
 
     addDockWidget(Qt::RightDockWidgetArea, rightDock);
     // addDockWidget(Qt::LeftDockWidgetArea, leftDock);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->matches(QKeySequence::Undo)) {
+        
+    }
+    
+    
+    
+    
+    
 }
 
