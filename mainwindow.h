@@ -12,8 +12,8 @@ class QLabel;
 class QMenu;
 
 const int SCREEN_INTERFACE_MARGIN = 50;
-const double SCREEN_WIDTH_SCALE = 0.5;
-const double SCREEN_HEIGHT_SCALE = 0.7;
+const double SCREEN_WIDTH_MARGIN = 0.3;
+const double SCREEN_HEIGHT_MARGIN = 0.15;
 
 
 //class ChangeCommand : public QUndoCommand

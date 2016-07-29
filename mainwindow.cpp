@@ -41,24 +41,22 @@ MainWindow::MainWindow()
     // statusBar()->showMessage(message);
     
     QRect screenGeometry = QApplication::desktop()->screenGeometry();
-    int x = (screenGeometry.width()-this->width()) * 0.3;
-    int y = (screenGeometry.height()-this->height()) * 0.15;
+    int x = (screenGeometry.width()-this->width()) * SCREEN_WIDTH_MARGIN;
+    int y = (screenGeometry.height()-this->height()) * SCREEN_HEIGHT_MARGIN;
     this->move(x, y);
-    
-    this->setFixedSize(SCREEN_WIDTH_SCALE * screenGeometry.width(), SCREEN_HEIGHT_SCALE * screenGeometry.height());
     
     //qDebug() << "SCREEN GEOMETRY: " << screenGeometry;
     
     if (qFabs(screenGeometry.height() - this->height()) < SCREEN_INTERFACE_MARGIN){
         QFont font;
         font.setFamily(font.defaultFamily());
-        font.setPointSize(font.pointSize() - 2);
+        font.setPointSize(font.pointSize() - 2.0);
         currInterface->setFont(font);
     }
                                
     setWindowTitle(tr("Wallpaper Generation"));
     
-    //ssetFixedSize(sizeHint());
+    //setFixedSize(sizeHint());
     
     //setFixedSize(screenGeometry.width() * 0.6, screenGeometry.height() * 0.7);
     //resize(this->currInterface->width() * 0.85, this->currInterface->height() * 0.85);
