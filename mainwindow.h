@@ -12,6 +12,9 @@ class QLabel;
 class QMenu;
 
 const int SCREEN_INTERFACE_MARGIN = 50;
+const double SCREEN_WIDTH_MARGIN = 0.3;
+const double SCREEN_HEIGHT_MARGIN = 0.15;
+
 
 //class ChangeCommand : public QUndoCommand
 //{
@@ -37,11 +40,14 @@ protected:
 // #ifndef QT_NO_CONTEXTMENU
 //     void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
 // #endif // QT_NO_CONTEXTMENU
+    void keyPressEvent(QKeyEvent *event);
 
 private:
     void createActions();
     void createMenus();
     void createDockWindows();
+    
+    
 
     QDockWidget *rightDock;
     // QDockWidget *leftDock;
@@ -65,6 +71,8 @@ private:
     
     QAction *undoAct;
     QAction *redoAct;
+    
+    QShortcut *undoShortcut;
     
     // QAction *printAct;
     // QAction *exitAct;

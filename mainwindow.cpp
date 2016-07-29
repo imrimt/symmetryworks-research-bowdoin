@@ -41,21 +41,22 @@ MainWindow::MainWindow()
     // statusBar()->showMessage(message);
     
     QRect screenGeometry = QApplication::desktop()->screenGeometry();
-    int x = (screenGeometry.width()-this->width()) * 0.3;
-    int y = (screenGeometry.height()-this->height()) * 0.15;
+    int x = (screenGeometry.width()-this->width()) * SCREEN_WIDTH_MARGIN;
+    int y = (screenGeometry.height()-this->height()) * SCREEN_HEIGHT_MARGIN;
     this->move(x, y);
     
-    qDebug() << "SCREEN GEOMETRY: " << screenGeometry;
+    //resize(QDesktopWidget().availableGeometry(this).size() * 0.5);
+    
     if (qFabs(screenGeometry.height() - this->height()) < SCREEN_INTERFACE_MARGIN){
         QFont font;
         font.setFamily(font.defaultFamily());
-        font.setPointSize(font.pointSize() - 2);
+        font.setPointSize(font.pointSize() - 2.0);
         currInterface->setFont(font);
     }
                                
     setWindowTitle(tr("Wallpaper Generation"));
     
-    setFixedSize(sizeHint());
+    //setFixedSize(sizeHint());
     
     //setFixedSize(screenGeometry.width() * 0.6, screenGeometry.height() * 0.7);
     //resize(this->currInterface->width() * 0.85, this->currInterface->height() * 0.85);
@@ -108,9 +109,13 @@ void MainWindow::createActions()
     
     // undoAct = currInterface->undoStack->createUndoAction(this, tr("&Undo"));
     undoAct = new QAction(tr("&Undo"), this);
-    // undoAct->setShortcuts(QKeySequence::Undo);
+    undoShortcut = new QShortcut(QKeySequence(QKeySequence::Undo), this);
+    //undoAct->setShortcut(undoShortcut);
     undoAct->setShortcut(QKeySequence(tr("Ctrl+Shift+R")));
     undoAct->setStatusTip(tr("Undo the most current action"));
+    
+
+    
     connect(undoAct, SIGNAL(triggered()), currInterface, SLOT(handleUndo()));
     
     // redoAct = currInterface->undoStack->createRedoAction(this, tr("&Redo"));
@@ -227,22 +232,15 @@ void MainWindow::createDockWindows()
     // addDockWidget(Qt::LeftDockWidgetArea, leftDock);
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->matches(QKeySequence::Undo)) {
+        
+    }
+    
+    
+    
+    
+    
+}
 
-//void MainWindow::moveEvent(QMoveEvent* event)
-//{
-//    const QPoint global = this->mapToGlobal(rect().center());
-//    
-//    QList<QWidget *> children = this->findChildren<QWidget *>();
-//    
-//    QList<QWidget *>::iterator i = children.begin();
-//    
-//    while (i != children.end()) {
-//        if((*i)->isWindow()) {
-//            (*i)->move(global.x() - (*i)->width() / 2, global.y() - (*i)->height() / 2);
-//        }
-//        ++i;
-//       
-//        
-//    }
-//    
-//}

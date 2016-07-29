@@ -710,7 +710,7 @@ void Interface::initImageExportPopUp()
     
     double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
     double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
-    double aspectRatio = (double)(width / height);
+    aspectRatio = (double)(width / height);
 
     aspectRatioEditLayout = new QHBoxLayout();
     aspectRatioPreviewLayout = new QHBoxLayout();
@@ -722,15 +722,12 @@ void Interface::initImageExportPopUp()
     aspectRatioEdit->setText(QString::number(aspectRatio));
     
     aspectRatioWidget = new QWidget();
-    aspectRatioWidget->setFixedSize(MAX_ASPECT_RATIO_PREVIEW, MAX_ASPECT_RATIO_PREVIEW);
-    aspectRatioPreview = new Display(MAX_ASPECT_RATIO_PREVIEW, MAX_ASPECT_RATIO_PREVIEW, aspectRatioWidget);
+    aspectRatioWidget->setFixedSize(MAX_IMAGE_DIM * ASPECT_SCALE, MAX_IMAGE_DIM * ASPECT_SCALE);
+    aspectRatioPreview = new Display(MAX_IMAGE_DIM * ASPECT_SCALE, MAX_IMAGE_DIM * ASPECT_SCALE, aspectRatioWidget);
     QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
     aspectRatioPreviewLayout->addWidget(aspectRatioWidget);
-    
-    
     aspectRatioPreviewLayout->setAlignment(Qt::AlignCenter);
-    aspectRatioPreviewDisplayPort = new Port(currFunction, currColorWheel, width, height, settings);
-    aspectRatioPreviewDisplayPort->changeDimensions(size.width(), size.height());
+    aspectRatioPreviewDisplayPort = new Port(currFunction, currColorWheel, size.width(), size.height(), settings);
     aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
     
     aspectRatioEditLayout->addWidget(aspectRatioLabel);
@@ -853,8 +850,8 @@ void Interface::connectAllSignals()
     connect(polarPlaneMapper,SIGNAL(mapped(int)), polarPlane, SLOT(showPlanePopUp(int)));
     connect(polarPlane, SIGNAL(setPolarCoordinates(int, QString, QString)), this, SLOT(setPolarCoordinates(int, QString, QString)));
 
-    connect(outWidthEdit, SIGNAL(editingFinished()), this, SLOT(changeOWidth()));
-    connect(outHeightEdit, SIGNAL(editingFinished()), this, SLOT(changeOHeight()));
+    connect(outWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeOWidth()));
+    connect(outHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeOHeight()));
     // connect(outWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeOWidth()));
     // connect(outHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeOHeight()));
     
@@ -1675,12 +1672,18 @@ void Interface::updateAspectRatio()
     
     double width = outWidthEdit->text().toInt() * ASPECT_SCALE;
     double height = outHeightEdit->text().toInt() * ASPECT_SCALE;
-    aspectRatio = (double)(width / height);
+    double temp = (double)(width / height);
     
-    if (width >= MAX_ASPECT_RATIO_PREVIEW || height >= MAX_ASPECT_RATIO_PREVIEW
-        || width <= MIN_ASPECT_RATIO_PREVIEW || height <= MIN_ASPECT_RATIO_PREVIEW) {
-        errorHandler(INVALID_OUTPUT_IMAGE_DIM);
+    if (temp < MIN_ASPECT_RATIO) {
+        errorHandler(INVALID_ASPECT_RATIO);
+        width = height * aspectRatio;
+    } else if (temp > MAX_ASPECT_RATIO) {
+        errorHandler(INVALID_ASPECT_RATIO);
+        height = width / aspectRatio;
+    } else {
+       aspectRatio = temp;
     }
+    
     
     QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
     aspectRatioPreviewDisplayPort->changeDimensions(size.width(), size.height());
@@ -1693,8 +1696,10 @@ void Interface::updateAspectRatio()
 
 void Interface::changeAspectRatio()
 {
-    double aspectRatio = aspectRatioEdit->text().toDouble();
+    double temp = aspectRatioEdit->text().toDouble();
     double width, height, val;
+    
+   
     
     if (aspectRatio > 1.0) {
         width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
@@ -1705,7 +1710,6 @@ void Interface::changeAspectRatio()
         settings->OHeight = val;
         
     } else {
-        qDebug() << "this is crashing";
         
         height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
         width = height * aspectRatio;
@@ -1716,12 +1720,17 @@ void Interface::changeAspectRatio()
         
     }
     
-    
-    if (width >= MAX_ASPECT_RATIO_PREVIEW || height >= MAX_ASPECT_RATIO_PREVIEW
-        || width <= MIN_ASPECT_RATIO_PREVIEW || height <= MIN_ASPECT_RATIO_PREVIEW) {
-        
-        errorHandler(INVALID_OUTPUT_IMAGE_DIM);
+    if (temp < MIN_ASPECT_RATIO) {
+        errorHandler(INVALID_ASPECT_RATIO);
+        width = height * aspectRatio;
+    } else if (temp > MAX_ASPECT_RATIO) {
+        errorHandler(INVALID_ASPECT_RATIO);
+        height = width / aspectRatio;
+    } else {
+        aspectRatio = temp;
     }
+    
+   
 
     imageExportPort->changeSettings(settings);
     QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
@@ -1985,6 +1994,10 @@ void Interface::errorHandler(const int &flag)
             break;
         case INVALID_OUTPUT_IMAGE_DIM:
             errorMessageBox->setText("Error: image dimensions must be between 20 and 9999");
+            errorMessageBox->exec();
+            break;
+        case INVALID_ASPECT_RATIO:
+            errorMessageBox->setText("Error: aspect ratio must be between 0.1 and 10");
             errorMessageBox->exec();
             break;
     }
