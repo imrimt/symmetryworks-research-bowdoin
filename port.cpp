@@ -48,6 +48,9 @@ void Port::handleRenderedImage(const int &actionFlag)
     // qDebug() << "print out result";
     switch (actionFlag) {
     case DISPLAY_REPAINT_FLAG:
+        //qDebug() << "hi";
+        display->repaint();
+        break;
     case HISTORY_ICON_REPAINT_FLAG:
         display->repaint();
         break;
