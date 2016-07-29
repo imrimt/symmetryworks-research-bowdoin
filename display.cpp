@@ -89,11 +89,12 @@ void Display::mouseMoveEvent(QMouseEvent *event)
 QSize Display::changeDisplayDimensions(double width, double height) {
     
     if (width > height) {
+        //qDebug() << "width" << width << "height" << height;
         this->height = this->width * (double)(height/width);
     } else {
         this->width = this->height * (double)(width/height);
     }
-
+    
     //resize(this->width, this->height);
     //disp = disp.scaled(this->width, this->height);
     resetSize();

@@ -863,10 +863,8 @@ void Interface::connectAllSignals()
 
     connect(outWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeOWidth()));
     connect(outHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeOHeight()));
-    // connect(outWidthEdit, SIGNAL(returnPressed()), this, SLOT(changeOWidth()));
-    // connect(outHeightEdit, SIGNAL(returnPressed()), this, SLOT(changeOHeight()));
-    
-    connect(aspectRatioEdit, SIGNAL(editingFinished()), this, SLOT(changeAspectRatio()));
+    connect(aspectRatioEdit, SIGNAL(returnPressed()), this, SLOT(changeAspectRatio()));
+    //connect(aspectRatioEdit, SIGNAL(editingFinished()), this, SLOT(changeAspectRatio()));
 
     connect(previewDisplayPort->getControllerObject(), SIGNAL(partialProgressChanged(double)), displayProgressBar, SLOT(partialUpdate(double)));
     connect(previewDisplayPort, SIGNAL(paintingFinished(bool)), this, SLOT(resetMainWindowButton(bool)));
@@ -1680,7 +1678,7 @@ void Interface::changeOWidth()
 
 void Interface::updateAspectRatio()
 {
-    
+    //qDebug() << "updating aspect ratio";
     double width = outWidthEdit->text().toInt() * ASPECT_SCALE;
     double height = outHeightEdit->text().toInt() * ASPECT_SCALE;
     double temp = (double)(width / height);
@@ -1709,15 +1707,17 @@ void Interface::changeAspectRatio()
 {
     double temp = aspectRatioEdit->text().toDouble();
     double width, height, val;
-    
-   
+    //qDebug() << "change aspect ratio";
     
     if (aspectRatio > 1.0) {
+        
         width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
         height = width / aspectRatio;
 
         val = (int)(height / ASPECT_SCALE);
+        outHeightEdit->blockSignals(true);
         outHeightEdit->setText(QString::number(val));
+        outHeightEdit->blockSignals(false);
         settings->OHeight = val;
         
     } else {
@@ -1726,10 +1726,13 @@ void Interface::changeAspectRatio()
         width = height * aspectRatio;
         
         val = (int)(width / ASPECT_SCALE);
+        outWidthEdit->blockSignals(true);
         outWidthEdit->setText(QString::number(val));
+        outWidthEdit->blockSignals(false);
         settings->OWidth = val;
         
     }
+    
     
     if (temp < MIN_ASPECT_RATIO) {
         errorHandler(INVALID_ASPECT_RATIO);
@@ -1741,12 +1744,11 @@ void Interface::changeAspectRatio()
         aspectRatio = temp;
     }
     
-   
-
-    imageExportPort->changeSettings(settings);
-    QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
-    aspectRatioPreviewDisplayPort->changeDimensions(size.width(), size.height());
-    aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
+    
+//    imageExportPort->changeSettings(settings);
+//    QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
+//    aspectRatioPreviewDisplayPort->changeDimensions(size.width(), size.height());
+//    aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
     
     
 }
