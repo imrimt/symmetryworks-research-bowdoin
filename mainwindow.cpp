@@ -45,7 +45,10 @@ MainWindow::MainWindow()
     int y = (screenGeometry.height()-this->height()) * 0.15;
     this->move(x, y);
     
-    qDebug() << "SCREEN GEOMETRY: " << screenGeometry;
+    this->setFixedSize(SCREEN_WIDTH_SCALE * screenGeometry.width(), SCREEN_HEIGHT_SCALE * screenGeometry.height());
+    
+    //qDebug() << "SCREEN GEOMETRY: " << screenGeometry;
+    
     if (qFabs(screenGeometry.height() - this->height()) < SCREEN_INTERFACE_MARGIN){
         QFont font;
         font.setFamily(font.defaultFamily());
@@ -55,7 +58,7 @@ MainWindow::MainWindow()
                                
     setWindowTitle(tr("Wallpaper Generation"));
     
-    setFixedSize(sizeHint());
+    //ssetFixedSize(sizeHint());
     
     //setFixedSize(screenGeometry.width() * 0.6, screenGeometry.height() * 0.7);
     //resize(this->currInterface->width() * 0.85, this->currInterface->height() * 0.85);
@@ -227,22 +230,3 @@ void MainWindow::createDockWindows()
     // addDockWidget(Qt::LeftDockWidgetArea, leftDock);
 }
 
-
-//void MainWindow::moveEvent(QMoveEvent* event)
-//{
-//    const QPoint global = this->mapToGlobal(rect().center());
-//    
-//    QList<QWidget *> children = this->findChildren<QWidget *>();
-//    
-//    QList<QWidget *>::iterator i = children.begin();
-//    
-//    while (i != children.end()) {
-//        if((*i)->isWindow()) {
-//            (*i)->move(global.x() - (*i)->width() / 2, global.y() - (*i)->height() / 2);
-//        }
-//        ++i;
-//       
-//        
-//    }
-//    
-//}
