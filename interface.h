@@ -45,7 +45,7 @@ const unsigned int INVALID_IMAGE_FILE_ERROR = 0;
 const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
 const unsigned int INVALID_ASPECT_RATIO = 2;
 
-const int MIN_IMAGE_DIM = 20;
+const int MIN_IMAGE_DIM = 10;
 const int MAX_IMAGE_DIM = 10000;
 const double ASPECT_SCALE = 0.02;
 const double MIN_ASPECT_RATIO = 0.1;
@@ -66,7 +66,7 @@ public:
     CustomLineEdit(QWidget *parent = 0) : QLineEdit(parent) { }
 
     void focusOutEvent(QFocusEvent * /*unused*/) {
-        if (isModified()) undo();
+        if (isModified()) this->undo();
         setReadOnly(true);
         deselect();
     }
@@ -280,16 +280,20 @@ public:
     ~ChangeCommand() {}
     
     void undo() Q_DECL_OVERRIDE {
+        
         qDebug() << "UNDO to" << oldVal;
+    
         if (QSpinBox *boxItem = dynamic_cast<QSpinBox*>(item) ) {
+            //qDebug() << "HELLO";
             boxItem->setValue(oldVal);
             // emit boxItem->returnPressed();
         }
-        if (QDoubleSpinBox *boxItem = dynamic_cast<QDoubleSpinBox*>(item)) {
+        else if (QDoubleSpinBox *boxItem = dynamic_cast<QDoubleSpinBox*>(item)) {
         	boxItem->setValue(oldVal);
         	// emit boxItem->returnPressed();
         }
         if (CustomLineEdit *lineEditItem = dynamic_cast<CustomLineEdit*>(item)) {
+          
         	lineEditItem->setText(QString::number(oldVal));
         	emit lineEditItem->returnPressed();
         }
@@ -298,6 +302,7 @@ public:
 			emit lineEditItem->returnPressed();
         }
         else if (QDoubleSlider *sliderItem = dynamic_cast<QDoubleSlider*>(item)) {
+            
         	sliderItem->setValue(oldVal * 100.0);
         }   
 
@@ -311,7 +316,8 @@ public:
             boxItem->setValue(newVal);
             // emit boxItem->returnPressed();
         }
-        if (QDoubleSpinBox *boxItem = dynamic_cast<QDoubleSpinBox*>(item)) {
+        else if (QDoubleSpinBox *boxItem = dynamic_cast<QDoubleSpinBox*>(item)) {
+            
         	boxItem->setValue(newVal);
         	// emit boxItem->returnPressed();
         }
@@ -527,6 +533,8 @@ public:
 
 signals:
     void imageActionStatus(bool status);
+    void undoEnabled();
+    void redoEnabled();
 
 private slots:
     void updateCurrTerm(int i);
@@ -629,7 +637,8 @@ private:
     void refreshTableTerms();
     void refreshMainWindowTerms();
     void updateAspectRatio();
-
+    virtual bool eventFilter(QObject* object,QEvent* event);
+    
 
     //main data structures
     QVector<AbstractFunction *> functionVector;
@@ -641,7 +650,8 @@ private:
     //operational variables
     int previewWidth, previewHeight, previewSize;       //preview display size
     double aspectRatio;
-    int numTerms;               //total number of terms
+    int numTerms;
+    int oldM, oldN;
     unsigned int termIndex;     //currently editing term
     int coeffFlag;      //mapping variable for polar plane
     bool newUpdate;     //guard variable for preview update

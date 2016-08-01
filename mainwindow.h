@@ -100,7 +100,9 @@ private slots:
     void updateImageActionStatus(bool status) {
         setOverflowColorAct->setEnabled(status); 
         showImageDataGraphAct->setEnabled(status); 
-    } 
+    }
+    void enableUndo() { undoAct->setEnabled(true); }
+    void enableRedo() { redoAct->setEnabled(true); }
 };
 
 #endif
