@@ -109,20 +109,24 @@ void MainWindow::createActions()
     
     // undoAct = currInterface->undoStack->createUndoAction(this, tr("&Undo"));
     undoAct = new QAction(tr("&Undo"), this);
-    undoAct->setShortcut(QKeySequence::Undo);
+    
     //undoAct->setShortcut(QKeySequence(tr("Ctrl+Shift+R")));
     undoAct->setStatusTip(tr("Undo the most current action"));
-    undoAct->setEnabled(false);
-    connect(currInterface, SIGNAL(undoEnabled()), this, SLOT(enableUndo()));
+    //undoAct->setEnabled(false);
+    undoAct->setShortcut(QKeySequence::Undo);
+//    connect(currInterface, SIGNAL(undoEnabled()), this, SLOT(enableUndo()));
+//    connect(currInterface, SIGNAL(undoDisabled()), this, SLOT(disableUndo()));
     connect(undoAct, SIGNAL(triggered()), currInterface, SLOT(handleUndo()));
     
     // redoAct = currInterface->undoStack->createRedoAction(this, tr("&Redo"));
     redoAct = new QAction(tr("&Redo"), this);
-    redoAct->setShortcut(QKeySequence::Redo);
+    
     //redoAct->setShortcut(QKeySequence(tr("Ctrl+Shift+T")));
     redoAct->setStatusTip(tr("Redo the most current action"));
-    redoAct->setEnabled(false);
-    connect(currInterface, SIGNAL(redoEnabled()), this, SLOT(enableRedo()));
+    //redoAct->setEnabled(false);
+    redoAct->setShortcut(QKeySequence::Redo);
+//    connect(currInterface, SIGNAL(redoEnabled()), this, SLOT(enableRedo()));
+//    connect(currInterface, SIGNAL(redoDisabled()), this, SLOT(disableRedo()));
     connect(redoAct, SIGNAL(triggered()), currInterface, SLOT(handleRedo()));
     
     // printAct = new QAction(tr("&Print..."), this);
@@ -171,6 +175,9 @@ void MainWindow::createActions()
 //    viewTermsTableAct = new QAction(tr("View/Edit All Terms"), this);
 //    viewTermsTableAct->setStatusTip(tr("View or Edit all function terms"));
 //    connect(viewTermsTableAct, SIGNAL(triggered()), currInterface, SLOT(termViewPopUp()));
+    
+     //installEventFilter(this);
+    
 }
 
 void MainWindow::createMenus()
@@ -232,15 +239,4 @@ void MainWindow::createDockWindows()
     // addDockWidget(Qt::LeftDockWidgetArea, leftDock);
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    if (event->matches(QKeySequence::Undo)) {
-        
-    }
-    
-    
-    
-    
-    
-}
 

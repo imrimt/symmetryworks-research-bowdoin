@@ -128,7 +128,7 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *event) {
 		if (event->button() == Qt::LeftButton) {
 			newVal = (double)this->value() / 100.0;
-			qDebug() << "release";
+			//qDebug() << "release";
 			emit newSliderAction(this, oldVal, newVal);
 		}
 	}
@@ -271,16 +271,17 @@ public:
 
         this->item = item;
         this->oldVal = oldVal;
-        qDebug() << "old value" << oldVal;
+        //qDebug() << "old value" << oldVal;
         this->newVal = newVal;
-        qDebug() << "new value" << newVal;
+        //qDebug() << "new value" << newVal;
+        canUndo = true;
         canRedo = false;
     }
     
     ~ChangeCommand() {}
     
     void undo() Q_DECL_OVERRIDE {
-        
+        if(!canUndo) return;
         qDebug() << "UNDO to" << oldVal;
     
         if (QSpinBox *boxItem = dynamic_cast<QSpinBox*>(item) ) {
@@ -307,6 +308,7 @@ public:
         }   
 
         canRedo = true;
+        //canUndo = true;
     }
     void redo() Q_DECL_OVERRIDE {
         if(!canRedo) return;
@@ -339,7 +341,7 @@ private:
     QObject *item;
 
     double oldVal, newVal;
-    bool canRedo;
+    bool canUndo, canRedo;
     
 };
 
@@ -533,8 +535,10 @@ public:
 
 signals:
     void imageActionStatus(bool status);
-    void undoEnabled();
-    void redoEnabled();
+//    void undoEnabled();
+//    void undoDisabled();
+//    void redoEnabled();
+//    void redoDisabled();
 
 private slots:
     void updateCurrTerm(int i);
@@ -637,7 +641,7 @@ private:
     void refreshTableTerms();
     void refreshMainWindowTerms();
     void updateAspectRatio();
-    virtual bool eventFilter(QObject* object,QEvent* event);
+    bool eventFilter(QObject* object,QEvent* event);
     
 
     //main data structures
@@ -656,7 +660,8 @@ private:
     int coeffFlag;      //mapping variable for polar plane
     bool newUpdate;     //guard variable for preview update
     bool newAction;     //new action performed, not because of undo/redo 
-    
+    bool heightChanged;
+    bool widthChanged;
     
     //I/O-related variables    
     QString saveloadPath;

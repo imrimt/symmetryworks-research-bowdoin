@@ -40,7 +40,7 @@ protected:
 // #ifndef QT_NO_CONTEXTMENU
 //     void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
 // #endif // QT_NO_CONTEXTMENU
-    void keyPressEvent(QKeyEvent *event);
+    //void keyPressEvent(QKeyEvent *event);
 
 private:
     void createActions();
@@ -101,8 +101,10 @@ private slots:
         setOverflowColorAct->setEnabled(status); 
         showImageDataGraphAct->setEnabled(status); 
     }
-    void enableUndo() { undoAct->setEnabled(true); }
-    void enableRedo() { redoAct->setEnabled(true); }
+//    void enableUndo() { undoAct->setEnabled(true); qDebug() << "success!"; }
+//    void enableRedo() { redoAct->setEnabled(true); }
+//     void disableUndo() { undoAct->setEnabled(false); }
+//     void disableRedo() { undoAct->setEnabled(false); }
 };
 
 #endif

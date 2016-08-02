@@ -75,7 +75,7 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     refreshTableTerms();
     updatePreviewDisplay();
     
-    installEventFilter(this);
+   
 }
 
 
@@ -195,6 +195,7 @@ void Interface::initFunctionConstants()
     currTermLabel->setText(tr("<b>Current Term:<\b>"));
     currTermEdit = new CustomSpinBox(functionConstantsBox);
     currTermEdit->setRange(1, numTerms);
+    currTermEdit->installEventFilter(this);
     
     freqpairLabel = new QLabel(tr("Frequency Pair: "), functionConstantsBox);
     coeffLabel = new QLabel(tr("Coefficient Pair: "), functionConstantsBox);
@@ -210,6 +211,8 @@ void Interface::initFunctionConstants()
     mEdit = new QSpinBox(functionConstantsBox);
     aEdit = new QDoubleSlider(functionConstantsBox);
     rEdit = new QDoubleSlider(functionConstantsBox);
+    nEdit->installEventFilter(this);
+    mEdit->installEventFilter(this);
     
     nEdit->setFixedWidth(100);
     mEdit->setFixedWidth(100);
@@ -251,6 +254,7 @@ void Interface::initFunctionConstants()
     numTermsEdit = new QSpinBox(functionConstantsBox);
     numTermsEdit->setValue(1);
     numTermsEdit->setRange(1, MAX_NUM_TERMS);
+    numTermsEdit->installEventFilter(this);
     
     QFrame* line1 = new QFrame(functionConstantsBox);
     line1->setLineWidth(2);
@@ -1156,15 +1160,15 @@ void Interface::updateCurrTerm(int i)
     if (i > 0) termIndex = i - 1;
     
     
-    if (newAction) {
-        ChangeCommand *command = new ChangeCommand(currTermEdit, oldTermIndex + 1, termIndex + 1);
-        undoStack->push(command);
-        qDebug() << "pushing command" << command->id();
-    }
-    else {
-        newAction = true;
-    }
-    
+//    if (newAction) {
+//        ChangeCommand *command = new ChangeCommand(currTermEdit, oldTermIndex + 1, termIndex + 1);
+//        undoStack->push(command);
+//        qDebug() << "pushing command" << command->id();
+//    }
+//    else {
+//        newAction = true;
+//    }
+    createUndoAction(currTermEdit, oldTermIndex + 1, termIndex + 1);
     
     refreshTableTerms();
     refreshMainWindowTerms();
@@ -1198,16 +1202,18 @@ void Interface::changeNumTerms(int i)
         currTermEdit->blockSignals(false);
     }
     
+    createUndoAction(numTermsEdit, oldNumTerms, numTerms);
     
-    if (newAction) {
-        ChangeCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
-        undoStack->push(command);
-        qDebug() << "pushing command" << command->id();
-    }
-    else {
-        newAction = true;
-    }
+    //if (newAction) {
+//        ChangeCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
+//        undoStack->push(command);
+      //  qDebug() << "pushing command" << command->id();
+    //}
+//    else {
+//        newAction = true;
+//    }
     
+
     //updateCurrTerm(i);
     
     refreshMainWindowTerms();
@@ -1313,6 +1319,7 @@ void Interface::changeFunction(int index)
     newUpdate = false;
     
     termIndex = 0;
+    //resetFunction();
     
     currFunction = functionVector[index];
     numTerms = currFunction->getNumTerms();
@@ -1329,6 +1336,8 @@ void Interface::changeFunction(int index)
     
     newUpdate = true;
     updatePreviewDisplay();
+    
+    resetFunction();
 }
 
 
@@ -1649,6 +1658,7 @@ void Interface::snapshotFunction()
 // SLOT FUNCTIONS TO CHANGE OUTPUT IMAGE PROPERTIES
 void Interface::changeOHeight()
 {
+    heightChanged = true;
     int val = outHeightEdit->text().toInt();
     
     
@@ -1661,6 +1671,7 @@ void Interface::changeOHeight()
     }
     
     settings->OHeight = val;
+    if (!widthChanged) changeOWidth();
     imageExportPort->changeSettings(settings);
     
     updateAspectRatio();
@@ -1669,6 +1680,7 @@ void Interface::changeOHeight()
 
 void Interface::changeOWidth()
 {
+    widthChanged = true;
     int val = outWidthEdit->text().toInt();
     
     
@@ -1682,7 +1694,8 @@ void Interface::changeOWidth()
 
 
     settings->OWidth = val;
-    //    qDebug() << "VAL" << val;
+    if (!heightChanged) changeOHeight();
+    
     imageExportPort->changeSettings(settings);
     
     updateAspectRatio();
@@ -1695,20 +1708,22 @@ void Interface::updateAspectRatio()
     double width = outWidthEdit->text().toInt() * ASPECT_SCALE;
     double height = outHeightEdit->text().toInt() * ASPECT_SCALE;
     double temp = (double)(width / height);
-    
-    if (width < MIN_IMAGE_DIM) {
+    if (temp < 0.1 || temp > 10) {
         errorHandler(INVALID_ASPECT_RATIO);
-        //settings->OHeight = MIN_IMAGE_DIM;
-    } else if (width > MAX_IMAGE_DIM) {
-        errorHandler(INVALID_ASPECT_RATIO);
-        //settings->OHeight = MAX_IMAGE_DIM;
-    } else if (height < MIN_IMAGE_DIM) {
-        errorHandler(INVALID_ASPECT_RATIO);
-        //outHeightEdit->setText(QString::number(MIN_IMAGE_DIM));
-    } else if (height > MAX_IMAGE_DIM) {
-        errorHandler(INVALID_ASPECT_RATIO);
-        //outHeightEdit->setText(QString::number(MAX_IMAGE_DIM));
     } else {
+//    if (width < MIN_IMAGE_DIM) {
+//        errorHandler(INVALID_ASPECT_RATIO);
+//        //settings->OHeight = MIN_IMAGE_DIM;
+//    } else if (width > MAX_IMAGE_DIM) {
+//        errorHandler(INVALID_ASPECT_RATIO);
+//        //settings->OHeight = MAX_IMAGE_DIM;
+//    } else if (height < MIN_IMAGE_DIM) {
+//        errorHandler(INVALID_ASPECT_RATIO);
+//        //outHeightEdit->setText(QString::number(MIN_IMAGE_DIM));
+//    } else if (height > MAX_IMAGE_DIM) {
+//        errorHandler(INVALID_ASPECT_RATIO);
+//        //outHeightEdit->setText(QString::number(MAX_IMAGE_DIM));
+//    } else {
         aspectRatio = temp;
         
         QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
@@ -1887,6 +1902,7 @@ void Interface::changeN(int val)
    
     currFunction->setN(termIndex, val);
     
+    
     createUndoAction(nEdit, oldN, val);
    
     refreshTableTerms();
@@ -1894,7 +1910,7 @@ void Interface::changeN(int val)
     updatePreviewDisplay();
     
     oldN = val;
-    qDebug() << "old N" << oldN;
+    //qDebug() << "old N" << oldN;
 }
 
 void Interface::changeM(int val)
@@ -1902,14 +1918,14 @@ void Interface::changeM(int val)
     
     currFunction->setM(termIndex, val);
     
-    createUndoAction(mEdit, oldM, val);
-   
+   createUndoAction(nEdit, oldN, val);
+    
     refreshTableTerms();
     refreshMainWindowTerms();
     updatePreviewDisplay();
     
     oldM = val;
-    qDebug() << "old M" << oldM;
+    //qDebug() << "old M" << oldM;
 }
 
 
@@ -1943,7 +1959,7 @@ void Interface::changeScaleA(double val)
     currFunction->setScaleA(val);
     scaleAEdit->setText(QString::number(val));
     createUndoAction(scaleAEditSlider, scaleAEditSlider->value() / 100.0, val);
-    qDebug() << "old" << scaleAEditSlider->value() / 100.0;
+    //qDebug() << "old" << scaleAEditSlider->value() / 100.0;
     updatePreviewDisplay();
 }
 
@@ -2232,18 +2248,22 @@ void Interface::updateImageDataGraph()
 
 void Interface::handleUndo()
 {
-    qDebug() << "setting newAction to false due to undo";
+    if(!undoStack->canUndo()) { return; }
+    
     newAction = false;
     undoStack->undo();
     newAction = true;
-    emit redoEnabled();
+    //emit redoEnabled();
+    
+    
     // item->setValue(undoVal);
     
 }
 
 void Interface::handleRedo()
 {
-    qDebug() << "setting newAction to false due to redo";
+    if(!undoStack->canRedo()) { return; }
+    //qDebug() << "setting newAction to false due to redo";
     newAction = false;
     undoStack->redo();
     newAction = true;
@@ -2252,14 +2272,18 @@ void Interface::handleRedo()
 
 void Interface::createUndoAction(QObject *item, double oldVal, double newVal)
 {
+    
     if (newAction) {
         ChangeCommand *command = new ChangeCommand(item, oldVal, newVal);
-        qDebug() << "pushing command: " << "old val:" << oldVal << "newVal:" << newVal;
+//        qDebug() << "pushing command: " << "old val:" << oldVal << "newVal:" << newVal;
         undoStack->push(command);
-        emit undoEnabled();
-        qDebug() << "undo stack size" << undoStack->count();
+   //     canUndo = true;
+//        emit undoEnabled();
+ //       qDebug() << "undo stack size" << undoStack->count();
+
     }
     else {
+       // qDebug() << "it's a new action";
         newAction = true;
     }
 }
@@ -2267,13 +2291,13 @@ void Interface::createUndoAction(QObject *item, double oldVal, double newVal)
 
 bool Interface::eventFilter(QObject* object,QEvent* event)
 {
+    //qDebug() << "FILTER";
     if(event->type() == QEvent::KeyPress)
     {
-        
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         QKeySequence keySequence(keyEvent->key() | keyEvent->modifiers());
+        
         if(keySequence.matches(QKeySequence::Undo)) {
-            qDebug() << "IN EVENT FILTER";
             handleUndo();
             return true;
         } else if (keySequence.matches(QKeySequence::Redo)) {
@@ -2285,6 +2309,7 @@ bool Interface::eventFilter(QObject* object,QEvent* event)
     }
     else
     {
+        
         return QObject::eventFilter(object,event);
     }
 };
