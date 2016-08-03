@@ -34,15 +34,14 @@ private:
     void createMenus();
     void createDockWindows();
     
-    
-    
     QDockWidget *rightDock;
     // QDockWidget *leftDock;
     
     QMenu *fileMenu;
     QMenu *editMenu;
-    QMenu *viewMenu;
-    // QMenu *helpMenu;
+    //QMenu *viewMenu;
+    QMenu *advancedMenu;
+    QMenu *helpMenu;
     QActionGroup *alignmentGroup;
     // QAction *newAct;
     QAction *loadAct;
@@ -51,34 +50,14 @@ private:
     QAction *exportImageAct;
     QAction *snapshotAct;
     QAction *resetImageAct;
-    //QAction *clearSnapshotsAct;
+    QAction *aboutAct;
     QAction *setOverflowColorAct;
     QAction *showImageDataGraphAct;
-    // QAction *viewTermsTableAct;
-    
     QAction *undoAct;
     QAction *redoAct;
-    
     QShortcut *undoShortcut;
     
-    // QAction *printAct;
-    // QAction *exitAct;
-    // QAction *undoAct;
-    // QAction *redoAct;
-    // QAction *cutAct;
-    // QAction *copyAct;
-    // QAction *pasteAct;
-    // QAction *boldAct;
-    // QAction *italicAct;
-    // QAction *leftAlignAct;
-    // QAction *rightAlignAct;
-    // QAction *justifyAct;
-    // QAction *centerAct;
-    // QAction *setLineSpacingAct;
-    // QAction *setParagraphSpacingAct;
-    // QAction *aboutAct;
-    // QAction *aboutQtAct;
-    // QLabel *infoLabel;
+    
     Interface *currInterface;
     HistoryDisplay *snapShotWindow;
     // QWidget *functionIconsWindow;
@@ -88,10 +67,7 @@ private:
         setOverflowColorAct->setEnabled(status);
         showImageDataGraphAct->setEnabled(status);
     }
-    //    void enableUndo() { undoAct->setEnabled(true); qDebug() << "success!"; }
-    //    void enableRedo() { redoAct->setEnabled(true); }
-    //     void disableUndo() { undoAct->setEnabled(false); }
-    //     void disableRedo() { undoAct->setEnabled(false); }
+    
 };
 
 #endif

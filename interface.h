@@ -47,9 +47,9 @@ const unsigned int INVALID_ASPECT_RATIO = 2;
 
 const int MIN_IMAGE_DIM = 10;
 const int MAX_IMAGE_DIM = 10000;
-const double ASPECT_SCALE = 0.02;
+const double ASPECT_RATIO_SCALE = 0.025;
 const double MIN_ASPECT_RATIO = 0.1;
-const double MAX_ASPECT_RATIO = 10;
+const double MAX_ASPECT_RATIO = 12;
 const int MAX_FREQ_VALUE = 10;
 const int MIN_FREQ_VALUE = -10;
 const int FREQ_SPINBOX_STEP = 1;
@@ -57,6 +57,7 @@ const double MAX_RADIUS = 10.0;
 const double MIN_RADIUS = -10.0;
 const double RADIUS_SPINBOX_STEP = 0.1;
 const double ANGLE_SPINBOX_STEP = 0.25;
+const double DISPLAY_RESIZE_SCALE_STEP = 0.1;
 
 // QLineEdit subclass that undo changes (if not entered) when loses focus
 class CustomLineEdit : public QLineEdit
@@ -286,7 +287,6 @@ public:
         qDebug() << "UNDO to" << oldVal;
         
         if (QSpinBox *boxItem = dynamic_cast<QSpinBox*>(item) ) {
-            //qDebug() << "HELLO";
             boxItem->setValue(oldVal);
             // emit boxItem->returnPressed();
         }
@@ -532,6 +532,9 @@ public:
     QHBoxLayout *aspectRatioEditLayout;
     QHBoxLayout *aspectRatioPreviewLayout;
     
+    QMessageBox *infoPopUp;
+    
+    
     void setSnapShotWindow(HistoryDisplay* window);
     
 signals:
@@ -579,8 +582,7 @@ signals:
     void loadFromSettings();
     void saveCurrWorkspace();
     void saveCurrWorkspaceAs();
-    //    void previewDisplayEnlarge() {disp->enlarge();}
-    //    void previewDisplayShrink() {disp->shrink();}
+   
     void previewDisplayResetSize() {disp->resetSize();}
     void snapshotFunction();
     void termViewPopUp();
@@ -611,6 +613,9 @@ signals:
     void handleUndo();
     void handleRedo();
     void createUndoAction(QObject *item, double oldVal, double newVal);
+    
+    void showInfo() { infoPopUp->show(); }
+
     
 protected:
     void mousePressEvent(QMouseEvent *event);

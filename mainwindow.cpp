@@ -58,40 +58,17 @@ MainWindow::MainWindow()
     
     //setFixedSize(sizeHint());
     
-    //setFixedSize(screenGeometry.width() * 0.6, screenGeometry.height() * 0.7);
-    //resize(this->currInterface->width() * 0.85, this->currInterface->height() * 0.85);
+    
 }
 
 MainWindow::~MainWindow()
 {
-    //delete currInterface;
-    
+    delete currInterface;
 }
-
-//void MainWindow::changedCommand()
-//{
-//    QUndoCommand *changedCommand = new UndoCommand();
-//    undoStack->push(changedCommand);
-//}
-
-// #ifndef QT_NO_CONTEXTMENU
-// void MainWindow::contextMenuEvent(QContextMenuEvent *event)
-// {
-//     QMenu menu(this);
-//     menu.addAction(cutAct);
-//     menu.addAction(copyAct);
-//     menu.addAction(pasteAct);
-//     menu.exec(event->globalPos());
-// }
-
-// #endif // QT_NO_CONTEXTMENU
 
 void MainWindow::createActions()
 {
-    // newAct = new QAction(tr("&New"), this);
-    // newAct->setShortcuts(QKeySequence::New);
-    // newAct->setStatusTip(tr("Create a new file"));
-    // connect(newAct, &QAction::triggered, this, &MainWindow::newFile);
+    
     
     loadAct = new QAction(tr("Load Workspace..."), this);
     loadAct->setShortcuts(QKeySequence::Open);
@@ -108,26 +85,12 @@ void MainWindow::createActions()
     connect(saveAsAct, SIGNAL(triggered()), currInterface, SLOT(saveCurrWorkspaceAs()));
     
     undoAct = currInterface->undoStack->createUndoAction(this, tr("&Undo"));
-    //undoAct = new QAction(tr("&Undo"), this);
-    
-    //undoAct->setShortcut(QKeySequence(tr("Ctrl+Shift+R")));
     undoAct->setStatusTip(tr("Undo the most current action"));
-    //undoAct->setEnabled(false);
     undoAct->setShortcut(QKeySequence::Undo);
-    //    connect(currInterface, SIGNAL(undoEnabled()), this, SLOT(enableUndo()));
-    //    connect(currInterface, SIGNAL(undoDisabled()), this, SLOT(disableUndo()));
-    //connect(undoAct, SIGNAL(triggered()), currInterface, SLOT(handleUndo()));
     
     redoAct = currInterface->undoStack->createRedoAction(this, tr("&Redo"));
-    //redoAct = new QAction(tr("&Redo"), this);
-    
-    //redoAct->setShortcut(QKeySequence(tr("Ctrl+Shift+T")));
     redoAct->setStatusTip(tr("Redo the most current action"));
-    //redoAct->setEnabled(false);
     redoAct->setShortcut(QKeySequence::Redo);
-    //    connect(currInterface, SIGNAL(redoEnabled()), this, SLOT(enableRedo()));
-    //    connect(currInterface, SIGNAL(redoDisabled()), this, SLOT(disableRedo()));
-    //connect(redoAct, SIGNAL(triggered()), currInterface, SLOT(handleRedo()));
     
     // printAct = new QAction(tr("&Print..."), this);
     // printAct->setShortcuts(QKeySequence::Print);
@@ -148,15 +111,6 @@ void MainWindow::createActions()
     resetImageAct->setStatusTip(tr("Reset the current image to its default settings"));
     connect(resetImageAct, SIGNAL(triggered()), currInterface, SLOT(resetFunction()));
     
-    //    clearSnapshotsAct = new QAction(tr("Clear All Snapshots"), this);
-    //    clearSnapshotsAct->setShortcut(QKeySequence("Ctrl+K"));
-    //    clearSnapshotsAct->setStatusTip(tr("Save current instance to snapshots"));
-    //    connect(clearSnapshotsAct, SIGNAL(triggered()), currInterface->historyDisplay, SLOT(clearAllHistory()));
-    
-    // exitAct = new QAction(tr("Exit"), this);
-    // exitAct->setShortcuts(QKeySequence::Quit);
-    // exitAct->setStatusTip(tr("Exit the application"));
-    // connect(exitAct, &QAction::triggered, this, &QWidget::close);
     
     setOverflowColorAct = new QAction(tr("Set Overflow Color..."), this);
     setOverflowColorAct->setStatusTip(tr("Set default color for overflow pixel on image"));
@@ -168,75 +122,52 @@ void MainWindow::createActions()
     connect(showImageDataGraphAct, SIGNAL(triggered()), currInterface, SLOT(showImageDataGraph()));
     showImageDataGraphAct->setEnabled(false);
     
-    //    resetPreviewAct = new QAction(tr("Reset Preview"), this);
-    //    resetPreviewAct->setStatusTip(tr("Reset Preview Display Size"));
-    //    connect(resetPreviewAct, SIGNAL(triggered()), currInterface, SLOT(previewDisplayResetSize()));
+    aboutAct = new QAction(tr("About wallgen"), this);
+    connect(aboutAct, SIGNAL(triggered()), currInterface, SLOT(showInfo()));
     
-    //    viewTermsTableAct = new QAction(tr("View/Edit All Terms"), this);
-    //    viewTermsTableAct->setStatusTip(tr("View or Edit all function terms"));
-    //    connect(viewTermsTableAct, SIGNAL(triggered()), currInterface, SLOT(termViewPopUp()));
-    
-    //installEventFilter(this);
     
 }
 
 void MainWindow::createMenus()
 {
-    fileMenu = menuBar()->addMenu(tr("F&ile"));
-    // fileMenu->addAction(newAct);
+    fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(loadAct);
     fileMenu->addAction(saveAct);
     fileMenu->addAction(saveAsAct);
-    // fileMenu->addAction(printAct);
     fileMenu->addSeparator();
-    // fileMenu->addAction(exitAct);
     fileMenu->addAction(snapshotAct);
-    //fileMenu->addAction(clearSnapshotsAct);
     fileMenu->addAction(exportImageAct);
-    
     
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(undoAct);
     editMenu->addAction(redoAct);
     editMenu->addSeparator();
     editMenu->addAction(resetImageAct);
-    // helpMenu = menuBar()->addMenu(tr("&Help"));
-    // helpMenu->addAction(aboutAct);
-    // helpMenu->addAction(aboutQtAct);
+   
+    advancedMenu = menuBar()->addMenu(tr("&Advanced"));
+    advancedMenu->addSeparator();
+    advancedMenu->addAction(setOverflowColorAct);
+    advancedMenu->addAction(showImageDataGraphAct);
     
-    viewMenu = menuBar()->addMenu(tr("Advanced"));
-    //viewMenu->addAction(resetPreviewAct);
-    viewMenu->addSeparator();
-    viewMenu->addAction(setOverflowColorAct);
-    viewMenu->addAction(showImageDataGraphAct);
-    //viewMenu->addSeparator();
-    //viewMenu->addAction(viewTermsTableAct);
+    helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(aboutAct);
+    //helpMenu->addAction(aboutQtAct);
+    
 }
 
 void MainWindow::createDockWindows()
 {
     rightDock = new QDockWidget(tr("Snapshots"), this);
     rightDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    // rightDock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    
-    // leftDock = new QDockWidget(tr("Pattern Previews"), this);
-    // leftDock->setFeatures(QDockWidget::DockWidgetClosable);
     
     snapShotWindow = new HistoryDisplay(this);
-    // functionIconsWindow = new QWidget(this, Qt::Window);
     
     currInterface->setSnapShotWindow(snapShotWindow);
-    // currInterface->setFunctionIconsWindow(functionIconsWindow);
     
     rightDock->setWidget(snapShotWindow->viewHistoryWidget);
-    // leftDock->setWidget(functionIconsWindow);
-    
-    // leftDock->setFixedSize(500, 600);
-    
-    // leftDock->hide();
     
     addDockWidget(Qt::RightDockWidgetArea, rightDock);
-    // addDockWidget(Qt::LeftDockWidgetArea, leftDock);
+
 }
 
 

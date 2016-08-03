@@ -63,6 +63,12 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     
     functionSel->setFocus();
     
+    infoPopUp = new QMessageBox(this);
+//    infoPopUp->setIcon(QMessageBox::Information);
+    infoPopUp->setText(tr("Wallgen Software Overview"));
+    infoPopUp->setInformativeText(tr("Welcome to wallgen!"));
+    infoPopUp->hide();
+    
     // Set Up Tab Orders
     setTabOrder(functionSel, colorwheelSel);
     setTabOrder(colorwheelSel, scaleREdit);
@@ -118,12 +124,15 @@ void Interface::initInterfaceLayout()
     InterfaceLayout->addWidget(functionConstantsWidget);
     
     
+    
     overallLayout->addLayout(InterfaceLayout);
     overallLayout->activate();
     this->setLayout(overallLayout);
     
     errorMessageBox = new QMessageBox(this);
     errorMessageBox->setIcon(QMessageBox::Critical);
+    errorMessageBox->addButton(QMessageBox::Close);
+    //connect(errorMessageBox, SIGNAL(accepted()), errorMessageBox, SLOT(accept()));
     
     // INPUT VALIDATORS (NUMERICAL)
     doubleValidate = new QDoubleValidator(-9999999.0, 9999999.0, 5, this);
@@ -697,7 +706,6 @@ void Interface::initImageExportPopUp()
     outWidthLayout->addWidget(outWidthEdit);
     outWidthLayout->addWidget(new QLabel(tr("pixels")));
     
-    
     outHeightLayout = new QHBoxLayout();
     outHeightLabel = new QLabel(tr("Image Height"));
     outHeightLayout->addWidget(outHeightLabel);
@@ -707,8 +715,8 @@ void Interface::initImageExportPopUp()
     outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
     outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
     
-    double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
-    double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
+    double width = outWidthEdit->text().toDouble() * ASPECT_RATIO_SCALE;
+    double height = outHeightEdit->text().toDouble() * ASPECT_RATIO_SCALE;
     aspectRatio = (double)(width / height);
     
     aspectRatioEditLayout = new QHBoxLayout();
@@ -721,8 +729,8 @@ void Interface::initImageExportPopUp()
     aspectRatioEdit->setText(QString::number(aspectRatio));
     
     aspectRatioWidget = new QWidget();
-    aspectRatioWidget->setFixedSize(MAX_IMAGE_DIM * ASPECT_SCALE, MAX_IMAGE_DIM * ASPECT_SCALE);
-    aspectRatioPreview = new Display(MAX_IMAGE_DIM * ASPECT_SCALE, MAX_IMAGE_DIM * ASPECT_SCALE, aspectRatioWidget);
+    aspectRatioWidget->setFixedSize(MAX_IMAGE_DIM * ASPECT_RATIO_SCALE, MAX_IMAGE_DIM * ASPECT_RATIO_SCALE);
+    aspectRatioPreview = new Display(MAX_IMAGE_DIM * ASPECT_RATIO_SCALE, MAX_IMAGE_DIM * ASPECT_RATIO_SCALE, aspectRatioWidget);
     QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
     aspectRatioPreviewLayout->addWidget(aspectRatioWidget);
     aspectRatioPreviewLayout->setAlignment(Qt::AlignCenter);
@@ -1676,6 +1684,7 @@ void Interface::changeOHeight()
     
     updateAspectRatio();
     
+    
 }
 
 void Interface::changeOWidth()
@@ -1697,13 +1706,16 @@ void Interface::changeOWidth()
     
     updateAspectRatio();
     
+    
 }
 
 void Interface::updateAspectRatio()
 {
-    //qDebug() << "updating aspect ratio";
-    double width = outWidthEdit->text().toInt() * ASPECT_SCALE;
-    double height = outHeightEdit->text().toInt() * ASPECT_SCALE;
+   
+    double width = outWidthEdit->text().toInt() * ASPECT_RATIO_SCALE;
+    double height = outHeightEdit->text().toInt() * ASPECT_RATIO_SCALE;
+   // qDebug() << "width: " << width << "height: " << height;
+    
     double temp = (double)(width / height);
     
     if (temp < 0.1 || temp > 10) {
@@ -1719,7 +1731,8 @@ void Interface::updateAspectRatio()
         aspectRatioPreviewDisplayPort->paintToDisplay(aspectRatioPreview);
     }
     
-    
+    heightChanged = false;
+    widthChanged = false;
     
 }
 
@@ -1742,10 +1755,10 @@ void Interface::changeAspectRatio()
     
     if (aspectRatio > 1.0) {
         
-        width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
+        width = outWidthEdit->text().toDouble() * ASPECT_RATIO_SCALE;
         height = width / aspectRatio;
         
-        val = (int)(height / ASPECT_SCALE);
+        val = (int)(height / ASPECT_RATIO_SCALE);
         outHeightEdit->blockSignals(true);
         outHeightEdit->setText(QString::number(val));
         outHeightEdit->blockSignals(false);
@@ -1753,10 +1766,10 @@ void Interface::changeAspectRatio()
         
     } else {
         
-        height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
+        height = outHeightEdit->text().toDouble() * ASPECT_RATIO_SCALE;
         width = height * aspectRatio;
         
-        val = (int)(width / ASPECT_SCALE);
+        val = (int)(width / ASPECT_RATIO_SCALE);
         outWidthEdit->blockSignals(true);
         outWidthEdit->setText(QString::number(val));
         outWidthEdit->blockSignals(false);
@@ -1900,7 +1913,7 @@ void Interface::changeM(int val)
     
     currFunction->setM(termIndex, val);
     
-    createUndoAction(nEdit, oldN, val);
+    createUndoAction(mEdit, oldM, val);
     
     refreshTableTerms();
     refreshMainWindowTerms();
@@ -2029,16 +2042,18 @@ void Interface::errorHandler(const int &flag)
             imageSetPath = saveloadPath;
             openImageName = "";
             imagePathLabel->setText("<i>(no image has been set)</i>");
-            errorMessageBox->exec();
+            qDebug() << errorMessageBox->exec();
             break;
         case INVALID_OUTPUT_IMAGE_DIM:
             errorMessageBox->setText("Error: image dimensions must be between 20 and 9999");
-            errorMessageBox->exec();
+            qDebug() << errorMessageBox->exec();
             break;
         case INVALID_ASPECT_RATIO:
-            errorMessageBox->setText("Error: aspect ratio must be between 0.1 and 10. Please correct the input accordingly.");
+            QString msg = QString("Error: aspect ratio must be between %1 and %2. Please correct the input accordingly.").arg(MIN_ASPECT_RATIO).arg(MAX_ASPECT_RATIO);
+            errorMessageBox->setText(msg);
             errorMessageBox->exec();
-            break;
+            return;
+        
     }
     
 }
@@ -2249,13 +2264,13 @@ void Interface::updateImageDataGraph()
 void Interface::handleUndo()
 {
     
-    if(!undoStack->canUndo()) { qDebug() << "can't undo..."; return; }
+   // if(!undoStack->canUndo()) { return; }
     
     newAction = false;
     undoStack->undo();
     newAction = true;
     //emit redoEnabled();
-    qDebug() << "index of undo stack" << undoStack->index();
+    //qDebug() << "undo stack size" << undoStack->count();
     
     // item->setValue(undoVal);
     
@@ -2263,8 +2278,8 @@ void Interface::handleUndo()
 
 void Interface::handleRedo()
 {
-    if(!undoStack->canRedo()) { return; }
-    //qDebug() << "setting newAction to false due to redo";
+    //if(!undoStack->canRedo()) { return; }
+    qDebug() << "setting newAction to false due to redo";
     newAction = false;
     undoStack->redo();
     newAction = true;
@@ -2274,17 +2289,13 @@ void Interface::handleRedo()
 void Interface::createUndoAction(QObject *item, double oldVal, double newVal)
 {
     
-    if (newAction) {
+    if (newAction && undoStack->isClean()) {
         ChangeCommand *command = new ChangeCommand(item, oldVal, newVal);
-        //        qDebug() << "pushing command: " << "old val:" << oldVal << "newVal:" << newVal;
+        qDebug() << "pushing command: " << "old val:" << oldVal << "newVal:" << newVal;
         undoStack->push(command);
-        //     canUndo = true;
-        //        emit undoEnabled();
-        qDebug() << "undo stack size" << undoStack->count();
-        
+       
     }
     else {
-        // qDebug() << "it's a new action";
         newAction = true;
     }
 }
@@ -2296,16 +2307,13 @@ bool Interface::eventFilter(QObject* object,QEvent* event)
     
     if(event->type() == QEvent::KeyPress)
     {
-        // qDebug() << "object->metaObject()->className()";
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         QKeySequence keySequence(keyEvent->key() | keyEvent->modifiers());
         
         if(keySequence.matches(QKeySequence::Undo)) {
-            qDebug() << "can I undo?" << undoStack->canUndo();
             handleUndo();
             return true;
         } else if (keySequence.matches(QKeySequence::Redo)) {
-            // qDebug() << "can I redo?" << undoStack->canRedo();
             handleRedo();
             return true;
         }
@@ -2318,4 +2326,5 @@ bool Interface::eventFilter(QObject* object,QEvent* event)
         return QObject::eventFilter(object,event);
     }
 };
+
 
