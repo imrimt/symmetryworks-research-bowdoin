@@ -59,18 +59,18 @@ const double RADIUS_SPINBOX_STEP = 0.1;
 const double ANGLE_SPINBOX_STEP = 0.25;
 
 // QLineEdit subclass that undo changes (if not entered) when loses focus
-class CustomLineEdit : public QLineEdit 
+class CustomLineEdit : public QLineEdit
 {
     Q_OBJECT
 public:
     CustomLineEdit(QWidget *parent = 0) : QLineEdit(parent) { }
-
+    
     void focusOutEvent(QFocusEvent * /*unused*/) {
         if (isModified()) this->undo();
         setReadOnly(true);
         deselect();
     }
-
+    
     void focusInEvent(QFocusEvent * /*unused*/) {
         setReadOnly(false);
     }
@@ -82,12 +82,12 @@ public:
 class CustomSpinBox : public QSpinBox
 {
     Q_OBJECT
-  public:
+public:
     CustomSpinBox(QWidget *parent = 0) : QSpinBox(parent) { }
-
-  protected:
+    
+protected:
     void keyPressEvent(QKeyEvent *event) {event->ignore();}
-
+    
 };
 
 class ClickableLabel : public QLabel
@@ -119,41 +119,41 @@ class QDoubleSlider : public QSlider
 {
     Q_OBJECT
 public:
-    QDoubleSlider(QWidget *parent = 0) : QSlider(parent) { 
+    QDoubleSlider(QWidget *parent = 0) : QSlider(parent) {
         connect(this, SIGNAL(valueChanged(int)),
-            this, SLOT(notifyValueChanged(int)));
+                this, SLOT(notifyValueChanged(int)));
     }
-
+    
 protected:
-	void mouseReleaseEvent(QMouseEvent *event) {
-		if (event->button() == Qt::LeftButton) {
-			newVal = (double)this->value() / 100.0;
-			//qDebug() << "release";
-			emit newSliderAction(this, oldVal, newVal);
-		}
-	}
-
-	void mousePressEvent(QMouseEvent *event) {
-		if (event->button() == Qt::LeftButton) {
-			oldVal = (double)this->value() / 100.0;
-			QSlider::mousePressEvent(event);
-		}
-	}
+    void mouseReleaseEvent(QMouseEvent *event) {
+        if (event->button() == Qt::LeftButton) {
+            newVal = (double)this->value() / 100.0;
+            //qDebug() << "release";
+            emit newSliderAction(this, oldVal, newVal);
+        }
+    }
+    
+    void mousePressEvent(QMouseEvent *event) {
+        if (event->button() == Qt::LeftButton) {
+            oldVal = (double)this->value() / 100.0;
+            QSlider::mousePressEvent(event);
+        }
+    }
     
 signals:
     void doubleValueChanged(double value);
     void newSliderAction(QObject *item, double oldVal, double newVal);
-
-public slots:
+    
+    public slots:
     void notifyValueChanged(int value) {
         double doubleValue = value / 100.0;
         emit doubleValueChanged(doubleValue);
     }
-
+    
 private:
-	double oldVal;
-	double newVal;
-
+    double oldVal;
+    double newVal;
+    
 };
 
 
@@ -179,12 +179,12 @@ public:
         layout->addWidget(label);
         layout->addWidget(progBar);
         layout->addWidget(percentLabel);
-
+        
         this->port = port;
         
         
     }
-
+    
     double value() { return this->text().toDouble(); }
     
     void remove() {
@@ -192,7 +192,7 @@ public:
         delete percentLabel;
         delete progBar;
     }
-
+    
     void resetBar(const QString &title, Port *port) {
         label = new QLabel(title);
         percentLabel = new QLabel();
@@ -206,17 +206,17 @@ public:
         layout->addWidget(label);
         layout->addWidget(progBar);
         layout->addWidget(percentLabel);
-
+        
         this->port = port;
-    
+        
     }
-
-    void setVisible(bool visible) { 
+    
+    void setVisible(bool visible) {
         progBar->setVisible(visible);
         label->setVisible(visible);
         percentLabel->setVisible(visible);
     }
-
+    
     void setPermanentVisibility(bool visibility) {
         this->visibility = visibility;
     }
@@ -237,27 +237,27 @@ protected:
         percentLabel->setText(progBar->text());
     }
     
-
-signals: 
+    
+signals:
     void renderFinished();
-
-public slots:
+    
+    public slots:
     // called when a thread has finished rendering its portion of the work
     // called to update progress bar throughout the rendering process
     void partialUpdate(const double &progress)
     {
         if (!this->isVisible() && visibility) { this->setVisible(true); }
-
+        
         this->setNewValue(progress);
-
+        
         //emit signals to reset table buttons
         if (progress == 100) {
             emit renderFinished();
             this->setVisible(false);
         }
     }
-
-
+    
+    
 };
 
 
@@ -268,7 +268,7 @@ public:
     // ChangeCommand(QSpinBox *item, double oldVal, double newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
     ChangeCommand(QObject *item, double oldVal, double newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
     {
-
+        
         this->item = item;
         this->oldVal = oldVal;
         //qDebug() << "old value" << oldVal;
@@ -281,66 +281,66 @@ public:
     ~ChangeCommand() {}
     
     void undo() Q_DECL_OVERRIDE {
-       // qDebug() << "size of undo stack" << undoStack->count();
+        // qDebug() << "size of undo stack" << undoStack->count();
         if(!canUndo) return;
         qDebug() << "UNDO to" << oldVal;
-    
+        
         if (QSpinBox *boxItem = dynamic_cast<QSpinBox*>(item) ) {
             //qDebug() << "HELLO";
             boxItem->setValue(oldVal);
             // emit boxItem->returnPressed();
         }
         else if (QDoubleSpinBox *boxItem = dynamic_cast<QDoubleSpinBox*>(item)) {
-        	boxItem->setValue(oldVal);
-        	// emit boxItem->returnPressed();
+            boxItem->setValue(oldVal);
+            // emit boxItem->returnPressed();
         }
         if (CustomLineEdit *lineEditItem = dynamic_cast<CustomLineEdit*>(item)) {
-          
-        	lineEditItem->setText(QString::number(oldVal));
-        	emit lineEditItem->returnPressed();
+            
+            lineEditItem->setText(QString::number(oldVal));
+            emit lineEditItem->returnPressed();
         }
         else if (QLineEdit *lineEditItem = dynamic_cast<QLineEdit*>(item)) {
-			lineEditItem->setText(QString::number(oldVal));
-			emit lineEditItem->returnPressed();
+            lineEditItem->setText(QString::number(oldVal));
+            emit lineEditItem->returnPressed();
         }
         else if (QDoubleSlider *sliderItem = dynamic_cast<QDoubleSlider*>(item)) {
             
-        	sliderItem->setValue(oldVal * 100.0);
-        }   
-
+            sliderItem->setValue(oldVal * 100.0);
+        }
+        
         canRedo = true;
         //canUndo = true;
     }
     void redo() Q_DECL_OVERRIDE {
         if(!canRedo) return;
         qDebug() << "REDO to" << newVal;
-
+        
         if (QSpinBox *boxItem = dynamic_cast<QSpinBox*>(item) ) {
             boxItem->setValue(newVal);
             // emit boxItem->returnPressed();
         }
         else if (QDoubleSpinBox *boxItem = dynamic_cast<QDoubleSpinBox*>(item)) {
             
-        	boxItem->setValue(newVal);
-        	// emit boxItem->returnPressed();
+            boxItem->setValue(newVal);
+            // emit boxItem->returnPressed();
         }
         if (CustomLineEdit *lineEditItem = dynamic_cast<CustomLineEdit*>(item)) {
-        	lineEditItem->setText(QString::number(newVal));
-        	emit lineEditItem->returnPressed();
+            lineEditItem->setText(QString::number(newVal));
+            emit lineEditItem->returnPressed();
         }
         else if (QLineEdit *lineEditItem = dynamic_cast<QLineEdit*>(item)) {
-			lineEditItem->setText(QString::number(newVal));
-			emit lineEditItem->returnPressed();
+            lineEditItem->setText(QString::number(newVal));
+            emit lineEditItem->returnPressed();
         }
         else if (QDoubleSlider *sliderItem = dynamic_cast<QDoubleSlider*>(item)) {
-        	sliderItem->setValue(newVal * 100.0);
-        }      
+            sliderItem->setValue(newVal * 100.0);
+        }
     }
-
+    
     
 private:
     QObject *item;
-
+    
     double oldVal, newVal;
     bool canUndo, canRedo;
     
@@ -351,9 +351,9 @@ class Interface : public QWidget
 {
     Q_OBJECT
 public:
-    Interface(QWidget *parent = 0); 
-    ~Interface() {;} 
-
+    Interface(QWidget *parent = 0);
+    ~Interface() {;}
+    
     // ORGANIZATIONAL ELEMENTS
     QWidget *functionConstantsWidget;
     QHBoxLayout *overallLayout;
@@ -365,7 +365,7 @@ public:
     QSpacerItem *spacerItem;
     QSpacerItem *spacerItem2;
     QMessageBox *errorMessageBox;
-
+    
     // INPUT VALIDATORS
     QDoubleValidator *doubleValidate;
     QDoubleValidator *posdoubleValidate;
@@ -374,11 +374,11 @@ public:
     QIntValidator *posintValidate;
     QIntValidator *numtermsValidate;
     QIntValidator *dimValidate;
-
+    
     // SUPPLEMENTAL WINDOWS
     HistoryDisplay *historyDisplay;
     PolarPlane *polarPlane;
-    QSignalMapper *polarPlaneMapper;    
+    QSignalMapper *polarPlaneMapper;
     
     // global scaling factors SUBELEMENTS
     QGroupBox *globalScalingBox;
@@ -407,7 +407,7 @@ public:
     QDoubleSlider *aEdit;
     QDoubleSlider *rEdit;
     QPushButton *coeffPlaneEdit;
-
+    
     QGroupBox *functionConstantsBox;
     QGridLayout *functionTermsGrid;
     QVBoxLayout *functionConstantsBoxLayout;
@@ -417,7 +417,7 @@ public:
     QVBoxLayout *functionConstantsPairs;
     QHBoxLayout *functionConstantsFreqs;
     QHBoxLayout *functionConstantsCoeffs;
-
+    
     // TERM VIEW TABLE
     QPushButton *termViewButton;
     QWidget *termViewWidget;
@@ -430,7 +430,7 @@ public:
     QPushButton *addTermButton;
     QSignalMapper *termViewTableMapper;
     QSignalMapper *removeTermMapper;
-
+    
     // patternTypeBox SUBELEMENTS
     QGroupBox *patternTypeBox;
     QVBoxLayout *patternTypeBoxOverallLayout;
@@ -457,7 +457,7 @@ public:
     QRadioButton *fromImageButton;
     QRadioButton *fromColorWheelButton;
     QColorDialog *setOverflowColorPopUp;
-
+    
     // IMAGE DATA POINTS
     QPushButton *updateImageDataGraphButton;
     QScatterSeries *imageDataSeries;
@@ -471,7 +471,7 @@ public:
     QWidget *imageDataWindow;
     QVBoxLayout *imageDataWindowGraphLayout;
     QHBoxLayout *imageDataWindowLayout;
-
+    
     // imagePropsBox SUBELEMENTS
     QVBoxLayout *imagePropsBoxLayout;
     QHBoxLayout *imageShiftXLayout;
@@ -493,13 +493,13 @@ public:
     CustomLineEdit *worldHeightEdit;
     
     QSpacerItem *pspacer1;
-
+    
     // DISP SUBELEMENTS
     QPushButton *snapshotButton;
     Display *disp;
     QVBoxLayout *dispLayout;
-    QHBoxLayout *buttonLayout;    
-
+    QHBoxLayout *buttonLayout;
+    
     // SHORTCUTS
     QShortcut *updatePreviewShortcut;
     
@@ -533,15 +533,15 @@ public:
     QHBoxLayout *aspectRatioPreviewLayout;
     
     void setSnapShotWindow(HistoryDisplay* window);
-
+    
 signals:
     void imageActionStatus(bool status);
-//    void undoEnabled();
-//    void undoDisabled();
-//    void redoEnabled();
-//    void redoDisabled();
-
-private slots:
+    //    void undoEnabled();
+    //    void undoDisabled();
+    //    void redoEnabled();
+    //    void redoDisabled();
+    
+    private slots:
     void updateCurrTerm(int i);
     void changeNumTerms(int i);
     void colorWheelChanged(int index);
@@ -570,7 +570,7 @@ private slots:
     void changeScaleR();
     void changeScaleR(double val);
     void changeOverflowColor(const QColor &color) { currColorWheel->changeOverflowColor(color); updatePreviewDisplay(); }
-
+    
     void exportImageFunction() { imageDimensionsPopUp->show(); }
     void cancelImageExport() { imageDimensionsPopUp->hide(); }
     void startImageExport();
@@ -579,8 +579,8 @@ private slots:
     void loadFromSettings();
     void saveCurrWorkspace();
     void saveCurrWorkspaceAs();
-    void previewDisplayEnlarge() {disp->enlarge();}
-    void previewDisplayShrink() {disp->shrink();}
+    //    void previewDisplayEnlarge() {disp->enlarge();}
+    //    void previewDisplayShrink() {disp->shrink();}
     void previewDisplayResetSize() {disp->resetSize();}
     void snapshotFunction();
     void termViewPopUp();
@@ -592,36 +592,36 @@ private slots:
     void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
     QString loadSettings(const QString &fileName);
     void popUpImageExportFinished(const QString &filePath);
- 
+    
     void resetMainWindowButton(const bool &status);
     
     void showFunctionIcons() { functionIconsWindow->hide(), functionIconsWindow->show(); }
     void showOverflowColorPopUp() { setOverflowColorPopUp->show(); }
-
+    
     void addNewImageDataPoint(const ComplexValue &data) { *imageDataSeries << QPointF(data.real(), data.imag()); }
     void showImageDataGraph() { updateImageDataGraph(); imageDataWindow->hide(); imageDataWindow->show(); }
     void updateImageDataGraph();
-
+    
     void startShifting(const QPoint &point);
     void updateShifting(const QPoint &point);
     void finishShifting();
     
     void changeAspectRatio();
-
+    
     void handleUndo();
     void handleRedo();
     void createUndoAction(QObject *item, double oldVal, double newVal);
-
+    
 protected:
     void mousePressEvent(QMouseEvent *event);
     //void keyPressEvent(QKeyEvent *event);
     // void mouseMoveEvent(QMouseEvent *event);
     
-private:    
-    QString genLabel(const char * in);    
+private:
+    QString genLabel(const char * in);
     QString getCurrSettings(const HistoryItem &item);
     QString saveSettings(const QString &fileName);
-
+    
     // Interface display and formatting functions
     void initInterfaceLayout();
     void initPreviewDisplay();
@@ -644,14 +644,14 @@ private:
     void updateAspectRatio();
     bool eventFilter(QObject* object,QEvent* event);
     
-
+    
     //main data structures
     QVector<AbstractFunction *> functionVector;
     AbstractFunction *currFunction;
     ColorWheel *currColorWheel;
     Settings *settings;
     Port *previewDisplayPort, *imageExportPort, *aspectRatioPreviewDisplayPort;
-
+    
     //operational variables
     int previewWidth, previewHeight, previewSize;       //preview display size
     double aspectRatio;
@@ -673,7 +673,7 @@ private:
     QString currFileName;
     QString imageSetPath;
     QString openImageName;
-
+    
     //mouse-related variables
     bool mouseMoving;
     QPoint prevMousePos;    

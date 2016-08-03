@@ -51,9 +51,8 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     settings->OWidth = DEFAULT_OUTPUT_WIDTH;
     settings->OHeight = DEFAULT_OUTPUT_HEIGHT;
     
-
-    initInterfaceLayout();
     
+    initInterfaceLayout();
     
     updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
     undoStack = new QUndoStack(this);
@@ -82,7 +81,7 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     refreshTableTerms();
     updatePreviewDisplay();
     
-   
+    
 }
 
 // INIT INTERFACE LAYOUT
@@ -255,7 +254,7 @@ void Interface::initFunctionConstants()
     functionConstantsCoeffs = new QHBoxLayout();
     functionConstantsPairs = new QVBoxLayout();
     
-    coeffPlaneEdit = new QPushButton(tr("Set on plane"), functionConstantsBox);
+    coeffPlaneEdit = new QPushButton(tr("Set on Plane"), functionConstantsBox);
     
     numTermsLabel = new QLabel(tr("<b>Total Number of Terms: <\b>"), functionConstantsBox);
     numTermsEdit = new QSpinBox(functionConstantsBox);
@@ -311,7 +310,7 @@ void Interface::initFunctionConstants()
     
     termViewHeaderVertical= termViewTable->verticalHeader();
     termViewHeaderVertical->resizeSections(QHeaderView::Stretch);
-
+    
     termViewLayout->addWidget(termViewTable);
     termViewLayout->addWidget(addTermButton);
     termViewWidget->setLayout(termViewLayout);
@@ -377,7 +376,7 @@ void Interface::initGlobalScaling()
     scaleAEdit = new CustomLineEdit(patternTypeBox);
     scaleREdit = new CustomLineEdit(patternTypeBox);
     
-   
+    
     scaleAEdit->setValidator(doubleValidate);
     scaleREdit->setValidator(doubleValidate);
     scaleAEdit->setFixedWidth(40);
@@ -392,7 +391,7 @@ void Interface::initGlobalScaling()
     scaleAEditSlider->setSingleStep(1);
     scaleREditSlider->setFixedWidth(100);
     scaleAEditSlider->setFixedWidth(100);
-    scalePlaneEdit = new QPushButton(tr("Set on plane"), globalScalingBox);
+    scalePlaneEdit = new QPushButton(tr("Set on Plane"), globalScalingBox);
     
     scaleRLayout->addWidget(scaleRLabel);
     scaleRLayout->addWidget(scaleREditSlider);
@@ -1086,12 +1085,10 @@ void Interface::addTerm()
     aEditTable->setValue(currFunction->getA(highestIndex));
     rEditTable->setValue(currFunction->getR(highestIndex));
     
-    qDebug() << "here";
     oldMTable.append(mEditTable->value());
     oldNTable.append(nEditTable->value());
     oldATable.append(aEditTable->value());
     oldRTable.append(rEditTable->value());
-    qDebug() << "here";
     
     // connect signals
     connect(mEditTable, SIGNAL(valueChanged(int)), termViewTableMapper, SLOT(map()));
@@ -1162,14 +1159,14 @@ void Interface::updateCurrTerm(int i)
     if (i > 0) termIndex = i - 1;
     
     
-//    if (newAction) {
-//        ChangeCommand *command = new ChangeCommand(currTermEdit, oldTermIndex + 1, termIndex + 1);
-//        undoStack->push(command);
-//        qDebug() << "pushing command" << command->id();
-//    }
-//    else {
-//        newAction = true;
-//    }
+    //    if (newAction) {
+    //        ChangeCommand *command = new ChangeCommand(currTermEdit, oldTermIndex + 1, termIndex + 1);
+    //        undoStack->push(command);
+    //        qDebug() << "pushing command" << command->id();
+    //    }
+    //    else {
+    //        newAction = true;
+    //    }
     createUndoAction(currTermEdit, oldTermIndex + 1, termIndex + 1);
     
     refreshTableTerms();
@@ -1207,15 +1204,15 @@ void Interface::changeNumTerms(int i)
     createUndoAction(numTermsEdit, oldNumTerms, numTerms);
     
     //if (newAction) {
-//        ChangeCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
-//        undoStack->push(command);
-      //  qDebug() << "pushing command" << command->id();
+    //        ChangeCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
+    //        undoStack->push(command);
+    //  qDebug() << "pushing command" << command->id();
     //}
-//    else {
-//        newAction = true;
-//    }
+    //    else {
+    //        newAction = true;
+    //    }
     
-
+    
     //updateCurrTerm(i);
     
     refreshMainWindowTerms();
@@ -1349,8 +1346,8 @@ void Interface::saveCurrWorkspace()
     
     if (currFileName.isEmpty()) {
         currFileName = QFileDialog::getSaveFileName(this, tr("Open File"),
-                                                        saveloadPath,
-                                                        tr("Wallpapers (*.wpr)"));
+                                                    saveloadPath,
+                                                    tr("Wallpapers (*.wpr)"));
     }
     if (currFileName.isEmpty()) {
         return;
@@ -1367,9 +1364,9 @@ void Interface::saveCurrWorkspace()
 void Interface::saveCurrWorkspaceAs()
 {
     QString newFileName = QFileDialog::getSaveFileName(this, tr("Open File"),
-                                                           saveloadPath,
-                                                           tr("Wallpapers (*.wpr)"));
-
+                                                       saveloadPath,
+                                                       tr("Wallpapers (*.wpr)"));
+    
     currFileName = newFileName;
     if (currFileName.isEmpty()) {
         return;
@@ -1633,11 +1630,11 @@ void Interface::updatePreviewDisplay()
     if (!newUpdate) {
         return;
     }
-
+    
     imageDataSeries->clear();
     
     snapshotButton->setEnabled(false);
-
+    
     displayProgressBar->reset();
     previewDisplayPort->paintToDisplay(disp);
     updateAspectRatio();
@@ -1656,7 +1653,7 @@ void Interface::snapshotFunction()
     //qDebug() << "save" << filePath;
     
     historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
-   
+    
     
 }
 
@@ -1691,8 +1688,8 @@ void Interface::changeOWidth()
     } else if (val > MAX_IMAGE_DIM) {
         errorHandler(INVALID_OUTPUT_IMAGE_DIM);
     }
-
-
+    
+    
     settings->OWidth = val;
     if (!heightChanged) changeOHeight();
     
@@ -1884,12 +1881,12 @@ void Interface::changeYCorner()
 // SLOT FUNCTIONS TO CHANGE FREQ AND COEFF PAIRS
 void Interface::changeN(int val)
 {
-   
+    
     currFunction->setN(termIndex, val);
     
     
     createUndoAction(nEdit, oldN, val);
-   
+    
     refreshTableTerms();
     refreshMainWindowTerms();
     updatePreviewDisplay();
@@ -2089,7 +2086,7 @@ void Interface::termViewCellClicked(int row, int col)
 // updates the tem table to changed values
 void Interface::updateTermTable(QObject *cell)
 {
-   
+    
     int row = ((QPoint *)cell)->x();
     int col = ((QPoint *)cell)->y();
     
@@ -2279,15 +2276,15 @@ void Interface::createUndoAction(QObject *item, double oldVal, double newVal)
     
     if (newAction) {
         ChangeCommand *command = new ChangeCommand(item, oldVal, newVal);
-//        qDebug() << "pushing command: " << "old val:" << oldVal << "newVal:" << newVal;
+        //        qDebug() << "pushing command: " << "old val:" << oldVal << "newVal:" << newVal;
         undoStack->push(command);
-   //     canUndo = true;
-//        emit undoEnabled();
+        //     canUndo = true;
+        //        emit undoEnabled();
         qDebug() << "undo stack size" << undoStack->count();
-
+        
     }
     else {
-       // qDebug() << "it's a new action";
+        // qDebug() << "it's a new action";
         newAction = true;
     }
 }
@@ -2299,7 +2296,7 @@ bool Interface::eventFilter(QObject* object,QEvent* event)
     
     if(event->type() == QEvent::KeyPress)
     {
-       // qDebug() << "object->metaObject()->className()";
+        // qDebug() << "object->metaObject()->className()";
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         QKeySequence keySequence(keyEvent->key() | keyEvent->modifiers());
         
@@ -2308,7 +2305,7 @@ bool Interface::eventFilter(QObject* object,QEvent* event)
             handleUndo();
             return true;
         } else if (keySequence.matches(QKeySequence::Redo)) {
-           // qDebug() << "can I redo?" << undoStack->canRedo();
+            // qDebug() << "can I redo?" << undoStack->canRedo();
             handleRedo();
             return true;
         }

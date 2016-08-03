@@ -24,8 +24,8 @@ public:
     void setPixel(int i, int j, QRgb color);
     QSize sizeHint() const;
     QImage *getImage() { return &disp; }
-    void shrink();
-    void enlarge();
+//    void shrink();
+//    void enlarge();
     int getWidth() { return width;}
     int getHeight() { return height;}
     void resetSize() {resize(width, height); update();}

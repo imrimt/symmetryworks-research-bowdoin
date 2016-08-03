@@ -14,7 +14,7 @@ const int HISTORY_ITEM_SIZE = 60;
 class HistoryDisplay : public QObject
 {
     Q_OBJECT
-
+    
 public:
     
     HistoryDisplay(QObject *parent = 0);
@@ -35,10 +35,10 @@ public:
     void show();
     void triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings);
     void setPosition(QPoint point);
-
+    
     private slots:
-        void removePreview(QObject *item);
-        void clearAllHistory();
+    void removePreview(QObject *item);
+    void clearAllHistory();
     
     
 private:
