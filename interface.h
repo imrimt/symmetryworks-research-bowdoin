@@ -281,6 +281,7 @@ public:
     ~ChangeCommand() {}
     
     void undo() Q_DECL_OVERRIDE {
+       // qDebug() << "size of undo stack" << undoStack->count();
         if(!canUndo) return;
         qDebug() << "UNDO to" << oldVal;
     
@@ -656,6 +657,10 @@ private:
     double aspectRatio;
     int numTerms;
     int oldM, oldN;
+    QVector<int> oldMTable;
+    QVector<int> oldNTable;
+    QVector<double> oldATable;
+    QVector<double> oldRTable;
     unsigned int termIndex;     //currently editing term
     int coeffFlag;      //mapping variable for polar plane
     bool newUpdate;     //guard variable for preview update

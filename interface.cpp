@@ -1,6 +1,14 @@
 #include "Interface.h"
-
-
+/*
+ *
+ *  Interface class manages the UI elements for wallgen.
+ *
+ *
+ *  Last Modified: 08/03/2016 by Bridget E. Went and Son D. Ngo
+ *
+ *
+ *
+ */
 Interface::Interface(QWidget *parent) : QWidget(parent)
 {
     
@@ -43,14 +51,13 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     settings->OWidth = DEFAULT_OUTPUT_WIDTH;
     settings->OHeight = DEFAULT_OUTPUT_HEIGHT;
     
-    
-    // INITIALIZE LAYOUT
+
     initInterfaceLayout();
-    initShortcuts();
     
-    connectAllSignals();
     
+    updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
     undoStack = new QUndoStack(this);
+    connectAllSignals();
     
     functionSel->setCurrentIndex(0);
     colorwheelSel->setCurrentIndex(0);
@@ -78,7 +85,7 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
    
 }
 
-
+// INIT INTERFACE LAYOUT
 void Interface::initInterfaceLayout()
 {
     
@@ -145,7 +152,7 @@ void Interface::initInterfaceLayout()
 
 
 
-// INIT PREVIEW DISPLAY ELEMENTS
+// INIT WALLPAPER PREVIEW DISPLAY
 void Interface::initPreviewDisplay()
 {
     
@@ -295,7 +302,7 @@ void Interface::initFunctionConstants()
             termViewTable->horizontalHeader()->setSectionResizeMode(c, QHeaderView::Stretch);
     }
     
-    // SIGNAL MAPPERS
+    // signal mappers
     termViewTableMapper = new QSignalMapper(this);
     removeTermMapper = new QSignalMapper(this);
     
@@ -304,12 +311,13 @@ void Interface::initFunctionConstants()
     
     termViewHeaderVertical= termViewTable->verticalHeader();
     termViewHeaderVertical->resizeSections(QHeaderView::Stretch);
-    
-    // ASSEMBLE LAYOUT
+
     termViewLayout->addWidget(termViewTable);
     termViewLayout->addWidget(addTermButton);
     termViewWidget->setLayout(termViewLayout);
     
+    
+    // set up the grid layout
     for (int r = 0; r < 5; r++) {
         switch(r) {
             case 0:
@@ -345,6 +353,8 @@ void Interface::initFunctionConstants()
                 functionTermsGrid->addWidget(line2, r, 0, 1, 10);
         }
     }
+    
+    
     
     functionConstantsBoxLayout->addLayout(functionTermsGrid);
     functionConstantsWidgetLayout->addWidget(functionConstantsBox);
@@ -478,11 +488,6 @@ void Interface::initPatternType()
     functionLabel->setText(tr("<b>Pattern<\b>"));
     colorwheelLabel->setText(tr("<b>Color<\b>"));
     
-    //    colorwheelSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    //    colorwheelLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    //    functionSel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    //    functionLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    
     //initialize function previews window
     functionIconsWindow = new QWidget(this, Qt::Window);
     functionIconsWindow->setWindowTitle(tr("Pattern Previews"));
@@ -491,6 +496,7 @@ void Interface::initPatternType()
     int row = 0;
     int col = 0;
     
+    // init pattern preview grid layout
     for (int i = 0; i < functionSel->count(); ++i) {
         QVBoxLayout *layout = new QVBoxLayout();
         
@@ -559,20 +565,12 @@ void Interface::initPatternType()
     prevDataSeries->attachAxis(imageDataGraphAxisX);
     prevDataSeries->attachAxis(imageDataGraphAxisY);
     
-    //set size policies
-    // imageDataGraphView->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    // imageLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    
-    // imageDataWindowLayout->addStretch();
-    
     imageDataWindowGraphLayout->addWidget(imageDataGraphView);
     imageDataWindowGraphLayout->addWidget(updateImageDataGraphButton);
     imageDataWindowLayout->addLayout(imageDataWindowGraphLayout);
     imageDataWindowLayout->addWidget(imageLabel);
     imageDataWindow->setLayout(imageDataWindowLayout);
     imageDataWindow->setFixedSize(previewSize * 2, previewSize);
-    
-    // ASSEMBLE LAYOUT
     
     functionLayout->addWidget(functionLabel);
     functionLayout->addWidget(functionSel);
@@ -676,7 +674,6 @@ void Interface::initImageProps()
     worldWidthEditSlider->setValue(settings->Width * 100.0);
     worldHeightEditSlider->setValue(settings->Height * 100.0);
     
-    // ASSEMBLE LAYOUT
     imagePropsBoxLayout->addLayout(imageShiftXLayout);
     imagePropsBoxLayout->addLayout(imageShiftYLayout);
     imagePropsBoxLayout->addLayout(imageStretchXLayout);
@@ -692,8 +689,6 @@ void Interface::initImageExportPopUp()
     imageDimensionsPopUp->setWindowModality(Qt::WindowModal);
     imageDimensionsPopUp->setWindowTitle(tr("Output Image Dimensions"));
     imageDimensionsPopUpLayout = new QVBoxLayout(imageDimensionsPopUp);
-    
-    // imageDimensionsPopUp->setMinimumWidth(300);
     
     outHeightEdit = new QLineEdit(imageDimensionsPopUp);
     outWidthEdit = new QLineEdit(imageDimensionsPopUp);
@@ -712,7 +707,6 @@ void Interface::initImageExportPopUp()
     
     outWidthEdit->setText(QString::number(DEFAULT_OUTPUT_WIDTH));
     outHeightEdit->setText(QString::number(DEFAULT_OUTPUT_HEIGHT));
-    
     
     double width = outWidthEdit->text().toDouble() * ASPECT_SCALE;
     double height = outHeightEdit->text().toDouble() * ASPECT_SCALE;
@@ -765,7 +759,6 @@ void Interface::initToolTips()
     QToolTip::setFont(font);
     
     QString lineEditText = "Press <i> Enter </i> when finish editing to update preview.";
-    //QString editingBoxText = "Editing box for ";
     
     //patern properties
     functionLabel->setToolTip("Select among 17 different wallpaper patterns.");
@@ -798,11 +791,9 @@ void Interface::initToolTips()
     aLabel->setToolTip(aToolTip);
 }
 
-void Interface::initShortcuts()
-{
-    //SET UP SHORTCUTS...add for save, open, undo?
-    updatePreviewShortcut = new QShortcut(QKeySequence("Ctrl+D"), this);
-}
+
+
+
 
 // CONNECT SIGNALS TO SLOTS
 void Interface::connectAllSignals()
@@ -1055,6 +1046,10 @@ void Interface::addTerm()
     QSpinBox *mEditTable = new QSpinBox();
     QDoubleSpinBox *aEditTable = new QDoubleSpinBox();
     QDoubleSpinBox *rEditTable = new QDoubleSpinBox();
+    mEditTable->installEventFilter(this);
+    nEditTable->installEventFilter(this);
+    aEditTable->installEventFilter(this);
+    rEditTable->installEventFilter(this);
     
     nEditTable->setRange(MIN_FREQ_VALUE,MAX_FREQ_VALUE);
     nEditTable->setSingleStep(FREQ_SPINBOX_STEP);
@@ -1090,6 +1085,13 @@ void Interface::addTerm()
     nEditTable->setValue(currFunction->getN(highestIndex));
     aEditTable->setValue(currFunction->getA(highestIndex));
     rEditTable->setValue(currFunction->getR(highestIndex));
+    
+    qDebug() << "here";
+    oldMTable.append(mEditTable->value());
+    oldNTable.append(nEditTable->value());
+    oldATable.append(aEditTable->value());
+    oldRTable.append(rEditTable->value());
+    qDebug() << "here";
     
     // connect signals
     connect(mEditTable, SIGNAL(valueChanged(int)), termViewTableMapper, SLOT(map()));
@@ -1347,8 +1349,11 @@ void Interface::saveCurrWorkspace()
     
     if (currFileName.isEmpty()) {
         currFileName = QFileDialog::getSaveFileName(this, tr("Open File"),
-                                                    saveloadPath,
-                                                    tr("Wallpapers (*.wpr)"));
+                                                        saveloadPath,
+                                                        tr("Wallpapers (*.wpr)"));
+    }
+    if (currFileName.isEmpty()) {
+        return;
     }
     
     saveloadPath = saveSettings(currFileName);
@@ -1362,9 +1367,13 @@ void Interface::saveCurrWorkspace()
 void Interface::saveCurrWorkspaceAs()
 {
     QString newFileName = QFileDialog::getSaveFileName(this, tr("Open File"),
-                                                       saveloadPath,
-                                                       tr("Wallpapers (*.wpr)"));
+                                                           saveloadPath,
+                                                           tr("Wallpapers (*.wpr)"));
+
     currFileName = newFileName;
+    if (currFileName.isEmpty()) {
+        return;
+    }
     
     saveloadPath = saveSettings(currFileName);
     
@@ -1624,16 +1633,13 @@ void Interface::updatePreviewDisplay()
     if (!newUpdate) {
         return;
     }
-    
-    // if (!imageDataGraph->series().empty()) imageDataGraph->removeSeries(imageDataSeries);
+
     imageDataSeries->clear();
     
     snapshotButton->setEnabled(false);
-    
+
     displayProgressBar->reset();
-    
     previewDisplayPort->paintToDisplay(disp);
-    
     updateAspectRatio();
     
 }
@@ -1650,8 +1656,7 @@ void Interface::snapshotFunction()
     //qDebug() << "save" << filePath;
     
     historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
-    
-    //updatePreviewDisplay();
+   
     
 }
 
@@ -1664,10 +1669,8 @@ void Interface::changeOHeight()
     
     if (val < MIN_IMAGE_DIM) {
         errorHandler(INVALID_OUTPUT_IMAGE_DIM);
-        //outHeightEdit->setText(QString::number(MIN_IMAGE_DIM));
     } else if (val > MAX_IMAGE_DIM) {
         errorHandler(INVALID_OUTPUT_IMAGE_DIM);
-         //outHeightEdit->setText(QString::number(MAX_IMAGE_DIM));
     }
     
     settings->OHeight = val;
@@ -1683,13 +1686,10 @@ void Interface::changeOWidth()
     widthChanged = true;
     int val = outWidthEdit->text().toInt();
     
-    
     if (val < MIN_IMAGE_DIM) {
         errorHandler(INVALID_OUTPUT_IMAGE_DIM);
-        //settings->OHeight = MIN_IMAGE_DIM;
     } else if (val > MAX_IMAGE_DIM) {
         errorHandler(INVALID_OUTPUT_IMAGE_DIM);
-        //settings->OHeight = MAX_IMAGE_DIM;
     }
 
 
@@ -1708,22 +1708,10 @@ void Interface::updateAspectRatio()
     double width = outWidthEdit->text().toInt() * ASPECT_SCALE;
     double height = outHeightEdit->text().toInt() * ASPECT_SCALE;
     double temp = (double)(width / height);
+    
     if (temp < 0.1 || temp > 10) {
         errorHandler(INVALID_ASPECT_RATIO);
     } else {
-//    if (width < MIN_IMAGE_DIM) {
-//        errorHandler(INVALID_ASPECT_RATIO);
-//        //settings->OHeight = MIN_IMAGE_DIM;
-//    } else if (width > MAX_IMAGE_DIM) {
-//        errorHandler(INVALID_ASPECT_RATIO);
-//        //settings->OHeight = MAX_IMAGE_DIM;
-//    } else if (height < MIN_IMAGE_DIM) {
-//        errorHandler(INVALID_ASPECT_RATIO);
-//        //outHeightEdit->setText(QString::number(MIN_IMAGE_DIM));
-//    } else if (height > MAX_IMAGE_DIM) {
-//        errorHandler(INVALID_ASPECT_RATIO);
-//        //outHeightEdit->setText(QString::number(MAX_IMAGE_DIM));
-//    } else {
         aspectRatio = temp;
         
         QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
@@ -1778,9 +1766,6 @@ void Interface::changeAspectRatio()
         settings->OWidth = val;
         
     }
-    
-    
-    
     
     imageExportPort->changeSettings(settings);
     QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
@@ -1918,7 +1903,7 @@ void Interface::changeM(int val)
     
     currFunction->setM(termIndex, val);
     
-   createUndoAction(nEdit, oldN, val);
+    createUndoAction(nEdit, oldN, val);
     
     refreshTableTerms();
     refreshMainWindowTerms();
@@ -2104,7 +2089,7 @@ void Interface::termViewCellClicked(int row, int col)
 // updates the tem table to changed values
 void Interface::updateTermTable(QObject *cell)
 {
-    
+   
     int row = ((QPoint *)cell)->x();
     int col = ((QPoint *)cell)->y();
     
@@ -2112,10 +2097,18 @@ void Interface::updateTermTable(QObject *cell)
     
     float val;
     
-    if (col > 0 && col < 3)
-        val = static_cast<QSpinBox *>(termViewTable->cellWidget(row,col))->value();
-    else
-        val = static_cast<QDoubleSpinBox *>(termViewTable->cellWidget(row,col))->value();
+    QSpinBox *editor;
+    QDoubleSpinBox *doubleEditor;
+    
+    if (col > 0 && col < 3) {
+        
+        editor = static_cast<QSpinBox *>(termViewTable->cellWidget(row,col));
+        val = editor->value();
+    } else {
+        doubleEditor = static_cast<QDoubleSpinBox *>(termViewTable->cellWidget(row,col));
+        val = doubleEditor->value();
+    }
+    
     
     unsigned int index = row;
     int coeff = val;
@@ -2125,17 +2118,27 @@ void Interface::updateTermTable(QObject *cell)
     switch(col) {
         case 1:
             currFunction->setM(index, coeff);
+            createUndoAction(editor, oldMTable.at(index), coeff);
+            oldMTable.insert(index, coeff);
             break;
         case 2:
             currFunction->setN(index, coeff);
+            createUndoAction(editor, oldNTable.at(index), coeff);
+            oldNTable.insert(index, coeff);
             break;
         case 3:
             currFunction->setA(index, freq);
+            createUndoAction(doubleEditor, oldATable.at(index), freq);
+            oldATable.insert(index, freq);
             break;
         case 4:
             currFunction->setR(index, freq);
+            createUndoAction(doubleEditor, oldRTable.at(index), freq);
+            oldRTable.insert(index, freq);
             break;
     }
+    
+    
     
     refreshTableTerms();
     refreshMainWindowTerms();
@@ -2248,13 +2251,14 @@ void Interface::updateImageDataGraph()
 
 void Interface::handleUndo()
 {
-    if(!undoStack->canUndo()) { return; }
+    
+    if(!undoStack->canUndo()) { qDebug() << "can't undo..."; return; }
     
     newAction = false;
     undoStack->undo();
     newAction = true;
     //emit redoEnabled();
-    
+    qDebug() << "index of undo stack" << undoStack->index();
     
     // item->setValue(undoVal);
     
@@ -2279,7 +2283,7 @@ void Interface::createUndoAction(QObject *item, double oldVal, double newVal)
         undoStack->push(command);
    //     canUndo = true;
 //        emit undoEnabled();
- //       qDebug() << "undo stack size" << undoStack->count();
+        qDebug() << "undo stack size" << undoStack->count();
 
     }
     else {
@@ -2291,16 +2295,20 @@ void Interface::createUndoAction(QObject *item, double oldVal, double newVal)
 
 bool Interface::eventFilter(QObject* object,QEvent* event)
 {
-    //qDebug() << "FILTER";
+    //qDebug() << "FILTER" << object->metaObject()->className();
+    
     if(event->type() == QEvent::KeyPress)
     {
+       // qDebug() << "object->metaObject()->className()";
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         QKeySequence keySequence(keyEvent->key() | keyEvent->modifiers());
         
         if(keySequence.matches(QKeySequence::Undo)) {
+            qDebug() << "can I undo?" << undoStack->canUndo();
             handleUndo();
             return true;
         } else if (keySequence.matches(QKeySequence::Redo)) {
+           // qDebug() << "can I redo?" << undoStack->canRedo();
             handleRedo();
             return true;
         }
