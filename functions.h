@@ -585,6 +585,116 @@ public:
     
 };
 
+
+///////////////////////////////////////////////////////////////This locks z^n\bar{z}^m with reciprocal for
+//inversion symmetry
+class invFunction : public AbstractFunction
+{
+public:
+    invFunction() { terms = 1; refresh(); }
+    invFunction(unsigned int in_terms) { terms = in_terms; refresh(); }
+    invFunction(QVector<coeffpair> in_coeffs, QVector<freqpair> in_freqs) {initWithVectors(in_coeffs, in_freqs);}
+    
+    std::complex<double> bundle(double &x, double &y, unsigned int &i) const;
+    std::complex<double> operator() (double i, double j);
+    
+     virtual AbstractFunction* clone() const { return new invFunction(*this); };
+    
+};
+
+///////////////////////////////////////////////////////////////This locks z^n\bar{z}^m with minus reciprocal for
+//negating inversion symmetry
+class neginvFunction : public AbstractFunction
+{
+public:
+    neginvFunction() { terms = 1; refresh(); }
+    neginvFunction(unsigned int in_terms) { terms = in_terms; refresh(); }
+    neginvFunction(QVector<coeffpair> in_coeffs, QVector<freqpair> in_freqs) {initWithVectors(in_coeffs, in_freqs);}
+    
+    std::complex<double> bundle(double &x, double &y, unsigned int &i) const;
+    std::complex<double> operator() (double i, double j);
+    
+     virtual AbstractFunction* clone() const { return new neginvFunction(*this); };
+    
+};
 ///////////////////////////////////////////////////////////////
+
+//tetrahedral symmetry done very differently from last time
+class tetraFunction : public AbstractFunction
+{
+public:
+    tetraFunction() { terms = 1; refresh(); }
+    tetraFunction(unsigned int in_terms) { terms = in_terms; refresh(); }
+    tetraFunction(QVector<coeffpair> in_coeffs, QVector<freqpair> in_freqs) {initWithVectors(in_coeffs, in_freqs);}
+    
+    std::complex<double> bundle(double &x, double &y, unsigned int &i) const;
+    std::complex<double> operator() (double i, double j);
+    
+    virtual AbstractFunction* clone() const { return new tetraFunction(*this); };
+    
+};
+///////////////////////////////////////////////////////////////
+//tetrahedral symmetry with the mirror that locks (N,M) with (M,N)
+class tetraMFunction : public AbstractFunction
+{
+public:
+    tetraMFunction() { terms = 1; refresh(); }
+    tetraMFunction(unsigned int in_terms) { terms = in_terms; refresh(); }
+    tetraMFunction(QVector<coeffpair> in_coeffs, QVector<freqpair> in_freqs) {initWithVectors(in_coeffs, in_freqs);}
+    
+    std::complex<double> bundle(double &x, double &y, unsigned int &i) const;
+    std::complex<double> operator() (double i, double j);
+    
+     virtual AbstractFunction* clone() const { return new tetraMFunction(*this); };
+    
+};
+///////////////////////////////////////////////////////////////
+
+
+//icosahedral symmetry done very differently from last time
+class icosFunction : public AbstractFunction
+{
+public:
+    icosFunction() { terms = 1; refresh(); }
+    icosFunction(unsigned int in_terms) { terms = in_terms; refresh(); }
+    icosFunction(QVector<coeffpair> in_coeffs, QVector<freqpair> in_freqs) {initWithVectors(in_coeffs, in_freqs);}
+    
+    std::complex<double> bundle(double &x, double &y, unsigned int &i) const;
+    std::complex<double> operator() (double i, double j);
+    
+    virtual AbstractFunction* clone() const { return new icosFunction(*this); };
+    
+};
+
+//tetrahedral symmetry done with spherical harmonics
+class tetraHFunction : public AbstractFunction
+{
+public:
+    tetraHFunction() { terms = 1; refresh(); }
+    tetraHFunction(unsigned int in_terms) { terms = in_terms; refresh(); }
+    tetraHFunction(QVector<coeffpair> in_coeffs, QVector<freqpair> in_freqs) {initWithVectors(in_coeffs, in_freqs);}
+    
+    std::complex<double> bundle(double &x, double &y, unsigned int &i) const;
+    std::complex<double> operator() (double i, double j);
+    
+     virtual AbstractFunction* clone() const { return new tetraHFunction(*this); };
+    
+};
+
+//icosahedral symmetry done with spherical harmonics
+class icosHFunction : public AbstractFunction
+{
+public:
+    icosHFunction() { terms = 1; refresh(); }
+    icosHFunction(unsigned int in_terms) { terms = in_terms; refresh(); }
+    icosHFunction(QVector<coeffpair> in_coeffs, QVector<freqpair> in_freqs) {initWithVectors(in_coeffs, in_freqs);}
+    
+    std::complex<double> bundle(double &x, double &y, unsigned int &i) const;
+    std::complex<double> operator() (double i, double j);
+    
+    virtual AbstractFunction* clone() const { return new icosHFunction(*this); };
+    
+};
+
 
 #endif // FUNCTIONS_H

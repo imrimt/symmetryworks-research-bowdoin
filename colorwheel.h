@@ -53,6 +53,7 @@ private:
     QRgb Sect6Col(std::complex<double> zin);
     QRgb WinCol(std::complex<double> zin);
     QRgb FromImage(std::complex<double> zin);
+    QRgb ImageSquish(std::complex<double> zin);
     
     // COMPONENT VARIABLES
     QVector3D icosFaces[ICOS_FACES_SIZE] =

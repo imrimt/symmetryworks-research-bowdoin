@@ -280,7 +280,7 @@ public:
     // ChangeCommand(QSpinBox *item, double oldVal, double newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
     ChangeCommand(QObject *item, double oldVal, double newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
     {
-        if(oldVal == newVal) return;
+        //if(oldVal == newVal) return;
         this->item = item;
         
         this->oldVal = oldVal;
@@ -297,7 +297,7 @@ public:
     
     void undo() Q_DECL_OVERRIDE {
         // qDebug() << "size of undo stack" << undoStack->count();
-        if(!canUndo){ qDebug() << "can't undo"; return; }
+        if(!canUndo){ return; }
         qDebug() << "UNDO to" << oldVal;
         
         if (QSpinBox *boxItem = dynamic_cast<QSpinBox*>(item) ) {
@@ -326,7 +326,7 @@ public:
         //canUndo = true;
     }
     void redo() Q_DECL_OVERRIDE {
-        if(!canRedo) return;
+        if(!canRedo) { return; }
         qDebug() << "REDO to" << newVal;
         
         if (QSpinBox *boxItem = dynamic_cast<QSpinBox*>(item) ) {

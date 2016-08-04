@@ -514,6 +514,29 @@ QRgb ColorWheel::WinCol(std::complex<double> zin)
     
 }
 
+QRgb ColorWheel::ImageSquish(std::complex<double> zin)
+{
+    double x = zin.real();
+    double y = zin.imag();
+    double denom = sqrt(1.0+0.5*x*x+0.5*y*y);
+    x=x/denom;
+    y=y/denom;
+    QRgb color;
+    
+    if(x >= -2.0 && x < 2.0 && y >= -2.0 && y < 2.0)      //our image is defined within the Cartesian coordinates
+    {                                                       // -2 <= x <= 2  and -2 <= y <= 2
+        int translated_x = (int) ((x + 2.0) * (image_dim / 4.0));
+        int translated_y = (int) image_dim - ((y + 2.0) * (image_dim / 4.0));
+        
+        color = image.pixel(translated_x, translated_y);
+    }
+    else
+        //color = qRgb(210,231,255);
+        color = qRgb(0,0,0);
+    
+    return color;
+}
+
 QRgb ColorWheel::FromImage(std::complex<double> zin)
 {
     double x = zin.real();

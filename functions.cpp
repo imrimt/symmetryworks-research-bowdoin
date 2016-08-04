@@ -1004,3 +1004,194 @@ std::complex<double> zzbarFunction::operator ()(double i, double j)
     return ans;
 }
 
+
+////////////////////////////////////////////////////////////
+
+std::complex<double> invFunction::bundle(double &x, double &y, unsigned int &i) const
+{
+    int N,M;
+    N = freqs[i].N();
+    M = freqs[i].M();
+    std::complex<double> ans(x , y);
+    std::complex<double> ans2(x , y);
+    ans=pow(ans,N);
+    ans*=conj(pow(ans2,M));
+    ans2=pow(ans,-1.0);
+    return (ans+ans2)*0.5;
+    
+}
+
+std::complex<double> invFunction::operator ()(double i, double j)
+{
+    std::complex<double> ans(0,0);
+    for(unsigned int k=0; k<terms; k++)
+    {
+        std::complex<double> thisterm = bundle(i, j, k);
+        thisterm *= coeffs[k].combined();
+        ans+= thisterm;
+    }
+    ans *= scale.combined();
+    return ans;
+}
+
+////////////////////////////////////////////////////////////
+
+std::complex<double> neginvFunction::bundle(double &x, double &y, unsigned int &i) const
+{
+    int N,M;
+    N = freqs[i].N();
+    M = freqs[i].M();
+    std::complex<double> ans(x , y);
+    std::complex<double> ans2(x , y);
+    ans=pow(ans,N);
+    ans*=conj(pow(ans2,M));
+    ans2=pow(ans,-1.0);
+    return (ans-ans2)*0.5;
+    
+}
+
+std::complex<double> neginvFunction::operator ()(double i, double j)
+{
+    std::complex<double> ans(0,0);
+    for(unsigned int k=0; k<terms; k++)
+    {
+        std::complex<double> thisterm = bundle(i, j, k);
+        thisterm *= coeffs[k].combined();
+        ans+= thisterm;
+    }
+    ans *= scale.combined();
+    return ans;
+}
+/////////////////////////////////////////////////////////////
+///NOTE: You have to use N-M even to create tetrahedral symmetry
+std::complex<double> tetraFunction::bundle(double &x, double &y, unsigned int &i) const
+{
+    int N,M;
+    N = freqs[i].N();
+    M = freqs[i].M();
+    std::complex<double> tmpz(x , y);
+    std::complex<double> ans=ave3(tmpz,N,M);
+    return ans;
+}
+
+std::complex<double> tetraFunction::operator ()(double i, double j)
+{
+    std::complex<double> ans(0,0);
+    for(unsigned int k=0; k<terms; k++)
+    {
+        std::complex<double> thisterm = bundle(i, j, k);
+        thisterm *= coeffs[k].combined();
+        ans+= thisterm;
+    }
+    ans *= scale.combined();
+    return ans;
+}
+/////////////////////////////////////////////////////////////
+///NOTE: You have to use N-M even to create icosahedral symmetry
+std::complex<double> icosFunction::bundle(double &x, double &y, unsigned int &i) const
+{
+    int N,M;
+    N = freqs[i].N();
+    M = freqs[i].M();
+    std::complex<double> tmpz(x , y);
+    std::complex<double> ans=ave5(tmpz,N,M);
+    return ans;
+}
+
+std::complex<double> icosFunction::operator ()(double i, double j)
+{
+    std::complex<double> ans(0,0);
+    for(unsigned int k=0; k<terms; k++)
+    {
+        std::complex<double> thisterm = bundle(i, j, k);
+        thisterm *= coeffs[k].combined();
+        ans+= thisterm;
+    }
+    ans *= scale.combined();
+    return ans;
+}
+//tetraMFunction locks N,M with M,N
+////////////////////////////////////////////////////////////
+/// \brief tetraMFunction::bundle
+/// \param x
+/// \param y
+/// \param i
+/// \return
+///
+///
+
+std::complex<double> tetraMFunction::bundle(double &x, double &y, unsigned int &i) const
+{
+    int N,M;
+    N = freqs[i].N();
+    M = freqs[i].M();
+    std::complex<double> tmpz(x , y);
+    std::complex<double> ans=ave3(tmpz,N,M);
+    std::complex<double> ans1=ave3(tmpz,M,N);
+    return (ans+ans1)/2.0;
+}
+
+std::complex<double> tetraMFunction::operator ()(double i, double j)
+{
+    std::complex<double> ans(0,0);
+    for(unsigned int k=0; k<terms; k++)
+    {
+        std::complex<double> thisterm = bundle(i, j, k);
+        thisterm *= coeffs[k].combined();
+        ans+= thisterm;
+    }
+    ans *= scale.combined();
+    return ans;
+}
+/////////////////////////////////////////////////////////////
+///NOTE: Some of the spherical harmonics seem to average to zero. Investigate!
+std::complex<double> tetraHFunction::bundle(double &x, double &y, unsigned int &i) const
+{
+    int N,M;
+    N = freqs[i].N();
+    M = freqs[i].M();
+    std::complex<double> tmpz(x , y);
+    std::complex<double> ans=ave3H(tmpz,N,M);
+    //std::complex<double> ans=Htest(tmpz,N,M);
+    return ans;
+}
+
+std::complex<double> tetraHFunction::operator ()(double i, double j)
+{
+    std::complex<double> ans(0,0);
+    for(unsigned int k=0; k<terms; k++)
+    {
+        std::complex<double> thisterm = bundle(i, j, k);
+        thisterm *= coeffs[k].combined();
+        ans+= thisterm;
+    }
+    ans *= scale.combined();
+    return ans;
+}
+/////////////////////////////////////////////////////////////
+///NOTE: Some of the spherical harmonics seem to average to zero. Investigate!
+std::complex<double> icosHFunction::bundle(double &x, double &y, unsigned int &i) const
+{
+    int N,M;
+    N = freqs[i].N();
+    M = freqs[i].M();
+    std::complex<double> tmpz(x , y);
+    std::complex<double> ans=ave5H(tmpz,N,M);
+    //std::complex<double> ans=Htest(tmpz,N,M);
+    return ans;
+}
+
+std::complex<double> icosHFunction::operator ()(double i, double j)
+{
+    std::complex<double> ans(0,0);
+    for(unsigned int k=0; k<terms; k++)
+    {
+        std::complex<double> thisterm = bundle(i, j, k);
+        thisterm *= coeffs[k].combined();
+        ans+= thisterm;
+    }
+    ans *= scale.combined();
+    return ans;
+}
+
+

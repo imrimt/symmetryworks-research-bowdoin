@@ -36,7 +36,15 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     functionVector.push_back(new pmFunction());
     functionVector.push_back(new pgFunction());
     functionVector.push_back(new rhombicFunction());
+    functionVector.push_back(new invFunction());
+    functionVector.push_back(new neginvFunction());
+    functionVector.push_back(new tetraFunction());
+    functionVector.push_back(new tetraMFunction());
+    functionVector.push_back(new tetraHFunction());
+    functionVector.push_back(new icosFunction());
+    functionVector.push_back(new icosHFunction());
     functionVector.push_back(new zzbarFunction());
+    
     currFunction = functionVector[0];
     currColorWheel = new ColorWheel();
     
@@ -481,6 +489,15 @@ void Interface::initPatternType()
     functionSel->addItem("pm");
     functionSel->addItem("pg");
     functionSel->addItem("cm");
+    functionSel->insertSeparator(17);
+    functionSel->addItem("inv");
+    functionSel->addItem("neginv");
+    functionSel->addItem("tetra");
+    functionSel->addItem("tetraM");
+    functionSel->addItem("tetraH");
+    functionSel->addItem("icos");
+    functionSel->addItem("icosH");
+    functionSel->insertSeparator(25);
     functionSel->addItem("Original");
     
     // color wheel selector
@@ -493,6 +510,8 @@ void Interface::initPatternType()
     colorwheelSel->addItem("SectCol");
     colorwheelSel->addItem("Sect6Col");
     colorwheelSel->addItem("WinCol");
+    
+    
     functionLabel->setText(tr("<b>Pattern<\b>"));
     colorwheelLabel->setText(tr("<b>Color<\b>"));
     
