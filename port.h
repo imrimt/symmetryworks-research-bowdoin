@@ -19,15 +19,15 @@ public:
     void exportImage(QImage *output, const QString &fileName);
     void paintToDisplay(Display *display);
     void paintHistoryIcon(HistoryItem *item);
-
+    
     // SETTERS
-    void changeFunction(AbstractFunction *newFunction) { 
+    void changeFunction(AbstractFunction *newFunction) {
         currFunction = newFunction;
-        controller->changeFunction(newFunction); 
+        controller->changeFunction(newFunction);
     }
-    void changeColorWheel(ColorWheel *newColorWheel) { 
+    void changeColorWheel(ColorWheel *newColorWheel) {
         currColorWheel = newColorWheel;
-        controller->changeColorWheel(newColorWheel); 
+        controller->changeColorWheel(newColorWheel);
     }
     void changeSettings(Settings *newSettings) {
         currSettings = newSettings;
@@ -42,9 +42,9 @@ public:
         controller->changeDimensions(newWidth, newHeight);
     }
     
-
+    
     Controller *getControllerObject() { return controllerObject; }
-
+    
     void deleteMembers() {
         if (!currFunction) delete currFunction;
         if (!currColorWheel) delete currColorWheel;
@@ -54,38 +54,33 @@ public:
         if (!controller) delete controller;
         if (!controllerObject) delete controllerObject;
     }
-
+    
 protected:
     
     AbstractFunction *currFunction;
     ColorWheel *currColorWheel;
-    Settings *currSettings;    
+    Settings *currSettings;
     int overallWidth, overallHeight;
-    //double XCorner, YCorner, setWidth, setHeight;
     
 private:
     void render(QImage *output, const int &actionFlag);
     void render(Display *display, const int &actionFlag);
-
-    // void render(QImage *output, Display *display, const int &actionFlag);
-
+    
     Display *display;
     QImage *output;
     QString filePathToExport;
     
     ControllerThread *controller;
     Controller *controllerObject;
-
+    
 signals:
     void finishedExport(const QString &filePath);
     void paintingFinished(const bool &status);
-
-private slots:
+    
+    private slots:
     void handleRenderedImage(const int &actionFlag);
     void handleFinishedExport(const QString &filePath) { emit finishedExport(filePath); }
 
-    // void combineRenderedImageParts(QPoint startPoint, QVector<QVector<QRgb>> result);
-    // void combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result);
 };
 
 

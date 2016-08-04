@@ -3,8 +3,6 @@
         <file>wallgen.pro</file>
     </qresource>
     <qresource prefix="/Images">
-        <file>Icons/add.png</file>
-        <file>Icons/remove.png</file>
         <file>Icons/zoomin.png</file>
         <file>Icons/zoomout.png</file>
         <file>function-previews/cm.png</file>
@@ -25,5 +23,7 @@
         <file>function-previews/Original.png</file>
         <file>function-previews/p4g.png</file>
         <file>function-previews/pgg.png</file>
+        <file>Icons/remove.svg</file>
+        <file>Icons/plus.svg</file>
     </qresource>
 </RCC>

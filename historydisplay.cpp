@@ -1,6 +1,6 @@
 //
 //  historydisplay.cpp
-//  
+//
 //
 //  Created by Bridget E. Went on 6/30/16.
 //
@@ -17,27 +17,27 @@ HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
     
     viewHistoryWidget = new QWidget(static_cast<QWidget *>(parent), Qt::Drawer);
     viewHistoryWidget->setWindowTitle(tr("Saved Snapshots"));
-   
+    
     viewHistoryBox = new QGroupBox(viewHistoryWidget);
     viewHistoryBoxOverallLayout = new QVBoxLayout(viewHistoryWidget);
     
     clearHistoryButton = new QPushButton(tr("Remove All"), viewHistoryBox);
     viewHistoryBoxLayout = new QVBoxLayout(viewHistoryBox);
-
+    
     noItemLabel = new QLabel(tr("<i> (no snapshots to show) </i>"), viewHistoryWidget);
     noItemLabel->setFixedWidth(200);
     noItemLabel->setAlignment(Qt::AlignCenter);
-        
-    //initial layout 
+    
+    //initial layout
     viewHistoryBoxOverallLayout->addWidget(clearHistoryButton);
     viewHistoryBoxOverallLayout->addWidget(noItemLabel);
     viewHistoryBoxOverallLayout->addWidget(viewHistoryBox);
     viewHistoryBoxOverallLayout->addStretch();
-
+    
     //initial set up
     clearHistoryButton->setEnabled(false);
     viewHistoryBox->hide();
-   
+    
     // connect signals
     viewMapper = new QSignalMapper(this);
     removeMapper = new QSignalMapper(this);
@@ -51,7 +51,7 @@ HistoryDisplay::HistoryDisplay(QObject *parent) : QObject(parent)
 // add an instance of the function to the running history
 void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings)
 {
-
+    
     if (viewHistoryWidget->isHidden()) viewHistoryWidget->show();
     
     HistoryItem *item = new HistoryItem();
@@ -74,7 +74,7 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     historyItemsLayout->addLayout(historyItemsButtonsLayout);
     historyItemsWithLabelLayout->addLayout(historyItemsLayout);
     historyItemsWithLabelLayout->addWidget(timeStampLabel);
-
+    
     viewHistoryBoxLayout->insertLayout(0, historyItemsWithLabelLayout);
     
     // saving all values to history item object
@@ -105,8 +105,8 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     // map the timestamp to the history item and port
     historyItemsMap.insert(savedTime, item);
     historyPortsMap.insert(savedTime, historyDisplayPort);
-
-
+    
+    
 }
 
 // remove all elements of the history item and its UI
@@ -136,14 +136,14 @@ void HistoryDisplay::removePreview(QObject *item)
     delete historyItemToRemove->layoutWithLabelItem;
     
     (*(historyPortsMap.find(historyItemToRemove->savedTime)))->deleteMembers();
-
+    
     delete *(historyPortsMap.find(historyItemToRemove->savedTime));
     historyPortsMap.erase(historyPortsMap.find(historyItemToRemove->savedTime));
     
     historyItemsMap.erase(historyItemsMap.find(historyItemToRemove->savedTime));
     
-    QFile::remove(historyItemToRemove->filePathName); 
-
+    QFile::remove(historyItemToRemove->filePathName);
+    
     //delete historyItemToRemove;
     
     if (historyItemsMap.empty()) {
@@ -169,22 +169,20 @@ void HistoryDisplay::clearAllHistory()
 // called from Interface to add to history if we haven't reached the maximum number of history items
 void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QString &filePathName, AbstractFunction *function, ColorWheel *colorwheel, Settings *settings)
 {
-
+    
     if (noItemLabel->isVisible()) {
         clearHistoryButton->setEnabled(true);
         viewHistoryBox->show();
         noItemLabel->hide();
     }
-
+    
     if (historyItemsMap.size() < MAX_HISTORY_ITEMS) {
-        //addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
         addToHistory(savedTime, filePathName, function, colorwheel, settings);
     } else {
         removePreview(*(historyItemsMap.begin()));
-       // addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
         addToHistory(savedTime, filePathName, function, colorwheel, settings);
-    }    
-
+    }
+    
 }
 
 void HistoryDisplay::show()
@@ -196,7 +194,7 @@ void HistoryDisplay::show()
 
 void HistoryDisplay::hide()
 {
-   
+    
     viewHistoryWidget->hide();
     viewHistoryBox->hide();
     

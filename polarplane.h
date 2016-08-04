@@ -38,9 +38,9 @@ class PolarPlaneView : public QChartView {
 public:
     
     PolarPlaneView(QChart *chart, QScatterSeries *coordinateSeries) : QChartView(chart) { this->chart = chart; this->coordinateSeries = coordinateSeries; setMouseTracking(false);}
-
+    
 signals:
-	void newCoordinate();
+    void newCoordinate();
     
 protected:
     // MOUSE EVENTS
@@ -67,7 +67,6 @@ protected:
     
     void mouseMoveEvent(QMouseEvent *event)
     {
-        // qDebug() << "in move event " << event->pos();;
         if(mouseMoving)
         {
             // qDebug() << "Clicked on: " << event->pos();
@@ -91,7 +90,7 @@ public:
     PolarPlane(QWidget *parent = 0) : QWidget(parent) { }
     explicit PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, QWidget *parent = 0);
     ~PolarPlane() { }
-
+    
     void changeFunction(AbstractFunction* newFunction) { currFunction = newFunction; }
     
 signals:
@@ -134,15 +133,15 @@ private:
     
     QDoubleValidator *doubleValidate;
     QDoubleValidator *angleValidate;
-
+    
 protected:
-
+    
     AbstractFunction *currFunction;
     unsigned int *termIndex;
-
+    
     void updatePolarCoordinates(QPointF point);
     
-private slots:
+    private slots:
     
     void showPlanePopUp(int flag);
     void updatePolarCoordinatesWithIndex(const int &index);

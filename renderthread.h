@@ -25,17 +25,17 @@ class RenderThread : public QThread
     Q_OBJECT
     
 public:
-    RenderThread(QObject *parent = 0) : QThread(parent) { } 
+    RenderThread(QObject *parent = 0) : QThread(parent) { }
     explicit RenderThread(AbstractFunction *function, ColorWheel *colorwheel, Settings *settings, QSize outputSize, QObject *parent = 0);
     ~RenderThread();
     
     void render(QPoint topLeft, QPoint bottomRight, QWaitCondition *controllerCondition);
-
-    // SETTERS 
+    
+    // SETTERS
     void changeFunction(AbstractFunction *newFunction) { currFunction = newFunction; }
     void changeColorWheel(ColorWheel *newColorWheel) { currColorWheel = newColorWheel; }
-    void changeSettings(Settings *newSettings) { 
-        currSettings = newSettings; 
+    void changeSettings(Settings *newSettings) {
+        currSettings = newSettings;
         worldYStart1 = currSettings->Height + currSettings->YCorner;
         worldYStart2 = currSettings->Height/overallHeight;
         worldXStart = currSettings->Width/overallWidth;
@@ -71,8 +71,7 @@ private:
     AbstractFunction *currFunction;
     ColorWheel *currColorWheel;
     Settings *currSettings;
-    
-    // QImage *output;  
+
 };
 
 

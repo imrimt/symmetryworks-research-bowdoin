@@ -32,9 +32,9 @@ struct Settings
     double YCorner = DEFAULT_YCORNER;
     int OWidth = DEFAULT_OUTPUT_WIDTH;
     int OHeight = DEFAULT_OUTPUT_HEIGHT;
-
+    
     Settings* clone() {
-      
+        
         Settings* newSettings = new Settings;
         newSettings->Width = this->Width;
         newSettings->Height = this->Height;
@@ -57,7 +57,7 @@ public:
     HistoryItem(QObject *parent = 0) : QObject(parent) { }
     
     QImage *getImage() { return preview->getImage(); }
-    Display *getDisplay() { return preview; }    
+    Display *getDisplay() { return preview; }
     
     QVBoxLayout *layoutWithLabelItem;
     QHBoxLayout *layoutItem;

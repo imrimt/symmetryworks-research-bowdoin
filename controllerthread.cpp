@@ -5,24 +5,24 @@ ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *color
     QMutexLocker locker(&mutex);
     
     numThreadsActive = 0;
-
+    
     NUM_THREADS = idealThreadCount() != -1 ? idealThreadCount() : 8;
-
+    
     //NUM_THREADS = 1;         //for testing
-
+    
     restart = false;
     abort = false;
-
+    
     currFunction = function;
     currColorWheel = colorwheel;
     currSettings = settings;
-
+    
     this->controllerObject = controllerObject;
     this->controllerObject->setNumThreadsActive(NUM_THREADS);
-
+    
     qRegisterMetaType<Q2DArray>("Q2DArray");
     qRegisterMetaType<ComplexValue>("ComplexValue");
-
+    
     for (int i = 0; i < NUM_THREADS; i++) {
         RenderThread *nextThread = new RenderThread(currFunction, currColorWheel, currSettings, outputSize);
         threads.push_back(nextThread);
@@ -30,7 +30,7 @@ ControllerThread::ControllerThread(AbstractFunction *function, ColorWheel *color
         connect(nextThread, SIGNAL(newProgress(double)), controllerObject, SLOT(handleNewProgress(double)));
         connect(nextThread, SIGNAL(newImageDataPoint(ComplexValue)), controllerObject, SLOT(addNewImageDataPoint(ComplexValue)));
     }
-
+    
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
@@ -39,7 +39,7 @@ ControllerThread::~ControllerThread()
     mutex.lock();
     restart = false;
     abort = true;
-
+    
     restartCondition.wakeOne();
     mutex.unlock();
     
@@ -48,8 +48,8 @@ ControllerThread::~ControllerThread()
 
 void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
 {
-
-	QMutexLocker locker(&mutex);
+    
+    QMutexLocker locker(&mutex);
     
     AbstractFunction *imageFunction = currFunction->clone();
     ColorWheel *imageColorWheel = currColorWheel->clone();
@@ -61,18 +61,18 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
         threads[i]->changeColorWheel(imageColorWheel);
         threads[i]->changeSettings(imageSettings);
     }
-
+    
     this->output = output;
     overallWidth = output->width();
     overallHeight = output->height();
     this->actionFlag = actionFlag;
     controllerObject->setActionFlag(this->actionFlag);
     controllerObject->setOutput(this->output);
-
-	numThreadsActive = threads.size();
-
-	controllerObject->setNumThreadsRunning(numThreadsActive);
-
+    
+    numThreadsActive = threads.size();
+    
+    controllerObject->setNumThreadsRunning(numThreadsActive);
+    
     if (!isRunning()) {
         start(InheritPriority);
     }
@@ -83,16 +83,11 @@ void ControllerThread::prepareToRun(QImage *output, const int &actionFlag)
         restartCondition.wakeOne();
     }
     
-//    delete imageFunction;
-//    delete imageColorWheel;
-//    delete imageSettings;
-    
-    
 }
 
 void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
 {
-
+    
     QMutexLocker locker(&mutex);
     
     
@@ -102,11 +97,11 @@ void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
     this->actionFlag = actionFlag;
     controllerObject->setActionFlag(this->actionFlag);
     controllerObject->setDisplay(this->display);
-
+    
     numThreadsActive = threads.size();
-
+    
     controllerObject->setNumThreadsRunning(numThreadsActive);
-
+    
     if (!isRunning()) {
         start(InheritPriority);
     }
@@ -118,23 +113,19 @@ void ControllerThread::prepareToRun(Display *display, const int &actionFlag)
     }
 }
 
-void ControllerThread::run() 
+void ControllerThread::run()
 {
     forever {
         if (abort) return;
         
-    	mutex.lock();
+        mutex.lock();
         
-        // qDebug() << currentThread() << "starts running";
-
         int width = overallWidth;
         int height = overallHeight;
-        //qDebug() << "width" << width << "height" << height;
-    
         int counter = overallWidth/numThreadsActive;
-
-    	for (int i = 0; i < numThreadsActive; i++)
-    	{
+        
+        for (int i = 0; i < numThreadsActive; i++)
+        {
             if (restart) break;
             if (abort) return;
             if (i == numThreadsActive - 1) {
@@ -143,30 +134,24 @@ void ControllerThread::run()
             else {
                 threads[i]->render(QPoint(i * counter, 0), QPoint((i + 1) * counter, height), &allWorkersFinishedCondition);
             }
-    	}
-
+        }
+        
         mutex.unlock();
-
+        
         // std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-
-        // qDebug() << "start event loop";
-
+        
         if (!restart) {
             QEventLoop q;
             connect(this, SIGNAL(newWork()), &q, SLOT(quit()));
             connect(controllerObject, SIGNAL(allThreadsFinished()), &q, SLOT(quit()));
-            // qDebug() << "before execting";
             q.exec();
         }
-
-        // qDebug() << "end event loop";
-
+        
         // std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         // qDebug() << "TIME TO RENDER ALL PIXELS:" << (std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()) / pow(10, 6) << "seconds";
-
+        
         mutex.lock();
         if (!restart) {
-            //qDebug() << "controller goes to wait for restart";
             restartCondition.wait(&mutex);
         }
         

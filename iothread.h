@@ -20,7 +20,7 @@ public:
     
 signals:
     void finishedExport(const QString &result);
-
+    
 protected:
     void run() Q_DECL_OVERRIDE;
     
@@ -29,7 +29,7 @@ private:
     
     QImage *output;
     QString filePathToExport;
-    QString result;    
+    QString result;
 };
 
 #endif // IOTHREAD_H

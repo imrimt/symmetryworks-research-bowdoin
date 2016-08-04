@@ -7,7 +7,7 @@ IOThread::IOThread(QObject *parent) : QThread(parent)
 
 IOThread::~IOThread()
 {
-     wait();
+    wait();
 }
 
 
@@ -32,6 +32,6 @@ void IOThread::run()
     result = stickypath.path();
     
     emit finishedExport(result);
- 
+    
 }
 

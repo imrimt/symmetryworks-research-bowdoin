@@ -11,11 +11,11 @@ class Controller : public QObject
 public:
     Controller(QObject *parent = 0) : QObject(parent) { }
     ~Controller() { }
-    explicit Controller(Display *display, QImage *output, QObject *parent = 0) : QObject(parent) { 
+    explicit Controller(Display *display, QImage *output, QObject *parent = 0) : QObject(parent) {
         this->display = display;
         this->output = output;
         restart = false;
-    } 
+    }
     int getNumThreadsRunning() { return numThreadsRunning; }
     int getNumThreadsActive() { return numThreadsActive; }
     void setNumThreadsRunning(int value) { numThreadsRunning = value; }
@@ -23,7 +23,7 @@ public:
     void setActionFlag(int flag) { actionFlag = flag; }
     void setDisplay(Display *display) { this->display = display; }
     void setOutput(QImage *output) { this->output = output; }
-    void setRestart(bool status) { restart = status; }    
+    void setRestart(bool status) { restart = status; }
     
 signals:
     void workFinished(const int &actionFlag);
@@ -31,7 +31,7 @@ signals:
     void progressChanged(const int &progress);
     void partialProgressChanged(const double &progress);
     void newImageDataPoint(const ComplexValue &data);
-
+    
 private:
     int numThreadsRunning;
     int numThreadsActive;
@@ -65,89 +65,81 @@ private:
             }
         }
     }
-
-private slots: 
+    
+    private slots:
     void handleRenderedImageParts(const QPoint &startPoint, const Q2DArray &result) {
         if (restart) {
             return;
         }
-
-        // qDebug() << "start combining";
         
         switch (actionFlag) {
-        case DISPLAY_REPAINT_FLAG: 
-        case HISTORY_ICON_REPAINT_FLAG:
-            repaintWork(display, startPoint, result);
-            break;
-        case IMAGE_EXPORT_FLAG:
-            repaintWork(output, startPoint, result);
-            break;
-        } 
-
+            case DISPLAY_REPAINT_FLAG:
+            case HISTORY_ICON_REPAINT_FLAG:
+                repaintWork(display, startPoint, result);
+                break;
+            case IMAGE_EXPORT_FLAG:
+                repaintWork(output, startPoint, result);
+                break;
+        }
+        
         --numThreadsRunning;
-        // qDebug() << "numThreadsRunning = " << numThreadsRunning;
-
-        //emit progressChanged(numThreadsActive - numThreadsRunning);
-
+        
         if (numThreadsRunning == 0) {
-            // qDebug() << "emit workFinished signal";
             restart = false;
-
+            
             //quit the event loop
             emit allThreadsFinished();
-
+            
             //signal to the port object
             emit workFinished(actionFlag);
-
+            
             //signal to update progress bar
             emit partialProgressChanged(100);
         }
     }
-
+    
     void handleNewProgress(const double &progress) {
         if (restart) {
             return;
         }
-
-        //qDebug() << "new progress" << progress;
-
+        
         emit partialProgressChanged(progress * numThreadsRunning / numThreadsActive);
     }
-
+    
     void addNewImageDataPoint(const ComplexValue &data) {
         emit newImageDataPoint(data);
     }
 };
 
-class ControllerThread : public QThread 
+class ControllerThread : public QThread
 {
     Q_OBJECT
-
+    
 public:
-    ControllerThread(QObject *parent = 0) : QThread(parent) { } 
+    ControllerThread(QObject *parent = 0) : QThread(parent) { }
     explicit ControllerThread(AbstractFunction *function, ColorWheel *colorwheel, Settings *settings, Controller *controllerObject, const QSize &outputSize, QObject *parent = 0);
     ~ControllerThread();
     void prepareToRun(QImage *output, const int &actionFlag);
     void prepareToRun(Display *display, const int &actionFlag);
-
+    
     // GETTERS
     Controller* getControllerObject() {return controllerObject;}
-
+    
     // SETTERS
-    void changeFunction(AbstractFunction *newFunction) { 
+    void changeFunction(AbstractFunction *newFunction) {
         currFunction = newFunction;
         for (int i = 0; i < NUM_THREADS; i++) {
             threads[i]->changeFunction(newFunction);
-        } 
+        }
     }
-    void changeColorWheel(ColorWheel *newColorWheel) { 
+    void changeColorWheel(ColorWheel *newColorWheel) {
         currColorWheel = newColorWheel;
         for (int i = 0; i < NUM_THREADS; i++) {
             threads[i]->changeColorWheel(newColorWheel);
-        } 
+        }
     }
-    void changeSettings(Settings *newSettings) { 
-        currSettings = newSettings; 
+    void changeSettings(Settings *newSettings) {
+        currSettings = newSettings;
         for (int i = 0; i < NUM_THREADS; i++) {
             threads[i]->changeSettings(newSettings);
         }
@@ -161,42 +153,36 @@ public:
         }
     }
     
-
-    // CONSTANTS (SET VALUE ONCE)
+    
+    // CONSTANTS
     int NUM_THREADS;
-
+    
 protected:
     void run() Q_DECL_OVERRIDE;
-
+    
 signals:
     void resultReady(const int &actionFlag);
     void newWork();
-
-// private slots:
-//     void combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result);
-
-private:
-	QMutex mutex;
-	QWaitCondition allWorkersFinishedCondition;
+    
+   private:
+    QMutex mutex;
+    QWaitCondition allWorkersFinishedCondition;
     QWaitCondition restartCondition;
-
-	bool restart, abort;
-
-	int numThreadsActive;
-	int overallWidth, overallHeight;
+    
+    bool restart, abort;
+    
+    int numThreadsActive;
+    int overallWidth, overallHeight;
     int actionFlag;
-
-    // QPoint topLeft;
-    // QPoint bottomRight;
-
+    
     AbstractFunction *currFunction;
     ColorWheel *currColorWheel;
     Settings *currSettings;
     Controller *controllerObject;
     Display *display;
     QImage *output;
-	QVector<RenderThread *> threads;
-
+    QVector<RenderThread *> threads;
+    
 };
 
 #endif // CONTROLLERTHREAD_H

@@ -19,8 +19,8 @@
 
 class coeffpair
 {
-  public:
-
+public:
+    
     // CONSTRUCTORS
     coeffpair()
     {
@@ -32,7 +32,7 @@ class coeffpair
         r = rval;
         a = aval;
     }
-
+    
     // CONST-MEMBER FUNCTIONS
     double R() const {return r;}
     double A() const {return a;}
@@ -41,14 +41,14 @@ class coeffpair
         std::complex<double> ans = ei(a);
         return ans * r;
     }
-
+    
     // MUTATORS
     void setR(double val) {r = val;}
     void setA(double val) {a = val;}
-
-
-  private:
-
+    
+    
+private:
+    
     // DATA
     double r;
     double a;
@@ -59,8 +59,8 @@ class coeffpair
 
 class freqpair
 {
-  public:
-
+public:
+    
     // CONSTRUCTORS
     freqpair()
     {
@@ -72,18 +72,18 @@ class freqpair
         n = nval;
         m = mval;
     }
-
+    
     // CONST-MEMBER FUNCTIONS
     int N() const {return n;}
     int M() const {return m;}
-
+    
     // MUTATORS
     void setN(int val) {n = val;}
     void setM(int val) {m = val;}
-
-
-  private:
-
+    
+    
+private:
+    
     // DATA
     int n;
     int m;

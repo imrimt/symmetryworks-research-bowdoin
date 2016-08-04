@@ -2,22 +2,22 @@
 
 Port::Port(AbstractFunction *currFunction, ColorWheel *currColorWheel, int width, int height, Settings *currSettings)
 {
-
+    
     overallWidth = width;
-    overallHeight = height;    
+    overallHeight = height;
     this->currFunction = currFunction;
     this->currColorWheel = currColorWheel;
     this->currSettings = currSettings;
     
     output = new QImage();
     display = new Display();
-
-    controllerObject = new Controller(display, output);    
+    
+    controllerObject = new Controller(display, output);
     controller = new ControllerThread(this->currFunction, this->currColorWheel, this->currSettings, controllerObject, QSize(overallWidth, overallHeight), this);
     
     controllerObject->moveToThread(controller);
     connect(controllerObject, SIGNAL(workFinished(int)), this, SLOT(handleRenderedImage(int)));
-
+    
 }
 
 
@@ -45,24 +45,22 @@ void Port::paintHistoryIcon(HistoryItem *item)
 void Port::handleRenderedImage(const int &actionFlag)
 {
     QString result = "";
-    // qDebug() << "print out result";
     switch (actionFlag) {
-    case DISPLAY_REPAINT_FLAG:
-        //qDebug() << "hi";
-        display->repaint();
-        break;
-    case HISTORY_ICON_REPAINT_FLAG:
-        display->repaint();
-        break;
-    case IMAGE_EXPORT_FLAG:
-        IOThread *ioThread = new IOThread();
-        connect(ioThread, SIGNAL(finishedExport(QString)), this, SLOT(handleFinishedExport(QString)));
-        ioThread->prepareToWrite(output, filePathToExport);
-        break;
+        case DISPLAY_REPAINT_FLAG:
+            display->repaint();
+            break;
+        case HISTORY_ICON_REPAINT_FLAG:
+            display->repaint();
+            break;
+        case IMAGE_EXPORT_FLAG:
+            IOThread *ioThread = new IOThread();
+            connect(ioThread, SIGNAL(finishedExport(QString)), this, SLOT(handleFinishedExport(QString)));
+            ioThread->prepareToWrite(output, filePathToExport);
+            break;
     }
-
+    
     emit paintingFinished(true);
-
+    
 }
 
 void Port::render(QImage *output, const int &actionFlag)
@@ -72,7 +70,6 @@ void Port::render(QImage *output, const int &actionFlag)
 
 void Port::render(Display *display, const int &actionFlag)
 {
-    // qDebug() << "in port, currFunction is" << &(*currFunction);    
     controller->prepareToRun(display, actionFlag);
 }
 

@@ -22,10 +22,10 @@ class Display : public QWidget
 public:
     explicit Display(double imageWidth = 200, double imageHeight = 200, QWidget *parent = 0);
     void setPixel(int i, int j, QRgb color);
-    QSize sizeHint() const;
+    QSize sizeHint() const { return disp.size(); }
     QImage *getImage() { return &disp; }
-    void shrink();
-    void enlarge();
+//    void shrink();
+//    void enlarge();
     int getWidth() { return width;}
     int getHeight() { return height;}
     void resetSize() {resize(width, height); update();}
@@ -38,7 +38,6 @@ signals:
 
 protected:
     void paintEvent(QPaintEvent *event);
-    // void resizeEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
