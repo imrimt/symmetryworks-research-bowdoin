@@ -67,7 +67,6 @@ protected:
     
     void mouseMoveEvent(QMouseEvent *event)
     {
-        // qDebug() << "in move event " << event->pos();;
         if(mouseMoving)
         {
             // qDebug() << "Clicked on: " << event->pos();

@@ -21,7 +21,6 @@ public:
     
     // LAYOUT ELEMENTS
     QWidget *viewHistoryWidget;
-    //QDockWidget *dock;
     QGroupBox *viewHistoryBox;
     QVBoxLayout *viewHistoryBoxLayout;
     QVBoxLayout *viewHistoryBoxOverallLayout;

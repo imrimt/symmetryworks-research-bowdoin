@@ -144,7 +144,6 @@ void ControllerThread::run()
             QEventLoop q;
             connect(this, SIGNAL(newWork()), &q, SLOT(quit()));
             connect(controllerObject, SIGNAL(allThreadsFinished()), &q, SLOT(quit()));
-            // qDebug() << "before execting";
             q.exec();
         }
         

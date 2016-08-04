@@ -72,8 +72,6 @@ private:
             return;
         }
         
-        // qDebug() << "start combining";
-        
         switch (actionFlag) {
             case DISPLAY_REPAINT_FLAG:
             case HISTORY_ICON_REPAINT_FLAG:
@@ -85,12 +83,8 @@ private:
         }
         
         --numThreadsRunning;
-        // qDebug() << "numThreadsRunning = " << numThreadsRunning;
-        
-        //emit progressChanged(numThreadsActive - numThreadsRunning);
         
         if (numThreadsRunning == 0) {
-            // qDebug() << "emit workFinished signal";
             restart = false;
             
             //quit the event loop
@@ -160,7 +154,7 @@ public:
     }
     
     
-    // CONSTANTS (SET VALUE ONCE)
+    // CONSTANTS
     int NUM_THREADS;
     
 protected:
@@ -170,10 +164,7 @@ signals:
     void resultReady(const int &actionFlag);
     void newWork();
     
-    // private slots:
-    //     void combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result);
-    
-private:
+   private:
     QMutex mutex;
     QWaitCondition allWorkersFinishedCondition;
     QWaitCondition restartCondition;
@@ -183,9 +174,6 @@ private:
     int numThreadsActive;
     int overallWidth, overallHeight;
     int actionFlag;
-    
-    // QPoint topLeft;
-    // QPoint bottomRight;
     
     AbstractFunction *currFunction;
     ColorWheel *currColorWheel;

@@ -61,13 +61,10 @@ protected:
     ColorWheel *currColorWheel;
     Settings *currSettings;
     int overallWidth, overallHeight;
-    //double XCorner, YCorner, setWidth, setHeight;
     
 private:
     void render(QImage *output, const int &actionFlag);
     void render(Display *display, const int &actionFlag);
-    
-    // void render(QImage *output, Display *display, const int &actionFlag);
     
     Display *display;
     QImage *output;
@@ -83,9 +80,7 @@ signals:
     private slots:
     void handleRenderedImage(const int &actionFlag);
     void handleFinishedExport(const QString &filePath) { emit finishedExport(filePath); }
-    
-    // void combineRenderedImageParts(QPoint startPoint, QVector<QVector<QRgb>> result);
-    // void combineRenderedImageParts(const QPoint &startPoint, const Q2DArray &result);
+
 };
 
 

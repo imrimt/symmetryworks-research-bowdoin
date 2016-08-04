@@ -177,11 +177,9 @@ void HistoryDisplay::triggerAddToHistory(const QDateTime &savedTime, const QStri
     }
     
     if (historyItemsMap.size() < MAX_HISTORY_ITEMS) {
-        //addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
         addToHistory(savedTime, filePathName, function, colorwheel, settings);
     } else {
         removePreview(*(historyItemsMap.begin()));
-        // addToHistory(savedTime, filePathName, function->clone(), colorwheel->clone(), settings->clone());
         addToHistory(savedTime, filePathName, function, colorwheel, settings);
     }
     

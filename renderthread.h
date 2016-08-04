@@ -71,8 +71,7 @@ private:
     AbstractFunction *currFunction;
     ColorWheel *currColorWheel;
     Settings *currSettings;
-    
-    // QImage *output;
+
 };
 
 

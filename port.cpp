@@ -45,10 +45,8 @@ void Port::paintHistoryIcon(HistoryItem *item)
 void Port::handleRenderedImage(const int &actionFlag)
 {
     QString result = "";
-    // qDebug() << "print out result";
     switch (actionFlag) {
         case DISPLAY_REPAINT_FLAG:
-            //qDebug() << "hi";
             display->repaint();
             break;
         case HISTORY_ICON_REPAINT_FLAG:
@@ -72,7 +70,6 @@ void Port::render(QImage *output, const int &actionFlag)
 
 void Port::render(Display *display, const int &actionFlag)
 {
-    // qDebug() << "in port, currFunction is" << &(*currFunction);
     controller->prepareToRun(display, actionFlag);
 }
 

@@ -299,7 +299,7 @@ void Interface::initFunctionConstants()
     termViewTable->verticalHeader()->hide();
     
     addTermButton = new QPushButton(tr("Add term..."));
-    addTermButton->setIcon(*(new QIcon(":/Images/Icons/add.png")));
+    addTermButton->setIcon(*(new QIcon(":/Images/Icons/plus.svg")));
     
     // resize all columns to maximum stretch
     for (int c = 0; c < termViewTable->horizontalHeader()->count(); ++c)
@@ -1082,7 +1082,7 @@ void Interface::addTerm()
     termViewTable->setCellWidget(highestIndex, 4, rEditTable);
     
     QTableWidgetItem *removeTermItem = new QTableWidgetItem();
-    removeTermItem->setIcon(QIcon(":/Images/Icons/remove.png"));
+    removeTermItem->setIcon(QIcon(":/Images/Icons/remove.svg"));
     removeTermItem->setFlags(removeTermItem->flags() ^ Qt::ItemIsEditable);
     
     termViewTable->setItem(highestIndex, 5, removeTermItem);
@@ -1740,15 +1740,11 @@ void Interface::changeAspectRatio()
 {
     double temp = aspectRatioEdit->text().toDouble();
     double width, height, val;
-    //qDebug() << "change aspect ratio";
-    
-    
+   
     if (temp < MIN_ASPECT_RATIO) {
         errorHandler(INVALID_ASPECT_RATIO);
-        //width = height * aspectRatio;
     } else if (temp > MAX_ASPECT_RATIO) {
         errorHandler(INVALID_ASPECT_RATIO);
-        //height = width / aspectRatio;
     } else {
         aspectRatio = temp;
     }
@@ -1799,15 +1795,6 @@ void Interface::changeWorldHeight()
 {
     double val = worldHeightEdit->text().toDouble();
     settings->Height = val;
-    
-    // if (newAction) {
-    //     ChangeCommand *command = new ChangeCommand(worldHeightEdit, worldHeightEditSlider->value() / 100.0, val);
-    //     undoStack->push(command);
-    //     qDebug() << "pushing command" << command->id();
-    // }
-    // else {
-    //     newAction = true;
-    // }
     
     createUndoAction(worldHeightEdit, worldHeightEditSlider->value() / 100.0, val);
     
@@ -2279,7 +2266,7 @@ void Interface::handleUndo()
 void Interface::handleRedo()
 {
     //if(!undoStack->canRedo()) { return; }
-    qDebug() << "setting newAction to false due to redo";
+   // qDebug() << "setting newAction to false due to redo";
     newAction = false;
     undoStack->redo();
     newAction = true;
@@ -2289,15 +2276,15 @@ void Interface::handleRedo()
 void Interface::createUndoAction(QObject *item, double oldVal, double newVal)
 {
     
-    if (newAction && undoStack->isClean()) {
+    if (newAction) {
         ChangeCommand *command = new ChangeCommand(item, oldVal, newVal);
-        qDebug() << "pushing command: " << "old val:" << oldVal << "newVal:" << newVal;
+      //  qDebug() << "pushing command: " << "old val:" << oldVal << "newVal:" << newVal;
         undoStack->push(command);
-       
+       // newAction = false;
     }
-    else {
-        newAction = true;
-    }
+//    else {
+//        newAction = true;
+//    }
 }
 
 

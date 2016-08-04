@@ -1,3 +1,14 @@
+/*
+ *
+ *  Interface class manages the UI elements for wallgen.
+ *
+ *
+ *  Last Modified: 08/03/2016 by Bridget E. Went and Son D. Ngo
+ *
+ *
+ *
+ */
+
 #ifndef Interface_H
 #define Interface_H
 
@@ -269,12 +280,15 @@ public:
     // ChangeCommand(QSpinBox *item, double oldVal, double newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
     ChangeCommand(QObject *item, double oldVal, double newVal, QUndoCommand *parent = 0) : QUndoCommand(parent)
     {
-        
+        if(oldVal == newVal) return;
         this->item = item;
+        
         this->oldVal = oldVal;
         //qDebug() << "old value" << oldVal;
         this->newVal = newVal;
         //qDebug() << "new value" << newVal;
+        
+        
         canUndo = true;
         canRedo = false;
     }
@@ -283,7 +297,7 @@ public:
     
     void undo() Q_DECL_OVERRIDE {
         // qDebug() << "size of undo stack" << undoStack->count();
-        if(!canUndo) return;
+        if(!canUndo){ qDebug() << "can't undo"; return; }
         qDebug() << "UNDO to" << oldVal;
         
         if (QSpinBox *boxItem = dynamic_cast<QSpinBox*>(item) ) {

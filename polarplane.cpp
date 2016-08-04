@@ -7,8 +7,6 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     this->currFunction = currFunction;
     this->termIndex = termIndex;
     
-    // qDebug() << "currFunction address in polarplane constructor" << &(*currFunction);
-    
     // INPUT VALIDATORS (NUMERICAL)
     doubleValidate = new QDoubleValidator(-9999999.0, 9999999.0, 5, this);
     angleValidate = new QDoubleValidator(-pi, pi, 5, this);
@@ -22,8 +20,6 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     polarCoordinatesLayout = new QVBoxLayout(polarCoordinatesBox);
     actionButtonLayout = new QHBoxLayout();
     zoomButtonLayout = new QHBoxLayout();
-    
-    // polarPlanePopUp->setWindowModality(Qt::WindowModal);
     
     // GRAPH ELEMENTS
     graph = new QChart();
@@ -247,25 +243,11 @@ void PolarPlane::updatePolarCoordinates(QPointF point)
 void PolarPlane::setPolarCoordinates()
 {
     emit setPolarCoordinates(coeffFlag, radiusEdit->text(), angleEdit->text());
-    
-    //hidePolarPlane();
+
 }
 
 void PolarPlane::resetPolarCoordinates()
 {
-    // QPointF point(1, 0);
-    // coordinateSeries->replace(0, point);
-    
-    // QVector<QPointF> list1;
-    // list1 << QPointF(0,0) << point;
-    // QVector<QPointF> list2;
-    // list2 << QPointF(point.x(), 0) << point;
-    
-    // xSeries->replace(list1);
-    // ySeries->replace(list2);
-    
-    // radiusEdit->setText("1.00");
-    // angleEdit->setText("0.00");
     
     coordinateSeries->replace(0, QPointF(startingRadius * cos(startingAngle), startingRadius * sin(startingAngle)));
 }

@@ -98,7 +98,7 @@ void RenderThread::run()
                     emit newImageDataPoint(fout);
                 }
                 
-                               //finally push the determined color to the corresponding point on the display
+                // now, push the determined color to the corresponding point on the display
                 colorMap[x][y] = color;
             }
             
@@ -109,12 +109,9 @@ void RenderThread::run()
         
         mutex.lock();
         
-        // qDebug() << "thread" << QThread::currentThread() << "finishes rendering";
         if (!restart) {
-            // qDebug() << "thread" << QThread::currentThread() << "goes to wait before restarting";
-            
             emit renderingFinished(topLeft, colorMap);
-            //controllerCondition->wakeOne();
+
             condition.wait(&mutex);
         }
         // qDebug() << "thread" << QThread::currentThread() << "wakes up from restarting";

@@ -60,7 +60,6 @@ private:
     
     Interface *currInterface;
     HistoryDisplay *snapShotWindow;
-    // QWidget *functionIconsWindow;
     
     private slots:
     void updateImageActionStatus(bool status) {
