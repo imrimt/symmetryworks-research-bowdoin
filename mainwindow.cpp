@@ -47,12 +47,12 @@ MainWindow::MainWindow()
     
     //resize(QDesktopWidget().availableGeometry(this).size() * 0.5);
     
-    if (qFabs(screenGeometry.height() - this->height()) < SCREEN_INTERFACE_MARGIN){
-        QFont font;
-        font.setFamily(font.defaultFamily());
-        font.setPointSize(font.pointSize() - 2.0);
-        currInterface->setFont(font);
-    }
+//    if (qFabs(screenGeometry.height() - this->height()) < SCREEN_INTERFACE_MARGIN){
+//        QFont font;
+//        font.setFamily(font.defaultFamily());
+//        font.setPointSize(font.pointSize() - 2.0);
+//        currInterface->setFont(font);
+//    }
     
     setWindowTitle(tr("Wallpaper Generation"));
     
