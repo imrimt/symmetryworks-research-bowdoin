@@ -92,6 +92,7 @@ public:
     ~PolarPlane() { }
     
     void changeFunction(AbstractFunction* newFunction) { currFunction = newFunction; }
+    void hidePolarPlane() { qDebug() << "hello"; polarPlanePopUp->close(); }
     
 signals:
     void setPolarCoordinates(int coeffFlag, const QString &radius, const QString &angle);
@@ -141,14 +142,13 @@ protected:
     
     void updatePolarCoordinates(QPointF point);
     
-    private slots:
+private slots:
     
     void showPlanePopUp(int flag);
     void updatePolarCoordinatesWithIndex(const int &index);
     void updatePolarCoordinates();
     void polarPlaneZoomIn();
     void polarPlaneZoomOut();
-    void hidePolarPlane() { polarPlanePopUp->hide(); }
     
     void setPolarCoordinates();
     void resetPolarCoordinates();

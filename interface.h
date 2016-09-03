@@ -328,6 +328,7 @@ public:
     void redo() Q_DECL_OVERRIDE {
         if(!canRedo) return;
         qDebug() << "REDO to" << newVal;
+        qDebug() << "is Item null?" << item;
         
         if (QSpinBox *boxItem = dynamic_cast<QSpinBox*>(item) ) {
             boxItem->setValue(newVal);

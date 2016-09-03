@@ -47,12 +47,12 @@ MainWindow::MainWindow()
     
     //resize(QDesktopWidget().availableGeometry(this).size() * 0.5);
     
-//    if (qFabs(screenGeometry.height() - this->height()) < SCREEN_INTERFACE_MARGIN){
-//        QFont font;
-//        font.setFamily(font.defaultFamily());
-//        font.setPointSize(font.pointSize() - 2.0);
-//        currInterface->setFont(font);
-//    }
+    if (qFabs(screenGeometry.height() - this->height()) < SCREEN_INTERFACE_MARGIN){
+        QFont font;
+        font.setFamily(font.defaultFamily());
+        font.setPointSize(font.pointSize() - 2.0);
+        currInterface->setFont(font);
+    }
     
     setWindowTitle(tr("Wallpaper Generation"));
     
@@ -84,13 +84,15 @@ void MainWindow::createActions()
     saveAsAct->setShortcuts(QKeySequence::SaveAs);
     connect(saveAsAct, SIGNAL(triggered()), currInterface, SLOT(saveCurrWorkspaceAs()));
     
-    undoAct = currInterface->undoStack->createUndoAction(this, tr("&Undo"));
+    undoAct = new QAction(tr("&Undo"), this);
     undoAct->setStatusTip(tr("Undo the most current action"));
     undoAct->setShortcut(QKeySequence::Undo);
+    connect(undoAct, SIGNAL(triggered()), currInterface, SLOT(handleUndo()));
     
-    redoAct = currInterface->undoStack->createRedoAction(this, tr("&Redo"));
+    redoAct = new QAction(tr("&Redo"), this);
     redoAct->setStatusTip(tr("Redo the most current action"));
     redoAct->setShortcut(QKeySequence::Redo);
+    connect(redoAct, SIGNAL(triggered()), currInterface, SLOT(handleRedo()));
     
     // printAct = new QAction(tr("&Print..."), this);
     // printAct->setShortcuts(QKeySequence::Print);

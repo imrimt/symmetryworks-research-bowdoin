@@ -670,9 +670,9 @@ void Interface::initImageProps()
     
     worldWidthEditSlider->setFixedWidth(100);
     worldHeightEditSlider->setFixedWidth(100);
-    worldWidthEditSlider->setRange(0, 1000);
+    worldWidthEditSlider->setRange(10, 1000);
     worldWidthEditSlider->setSingleStep(1);
-    worldHeightEditSlider->setRange(0, 1000);
+    worldHeightEditSlider->setRange(10, 1000);
     worldHeightEditSlider->setSingleStep(1);
     worldWidthEditSlider->setOrientation(Qt::Horizontal);
     worldHeightEditSlider->setOrientation(Qt::Horizontal);
@@ -774,17 +774,6 @@ void Interface::initToolTips()
     scaleRLabel->setToolTip("Changes which points on the color wheel\n will be called up by the wallpaper function.");
     scaleALabel->setToolTip("Changes which points on the color wheel\n will be called up by the wallpaper function.");
     
-    //scaling factors & image
-    //    scaleALabel->setToolTip("Scaling Angle\n" + lineEditText);
-    //    scaleRLabel->setToolTip("Scaling Radius\n" + lineEditText);
-    //    XShiftLabel->setToolTip("Horizontal shifting factor\n" + lineEditText);
-    //    YShiftLabelt->setToolTip("vertical shifting factor. " + lineEditText);
-    //    worldWidthLabel->setToolTip(editingBoxText + "horizontal stretching factor. " + lineEditText);
-    //    worldHeightLabel->setToolTip(editingBoxText + "vertical stretching factor. " + lineEditText);
-    
-    //function parameters
-    //    numTermsLabel->setToolTip(editingBoxText + "total number of terms.");
-    //    currTermLabel->setToolTip(editingBoxText + "currently editing term.");
     QString freqToolTip = "Larger values of <b>n</b> and <b>m</b> will make your wallpaper pattern more 'wiggly.' \nThese represent directional frequencies of waves.";
     freqpairLabel->setToolTip(freqToolTip);
     mLabel->setToolTip(freqToolTip);
@@ -1166,22 +1155,10 @@ void Interface::updateCurrTerm(int i)
     int oldTermIndex = termIndex;
     if (i > 0) termIndex = i - 1;
     
-    
-    //    if (newAction) {
-    //        ChangeCommand *command = new ChangeCommand(currTermEdit, oldTermIndex + 1, termIndex + 1);
-    //        undoStack->push(command);
-    //        qDebug() << "pushing command" << command->id();
-    //    }
-    //    else {
-    //        newAction = true;
-    //    }
     createUndoAction(currTermEdit, oldTermIndex + 1, termIndex + 1);
     
     refreshTableTerms();
-    refreshMainWindowTerms();
-    
-    
-    
+    refreshMainWindowTerms();    
 }
 
 // updates the number of terms of the current function
@@ -1210,16 +1187,6 @@ void Interface::changeNumTerms(int i)
     }
     
     createUndoAction(numTermsEdit, oldNumTerms, numTerms);
-    
-    //if (newAction) {
-    //        ChangeCommand *command = new ChangeCommand(numTermsEdit, oldNumTerms, numTerms);
-    //        undoStack->push(command);
-    //  qDebug() << "pushing command" << command->id();
-    //}
-    //    else {
-    //        newAction = true;
-    //    }
-    
     
     //updateCurrTerm(i);
     
@@ -1592,20 +1559,12 @@ QString Interface::loadSettings(const QString &fileName) {
     XShiftEditSlider->setValue(settings->XCorner * 100.0);
     YShiftEditSlider->setValue(settings->YCorner * 100.0);
     
-    // numTermsEdit->blockSignals(true);
-    // numTermsEdit->setValue(currFunction->getNumTerms());
-    // numTermsEdit->blockSignals(false);
-    
     if (functionSel->currentIndex() == newFunctionIndex) {
         changeFunction(newFunctionIndex);
     }
     else {
         functionSel->setCurrentIndex(newFunctionIndex);
     }
-    
-    // functionSel->blockSignals(true);
-    // functionSel->setCurrentIndex(newFunctionIndex);
-    // functionSel->blockSignals(false);
     
     refreshMainWindowTerms();
     refreshTableTerms();
@@ -1830,6 +1789,7 @@ void Interface::changeWorldWidth()
     updatePreviewDisplay();
 }
 
+//changing edit box values
 void Interface::changeXCorner(double val)
 {
     
@@ -1839,6 +1799,8 @@ void Interface::changeXCorner(double val)
     updatePreviewDisplay();
 }
 
+
+//changing slider values
 void Interface::changeXCorner()
 {
     
@@ -1855,6 +1817,7 @@ void Interface::changeXCorner()
     updatePreviewDisplay();
 }
 
+//changing edit box values
 void Interface::changeYCorner(double val)
 {
     settings->YCorner = val;
@@ -1863,6 +1826,7 @@ void Interface::changeYCorner(double val)
     updatePreviewDisplay();
 }
 
+//changing sliders value
 void Interface::changeYCorner()
 {
     double val = YShiftEdit->text().toDouble();
@@ -1878,70 +1842,13 @@ void Interface::changeYCorner()
 }
 
 
-// SLOT FUNCTIONS TO CHANGE FREQ AND COEFF PAIRS
-void Interface::changeN(int val)
-{
-    
-    currFunction->setN(termIndex, val);
-    
-    
-    createUndoAction(nEdit, oldN, val);
-    
-    refreshTableTerms();
-    refreshMainWindowTerms();
-    updatePreviewDisplay();
-    
-    oldN = val;
-    //qDebug() << "old N" << oldN;
-}
-
-void Interface::changeM(int val)
-{
-    
-    currFunction->setM(termIndex, val);
-    
-    createUndoAction(mEdit, oldM, val);
-    
-    refreshTableTerms();
-    refreshMainWindowTerms();
-    updatePreviewDisplay();
-    
-    oldM = val;
-    //qDebug() << "old M" << oldM;
-}
-
-
-void Interface::changeR(double val)
-{
-    currFunction->setR(termIndex, val);
-    createUndoAction(rEdit, rValueLabel->text().toDouble(), val);
-    rValueLabel->setText(QString::number(val));
-    
-    refreshTableTerms();
-    refreshMainWindowTerms();
-    updatePreviewDisplay();
-}
-
-void Interface::changeA(double val)
-{
-    
-    currFunction->setA(termIndex, val);
-    createUndoAction(aEdit, aValueLabel->text().toDouble(), val);
-    aValueLabel->setText(QString::number(val));
-    
-    refreshTableTerms();
-    refreshMainWindowTerms();
-    updatePreviewDisplay();
-}
-
 //changing slider values
 void Interface::changeScaleA(double val)
 {
-    
     currFunction->setScaleA(val);
     scaleAEdit->setText(QString::number(val));
-    createUndoAction(scaleAEditSlider, scaleAEditSlider->value() / 100.0, val);
-    //qDebug() << "old" << scaleAEditSlider->value() / 100.0;
+    scaleAEdit->setModified(false);
+    // createUndoAction(scaleAEditSlider, scaleAEditSlider->value() / 100.0, val);
     updatePreviewDisplay();
 }
 
@@ -1952,24 +1859,23 @@ void Interface::changeScaleA()
     double val = scaleAEdit->text().toDouble();
     currFunction->setScaleA(val);
     
-    createUndoAction(scaleAEdit, scaleAEdit->text().toDouble(), val);
+    createUndoAction(scaleAEdit, scaleAEditSlider->value(), val);
     
     scaleAEditSlider->blockSignals(true);
     scaleAEditSlider->setValue(val * 100.0);
     scaleAEditSlider->blockSignals(false);
     scaleAEdit->setModified(false);
     updatePreviewDisplay();
-    //qDebug() << (bool)scaleAEdit->isUndoAvailable();
 }
 
 
 //changing slider values
 void Interface::changeScaleR(double val)
 {
-    
     currFunction->setScaleR(val);
     scaleREdit->setText(QString::number(val));
-    createUndoAction(scaleREditSlider, scaleREditSlider->value() / 100.0, val);
+    scaleREdit->setModified(false);
+    // createUndoAction(scaleREditSlider, scaleREditSlider->value() / 100.0, val);
     updatePreviewDisplay();
 }
 
@@ -1980,7 +1886,7 @@ void Interface::changeScaleR()
     double val = scaleREdit->text().toDouble();
     currFunction->setScaleR(val);
     
-    createUndoAction(scaleREdit, scaleREdit->text().toDouble(), val);
+    createUndoAction(scaleREdit, scaleREditSlider->value(), val);
     
     scaleREditSlider->blockSignals(true);
     scaleREditSlider->setValue(val * 100.0);
@@ -1990,6 +1896,57 @@ void Interface::changeScaleR()
 }
 
 
+// SLOT FUNCTIONS TO CHANGE FREQ AND COEFF PAIRS
+void Interface::changeN(int val)
+{
+    
+    currFunction->setN(termIndex, val);
+    
+    createUndoAction(nEdit, oldN, val);
+    
+    refreshTableTerms();
+    // refreshMainWindowTerms();
+    updatePreviewDisplay();
+    
+    oldN = val;
+}
+
+void Interface::changeM(int val)
+{
+    
+    currFunction->setM(termIndex, val);
+    
+    createUndoAction(mEdit, oldM, val);
+
+    refreshTableTerms();
+    // refreshMainWindowTerms();
+    updatePreviewDisplay();
+    
+    oldM = val;
+}
+
+
+void Interface::changeR(double val)
+{
+    currFunction->setR(termIndex, val);
+    createUndoAction(rEdit, rValueLabel->text().toDouble(), val);
+    rValueLabel->setText(QString::number(val));
+    
+    refreshTableTerms();
+    // refreshMainWindowTerms();
+    updatePreviewDisplay();
+}
+
+void Interface::changeA(double val)
+{
+    currFunction->setA(termIndex, val);
+    createUndoAction(aEdit, aValueLabel->text().toDouble(), val);
+    aValueLabel->setText(QString::number(val));
+    
+    refreshTableTerms();
+    // refreshMainWindowTerms();
+    updatePreviewDisplay();
+}
 
 void Interface::startImageExport()
 {
@@ -2052,17 +2009,17 @@ void Interface::setPolarCoordinates(int coeffFlag, const QString &radius, const 
     {
         rEdit->setValue(radius.toDouble() * 100);
         aEdit->setValue(angle.toDouble() * 100);
-        rValueLabel->setText(radius);
-        aValueLabel->setText(angle);
+//        rValueLabel->setText(radius);
+//        aValueLabel->setText(angle);
     }
     else if (coeffFlag == GLOBAL_FLAG)
     {
-        scaleREdit->setText(radius);
+//        scaleREdit->setText(radius);
         scaleREditSlider->setValue(radius.toDouble() * 100.0);
-        emit scaleREdit->returnPressed();
-        scaleAEdit->setText(angle);
+//        emit scaleREdit->returnPressed();
+//        scaleAEdit->setText(angle);
         scaleAEditSlider->setValue(angle.toDouble() * 100.0);
-        emit scaleAEdit->returnPressed();
+//        emit scaleAEdit->returnPressed();
     }
     
 }
@@ -2223,10 +2180,8 @@ void Interface::finishShifting()
 void Interface::updateShifting(const QPoint &point)
 {
     if (mouseMoving) {
-        // qDebug() << "pointx:" << point.x() << "prevmousepos.x:" << prevMousePos.x();
         double xTranslation = (double)(point.x() - prevMousePos.x()) / 100;
         double yTranslation = (double)(point.y() - prevMousePos.y()) / 100;
-        // qDebug() << "xTranslation:" << xTranslation << "and yTranslation:" << yTranslation;
         newUpdate = false;
         XShiftEdit->setText(QString::number(XShiftEdit->text().toDouble() - xTranslation));
         YShiftEdit->setText(QString::number(YShiftEdit->text().toDouble() + yTranslation));
@@ -2253,7 +2208,10 @@ void Interface::handleUndo()
     
    // if(!undoStack->canUndo()) { return; }
     
+    qDebug() << "in Undo";
+
     newAction = false;
+    polarPlane->hidePolarPlane();
     undoStack->undo();
     newAction = true;
     //emit redoEnabled();
@@ -2266,8 +2224,9 @@ void Interface::handleUndo()
 void Interface::handleRedo()
 {
     //if(!undoStack->canRedo()) { return; }
-   // qDebug() << "setting newAction to false due to redo";
     newAction = false;
+    qDebug() << "starting redo";
+    polarPlane->hidePolarPlane();
     undoStack->redo();
     newAction = true;
     // item->setValue(redoVal);
@@ -2275,32 +2234,31 @@ void Interface::handleRedo()
 
 void Interface::createUndoAction(QObject *item, double oldVal, double newVal)
 {
-    
     if (newAction) {
         ChangeCommand *command = new ChangeCommand(item, oldVal, newVal);
-      //  qDebug() << "pushing command: " << "old val:" << oldVal << "newVal:" << newVal;
+        qDebug() << "pushing command: " << "old val:" << oldVal << "newVal:" << newVal;
         undoStack->push(command);
-       // newAction = false;
     }
-//    else {
-//        newAction = true;
-//    }
 }
 
 
-bool Interface::eventFilter(QObject* object,QEvent* event)
+bool Interface::eventFilter(QObject* object, QEvent* event)
 {
-    //qDebug() << "FILTER" << object->metaObject()->className();
+    // qDebug() << "FILTER" << object->metaObject()->className();
     
     if(event->type() == QEvent::KeyPress)
     {
+       // qDebug() << event->type();
+        
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         QKeySequence keySequence(keyEvent->key() | keyEvent->modifiers());
         
         if(keySequence.matches(QKeySequence::Undo)) {
+            // qDebug() << "here2";
             handleUndo();
             return true;
         } else if (keySequence.matches(QKeySequence::Redo)) {
+            // qDebug() << "here";
             handleRedo();
             return true;
         }

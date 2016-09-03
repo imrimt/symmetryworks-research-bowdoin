@@ -146,8 +146,8 @@ PolarPlane::PolarPlane(AbstractFunction *currFunction, unsigned int *termIndex, 
     polarPlanePopUp->setFixedSize(720, 400);
     
     // CONNECT ALL SIGNALS
-    connect(radiusEdit, SIGNAL(editingFinished()), this, SLOT(updatePolarCoordinates()));
-    connect(angleEdit, SIGNAL(editingFinished()), this, SLOT(updatePolarCoordinates()));
+    connect(radiusEdit, SIGNAL(returnPressed()), this, SLOT(updatePolarCoordinates()));
+    connect(angleEdit, SIGNAL(returnPressed()), this, SLOT(updatePolarCoordinates()));
     connect(coordinateSeries, SIGNAL(pointReplaced(int)), this, SLOT(updatePolarCoordinatesWithIndex(int)));
     //connect(confirmButton, SIGNAL(clicked()), this, SLOT(hidePolarPlane()));
     // connect(cancelButton, SIGNAL(clicked()), this, SLOT(hidePolarPlane()));
@@ -194,7 +194,7 @@ void PolarPlane::showPlanePopUp(int flag)
     QPointF point(tempR * cos(tempA), tempR * sin(tempA));
     
     coordinateSeries->replace(0, point);
-    updatePolarCoordinates(QPointF(tempR * cos(tempA), tempR * sin(tempA)));
+//    updatePolarCoordinates(QPointF(tempR * cos(tempA), tempR * sin(tempA)));
     polarPlanePopUp->show();
     
     showActionFlag = false;
@@ -242,6 +242,7 @@ void PolarPlane::updatePolarCoordinates(QPointF point)
 
 void PolarPlane::setPolarCoordinates()
 {
+    qDebug() << "emit new signal";
     emit setPolarCoordinates(coeffFlag, radiusEdit->text(), angleEdit->text());
 
 }
