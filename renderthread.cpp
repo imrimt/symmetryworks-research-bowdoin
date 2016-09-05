@@ -106,6 +106,8 @@ void RenderThread::run()
                 emit newProgress((x/outputWidth) * 100);
             }
         }
+
+        // qDebug() << currentThreadId() << "FINISHES RENDERING";
         
         mutex.lock();
         

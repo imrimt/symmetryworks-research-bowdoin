@@ -60,9 +60,10 @@ protected:
         if(event->button() == Qt::LeftButton)
         {
             // qDebug() << "Clicked on: " << event->pos();
-            coordinateSeries->replace(0, chart->mapToValue(event->pos(), coordinateSeries));
+            // coordinateSeries->replace(0, chart->mapToValue(event->pos(), coordinateSeries));
             mouseMoving = true;
         }
+        QChartView::mousePressEvent(event);
     }
     
     void mouseMoveEvent(QMouseEvent *event)

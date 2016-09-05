@@ -1597,6 +1597,8 @@ void Interface::updatePreviewDisplay()
     if (!newUpdate) {
         return;
     }
+
+    qDebug() << "updates";
     
     imageDataSeries->clear();
     
@@ -2014,12 +2016,14 @@ void Interface::setPolarCoordinates(int coeffFlag, const QString &radius, const 
     }
     else if (coeffFlag == GLOBAL_FLAG)
     {
-//        scaleREdit->setText(radius);
-        scaleREditSlider->setValue(radius.toDouble() * 100.0);
-//        emit scaleREdit->returnPressed();
-//        scaleAEdit->setText(angle);
-        scaleAEditSlider->setValue(angle.toDouble() * 100.0);
-//        emit scaleAEdit->returnPressed();
+        newUpdate = false;
+        scaleREdit->setText(radius);
+        emit scaleREdit->returnPressed();
+        // scaleREditSlider->setValue(radius.toDouble() * 100.0);
+        newUpdate = true;
+        scaleAEdit->setText(angle);
+        emit scaleAEdit->returnPressed();
+        // scaleAEditSlider->setValue(angle.toDouble() * 100.0);
     }
     
 }
@@ -2093,7 +2097,6 @@ void Interface::updateTermTable(QObject *cell)
             oldRTable.insert(index, freq);
             break;
     }
-    
     
     
     refreshTableTerms();
@@ -2208,7 +2211,7 @@ void Interface::handleUndo()
     
    // if(!undoStack->canUndo()) { return; }
     
-    qDebug() << "in Undo";
+    // qDebug() << "in Undo";
 
     newAction = false;
     polarPlane->hidePolarPlane();
