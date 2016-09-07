@@ -31,7 +31,7 @@ void Port::exportImage(QImage *output, const QString &fileName)
 
 void Port::paintToDisplay(Display *display)
 {
-    qDebug() << "in paint to display";
+    //qDebug() << "in paint to display";
     this->display = display;
     render(display, DISPLAY_REPAINT_FLAG);
 }
@@ -60,7 +60,7 @@ void Port::handleRenderedImage(const int &actionFlag)
             break;
     }
     
-    qDebug() << "painting finished";
+   // qDebug() << "painting finished";
     emit paintingFinished(true);
     
 }

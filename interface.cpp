@@ -1319,15 +1319,15 @@ void Interface::changeFunction(int index)
 void Interface::saveCurrWorkspace()
 {
     
-    if (currFileName.isEmpty()) {
-        currFileName = QFileDialog::getSaveFileName(this, tr("Open File"),
+    
+    QString currFileName = QFileDialog::getSaveFileName(this, tr("Open File"),
                                                     saveloadPath,
                                                     tr("Wallpapers (*.wpr)"));
-    }
+    
     if (currFileName.isEmpty()) {
         return;
     }
-    
+    //qDebug() << "saving";
     saveloadPath = saveSettings(currFileName);
     
     QMessageBox msgBox;
@@ -1361,7 +1361,8 @@ QString Interface::saveSettings(const QString &fileName) {
     
     QFile outFile(fileName);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        return nullptr;
+        qDebug() << "not write only";
+        return "";
     }
     
     
@@ -1377,7 +1378,7 @@ QString Interface::saveSettings(const QString &fileName) {
     
    	if (fromColorWheelButton->isChecked()) {
         out << "Color Type: Colorwheel" << endl;
-        out << "Colorwheel: " << colorwheelSel->currentText();
+        out << "Colorwheel: " << colorwheelSel->currentText() << endl;
     }
     else {
         out << "Color Type: Image" << endl;
@@ -1429,12 +1430,17 @@ void Interface::loadFromSettings()
 // internal function that handles loading settings from a specified file
 QString Interface::loadSettings(const QString &fileName) {
     
-    //qDebug() << "load" << fileName;
+    qDebug() << "load" << fileName;
     
     QFile inFile(fileName);
-    if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
-        return nullptr;
     
+    if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+         qDebug() << "ERROR LAODING FILE";
+         return "";
+    } else {
+        qDebug() << "SUCCEEDED LOADING FILE";
+    }
+
     // QDataStream in(&inFile);
     
     QTextStream in(&inFile);
@@ -1452,7 +1458,7 @@ QString Interface::loadSettings(const QString &fileName) {
     double tempdouble;
     QColor overflowColor;
     
-    newColorIndex = -1;
+   // newColorIndex = 0;
     
     in.readLineInto(&line);
     settings->XCorner = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
@@ -1469,7 +1475,6 @@ QString Interface::loadSettings(const QString &fileName) {
     in.readLineInto(&line);
     functionType = (line.right(line.length() - line.lastIndexOf(" ") - 1));
     
-    
     // if (functionType == "Wallpapers") {
     // in >> skipString >> functionName;
     in.readLineInto(&line);
@@ -1485,6 +1490,7 @@ QString Interface::loadSettings(const QString &fileName) {
     
     // in >> skipString >> colorType;
     if (colorType == "Image") {
+        newColorIndex = -1;
         in.readLineInto(&line);
         imageLoadPath = (line.right(line.length() - line.lastIndexOf(" ") - 1));
         in.readLineInto(&line);
@@ -1502,8 +1508,9 @@ QString Interface::loadSettings(const QString &fileName) {
     
     in.readLineInto(&line);
     tempdouble = (line.right(line.length() - line.lastIndexOf(" ") - 1)).toDouble();
-    currFunction->setScaleR(tempdouble);
+   // qDebug() << "scale R: " << tempdouble;
     scaleREdit->blockSignals(true);
+    currFunction->setScaleR(tempdouble);
     scaleREdit->setText(QString::number(tempdouble));
     scaleREdit->blockSignals(false);
     
@@ -1519,11 +1526,12 @@ QString Interface::loadSettings(const QString &fileName) {
     
     currFunction->setNumTerms(count);
     unsigned int unsignedCount = count;
-    // currFunction->refresh();
+    //currFunction->refresh();
     
     QString separator(PARAMETER_SEPARATOR_LENGTH, ' ');
     QStringList resultList;
     QString resultString;
+    
     
     for(unsigned int i = 0; i < unsignedCount; i++)
     {
@@ -1532,7 +1540,7 @@ QString Interface::loadSettings(const QString &fileName) {
         for (int j = 1; j < resultList.size(); j++) {
             
             resultString = resultList.at(j);
-            // qDebug() << "resultString:" << resultString;
+            
             if (j == 1) {
                 tempint = resultString.right(resultString.length() - resultString.lastIndexOf(" ") - 1).toInt();
                 currFunction->setN(i, tempint);
@@ -1551,8 +1559,9 @@ QString Interface::loadSettings(const QString &fileName) {
             }
         }
     }
-    
+ 
     inFile.close();
+    //qDebug() << scaleREdit->text();
     
     worldWidthEditSlider->setValue(settings->Width * 100.0);
     worldHeightEditSlider->setValue(settings->Height * 100.0);
@@ -1560,35 +1569,46 @@ QString Interface::loadSettings(const QString &fileName) {
     YShiftEditSlider->setValue(settings->YCorner * 100.0);
     
     if (functionSel->currentIndex() == newFunctionIndex) {
-        changeFunction(newFunctionIndex);
+        //qDebug() << scaleREdit->text();
+       // changeFunction(newFunctionIndex);
+        
     }
     else {
         functionSel->setCurrentIndex(newFunctionIndex);
+         //qDebug() << scaleREdit->text();
     }
-    
+//
+   // qDebug() << currFunction->getScaleR();
     refreshMainWindowTerms();
     refreshTableTerms();
     
     if (newColorIndex == -1) {
+        //qDebug() << "no color wheel: image";
         imageSetPath = imageLoadPath;
         openImageName = loadImageName;
         currColorWheel->changeOverflowColor(overflowColor);
         fromImageButton->setChecked(true);
         fromImageButton->clicked();
+        
     }
     else {
+       // qDebug() << "color wheel, not image";
+       
         fromColorWheelButton->setChecked(true);
         colorwheelSel->setCurrentIndex(newColorIndex);
         fromColorWheelButton->clicked();
     }
     
+   
     updatePreviewDisplay();
     
+//    return "";
     QDir stickypath(fileName);
     stickypath.cdUp();
     saveloadPath = stickypath.path();
     currFileName = saveloadPath + "/" + openImageName;
     return saveloadPath;
+    
 }
 
 // updates the preview to reflect changes to the settings, function, and color wheel
@@ -1598,7 +1618,7 @@ void Interface::updatePreviewDisplay()
         return;
     }
 
-    qDebug() << "updates";
+   // qDebug() << "updates";
     
     imageDataSeries->clear();
     
@@ -1619,7 +1639,7 @@ void Interface::snapshotFunction()
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
     QString filePath = saveSettings(newFile).append("/" + newFile);
     
-    //qDebug() << "save" << filePath;
+    qDebug() << "save" << filePath;
     
     historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
     
