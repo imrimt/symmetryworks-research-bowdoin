@@ -45,28 +45,28 @@ void Display::setPixel(int i, int j, QRgb color)
 //    update();
 //}
 
-void Display::mousePressEvent(QMouseEvent *event) 
-{
-    if (event->button() == Qt::LeftButton) {
-        mouseMoving = true;
-        emit displayPressed(event->pos());
-    }
-}
-
-void Display::mouseReleaseEvent(QMouseEvent *event) 
-{
-    if (event->button() == Qt::LeftButton) {
-        mouseMoving = false;
-        emit displayReleased();
-    }
-}
-
-void Display::mouseMoveEvent(QMouseEvent *event) 
-{
-    if (mouseMoving) {
-        emit displayMoved(event->pos());
-    }   
-}
+//void Display::mousePressEvent(QMouseEvent *event) 
+//{
+//    if (event->button() == Qt::LeftButton) {
+//        mouseMoving = true;
+//        emit displayPressed(event->pos());
+//    }
+//}
+//
+//void Display::mouseReleaseEvent(QMouseEvent *event) 
+//{
+//    if (event->button() == Qt::LeftButton) {
+//        mouseMoving = false;
+//        emit displayReleased();
+//    }
+//}
+//
+//void Display::mouseMoveEvent(QMouseEvent *event) 
+//{
+//    if (mouseMoving) {
+//        emit displayMoved(event->pos());
+//    }   
+//}
 
 QSize Display::changeDisplayDimensions(double width, double height) {
     

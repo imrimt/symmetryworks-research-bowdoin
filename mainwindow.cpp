@@ -172,4 +172,8 @@ void MainWindow::createDockWindows()
 
 }
 
+void MainWindow::closeEvent(QCloseEvent *event) {
+    currInterface->closing();
+    
+}
 

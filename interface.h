@@ -18,6 +18,7 @@
 #include <QSpinBox>
 #include <QSlider>
 #include <QKeyEvent>
+#include <QCloseEvent>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QSpacerItem>
@@ -45,6 +46,7 @@
 #include <QTableWidget>
 #include <QHeaderView>
 #include <QToolTip>
+#include <QStandardPaths>
 
 #include "historydisplay.h"
 #include "polarplane.h"
@@ -619,9 +621,9 @@ signals:
     void showImageDataGraph() { updateImageDataGraph(); imageDataWindow->hide(); imageDataWindow->show(); }
     void updateImageDataGraph();
     
-    void startShifting(const QPoint &point);
-    void updateShifting(const QPoint &point);
-    void finishShifting();
+//    void startShifting(const QPoint &point);
+//    void updateShifting(const QPoint &point);
+//    void finishShifting();
     
     void changeAspectRatio();
     
@@ -636,6 +638,7 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     //void keyPressEvent(QKeyEvent *event);
     // void mouseMoveEvent(QMouseEvent *event);
+    void closeEvent(QCloseEvent *event);
     
 private:
     QString genLabel(const char * in);
@@ -695,8 +698,8 @@ private:
     QString openImageName;
     
     //mouse-related variables
-    bool mouseMoving;
-    QPoint prevMousePos;    
+    //bool mouseMoving;
+    //QPoint prevMousePos;
 };
 
 #endif // Interface_H

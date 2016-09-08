@@ -163,6 +163,7 @@ void HistoryDisplay::clearAllHistory()
         removePreview(historyItemsMap.begin().value());
     }
     
+    
 }
 
 

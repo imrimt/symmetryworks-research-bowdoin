@@ -32,15 +32,15 @@ public:
     QSize changeDisplayDimensions(double width, double height);
     
 signals:
-    void displayPressed(const QPoint &point);
-    void displayReleased();
-    void displayMoved(const QPoint &point);
+//    void displayPressed(const QPoint &point);
+//    void displayReleased();
+//    void displayMoved(const QPoint &point);
 
 protected:
     void paintEvent(QPaintEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+//    void mouseMoveEvent(QMouseEvent *event);
+//    void mousePressEvent(QMouseEvent *event);
+//    void mouseReleaseEvent(QMouseEvent *event);
 
 
 private:
@@ -52,8 +52,8 @@ private:
     QPoint topLeft;
     QPoint bottomRight;
 
-    bool mouseMoving;
-    QPoint prevMousePos;
+    //bool mouseMoving;
+    //QPoint prevMousePos;
 };
 
 

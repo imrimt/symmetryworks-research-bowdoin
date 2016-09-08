@@ -66,6 +66,7 @@ private:
         setOverflowColorAct->setEnabled(status);
         showImageDataGraphAct->setEnabled(status);
     }
+    void closeEvent(QCloseEvent *event);
     
 };
 

@@ -795,9 +795,9 @@ void Interface::initToolTips()
 void Interface::connectAllSignals()
 {
     
-    connect(disp, SIGNAL(displayPressed(QPoint)), this, SLOT(startShifting(QPoint)));
-    connect(disp, SIGNAL(displayReleased()), this, SLOT(finishShifting()));
-    connect(disp, SIGNAL(displayMoved(QPoint)), this, SLOT(updateShifting(QPoint)));
+//    connect(disp, SIGNAL(displayPressed(QPoint)), this, SLOT(startShifting(QPoint)));
+//    connect(disp, SIGNAL(displayReleased()), this, SLOT(finishShifting()));
+//    connect(disp, SIGNAL(displayMoved(QPoint)), this, SLOT(updateShifting(QPoint)));
     connect(snapshotButton, SIGNAL(clicked()), this, SLOT(snapshotFunction()));
     
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
@@ -1360,9 +1360,12 @@ void Interface::saveCurrWorkspaceAs()
 QString Interface::saveSettings(const QString &fileName) {
     
     QFile outFile(fileName);
-    //QDir::setCurrent("/home");
+    //QDir::setCurrent("~/Desktop");
     
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox msgBox;
+        msgBox.setText("Your settings could not be saved.");
+        msgBox.exec();
         return "";
     }
     
@@ -1415,7 +1418,6 @@ QString Interface::saveSettings(const QString &fileName) {
     stickypath.cdUp();
     
     // FOR DEBUGGING: TEMPORARY
-    // WHY DOESN'T THIS EXECUTE
     QMessageBox msgBox;
     msgBox.setText(tr("The file has been successfully saved to: ").append(stickypath.absolutePath()));
     msgBox.exec();
@@ -2203,31 +2205,31 @@ void Interface::mousePressEvent(QMouseEvent* event)
     }
 }
 
-void Interface::startShifting(const QPoint &point)
-{
-    prevMousePos = point;
-    mouseMoving = true;
-}
-
-void Interface::finishShifting()
-{
-    mouseMoving = false;
-}
-
-void Interface::updateShifting(const QPoint &point)
-{
-    if (mouseMoving) {
-        double xTranslation = (double)(point.x() - prevMousePos.x()) / 100;
-        double yTranslation = (double)(point.y() - prevMousePos.y()) / 100;
-        newUpdate = false;
-        XShiftEdit->setText(QString::number(XShiftEdit->text().toDouble() - xTranslation));
-        YShiftEdit->setText(QString::number(YShiftEdit->text().toDouble() + yTranslation));
-        emit XShiftEdit->returnPressed();
-        newUpdate = true;
-        emit YShiftEdit->returnPressed();
-        prevMousePos = point;
-    }
-}
+//void Interface::startShifting(const QPoint &point)
+//{
+//    prevMousePos = point;
+//    mouseMoving = true;
+//}
+//
+//void Interface::finishShifting()
+//{
+//    mouseMoving = false;
+//}
+//
+//void Interface::updateShifting(const QPoint &point)
+//{
+//    if (mouseMoving) {
+//        double xTranslation = (double)(point.x() - prevMousePos.x()) / 100;
+//        double yTranslation = (double)(point.y() - prevMousePos.y()) / 100;
+//        newUpdate = false;
+//        XShiftEdit->setText(QString::number(XShiftEdit->text().toDouble() - xTranslation));
+//        YShiftEdit->setText(QString::number(YShiftEdit->text().toDouble() + yTranslation));
+//        emit XShiftEdit->returnPressed();
+//        newUpdate = true;
+//        emit YShiftEdit->returnPressed();
+//        prevMousePos = point;
+//    }
+//}
 
 
 void Interface::updateImageDataGraph()
@@ -2307,6 +2309,9 @@ bool Interface::eventFilter(QObject* object, QEvent* event)
         
         return QObject::eventFilter(object,event);
     }
-};
+}
+
+
+
 
 
