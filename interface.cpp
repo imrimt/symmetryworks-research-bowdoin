@@ -1583,7 +1583,7 @@ QString Interface::loadSettings(const QString &fileName) {
     refreshTableTerms();
     
     if (newColorIndex == -1) {
-        //qDebug() << "no color wheel: image";
+     //   qDebug() << "no color wheel: image";
         imageSetPath = imageLoadPath;
         openImageName = loadImageName;
         currColorWheel->changeOverflowColor(overflowColor);
@@ -1592,17 +1592,16 @@ QString Interface::loadSettings(const QString &fileName) {
         
     }
     else {
-       // qDebug() << "color wheel, not image";
-       
+        
         fromColorWheelButton->setChecked(true);
         colorwheelSel->setCurrentIndex(newColorIndex);
         fromColorWheelButton->clicked();
     }
     
-   
+    newUpdate = true;
     updatePreviewDisplay();
     
-//    return "";
+    
     QDir stickypath(fileName);
     stickypath.cdUp();
     saveloadPath = stickypath.path();
