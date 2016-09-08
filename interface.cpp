@@ -1360,8 +1360,9 @@ void Interface::saveCurrWorkspaceAs()
 QString Interface::saveSettings(const QString &fileName) {
     
     QFile outFile(fileName);
+    //QDir::setCurrent("/home");
+    
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "not write only";
         return "";
     }
     
@@ -1414,10 +1415,10 @@ QString Interface::saveSettings(const QString &fileName) {
     stickypath.cdUp();
     
     // FOR DEBUGGING: TEMPORARY
+    // WHY DOESN'T THIS EXECUTE
     QMessageBox msgBox;
     msgBox.setText(tr("The file has been successfully saved to: ").append(stickypath.absolutePath()));
     msgBox.exec();
-    
     
     return stickypath.absolutePath();
     
@@ -1438,12 +1439,11 @@ void Interface::loadFromSettings()
 QString Interface::loadSettings(const QString &fileName) {
     
     //qDebug() << "load" << fileName;
-    QMessageBox msgBox;
-    msgBox.setText(tr("Loading from: ").append(fileName));
-    msgBox.exec();
+//    QMessageBox msgBox;
+//    msgBox.setText(tr("Loading from: ").append(fileName));
+//    msgBox.exec();
     
     QFile inFile(fileName);
-    
     
     if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox msgBox;
@@ -1651,9 +1651,9 @@ void Interface::snapshotFunction()
     QString filePath = saveSettings(newFile).append("/" + newFile);
     
     qDebug() << "save" << filePath;
-    QMessageBox msgBox;
-    msgBox.setText(tr("Saving from: ").append(filePath));
-    msgBox.exec();
+//    QMessageBox msgBox;
+//    msgBox.setText(tr("Saving from: ").append(filePath));
+//    msgBox.exec();
     
     historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
     
