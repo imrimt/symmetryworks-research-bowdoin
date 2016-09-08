@@ -53,7 +53,7 @@ private:
     QPoint bottomRight;
 
     bool mouseMoving;
-    QPoint prevMousePos;
+    // QPoint prevMousePos;
 };
 
 

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDockWidget>
 #include <QtWidgets>
+#include <QCloseEvent>
 #include "Interface.h"
 
 class QAction;
@@ -22,6 +23,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
     ~MainWindow();
+
+    void close() {currInterface->closing();}
     
 protected:
     // #ifndef QT_NO_CONTEXTMENU

@@ -802,10 +802,11 @@ void Interface::initToolTips()
 // CONNECT SIGNALS TO SLOTS
 void Interface::connectAllSignals()
 {
-    
+
     connect(disp, SIGNAL(displayPressed(QPoint)), this, SLOT(startShifting(QPoint)));
     connect(disp, SIGNAL(displayReleased(QPoint)), this, SLOT(finishShifting(QPoint)));
     connect(disp, SIGNAL(displayMoved(QPoint)), this, SLOT(updateShifting(QPoint)));
+
     connect(snapshotButton, SIGNAL(clicked()), this, SLOT(snapshotFunction()));
     
     connect(functionSel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeFunction(int)));
@@ -1376,7 +1377,6 @@ QString Interface::saveSettings(const QString &fileName, const int &actionFlag) 
     // qDebug() << QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + fileName;
 
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "what the hell";
         return "";
     }
     
@@ -1427,11 +1427,6 @@ QString Interface::saveSettings(const QString &fileName, const int &actionFlag) 
     
     QDir stickypath(fileName);
     stickypath.cdUp();
-    
-    // FOR DEBUGGING: TEMPORARY
-    // QMessageBox msgBox;
-    // msgBox.setText(tr("The file has been successfully saved to: ").append(stickypath.absolutePath()));
-    // msgBox.exec();
     
     return stickypath.absolutePath();
     
@@ -2225,7 +2220,7 @@ void Interface::startShifting(const QPoint &point)
     oldYShift = YShiftEdit->text().toDouble();
 }
 
-void Interface::finishShifting(const QPoint &point)
+void Interface::finishShifting(const QPoint& /* unused */ )
 {
     newAction = true;
     mouseMoving = false;
@@ -2247,7 +2242,6 @@ void Interface::updateShifting(const QPoint &point)
         prevMousePos = point;
     }
 }
-
 
 void Interface::updateImageDataGraph()
 {

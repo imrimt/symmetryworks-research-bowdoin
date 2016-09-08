@@ -18,6 +18,7 @@
 #include <QSpinBox>
 #include <QSlider>
 #include <QKeyEvent>
+#include <QCloseEvent>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QSpacerItem>
@@ -554,6 +555,7 @@ public:
     
     
     void setSnapShotWindow(HistoryDisplay* window);
+    void closing();
     
 signals:
     void imageActionStatus(bool status);
@@ -621,7 +623,7 @@ signals:
     void addNewImageDataPoint(const ComplexValue &data) { *imageDataSeries << QPointF(data.real(), data.imag()); }
     void showImageDataGraph() { updateImageDataGraph(); imageDataWindow->hide(); imageDataWindow->show(); }
     void updateImageDataGraph();
-    
+
     void startShifting(const QPoint &point);
     void updateShifting(const QPoint &point);
     void finishShifting(const QPoint &point);
@@ -633,7 +635,6 @@ signals:
     void createUndoAction(QObject *item, double oldVal, double newVal);
     
     void showInfo() { infoPopUp->show(); }
-    void closing();
 
     
 protected:
@@ -702,7 +703,7 @@ private:
     
     //mouse-related variables
     bool mouseMoving;
-    QPoint prevMousePos;    
+    QPoint prevMousePos;
 };
 
 #endif // Interface_H

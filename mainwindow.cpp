@@ -172,4 +172,3 @@ void MainWindow::createDockWindows()
 
 }
 
-
