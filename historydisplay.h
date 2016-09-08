@@ -7,6 +7,8 @@
 #include <QSignalMapper>
 #include <QLabel>
 
+#include <QMessageBox>
+
 const int MAX_HISTORY_ITEMS = 8;
 const int HISTORY_ITEM_SIZE = 60;
 

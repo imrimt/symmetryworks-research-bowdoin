@@ -88,6 +88,10 @@ void HistoryDisplay::addToHistory(const QDateTime &savedTime, const QString &fil
     item->labelItem = timeStampLabel;
     item->filePathName = filePathName;
     
+    QMessageBox msgBox;
+    msgBox.setText(tr("Saving item path: ").append(filePathName));
+    msgBox.exec();
+    
     AbstractFunction *currFunction = function;
     ColorWheel *currColorWheel = colorwheel;
     Settings *clonedSettings = settings;

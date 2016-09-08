@@ -729,8 +729,8 @@ void Interface::initImageExportPopUp()
     aspectRatioEdit->setText(QString::number(aspectRatio));
     
     aspectRatioWidget = new QWidget();
-    aspectRatioWidget->setFixedSize(MAX_IMAGE_DIM * ASPECT_RATIO_SCALE, MAX_IMAGE_DIM * ASPECT_RATIO_SCALE);
-    aspectRatioPreview = new Display(MAX_IMAGE_DIM * ASPECT_RATIO_SCALE, MAX_IMAGE_DIM * ASPECT_RATIO_SCALE, aspectRatioWidget);
+    aspectRatioWidget->setFixedSize(MAX_IMAGE_DIM * 0.1 * ASPECT_RATIO_SCALE, MAX_IMAGE_DIM * 0.1* ASPECT_RATIO_SCALE);
+    aspectRatioPreview = new Display(MAX_IMAGE_DIM * 0.1 * ASPECT_RATIO_SCALE, MAX_IMAGE_DIM * 0.1 * ASPECT_RATIO_SCALE, aspectRatioWidget);
     QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
     aspectRatioPreviewLayout->addWidget(aspectRatioWidget);
     aspectRatioPreviewLayout->setAlignment(Qt::AlignCenter);
@@ -1413,7 +1413,14 @@ QString Interface::saveSettings(const QString &fileName) {
     QDir stickypath(fileName);
     stickypath.cdUp();
     
+    // FOR DEBUGGING: TEMPORARY
+    QMessageBox msgBox;
+    msgBox.setText(tr("The file has been successfully saved to: ").append(stickypath.absolutePath()));
+    msgBox.exec();
+    
+    
     return stickypath.absolutePath();
+    
     
 }
 
@@ -1430,13 +1437,19 @@ void Interface::loadFromSettings()
 // internal function that handles loading settings from a specified file
 QString Interface::loadSettings(const QString &fileName) {
     
-    qDebug() << "load" << fileName;
+    //qDebug() << "load" << fileName;
+    QMessageBox msgBox;
+    msgBox.setText(tr("Loading from: ").append(fileName));
+    msgBox.exec();
     
     QFile inFile(fileName);
     
+    
     if (!inFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-         qDebug() << "ERROR LAODING FILE";
-         return "";
+        QMessageBox msgBox;
+        msgBox.setText(tr("ERROR LOADING FILE"));
+        msgBox.exec();
+        // return "";
     } else {
         qDebug() << "SUCCEEDED LOADING FILE";
     }
@@ -1601,7 +1614,6 @@ QString Interface::loadSettings(const QString &fileName) {
     newUpdate = true;
     updatePreviewDisplay();
     
-    
     QDir stickypath(fileName);
     stickypath.cdUp();
     saveloadPath = stickypath.path();
@@ -1639,6 +1651,9 @@ void Interface::snapshotFunction()
     QString filePath = saveSettings(newFile).append("/" + newFile);
     
     qDebug() << "save" << filePath;
+    QMessageBox msgBox;
+    msgBox.setText(tr("Saving from: ").append(filePath));
+    msgBox.exec();
     
     historyDisplay->triggerAddToHistory(savedTime, filePath, currFunction, currColorWheel, settings);
     
