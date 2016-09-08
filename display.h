@@ -33,7 +33,7 @@ public:
     
 signals:
     void displayPressed(const QPoint &point);
-    void displayReleased();
+    void displayReleased(const QPoint &point);
     void displayMoved(const QPoint &point);
 
 protected:

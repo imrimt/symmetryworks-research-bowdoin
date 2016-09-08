@@ -57,7 +57,7 @@ void Display::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         mouseMoving = false;
-        emit displayReleased();
+        emit displayReleased(event->pos());
     }
 }
 

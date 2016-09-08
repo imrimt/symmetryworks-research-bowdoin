@@ -45,6 +45,7 @@
 #include <QTableWidget>
 #include <QHeaderView>
 #include <QToolTip>
+#include <QStandardPaths>
 
 #include "historydisplay.h"
 #include "polarplane.h"
@@ -69,6 +70,8 @@ const double MIN_RADIUS = -10.0;
 const double RADIUS_SPINBOX_STEP = 0.1;
 const double ANGLE_SPINBOX_STEP = 0.25;
 const double DISPLAY_RESIZE_SCALE_STEP = 0.1;
+const int SNAPSHOT_ACTION = 0;
+const int WORKSPACE_ACTION = 1;
 
 // QLineEdit subclass that undo changes (if not entered) when loses focus
 class CustomLineEdit : public QLineEdit
@@ -621,7 +624,7 @@ signals:
     
     void startShifting(const QPoint &point);
     void updateShifting(const QPoint &point);
-    void finishShifting();
+    void finishShifting(const QPoint &point);
     
     void changeAspectRatio();
     
@@ -630,6 +633,7 @@ signals:
     void createUndoAction(QObject *item, double oldVal, double newVal);
     
     void showInfo() { infoPopUp->show(); }
+    void closing();
 
     
 protected:
@@ -640,7 +644,7 @@ protected:
 private:
     QString genLabel(const char * in);
     QString getCurrSettings(const HistoryItem &item);
-    QString saveSettings(const QString &fileName);
+    QString saveSettings(const QString &fileName, const int &actionFlag);
     
     // Interface display and formatting functions
     void initInterfaceLayout();
@@ -677,6 +681,7 @@ private:
     double aspectRatio;
     int numTerms;
     int oldM, oldN;
+    int oldXShift, oldYShift;
     QVector<int> oldMTable;
     QVector<int> oldNTable;
     QVector<double> oldATable;
@@ -693,6 +698,7 @@ private:
     QString currFileName;
     QString imageSetPath;
     QString openImageName;
+    QString snapshotFolderPath;
     
     //mouse-related variables
     bool mouseMoving;

@@ -11,7 +11,7 @@
  */
 Interface::Interface(QWidget *parent) : QWidget(parent)
 {
-    
+
     // FUNCTIONAL VARIABLES
     newUpdate = true;
     newAction = true;
@@ -62,6 +62,12 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     colorwheelSel->setCurrentIndex(0);
     
     functionSel->setFocus();
+
+    //CREATE SNAPSHOT FOLDER
+    QDir dir(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+    dir.mkdir("Wallgen Snapshots");
+
+    snapshotFolderPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/Wallgen Snapshots";
     
     infoPopUp = new QMessageBox(this);
 //    infoPopUp->setIcon(QMessageBox::Information);
@@ -156,6 +162,8 @@ void Interface::initInterfaceLayout()
     initImageProps();
     initImageExportPopUp();
     initToolTips();
+
+    // globalSnapshotFolder = QStandPaths::writableLocation(QStandPaths::DesktopLocation) + "/Wallgen Snapshots";
 }
 
 
@@ -796,7 +804,7 @@ void Interface::connectAllSignals()
 {
     
     connect(disp, SIGNAL(displayPressed(QPoint)), this, SLOT(startShifting(QPoint)));
-    connect(disp, SIGNAL(displayReleased()), this, SLOT(finishShifting()));
+    connect(disp, SIGNAL(displayReleased(QPoint)), this, SLOT(finishShifting(QPoint)));
     connect(disp, SIGNAL(displayMoved(QPoint)), this, SLOT(updateShifting(QPoint)));
     connect(snapshotButton, SIGNAL(clicked()), this, SLOT(snapshotFunction()));
     
@@ -1327,8 +1335,8 @@ void Interface::saveCurrWorkspace()
     if (currFileName.isEmpty()) {
         return;
     }
-    //qDebug() << "saving";
-    saveloadPath = saveSettings(currFileName);
+    // qDebug() << "saving";
+    saveloadPath = saveSettings(currFileName, WORKSPACE_ACTION);
     
     QMessageBox msgBox;
     msgBox.setText(tr("The file has been successfully saved to: ").append(saveloadPath));
@@ -1347,7 +1355,7 @@ void Interface::saveCurrWorkspaceAs()
         return;
     }
     
-    saveloadPath = saveSettings(currFileName);
+    saveloadPath = saveSettings(currFileName, WORKSPACE_ACTION);
     
     QMessageBox msgBox;
     msgBox.setText(tr("The file has been successfully saved to: ").append(saveloadPath));
@@ -1357,12 +1365,18 @@ void Interface::saveCurrWorkspaceAs()
 
 
 // internal function that handles saving settings
-QString Interface::saveSettings(const QString &fileName) {
+QString Interface::saveSettings(const QString &fileName, const int &actionFlag) {
     
-    QFile outFile(fileName);
-    //QDir::setCurrent("/home");
-    
+    // QDir::setCurrent(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+    if (actionFlag == SNAPSHOT_ACTION) {
+        QDir::setCurrent(snapshotFolderPath);
+    }
+    QFile outFile(fileName);    
+
+    // qDebug() << QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + fileName;
+
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qDebug() << "what the hell";
         return "";
     }
     
@@ -1415,10 +1429,9 @@ QString Interface::saveSettings(const QString &fileName) {
     stickypath.cdUp();
     
     // FOR DEBUGGING: TEMPORARY
-    // WHY DOESN'T THIS EXECUTE
-    QMessageBox msgBox;
-    msgBox.setText(tr("The file has been successfully saved to: ").append(stickypath.absolutePath()));
-    msgBox.exec();
+    // QMessageBox msgBox;
+    // msgBox.setText(tr("The file has been successfully saved to: ").append(stickypath.absolutePath()));
+    // msgBox.exec();
     
     return stickypath.absolutePath();
     
@@ -1648,7 +1661,7 @@ void Interface::snapshotFunction()
     
     QDateTime savedTime = QDateTime::currentDateTimeUtc();
     QString newFile = savedTime.toString("MM.dd.yyyy.hh.mm.ss.zzz.t").append(".wpr");
-    QString filePath = saveSettings(newFile).append("/" + newFile);
+    QString filePath = saveSettings(newFile, SNAPSHOT_ACTION).append("/" + newFile);
     
     qDebug() << "save" << filePath;
 //    QMessageBox msgBox;
@@ -2207,11 +2220,17 @@ void Interface::startShifting(const QPoint &point)
 {
     prevMousePos = point;
     mouseMoving = true;
+    newAction = false;
+    oldXShift = XShiftEdit->text().toDouble();
+    oldYShift = YShiftEdit->text().toDouble();
 }
 
-void Interface::finishShifting()
+void Interface::finishShifting(const QPoint &point)
 {
+    newAction = true;
     mouseMoving = false;
+    createUndoAction(XShiftEdit, oldXShift, XShiftEdit->text().toDouble());
+    createUndoAction(YShiftEdit, oldYShift, YShiftEdit->text().toDouble());
 }
 
 void Interface::updateShifting(const QPoint &point)
@@ -2307,6 +2326,12 @@ bool Interface::eventFilter(QObject* object, QEvent* event)
         
         return QObject::eventFilter(object,event);
     }
-};
+}
+
+void Interface::closing()
+{
+    QDir dir(snapshotFolderPath);
+    dir.removeRecursively();
+}
 
 
