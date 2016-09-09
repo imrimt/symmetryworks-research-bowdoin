@@ -693,6 +693,7 @@ private:
     bool newAction;     //new action performed, not because of undo/redo 
     bool heightChanged;
     bool widthChanged;
+    bool errPrint;
     
     //I/O-related variables    
     QString saveloadPath;

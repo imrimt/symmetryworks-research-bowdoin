@@ -17,6 +17,7 @@ Interface::Interface(QWidget *parent) : QWidget(parent)
     newAction = true;
     termIndex = 0;
     saveloadPath = QDir::homePath();
+    errPrint = false;
     
     // FUNCTIONAL OBJECTS
     functionVector.push_back(new hex3Function());
@@ -2033,13 +2034,23 @@ void Interface::errorHandler(const int &flag)
             qDebug() << errorMessageBox->exec();
             break;
         case INVALID_OUTPUT_IMAGE_DIM:
+            if (errPrint) {
+                errPrint = false;
+                return;
+            }
             errorMessageBox->setText("Error: image dimensions must be between 20 and 9999");
             qDebug() << errorMessageBox->exec();
+            //errPrint = true;
             break;
         case INVALID_ASPECT_RATIO:
+            if (errPrint) {
+                errPrint = false;
+                return;
+            }
             QString msg = QString("Error: aspect ratio must be between %1 and %2. Please correct the input accordingly.").arg(MIN_ASPECT_RATIO).arg(MAX_ASPECT_RATIO);
             errorMessageBox->setText(msg);
             errorMessageBox->exec();
+            errPrint = true;
             return;
         
     }
