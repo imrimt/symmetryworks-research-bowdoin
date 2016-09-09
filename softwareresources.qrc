@@ -25,5 +25,7 @@
         <file>function-previews/pgg.png</file>
         <file>Icons/remove.svg</file>
         <file>Icons/plus.svg</file>
+        <file>Icons/plus.png</file>
+        <file>Icons/remove.png</file>
     </qresource>
 </RCC>

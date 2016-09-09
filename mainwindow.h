@@ -5,7 +5,7 @@
 #include <QDockWidget>
 #include <QtWidgets>
 #include <QCloseEvent>
-#include "Interface.h"
+#include "interface.h"
 
 class QAction;
 class QActionGroup;
