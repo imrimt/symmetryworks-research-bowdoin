@@ -19,7 +19,7 @@ const double DEFAULT_XCORNER = 0.0;
 const double DEFAULT_YCORNER = 0.0;
 const int DEFAULT_OUTPUT_WIDTH = 6000; //6000 width 4800 height standard for art prints
 const int DEFAULT_OUTPUT_HEIGHT = 4800;
-const double PREVIEW_SCALING = 0.10;
+const double PREVIEW_SCALING = 0.4;
 const int PARAMETER_SEPARATOR_LENGTH = 10;
 
 //struct that holds information about image and output properties
