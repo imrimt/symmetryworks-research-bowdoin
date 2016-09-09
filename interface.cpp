@@ -129,8 +129,6 @@ void Interface::initInterfaceLayout()
     InterfaceLayout->addLayout(topbarLayout);
     InterfaceLayout->addWidget(functionConstantsWidget);
     
-    
-    
     overallLayout->addLayout(InterfaceLayout);
     overallLayout->activate();
     this->setLayout(overallLayout);
@@ -307,7 +305,7 @@ void Interface::initFunctionConstants()
     termViewTable->verticalHeader()->hide();
     
     addTermButton = new QPushButton(tr("Add term..."));
-    addTermButton->setIcon(*(new QIcon(":/Images/Icons/plus.svg")));
+    addTermButton->setIcon(*(new QIcon(":/Images/Icons/plus.png")));
     
     // resize all columns to maximum stretch
     for (int c = 0; c < termViewTable->horizontalHeader()->count(); ++c)
@@ -1080,7 +1078,7 @@ void Interface::addTerm()
     termViewTable->setCellWidget(highestIndex, 4, rEditTable);
     
     QTableWidgetItem *removeTermItem = new QTableWidgetItem();
-    removeTermItem->setIcon(QIcon(":/Images/Icons/remove.svg"));
+    removeTermItem->setIcon(QIcon(":/Images/Icons/remove.png"));
     removeTermItem->setFlags(removeTermItem->flags() ^ Qt::ItemIsEditable);
     
     termViewTable->setItem(highestIndex, 5, removeTermItem);
