@@ -59,7 +59,7 @@ const unsigned int INVALID_OUTPUT_IMAGE_DIM = 1;
 const unsigned int INVALID_ASPECT_RATIO = 2;
 
 const int MIN_IMAGE_DIM = 10;
-const int MAX_IMAGE_DIM = 100000;
+const int MAX_IMAGE_DIM = 20000;
 const double ASPECT_RATIO_SCALE = 0.025;
 const double MIN_ASPECT_RATIO = 0.1;
 const double MAX_ASPECT_RATIO = 12;

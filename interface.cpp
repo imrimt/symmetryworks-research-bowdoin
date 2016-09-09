@@ -736,8 +736,8 @@ void Interface::initImageExportPopUp()
     aspectRatioEdit->setText(QString::number(aspectRatio));
     
     aspectRatioWidget = new QWidget();
-    aspectRatioWidget->setFixedSize(MAX_IMAGE_DIM * 0.1 * ASPECT_RATIO_SCALE, MAX_IMAGE_DIM * 0.1* ASPECT_RATIO_SCALE);
-    aspectRatioPreview = new Display(MAX_IMAGE_DIM * 0.1 * ASPECT_RATIO_SCALE, MAX_IMAGE_DIM * 0.1 * ASPECT_RATIO_SCALE, aspectRatioWidget);
+    aspectRatioWidget->setFixedSize(MAX_IMAGE_DIM * 0.25 * ASPECT_RATIO_SCALE, MAX_IMAGE_DIM * 0.25 * ASPECT_RATIO_SCALE);
+    aspectRatioPreview = new Display(MAX_IMAGE_DIM * 0.25 * ASPECT_RATIO_SCALE, MAX_IMAGE_DIM * 0.25 * ASPECT_RATIO_SCALE, aspectRatioWidget);
     QSize size = aspectRatioPreview->changeDisplayDimensions(width, height);
     aspectRatioPreviewLayout->addWidget(aspectRatioWidget);
     aspectRatioPreviewLayout->setAlignment(Qt::AlignCenter);
@@ -1993,6 +1993,9 @@ void Interface::changeA(double val)
 
 void Interface::startImageExport()
 {
+    emit outWidthEdit->returnPressed();
+    emit outHeightEdit->returnPressed();
+    
     aspectRatio = (double)settings->Width/settings->Height;
     
     
